@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 20px;
+        }
+
+        .business-info {
+            float: left;
+        }
+
+        .invoice-details {
+            float: right;
+            text-align: right;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
+        .client-info {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .totals {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .yekun {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1e40af;
+            border-top: 1px solid #1e40af;
+            padding-top: 10px;
+        }
+
+        .footer {
+            margin-top: 100px;
+            font-size: 0.8em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="business-info">
+            {% if business.logo %}
+            <img src="{{ business.logo.url }}" style="height: 60px; width: auto; margin-bottom: 10px;">
+            {% endif %}
+            <h1>{{ business.name }}</h1>
+            <p>{{ business.address }}<br>
+                VOEN: {{ business.voen }}<br>
+                Tel: {{ business.phone }}</p>
+        </div>
+        <div class="invoice-details">
+            <h2 style="color: #1e40af;">HESAB-FAKTURA</h2>
+            <p>No: {{ invoice.invoice_number }}<br>
+                Tarix: {{ invoice.invoice_date }}<br>
+                Son tarix: {{ invoice.due_date }}</p>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="section client-info">
+        <h3>Müştəri:</h3>
+        <p><strong>{{ client.name }}</strong><br>
+            VOEN: {{ client.voen|default:"-" }}<br>
+            Email: {{ client.email }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Təsvir</th>
+                <th>Say</th>
+                <th>Qiymət</th>
+                <th>Məbləğ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity|floatformat:-2 }} {{ item.unit }}</td>
+                <td>{{ item.unit_price|floatformat:2 }} {{ invoice.currency }}</td>
+                <td>{{ item.amount|floatformat:2 }} {{ invoice.currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="total-row">
+            <span>Cəm: </span>
+            <span style="float: right;">{{ invoice.subtotal|floatformat:2 }} {{ invoice.currency }}</span>
+        </div>
+        <div class="total-row">
+            <span>ƏDV: </span>
+            <span style="float: right;">{{ invoice.tax_amount|floatformat:2 }} {{ invoice.currency }}</span>
+        </div>
+        <div class="total-row yekun">
+            <span>YEKUN: </span>
+            <span style="float: right;">{{ invoice.total|floatformat:2 }} {{ invoice.currency }}</span>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="section">
+        <p><strong>Qeydlər:</strong><br>{{ invoice.notes|default:"Təşəkkür edirik!" }}</p>
+        <p><strong>Bank məlumatları:</strong><br>
+            Bank: {{ business.bank_name }}<br>
+            IBAN: {{ business.iban }}<br>
+            SWIFT: {{ business.swift }}</p>
+    </div>
+
+    <div class="footer">
+        InvoiceAZ tərəfindən yaradılmışdır - www.invoiceaz.com
+    </div>
+</body>
+
+</html>

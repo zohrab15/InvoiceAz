@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-blue: var(--color-brand);
+  --color-premium-dark: var(--color-brand-dark);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root,
+.theme-slate {
+  --color-brand: #3b82f6;
+  --color-brand-dark: #1e3a8a;
+  --color-brand-light: #eff6ff;
+  --color-brand-shadow: rgba(59, 130, 246, 0.2);
+  --color-sidebar-bg: #ffffff;
+  --color-sidebar-text: #64748b;
+  --color-sidebar-active-bg: #3b82f6;
+  --color-sidebar-active-text: #ffffff;
+  --color-sidebar-border: #f1f5f9;
+}
+
+.theme-money {
+  --color-brand: #10b981;
+  --color-brand-dark: #064e3b;
+  --color-brand-light: #ecfdf5;
+  --color-brand-shadow: rgba(16, 185, 129, 0.2);
+  --color-sidebar-bg: #064e3b;
+  --color-sidebar-text: #a7f3d0;
+  --color-sidebar-active-bg: #10b981;
+  --color-sidebar-active-text: #ffffff;
+  --color-sidebar-border: #065f46;
+}
+
+.theme-indigo {
+  --color-brand: #6366f1;
+  --color-brand-dark: #312e81;
+  --color-brand-light: #eef2ff;
+  --color-brand-shadow: rgba(99, 102, 241, 0.2);
+  --color-sidebar-bg: #312e81;
+  --color-sidebar-text: #c7d2fe;
+  --color-sidebar-active-bg: #6366f1;
+  --color-sidebar-active-text: #ffffff;
+  --color-sidebar-border: #3730a3;
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-sm border border-white/40 shadow-xl transition-all duration-300;
+  }
+
+  .glass-dark {
+    @apply bg-slate-900/80 backdrop-blur-md border border-slate-700/50 shadow-2xl;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600;
+  }
+
+  .font-outfit {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  background-attachment: fixed;
+}
+
+/* Custom Scrollbar for Premium Feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
