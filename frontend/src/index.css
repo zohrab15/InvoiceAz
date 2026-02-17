@@ -17,6 +17,22 @@
   --color-sidebar-active-bg: #3b82f6;
   --color-sidebar-active-text: #ffffff;
   --color-sidebar-border: #f1f5f9;
+  --color-page-bg: #f8fafc;
+  --color-card-bg: #ffffff;
+  --color-card-border: #f1f5f9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-header-bg: rgba(255, 255, 255, 0.8);
+  --color-header-border: #e2e8f0;
+  --color-input-bg: #ffffff;
+  --color-input-border: #e2e8f0;
+  --color-hover-bg: #f1f5f9;
+  --color-dropdown-bg: #ffffff;
+  --color-dropdown-border: #f1f5f9;
+  --color-badge-bg: #f1f5f9;
+  --color-scrollbar: #cbd5e1;
+  --color-scrollbar-hover: #94a3b8;
 }
 
 .theme-money {
@@ -29,6 +45,22 @@
   --color-sidebar-active-bg: #10b981;
   --color-sidebar-active-text: #ffffff;
   --color-sidebar-border: #065f46;
+  --color-page-bg: #f8fafc;
+  --color-card-bg: #ffffff;
+  --color-card-border: #f1f5f9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-header-bg: rgba(255, 255, 255, 0.8);
+  --color-header-border: #e2e8f0;
+  --color-input-bg: #ffffff;
+  --color-input-border: #e2e8f0;
+  --color-hover-bg: #f1f5f9;
+  --color-dropdown-bg: #ffffff;
+  --color-dropdown-border: #f1f5f9;
+  --color-badge-bg: #f1f5f9;
+  --color-scrollbar: #cbd5e1;
+  --color-scrollbar-hover: #94a3b8;
 }
 
 .theme-indigo {
@@ -41,6 +73,50 @@
   --color-sidebar-active-bg: #6366f1;
   --color-sidebar-active-text: #ffffff;
   --color-sidebar-border: #3730a3;
+  --color-page-bg: #f8fafc;
+  --color-card-bg: #ffffff;
+  --color-card-border: #f1f5f9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-header-bg: rgba(255, 255, 255, 0.8);
+  --color-header-border: #e2e8f0;
+  --color-input-bg: #ffffff;
+  --color-input-border: #e2e8f0;
+  --color-hover-bg: #f1f5f9;
+  --color-dropdown-bg: #ffffff;
+  --color-dropdown-border: #f1f5f9;
+  --color-badge-bg: #f1f5f9;
+  --color-scrollbar: #cbd5e1;
+  --color-scrollbar-hover: #94a3b8;
+}
+
+.theme-dark {
+  --color-brand: #818cf8;
+  --color-brand-dark: #6366f1;
+  --color-brand-light: rgba(99, 102, 241, 0.1);
+  --color-brand-shadow: rgba(99, 102, 241, 0.3);
+  --color-sidebar-bg: #0f0f17;
+  --color-sidebar-text: rgba(255, 255, 255, 0.4);
+  --color-sidebar-active-bg: linear-gradient(135deg, #3b82f6, #7c3aed);
+  --color-sidebar-active-text: #ffffff;
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+  --color-page-bg: #0a0a0f;
+  --color-card-bg: rgba(255, 255, 255, 0.03);
+  --color-card-border: rgba(255, 255, 255, 0.06);
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: rgba(255, 255, 255, 0.5);
+  --color-text-muted: rgba(255, 255, 255, 0.25);
+  --color-header-bg: rgba(10, 10, 15, 0.8);
+  --color-header-border: rgba(255, 255, 255, 0.06);
+  --color-input-bg: rgba(255, 255, 255, 0.04);
+  --color-input-border: rgba(255, 255, 255, 0.08);
+  --color-hover-bg: rgba(255, 255, 255, 0.06);
+  --color-dropdown-bg: #12121a;
+  --color-dropdown-border: rgba(255, 255, 255, 0.08);
+  --color-badge-bg: rgba(255, 255, 255, 0.06);
+  --color-scrollbar: rgba(255, 255, 255, 0.1);
+  --color-scrollbar-hover: rgba(255, 255, 255, 0.2);
 }
 
 @layer utilities {
@@ -92,10 +168,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-scrollbar);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-scrollbar-hover);
+}
+
+html {
+  scroll-behavior: smooth;
 }

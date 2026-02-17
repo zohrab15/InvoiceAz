@@ -51,13 +51,11 @@ const Dashboard = () => {
 
     const profit = stats.paidRevenue - stats.totalExpenses;
 
-    // Aggregated real monthly data
     const monthlyData = React.useMemo(() => {
         const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyun', 'İyul', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
         const currentMonth = new Date().getMonth();
         const data = [];
 
-        // Last 6 months
         for (let i = 5; i >= 0; i--) {
             const date = new Date();
             date.setMonth(currentMonth - i);
@@ -70,7 +68,7 @@ const Dashboard = () => {
             }).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
 
             const monthExpense = expenses?.filter(exp => {
-                const d = new Date(exp.date); // Use 'date' field from Expense model
+                const d = new Date(exp.date);
                 return d.getMonth() === m && d.getFullYear() === y;
             }).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0;
 
@@ -121,7 +119,7 @@ const Dashboard = () => {
     }, [invoices, expenses, payments]);
 
     if (isLoading) return (
-        <div className="h-full flex items-center justify-center text-gray-400">
+        <div className="h-full flex items-center justify-center" style={{ color: 'var(--color-text-muted)' }}>
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
                 <Clock size={32} />
             </motion.div>
@@ -137,15 +135,16 @@ const Dashboard = () => {
         >
             <div className="flex justify-between items-end">
                 <div>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-2 font-outfit">
-                        Dashboard <span className="text-blue-600 block text-sm font-bold tracking-widest uppercase mt-2">Biznesinizin ümumi görünüşü</span>
+                    <h2 className="text-4xl font-black tracking-tight mb-2 font-outfit" style={{ color: 'var(--color-text-primary)' }}>
+                        Dashboard <span className="block text-sm font-bold tracking-widest uppercase mt-2" style={{ color: 'var(--color-brand)' }}>Biznesinizin ümumi görünüşü</span>
                     </h2>
                 </div>
                 <div className="flex gap-4 mb-2">
                     <motion.a
                         whileHover={{ y: -2 }}
                         href="/expenses"
-                        className="glass px-6 py-3 rounded-2xl flex items-center gap-2 text-slate-600 hover:text-red-500 transition-all font-bold text-sm"
+                        className="px-6 py-3 rounded-2xl flex items-center gap-2 transition-all font-bold text-sm"
+                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
                     >
                         <Wallet size={18} /> Yeni Xərc
                     </motion.a>
@@ -153,7 +152,8 @@ const Dashboard = () => {
                         whileHover={{ y: -2, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         href="/invoices"
-                        className="bg-slate-900 text-white px-8 py-3 rounded-2xl flex items-center gap-2 shadow-2xl shadow-slate-200 transition-all font-bold text-sm"
+                        className="text-white px-8 py-3 rounded-2xl flex items-center gap-2 shadow-2xl transition-all font-bold text-sm"
+                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 30px var(--color-brand-shadow)' }}
                     >
                         <Plus size={18} /> Yeni Faktura
                     </motion.a>
@@ -162,15 +162,15 @@ const Dashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'Ümumi Gəlir', val: stats.totalRevenue, icon: <TrendingUp size={20} />, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                    { label: 'Gözləyən', val: stats.pendingRevenue, icon: <Clock size={20} />, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-                    { label: 'Ümumi Xərclər', val: stats.totalExpenses, icon: <Wallet size={20} />, color: 'text-red-500', bg: 'bg-red-500/10' },
+                    { label: 'Ümumi Gəlir', val: stats.totalRevenue, icon: <TrendingUp size={20} />, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
+                    { label: 'Gözləyən', val: stats.pendingRevenue, icon: <Clock size={20} />, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+                    { label: 'Ümumi Xərclər', val: stats.totalExpenses, icon: <Wallet size={20} />, color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
                     {
                         label: 'Xalis Mənfəət',
                         val: profit,
                         icon: profit >= 0 ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />,
-                        color: profit >= 0 ? 'text-emerald-500' : 'text-red-500',
-                        bg: profit >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'
+                        color: profit >= 0 ? '#10b981' : '#ef4444',
+                        bg: profit >= 0 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'
                     },
                 ].map((s, i) => (
                     <motion.div
@@ -178,17 +178,18 @@ const Dashboard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         key={s.label}
-                        className="glass p-7 rounded-[2rem] hover:shadow-2xl transition-all group relative overflow-hidden"
+                        className="p-7 rounded-[2rem] hover:shadow-2xl transition-all group relative overflow-hidden backdrop-blur-sm"
+                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                     >
-                        <div className={`absolute top-0 right-0 w-24 h-24 ${s.bg} rounded-bl-full opacity-20 group-hover:scale-150 transition-transform duration-700`} />
+                        <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-20 group-hover:scale-150 transition-transform duration-700" style={{ backgroundColor: s.bg }} />
                         <div className="flex items-center gap-4 mb-6">
-                            <div className={`p-3.5 rounded-2xl ${s.bg} ${s.color}`}>
+                            <div className="p-3.5 rounded-2xl" style={{ backgroundColor: s.bg, color: s.color }}>
                                 {s.icon}
                             </div>
-                            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">{s.label}</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)' }}>{s.label}</p>
                         </div>
-                        <p className="text-3xl font-black text-slate-900 tracking-tighter">
-                            {s.val.toLocaleString()} <span className="text-xs font-bold text-slate-400 ml-1">₼</span>
+                        <p className="text-3xl font-black tracking-tighter" style={{ color: 'var(--color-text-primary)' }}>
+                            {s.val.toLocaleString()} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                         </p>
                     </motion.div>
                 ))}
@@ -198,20 +199,21 @@ const Dashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="lg:col-span-2 glass p-10 rounded-[2.5rem]"
+                    className="lg:col-span-2 p-10 rounded-[2.5rem] backdrop-blur-sm"
+                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
                     <div className="flex justify-between items-center mb-10">
-                        <h3 className="font-black text-slate-900 text-lg tracking-tight flex items-center gap-3">
-                            <div className="w-2 h-8 bg-blue-600 rounded-full" />
+                        <h3 className="font-black text-lg tracking-tight flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
+                            <div className="w-2 h-8 rounded-full" style={{ backgroundColor: 'var(--color-brand)' }} />
                             Performans Analitikası
                         </h3>
                         <div className="flex gap-6">
-                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-lg shadow-blue-200" />
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
+                                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-lg" style={{ boxShadow: '0 2px 8px rgba(59,130,246,0.4)' }} />
                                 <span>Gəlir</span>
                             </div>
-                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                <div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-lg shadow-red-200" />
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
+                                <div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-lg" style={{ boxShadow: '0 2px 8px rgba(251,113,133,0.4)' }} />
                                 <span>Xərc</span>
                             </div>
                         </div>
@@ -229,10 +231,17 @@ const Dashboard = () => {
                                         <stop offset="95%" stopColor="#FB7185" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} dy={10} />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }} dy={10} />
                                 <YAxis hide />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', padding: '16px' }}
+                                    contentStyle={{
+                                        borderRadius: '24px',
+                                        border: '1px solid var(--color-card-border)',
+                                        boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+                                        padding: '16px',
+                                        backgroundColor: 'var(--color-dropdown-bg)',
+                                        color: 'var(--color-text-primary)'
+                                    }}
                                     itemStyle={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '10px' }}
                                 />
                                 <Area type="monotone" dataKey="gəlir" stroke="#3B82F6" strokeWidth={4} fillOpacity={1} fill="url(#colorIncome)" />
@@ -245,9 +254,10 @@ const Dashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="glass p-10 rounded-[2.5rem] flex flex-col"
+                    className="p-10 rounded-[2.5rem] flex flex-col backdrop-blur-sm"
+                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
-                    <h3 className="font-black text-slate-900 text-lg tracking-tight mb-8">Son Əməliyyatlar</h3>
+                    <h3 className="font-black text-lg tracking-tight mb-8" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
                     <div className="space-y-6 flex-1 overflow-y-auto pr-2">
                         {recentTransactions.map((t, i) => (
                             <div
@@ -256,17 +266,21 @@ const Dashboard = () => {
                                 className="flex justify-between items-center group cursor-pointer hover:translate-x-1 transition-transform"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${t.type === 'payment' ? 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white' :
-                                        t.type === 'expense' ? 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white' :
-                                            'bg-slate-100 text-slate-500 group-hover:bg-blue-600 group-hover:text-white'
-                                        }`}>
+                                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center transition-colors"
+                                        style={{
+                                            backgroundColor: t.type === 'payment' ? 'rgba(16,185,129,0.1)' :
+                                                t.type === 'expense' ? 'rgba(239,68,68,0.1)' : 'var(--color-hover-bg)',
+                                            color: t.type === 'payment' ? '#10b981' :
+                                                t.type === 'expense' ? '#ef4444' : 'var(--color-text-secondary)'
+                                        }}
+                                    >
                                         {t.type === 'expense' ? <ArrowDownRight size={18} /> : <ArrowUpRight size={18} />}
                                     </div>
                                     <div>
-                                        <div className="font-black text-slate-900 text-sm">{t.title}</div>
-                                        <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase flex items-center gap-2">
+                                        <div className="font-black text-sm" style={{ color: 'var(--color-text-primary)' }}>{t.title}</div>
+                                        <div className="text-[10px] font-bold tracking-wider uppercase flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
                                             {t.subtitle}
-                                            {t.type === 'payment' && <span className="w-1 h-1 rounded-full bg-slate-300" />}
+                                            {t.type === 'payment' && <span className="w-1 h-1 rounded-full" style={{ backgroundColor: 'var(--color-text-muted)' }} />}
                                             {t.type === 'payment' && <span className="text-emerald-500 lowercase">ödəniş</span>}
                                         </div>
                                     </div>
@@ -277,7 +291,11 @@ const Dashboard = () => {
                             </div>
                         ))}
                     </div>
-                    <button className="w-full py-4 mt-8 bg-slate-900 text-white font-black rounded-2xl hover:shadow-xl hover:shadow-slate-200 transition-all text-[10px] uppercase tracking-widest">
+                    <button
+                        onClick={() => navigate('/analytics/tax')}
+                        className="w-full py-4 mt-8 text-white font-black rounded-2xl transition-all text-[10px] uppercase tracking-widest"
+                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 30px var(--color-brand-shadow)' }}
+                    >
                         Bütün Hesabata Bax
                     </button>
                 </motion.div>
@@ -287,12 +305,14 @@ const Dashboard = () => {
                 <div className="lg:col-span-2">
                     <TopProductsChart />
                 </div>
-                <div className="glass p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-4">
-                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
+                <div className="p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-4 backdrop-blur-sm"
+                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                >
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                         <TrendingUp size={32} />
                     </div>
-                    <h3 className="font-outfit font-black text-slate-900 text-lg">Satış Artımı</h3>
-                    <p className="text-slate-500 text-sm">Mehsul bazasında statistikalar satış strategiyanızı gücləndirir.</p>
+                    <h3 className="font-outfit font-black text-lg" style={{ color: 'var(--color-text-primary)' }}>Satış Artımı</h3>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Mehsul bazasında statistikalar satış strategiyanızı gücləndirir.</p>
                 </div>
             </div>
         </motion.div>

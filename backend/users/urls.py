@@ -5,6 +5,7 @@ from .views import (
     DeleteAccountView, SessionListView, RevokeSessionView,
     Generate2FAView, Enable2FAView, Disable2FAView, UserMeView
 )
+from .plan_views import PlanStatusView
 
 router = DefaultRouter()
 router.register(r'business', BusinessViewSet, basename='business')
@@ -20,4 +21,5 @@ urlpatterns = [
     path('2fa/generate/', Generate2FAView.as_view(), name='2fa_generate'),
     path('2fa/enable/', Enable2FAView.as_view(), name='2fa_enable'),
     path('2fa/disable/', Disable2FAView.as_view(), name='2fa_disable'),
+    path('plan/status/', PlanStatusView.as_view(), name='plan_status'),
 ]

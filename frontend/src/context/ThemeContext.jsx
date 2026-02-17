@@ -11,7 +11,6 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-    // Priority: Saved theme > OS preference > 'slate'
     const getInitialTheme = () => {
         const savedTheme = localStorage.getItem('invoice-az-theme');
         if (savedTheme) return savedTheme;
@@ -21,24 +20,23 @@ export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(getInitialTheme);
 
     useEffect(() => {
-        // Remove previous theme classes
         const root = window.document.documentElement;
-        root.classList.remove('theme-slate', 'theme-money', 'theme-indigo');
-
-        // Add current theme class
+        root.classList.remove('theme-slate', 'theme-money', 'theme-indigo', 'theme-dark');
         root.classList.add(`theme-${theme}`);
-
-        // Persist
         localStorage.setItem('invoice-az-theme', theme);
     }, [theme]);
+
+    const isDark = theme === 'dark';
 
     const value = {
         theme,
         setTheme,
+        isDark,
         themes: [
-            { id: 'slate', name: 'Slate (Modern)', color: '#3b82f6' },
-            { id: 'money', name: 'Money (Midnight)', color: '#10b981' },
-            { id: 'indigo', name: 'Indigo (Royal)', color: '#6366f1' }
+            { id: 'slate', name: 'Slate', subtitle: 'Klassik', color: '#3b82f6', preview: ['#3b82f6', '#eff6ff', '#ffffff'] },
+            { id: 'money', name: 'Money', subtitle: 'Maliyyə', color: '#10b981', preview: ['#10b981', '#064e3b', '#ecfdf5'] },
+            { id: 'indigo', name: 'Indigo', subtitle: 'Premium', color: '#6366f1', preview: ['#6366f1', '#312e81', '#eef2ff'] },
+            { id: 'dark', name: 'Gecə', subtitle: 'Qaranlıq', color: '#818cf8', preview: ['#818cf8', '#0a0a0f', '#12121a'] },
         ]
     };
 

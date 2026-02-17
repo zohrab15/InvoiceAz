@@ -4,36 +4,38 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
-import { Plus, Search, Mail, Phone, MoreVertical, X, User, Building, MapPin, Hash, Edit, Trash2, ChevronDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-
+import { Plus, Search, Mail, Phone, MoreVertical, X, User, Building, MapPin, Hash, Edit, Trash2 } from 'lucide-react';
 import PhoneInput from '../components/common/PhoneInput';
+import UpgradeModal from '../components/UpgradeModal';
+import usePlanLimits from '../hooks/usePlanLimits';
 
 const Clients = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [activeMenuId, setActiveMenuId] = useState(null);
-    const [editingId, setEditingId] = useState(null);
+    const { checkLimit, isPro } = usePlanLimits();
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-    // Form State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [editingClient, setEditingClient] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        client_type: 'individual',
         email: '',
         phone: '',
         address: '',
         voen: ''
     });
 
-    // Unified phone state is now inside formData.phone
-
     const resetForm = () => {
-        setFormData({ name: '', client_type: 'individual', email: '', phone: '', address: '', voen: '' });
-        // No need for separate phone states
-        setEditingId(null);
-        setActiveMenuId(null);
+        setFormData({ name: '', email: '', phone: '', address: '', voen: '' });
+        setEditingClient(null);
+        setIsModalOpen(false);
+    };
+
+    const handleAddNew = () => {
+        resetForm();
+        setIsModalOpen(true);
     };
 
     const { data: clients, isLoading } = useQuery({
@@ -42,338 +44,288 @@ const Clients = () => {
             const res = await clientApi.get('/clients/');
             return res.data;
         },
-        enabled: !!activeBusiness, // Only fetch if business is selected
+        enabled: !!activeBusiness,
     });
 
     const createMutation = useMutation({
         mutationFn: (data) => clientApi.post('/clients/', data),
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
-            showToast('Müştəri uğurla əlavə edildi!');
-            setShowAddModal(false);
+            showToast('Müştəri əlavə edildi');
             resetForm();
         },
         onError: (error) => {
-            const errorMsg = error.response?.data?.detail || 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.';
-            showToast(errorMsg, 'error');
+            const data = error.response?.data;
+            if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
+                setShowUpgradeModal(true);
+            } else {
+                const detail = data?.detail || 'Xəta baş verdi';
+                showToast(detail, 'error');
+            }
         }
     });
 
     const updateMutation = useMutation({
-        mutationFn: (data) => clientApi.put(`/clients/${editingId}/`, data),
+        mutationFn: (data) => clientApi.put(`/clients/${data.id}/`, data),
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
-            showToast('Müştəri məlumatları yeniləndi!');
-            setShowAddModal(false);
+            showToast('Müştəri yeniləndi');
             resetForm();
         },
-        onError: (error) => {
-            showToast('Yenilənmə zamanı xəta baş verdi', 'error');
-        }
+        onError: (error) => showToast(error.response?.data?.detail || 'Xəta baş verdi', 'error')
     });
 
     const deleteMutation = useMutation({
         mutationFn: (id) => clientApi.delete(`/clients/${id}/`),
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
-            showToast('Müştəri silindi!');
+            showToast('Müştəri silindi');
         }
     });
 
-    const filteredClients = React.useMemo(() => {
-        return clients?.filter(c =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.email?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [clients, searchTerm]);
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.name) return showToast('Ad məcburidir', 'error');
-
-        const submissionData = { ...formData };
-
-        if (editingId) {
-            updateMutation.mutate(submissionData);
+        if (editingClient) {
+            updateMutation.mutate({ ...formData, id: editingClient.id });
         } else {
-            createMutation.mutate(submissionData);
+            createMutation.mutate(formData);
         }
     };
 
     const handleEdit = (client) => {
-        setFormData(client);
-        setEditingId(client.id);
-
-        setShowAddModal(true);
-        setActiveMenuId(null);
+        setEditingClient(client);
+        setFormData({
+            name: client.name,
+            email: client.email || '',
+            phone: client.phone || '',
+            address: client.address || '',
+            voen: client.voen || ''
+        });
+        setIsModalOpen(true);
     };
 
     const handleDelete = (id) => {
         if (window.confirm('Bu müştərini silmək istədiyinizə əminsiniz?')) {
             deleteMutation.mutate(id);
         }
-        setActiveMenuId(null);
     };
 
-    if (isLoading) return (
-        <div className="h-48 flex items-center justify-center text-gray-400">
-            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
-                <Plus size={32} />
-            </motion.div>
-        </div>
+    const filteredClients = clients?.filter(client =>
+        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.phone?.includes(searchTerm)
     );
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="space-y-6"
-        >
+        <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">Müştərilər</h2>
-                <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                        resetForm();
-                        setShowAddModal(true);
-                    }}
-                    className="bg-primary-blue text-white px-6 py-2.5 rounded-xl flex items-center space-x-2 hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all font-bold text-sm"
-                >
-                    <Plus size={20} />
-                    <span>Yeni Müştəri</span>
-                </motion.button>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">Müştərilər</h1>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={handleAddNew}
+                        className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
+                    >
+                        <Plus size={20} />
+                        <span>Yeni Müştəri</span>
+                    </button>
+                </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <div className="p-4 border-b border-gray-50 flex items-center space-x-3 bg-gray-50/30">
-                    <Search size={20} className="text-gray-400 ml-2" />
+            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                <div className="p-4 border-b bg-gray-50/50 flex items-center space-x-4">
+                    <Search className="text-gray-400" size={20} />
                     <input
                         type="text"
-                        placeholder="Müştəri axtar..."
-                        className="bg-transparent border-none focus:ring-0 w-full font-medium text-gray-600 placeholder:text-gray-300"
+                        placeholder="Ad, email və ya telefon ilə axtar..."
+                        className="bg-transparent border-none outline-none w-full text-sm font-medium"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left min-w-[600px]">
-                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                    <table className="w-full text-left border-collapse">
+                        <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
                             <tr>
-                                <th className="px-6 py-4">Ad / Şirkət</th>
+                                <th className="px-6 py-4">Müştəri</th>
                                 <th className="px-6 py-4">Əlaqə</th>
-                                <th className="px-6 py-4">Maliyyə (Gəlir / Xərc)</th>
-                                <th className="px-6 py-4">VÖEN</th>
-                                <th className="px-6 py-4 text-right"></th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 text-right">Əməliyyatlar</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            <AnimatePresence>
-                                {filteredClients?.map((client, i) => (
-                                    <motion.tr
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        key={client.id}
-                                        className="hover:bg-blue-50/30 transition-colors group cursor-default"
-                                    >
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className={`p-2 rounded-lg ${client.client_type === 'company' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>
-                                                    {client.client_type === 'company' ? <Building size={18} /> : <User size={18} />}
-                                                </div>
-                                                <div>
-                                                    <div className="font-bold text-gray-900 leading-tight">{client.name}</div>
-                                                    <div className="text-[10px] font-black uppercase tracking-tighter text-gray-400 mt-0.5">
-                                                        {client.client_type === 'company' ? 'Şirkət' : 'Fiziki şəxs'}
-                                                    </div>
+                        <tbody className="divide-y divide-gray-100">
+                            {isLoading ? (
+                                <tr><td colSpan="4" className="p-8 text-center text-gray-400">Yüklənir...</td></tr>
+                            ) : filteredClients?.length === 0 ? (
+                                <tr><td colSpan="4" className="p-8 text-center text-gray-400">Müştəri tapılmadı</td></tr>
+                            ) : filteredClients?.map((client) => (
+                                <motion.tr
+                                    layout
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    key={client.id}
+                                    className="hover:bg-blue-50/30 transition-colors group"
+                                >
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
+                                                {client.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-gray-900">{client.name}</div>
+                                                <div className="text-xs text-gray-500 flex items-center gap-1">
+                                                    <Building size={10} /> {client.voen ? `VÖEN: ${client.voen}` : 'VÖEN yoxdur'}
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-5 space-y-1">
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="space-y-1">
                                             {client.email && (
-                                                <div className="flex items-center text-xs font-medium text-gray-500 hover:text-primary-blue transition-colors">
-                                                    <Mail size={12} className="mr-2 opacity-50" /> {client.email}
+                                                <div className="flex items-center text-sm text-gray-600 gap-2">
+                                                    <Mail size={14} className="text-gray-400" />
+                                                    {client.email}
                                                 </div>
                                             )}
                                             {client.phone && (
-                                                <div className="flex items-center text-xs font-medium text-gray-500">
-                                                    <Phone size={12} className="mr-2 opacity-50" /> {client.phone}
+                                                <div className="flex items-center text-sm text-gray-600 gap-2">
+                                                    <Phone size={14} className="text-gray-400" />
+                                                    {client.phone}
                                                 </div>
                                             )}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                                                    <ArrowUpRight size={12} /> {parseFloat(client.total_revenue).toLocaleString()} ₼
+                                            {client.address && (
+                                                <div className="flex items-center text-sm text-gray-600 gap-2">
+                                                    <MapPin size={14} className="text-gray-400" />
+                                                    <span className="truncate max-w-[200px]">{client.address}</span>
                                                 </div>
-                                                <div className="text-xs font-bold text-red-500 flex items-center gap-1">
-                                                    <ArrowDownRight size={12} /> {parseFloat(client.total_expenses).toLocaleString()} ₼
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className="text-xs font-mono font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                                                {client.voen || '---'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-right relative">
-                                            <button
-                                                onClick={() => setActiveMenuId(activeMenuId === client.id ? null : client.id)}
-                                                className={`p-2 rounded-lg transition-all ${activeMenuId === client.id ? 'bg-blue-100 text-primary-blue opacity-100' : 'text-gray-400 hover:bg-gray-100 opacity-0 group-hover:opacity-100'}`}
-                                            >
-                                                <MoreVertical size={18} />
-                                            </button>
-
-                                            {/* Action Menu */}
-                                            <AnimatePresence>
-                                                {activeMenuId === client.id && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                                        className="absolute right-8 top-12 w-40 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
-                                                    >
-                                                        <button
-                                                            onClick={() => handleEdit(client)}
-                                                            className="w-full text-left px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-primary-blue flex items-center gap-2 transition-colors"
-                                                        >
-                                                            <Edit size={14} /> Düzəliş et
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(client.id)}
-                                                            className="w-full text-left px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
-                                                        >
-                                                            <Trash2 size={14} /> Sil
-                                                        </button>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </td>
-                                    </motion.tr>
-                                ))}
-                            </AnimatePresence>
-                            {filteredClients?.length === 0 && (
-                                <tr>
-                                    <td colSpan="4" className="px-6 py-12 text-center">
-                                        <div className="text-gray-300 font-bold italic tracking-tight">Müştəri tapılmadı...</div>
+                                            )}
+                                        </div>
                                     </td>
-                                </tr>
-                            )}
+                                    <td className="px-6 py-4">
+                                        <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700 border border-green-200 uppercase tracking-wider">
+                                            Aktiv
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end space-x-2">
+                                            <button
+                                                onClick={() => handleEdit(client)}
+                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            >
+                                                <Edit size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(client.id)}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </motion.tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Add Modal */}
             <AnimatePresence>
-                {showAddModal && (
-                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowAddModal(false)}
-                            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="bg-white rounded-3xl shadow-2xl w-full max-w-xl relative overflow-hidden"
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
                         >
-                            <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                                <h3 className="text-2xl font-black text-gray-800 tracking-tight">{editingId ? 'Müştəri Düzəliş' : 'Yeni Müştəri'}</h3>
-                                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600"><X size={24} /></button>
+                            <div className="p-6 border-b bg-gray-50 flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-gray-800">{editingClient ? 'Müştəri Məlumatlarını Yenilə' : 'Yeni Müştəri Əlavə Et'}</h2>
+                                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                                    <X size={24} />
+                                </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                                <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4 p-1 bg-gray-100 rounded-xl">
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, client_type: 'individual' })}
-                                            className={`py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${formData.client_type === 'individual' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
-                                        >
-                                            Fiziki Şəxs
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, client_type: 'company' })}
-                                            className={`py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${formData.client_type === 'company' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-400 hover:text-gray-600'}`}
-                                        >
-                                            Şirkət / VÖEN
-                                        </button>
-                                    </div>
-
+                            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Tam Ad / Şirkət Adı</label>
                                     <div className="relative">
-                                        <User className="absolute left-4 top-3.5 text-gray-300" size={18} />
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                         <input
+                                            required
                                             type="text"
-                                            placeholder="Müştəri və ya Şirkət adı"
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue rounded-xl p-3 pl-12 outline-none transition-all font-bold placeholder:font-medium"
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                            placeholder="Ad daxil edin"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         />
                                     </div>
+                                </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
                                         <div className="relative">
-                                            <Mail className="absolute left-4 top-3.5 text-gray-300" size={18} />
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                             <input
                                                 type="email"
-                                                placeholder="Email"
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                placeholder="example@mail.com"
                                                 value={formData.email}
                                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             />
                                         </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Mobil Nömrə</label>
                                         <PhoneInput
-                                            label="Telefon"
-                                            name="phone"
                                             value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        />
-                                    </div>
-
-                                    <div className="relative">
-                                        <MapPin className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                        <input
-                                            type="text"
-                                            placeholder="Ünvan"
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue rounded-xl p-3 pl-12 outline-none transition-all font-bold"
-                                            value={formData.address}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                        />
-                                    </div>
-
-                                    <div className="relative">
-                                        <Hash className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                        <input
-                                            type="text"
-                                            placeholder="VÖEN (isteğe bağlı)"
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue rounded-xl p-3 pl-12 outline-none transition-all font-bold"
-                                            value={formData.voen}
-                                            onChange={(e) => setFormData({ ...formData, voen: e.target.value })}
+                                            onChange={(val) => setFormData({ ...formData, phone: val })}
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4 pt-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">VÖEN</label>
+                                        <div className="relative">
+                                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                            <input
+                                                type="text"
+                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                placeholder="10 rəqəmli VÖEN"
+                                                value={formData.voen}
+                                                onChange={(e) => setFormData({ ...formData, voen: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Ünvan</label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                            <input
+                                                type="text"
+                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                placeholder="Şəhər, küçə..."
+                                                value={formData.address}
+                                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 flex gap-3">
                                     <button
                                         type="button"
-                                        onClick={() => setShowAddModal(false)}
-                                        className="flex-1 py-4 rounded-2xl font-bold text-gray-500 hover:bg-gray-50 transition-all border-2 border-transparent hover:border-gray-100"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
                                     >
                                         Ləğv et
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={createMutation.isPending}
-                                        className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest bg-primary-blue text-white shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+                                        className="flex-1 py-3 bg-primary-blue text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all active:scale-95"
                                     >
-                                        {createMutation.isPending || updateMutation.isPending ? 'Göndərilir...' : (editingId ? 'Yadda saxla' : 'Əlavə et')}
+                                        {editingClient ? 'Yadda Saxla' : 'Əlavə Et'}
                                     </button>
                                 </div>
                             </form>
@@ -381,7 +333,14 @@ const Clients = () => {
                     </div>
                 )}
             </AnimatePresence>
-        </motion.div>
+
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                resourceName="Müştəri"
+                limit={checkLimit('clients').limit}
+            />
+        </div>
     );
 };
 

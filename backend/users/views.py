@@ -10,7 +10,7 @@ class BusinessViewSet(viewsets.ModelViewSet):
         return Business.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, is_active=True)
 
 
 from django.shortcuts import redirect

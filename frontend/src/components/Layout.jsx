@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import { Menu, X } from 'lucide-react';
 
 const Layout = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="flex h-screen bg-gray-50 w-full overflow-hidden">
+        <div className="flex h-screen w-full overflow-hidden" style={{ backgroundColor: 'var(--color-page-bg)' }}>
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">

@@ -11,20 +11,22 @@ import {
     Calculator,
     Check,
     Building2,
-    ChevronDown
+    ChevronDown,
+    Lock
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
 import { useLocation } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import usePlanLimits from '../hooks/usePlanLimits';
 
 const Sidebar = ({ isOpen, onClose }) => {
     const { activeBusiness, businesses, switchBusiness } = useBusiness();
     const [isBusinessMenuOpen, setIsBusinessMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const location = useLocation();
+    const { isFeatureLocked } = usePlanLimits();
 
-    // Close business menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -42,7 +44,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/clients', icon: <Users size={20} />, label: 'Müştərilər' },
         { to: '/analytics/payments', icon: <TrendingUp size={20} />, label: 'Ödəniş Analitikası' },
         { to: '/analytics/issues', icon: <AlertTriangle size={20} />, label: 'Problemli Fakturalar' },
-        { to: '/analytics/forecast', icon: <Sparkles size={20} />, label: 'Trend və Proqnoz' },
+        { to: '/analytics/forecast', icon: <Sparkles size={20} />, label: 'Trend və Proqnoz', locked: isFeatureLocked('forecast_analytics') },
         { to: '/analytics/tax', icon: <Calculator size={20} />, label: 'Vergi və Hesabatlar' },
     ];
 
@@ -51,23 +53,35 @@ const Sidebar = ({ isOpen, onClose }) => {
             {/* Mobile Backdrop */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
                     onClick={onClose}
                 />
             )}
 
-            <div className={`
-                fixed inset-y-0 left-0 w-64 bg-[var(--color-sidebar-bg)] border-r border-[var(--color-sidebar-border)] h-screen flex flex-col z-50 
-                transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static
-                ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-            `}>
-                <div className="p-4 border-b relative" ref={menuRef}>
+            <div
+                className={`
+                    fixed inset-y-0 left-0 w-64 h-screen flex flex-col z-50 
+                    transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}
+                style={{
+                    backgroundColor: 'var(--color-sidebar-bg)',
+                    borderRight: '1px solid var(--color-sidebar-border)',
+                }}
+            >
+                <div className="p-4 relative" style={{ borderBottom: '1px solid var(--color-sidebar-border)' }} ref={menuRef}>
                     <button
                         onClick={() => setIsBusinessMenuOpen(!isBusinessMenuOpen)}
-                        className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded-xl transition-colors group"
+                        className="w-full flex items-center justify-between p-2 rounded-xl transition-colors group"
+                        style={{ '--tw-bg-opacity': 1 }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                         <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="w-10 h-10 bg-[var(--color-brand-light)] rounded-lg flex items-center justify-center text-[var(--color-brand)] flex-shrink-0 overflow-hidden">
+                            <div
+                                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                                style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}
+                            >
                                 {activeBusiness?.logo ? (
                                     <img
                                         src={activeBusiness.logo.startsWith('http') ? activeBusiness.logo : `http://localhost:8000${activeBusiness.logo}`}
@@ -79,20 +93,23 @@ const Sidebar = ({ isOpen, onClose }) => {
                                 )}
                             </div>
                             <div className="text-left overflow-hidden">
-                                <div className="font-bold text-[var(--color-sidebar-text)] opacity-90 truncate text-sm">
+                                <div className="font-bold truncate text-sm" style={{ color: 'var(--color-text-primary)' }}>
                                     {activeBusiness ? activeBusiness.name : 'Biznes Seçin'}
                                 </div>
-                                <div className="text-[10px] uppercase font-black tracking-wider text-[var(--color-sidebar-text)] opacity-50">
+                                <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                                     {activeBusiness ? 'Aktiv Profil' : '---'}
                                 </div>
                             </div>
                         </div>
-                        <ChevronDown size={16} className={`text-gray-400 transition-transform ${isBusinessMenuOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} className={`transition-transform ${isBusinessMenuOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--color-text-muted)' }} />
                     </button>
 
                     {/* Dropdown Menu */}
                     {isBusinessMenuOpen && (
-                        <div className="absolute top-full left-4 right-4 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[100]">
+                        <div
+                            className="absolute top-full left-4 right-4 mt-2 rounded-xl shadow-2xl overflow-hidden z-[100]"
+                            style={{ backgroundColor: 'var(--color-dropdown-bg)', border: '1px solid var(--color-dropdown-border)' }}
+                        >
                             <div className="p-2 max-h-64 overflow-y-auto space-y-1">
                                 {businesses?.map(business => (
                                     <button
@@ -102,14 +119,18 @@ const Sidebar = ({ isOpen, onClose }) => {
                                             setIsBusinessMenuOpen(false);
                                             if (window.innerWidth < 1024) onClose();
                                         }}
-                                        className={`w-full flex items-center justify-between p-2 rounded-lg text-sm font-medium transition-colors ${activeBusiness?.id === business.id ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                                        className="w-full flex items-center justify-between p-2 rounded-lg text-sm font-medium transition-colors"
+                                        style={{
+                                            color: activeBusiness?.id === business.id ? 'var(--color-brand)' : 'var(--color-text-secondary)',
+                                            backgroundColor: activeBusiness?.id === business.id ? 'var(--color-brand-light)' : 'transparent',
+                                        }}
                                     >
                                         <span className="truncate">{business.name}</span>
                                         {activeBusiness?.id === business.id && <Check size={14} />}
                                     </button>
                                 ))}
 
-                                <div className="h-px bg-gray-100 my-1"></div>
+                                <div style={{ height: '1px', backgroundColor: 'var(--color-card-border)', margin: '4px 0' }} />
 
                                 <NavLink
                                     to="/settings"
@@ -117,7 +138,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                                         setIsBusinessMenuOpen(false);
                                         if (window.innerWidth < 1024) onClose();
                                     }}
-                                    className="w-full flex items-center justify-center p-2 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-50 hover:text-gray-900 uppercase tracking-wider"
+                                    className="w-full flex items-center justify-center p-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+                                    style={{ color: 'var(--color-text-muted)' }}
                                 >
                                     + Yeni Biznes
                                 </NavLink>
@@ -126,23 +148,30 @@ const Sidebar = ({ isOpen, onClose }) => {
                     )}
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}
-                            onClick={() => {
+                            onClick={(e) => {
                                 if (window.innerWidth < 1024) onClose();
+                                // Optional: Prevent navigation if locked? For now let them see the locked page
+                                // if (item.locked) e.preventDefault(); 
                             }}
                             className={({ isActive }) =>
-                                `flex items-center space-x-3 p-3 rounded-lg transition-colors font-medium text-sm ${isActive
-                                    ? 'bg-[var(--color-sidebar-active-bg)] text-[var(--color-sidebar-active-text)] shadow-lg shadow-[var(--color-brand-shadow)]'
-                                    : 'text-[var(--color-sidebar-text)] hover:bg-[var(--color-brand-light)] hover:text-[var(--color-brand-dark)]'
-                                }`
+                                `flex items-center justify-between p-3 rounded-xl transition-all font-medium text-sm ${isActive ? 'shadow-lg' : ''} ${item.locked ? 'opacity-70' : ''}`
                             }
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? 'var(--color-sidebar-active-bg)' : 'transparent',
+                                color: isActive ? 'var(--color-sidebar-active-text)' : 'var(--color-sidebar-text)',
+                                boxShadow: isActive ? `0 4px 15px var(--color-brand-shadow)` : 'none',
+                            })}
                         >
-                            {item.icon}
-                            <span>{item.label}</span>
+                            <div className="flex items-center space-x-3">
+                                {item.icon}
+                                <span>{item.label}</span>
+                            </div>
+                            {item.locked && <Lock size={14} className="text-gray-400" />}
                         </NavLink>
                     ))}
                 </nav>

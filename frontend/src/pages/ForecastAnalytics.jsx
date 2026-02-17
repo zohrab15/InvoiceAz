@@ -9,11 +9,16 @@ import {
 import {
     TrendingUp, TrendingDown, Sparkles, DollarSign,
     Calendar, AlertTriangle, ArrowUpRight, ArrowDownRight,
-    Users, Activity, Zap
+    Users, Activity, Zap, Lock
 } from 'lucide-react';
+import UpgradeModal from '../components/UpgradeModal';
+import usePlanLimits from '../hooks/usePlanLimits';
 
 const ForecastAnalytics = () => {
     const { activeBusiness } = useBusiness();
+    const { isFeatureLocked, plan } = usePlanLimits();
+    const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
+    const isLocked = isFeatureLocked('forecast_analytics');
 
     const { data: analytics, isLoading } = useQuery({
         queryKey: ['forecast-analytics', activeBusiness?.id],
@@ -23,12 +28,50 @@ const ForecastAnalytics = () => {
             });
             return res.data;
         },
-        enabled: !!activeBusiness
+        enabled: !!activeBusiness && !isLocked
     });
 
-    if (isLoading) return (
+    if (isLoading && !isLocked) return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+
+    if (isLocked) return (
+        <div className="relative min-h-[80vh] flex flex-col items-center justify-center text-center space-y-6 p-8 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+            <div className="absolute inset-0 bg-grid-slate-50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="relative z-10 w-24 h-24 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-200 rotate-3"
+            >
+                <Lock className="text-white" size={48} />
+            </motion.div>
+            <div className="relative z-10 max-w-lg space-y-4">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Premium Analitika</h2>
+                <p className="text-slate-500 font-medium text-lg leading-relaxed">
+                    Süni intellekt dəstəkli proqnozlar və trend analizləri yalnız <span className="text-blue-600 font-bold">Pro</span> və <span className="text-purple-600 font-bold">Premium</span> paketlərdə mövcuddur.
+                </p>
+                <button
+                    onClick={() => setShowUpgradeModal(true)}
+                    className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl hover:shadow-slate-500/20"
+                >
+                    Paketi Yüksəlt
+                </button>
+            </div>
+
+            {/* Blurred background elements to simulate content */}
+            <div className="absolute inset-0 z-0 opacity-10 blur-xl pointer-events-none select-none overflow-hidden">
+                <div className="absolute top-20 left-10 w-64 h-32 bg-blue-500 rounded-full"></div>
+                <div className="absolute bottom-20 right-10 w-96 h-64 bg-purple-500 rounded-full"></div>
+            </div>
+
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                resourceName="AI Analitika"
+                limit={0} // Always 0/unlimited semantic, just identifying the resource
+            />
         </div>
     );
 

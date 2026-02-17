@@ -131,6 +131,12 @@ class Expense(models.Model):
         ('marketing', 'Marketinq'),
         ('rent', 'İcarə və Kommunal'),
         ('travel', 'Ezamiyyət'),
+        ('software', 'Proqram və Abunəliklər'),
+        ('transport', 'Nəqliyyat və Yanacaq'),
+        ('hardware', 'Avadanlıq və Texnika'),
+        ('tax', 'Vergi və Dövlət rüsumları'),
+        ('bank', 'Bank və Komissiya'),
+        ('training', 'Təlim və Tədris'),
         ('other', 'Digər'),
     )
     STATUS_CHOICES = (

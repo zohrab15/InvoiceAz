@@ -11,6 +11,7 @@ const useAuthStore = create((set) => ({
         localStorage.removeItem('invoice_token');
         localStorage.removeItem('active_business');
         set({ user: null, token: null });
+        window.location.href = '/';
     },
 }));
 

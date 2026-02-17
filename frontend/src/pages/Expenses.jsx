@@ -5,6 +5,8 @@ import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { Plus, Trash2, Search, Filter, DollarSign, Calendar, Tag, CreditCard, ChevronDown, X, Building, User, Paperclip, Download, Info, Edit2, Check } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import UpgradeModal from '../components/UpgradeModal';
+import usePlanLimits from '../hooks/usePlanLimits';
 
 import { useBusiness } from '../context/BusinessContext';
 
@@ -12,6 +14,8 @@ const Expenses = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
+    const { checkLimit, isPro } = usePlanLimits();
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
@@ -19,12 +23,18 @@ const Expenses = () => {
     const [budgetLimitInput, setBudgetLimitInput] = useState('');
 
     const categories = [
-        { id: 'office', name: 'Ofis ləvazimatları', color: '#3B82F6' },
-        { id: 'salary', name: 'Maaşlar', color: '#10B981' },
-        { id: 'marketing', name: 'Marketinq', color: '#F59E0B' },
-        { id: 'rent', name: 'İcarə və Kommunal', color: '#EF4444' },
-        { id: 'travel', name: 'Ezamiyyət', color: '#8B5CF6' },
-        { id: 'other', name: 'Digər', color: '#6B7280' },
+        { id: 'office', name: 'Ofis ləvazimatları', color: '#3B82F6' }, // Blue
+        { id: 'salary', name: 'Maaşlar', color: '#10B981' }, // Green
+        { id: 'marketing', name: 'Marketinq', color: '#F59E0B' }, // Amber
+        { id: 'rent', name: 'İcarə və Kommunal', color: '#EF4444' }, // Red
+        { id: 'travel', name: 'Ezamiyyət', color: '#8B5CF6' }, // Violet
+        { id: 'software', name: 'Proqram və Abunəliklər', color: '#06B6D4' }, // Cyan
+        { id: 'transport', name: 'Nəqliyyat və Yanacaq', color: '#F97316' }, // Orange
+        { id: 'hardware', name: 'Avadanlıq və Texnika', color: '#6366F1' }, // Indigo
+        { id: 'tax', name: 'Vergi və Dövlət rüsumları', color: '#991B1B' }, // Dark Red
+        { id: 'bank', name: 'Bank və Komissiya', color: '#059669' }, // Emerald
+        { id: 'training', name: 'Təlim və Tədris', color: '#D946EF' }, // Fuchsia
+        { id: 'other', name: 'Digər', color: '#64748B' }, // Slate
     ];
 
     const [formData, setFormData] = useState({
@@ -68,11 +78,12 @@ const Expenses = () => {
     });
 
     const { data: clients } = useQuery({
-        queryKey: ['clients'],
+        queryKey: ['clients', activeBusiness?.id],
         queryFn: async () => {
             const res = await clientApi.get('/clients/clients/');
             return res.data;
-        }
+        },
+        enabled: !!activeBusiness,
     });
 
     const createMutation = useMutation({
@@ -97,8 +108,14 @@ const Expenses = () => {
         },
         onError: (error) => {
             console.error('Create error:', error);
-            const msg = error.response?.data?.detail || error.response?.data?.error || 'Xərc əlavə edilərkən xəta baş verdi';
-            showToast(msg, 'error');
+            const data = error.response?.data;
+            if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
+                setShowUpgradeModal(true);
+                setShowAddModal(false);
+            } else {
+                const detail = data?.detail || data?.error || 'Xərc əlavə edilərkən xəta baş verdi';
+                showToast(detail, 'error');
+            }
         }
     });
 
@@ -106,10 +123,14 @@ const Expenses = () => {
         mutationFn: (data) => {
             const fd = new FormData();
             Object.keys(data).forEach(key => {
-                if (data[key] !== null && data[key] !== undefined && key !== 'attachment') {
-                    // Send empty string as null if it's the client to avoid validation errors
-                    const value = (key === 'client' && data[key] === '') ? '' : data[key];
-                    if (value !== '') fd.append(key, value);
+                const val = data[key];
+                // Don't append attachment here, it's handled separately
+                if (key === 'attachment') return;
+
+                // Only append if value is not null, undefined, or empty string
+                // Exception: if it's a numeric field like amount, 0 is valid but '' is not
+                if (val !== null && val !== undefined && val !== '') {
+                    fd.append(key, val);
                 }
             });
             // If new attachment selected, append it
@@ -126,7 +147,8 @@ const Expenses = () => {
         },
         onError: (error) => {
             console.error('Update error:', error);
-            showToast('Yeniləmə zamanı xəta baş verdi', 'error');
+            const msg = error.response?.data?.detail || error.response?.data?.error || 'Yeniləmə zamanı xəta baş verdi';
+            showToast(msg, 'error');
         }
     });
 
@@ -209,6 +231,8 @@ const Expenses = () => {
                     </motion.button>
                 </div>
             </div>
+
+
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
@@ -491,17 +515,6 @@ const Expenses = () => {
                                         </div>
                                     </div>
 
-                                    <div className="relative">
-                                        <User className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                        <select
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold cursor-pointer"
-                                            value={formData.client}
-                                            onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                                        >
-                                            <option value="">Aydınlaşdırılmayıb (Müştəri seçin)</option>
-                                            {clients?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                        </select>
-                                    </div>
 
                                     <div className="relative">
                                         <div className={`w-full bg-gray-50 border-2 border-dashed ${attachment ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 transition-all`}>
@@ -533,6 +546,12 @@ const Expenses = () => {
                     </div>
                 )}
             </AnimatePresence>
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                resourceName="Xərc"
+                limit={checkLimit('expenses').limit}
+            />
         </motion.div>
     );
 };

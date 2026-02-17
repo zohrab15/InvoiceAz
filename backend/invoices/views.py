@@ -1,10 +1,12 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from .models import Invoice, Expense
 from .serializers import InvoiceSerializer, ExpenseSerializer
 from users.models import Business
 from users.mixins import BusinessContextMixin
+from users.plan_limits import check_invoice_limit, check_expense_limit
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import io
@@ -13,6 +15,23 @@ class ExpenseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+            
+        limit_check = check_expense_limit(self.request.user, business)
+        if not limit_check['allowed']:
+            raise PermissionDenied({
+                "code": "plan_limit", 
+                "detail": "Aylıq xərc limitiniz dolub.",
+                "limit": limit_check['limit'],
+                "current": limit_check['current'],
+                "upgrade_required": True
+            })
+            
+        serializer.save(business=business)
 
 class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     from .models import Payment
@@ -52,7 +71,22 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             ).select_related('client', 'business').prefetch_related('items', 'payments')
         return Invoice.objects.none()
 
-    # perform_create is handled by Mixin correctly
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+            
+        limit_check = check_invoice_limit(self.request.user, business)
+        if not limit_check['allowed']:
+            raise PermissionDenied({
+                "code": "plan_limit", 
+                "detail": "Aylıq faktura limitiniz dolub.",
+                "limit": limit_check['limit'],
+                "current": limit_check['current'],
+                "upgrade_required": True
+            })
+            
+        serializer.save(business=business)
 
     @action(detail=True, methods=['post'])
     def duplicate(self, request, pk=None):

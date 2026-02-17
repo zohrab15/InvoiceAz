@@ -29,14 +29,13 @@ const Header = ({ onMenuClick }) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    // Fetch Notifications
     const { data: notifications = [] } = useQuery({
         queryKey: ['notifications'],
         queryFn: async () => {
             const response = await client.get('/notifications/');
             return response.data;
         },
-        refetchInterval: 30000, // Poll every 30s
+        refetchInterval: 30000,
         enabled: !!user,
     });
 
@@ -47,7 +46,6 @@ const Header = ({ onMenuClick }) => {
         onSuccess: () => queryClient.invalidateQueries(['notifications']),
     });
 
-    // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (profileRef.current && !profileRef.current.contains(event.target)) setIsProfileOpen(false);
@@ -69,7 +67,7 @@ const Header = ({ onMenuClick }) => {
         { icon: <User size={18} />, label: 'Profilim', onClick: () => navigate('/settings?tab=user') },
         { icon: <Shield size={18} />, label: 'Təhlükəsizlik', onClick: () => navigate('/security') },
         { icon: <Settings size={18} />, label: 'Tənzimləmələr', onClick: () => navigate('/system-settings') },
-        { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => { } },
+        { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing') },
         { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => { } },
         { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => { } },
         { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => { } },
@@ -77,15 +75,22 @@ const Header = ({ onMenuClick }) => {
     ];
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-white/80 px-4 backdrop-blur-md lg:px-8">
+        <header
+            className="sticky top-0 z-30 flex h-16 w-full items-center justify-between px-4 backdrop-blur-md lg:px-8"
+            style={{
+                backgroundColor: 'var(--color-header-bg)',
+                borderBottom: '1px solid var(--color-header-border)'
+            }}
+        >
             <div className="flex items-center gap-4">
                 <button
                     onClick={onMenuClick}
-                    className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="lg:hidden p-2 rounded-lg transition-colors"
+                    style={{ color: 'var(--color-text-secondary)' }}
                 >
-                    <User size={24} className="text-gray-600" />
+                    <Menu size={24} />
                 </button>
-                <h1 className="text-xl font-black text-[var(--color-brand)] tracking-tight hidden lg:block">InvoiceAZ</h1>
+                <h1 className="text-xl font-black tracking-tight hidden lg:block" style={{ color: 'var(--color-brand)' }}>InvoiceAZ</h1>
             </div>
 
             <div className="flex items-center gap-2 lg:gap-4">
@@ -93,11 +98,12 @@ const Header = ({ onMenuClick }) => {
                 <div className="relative" ref={notifRef}>
                     <button
                         onClick={() => setIsNotifOpen(!isNotifOpen)}
-                        className="relative p-2 text-gray-400 hover:text-[var(--color-brand)] hover:bg-[var(--color-brand-light)] rounded-xl transition-all"
+                        className="relative p-2 rounded-xl transition-all"
+                        style={{ color: 'var(--color-text-muted)' }}
                     >
                         <Bell size={22} />
                         {unreadCount > 0 && (
-                            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
+                            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" style={{ border: '2px solid var(--color-page-bg)' }}></span>
                         )}
                     </button>
 
@@ -107,12 +113,13 @@ const Header = ({ onMenuClick }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+                                className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden"
+                                style={{ backgroundColor: 'var(--color-dropdown-bg)', border: '1px solid var(--color-dropdown-border)' }}
                             >
-                                <div className="p-4 border-b bg-gray-50/50 flex justify-between items-center">
-                                    <h3 className="font-bold text-gray-900">Bildirişlər</h3>
+                                <div className="p-4 flex justify-between items-center" style={{ borderBottom: '1px solid var(--color-card-border)', backgroundColor: 'var(--color-hover-bg)' }}>
+                                    <h3 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>Bildirişlər</h3>
                                     {unreadCount > 0 && (
-                                        <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-black">{unreadCount} YENİ</span>
+                                        <span className="text-[10px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full font-black">{unreadCount} YENİ</span>
                                     )}
                                 </div>
                                 <div className="max-h-96 overflow-y-auto">
@@ -125,28 +132,32 @@ const Header = ({ onMenuClick }) => {
                                                     if (n.link) navigate(n.link);
                                                     setIsNotifOpen(false);
                                                 }}
-                                                className={`p-4 border-b last:border-0 hover:bg-gray-50 cursor-pointer transition-colors ${!n.is_read ? 'bg-blue-50/30' : ''}`}
+                                                className="p-4 cursor-pointer transition-colors"
+                                                style={{
+                                                    borderBottom: '1px solid var(--color-card-border)',
+                                                    backgroundColor: !n.is_read ? 'var(--color-brand-light)' : 'transparent',
+                                                }}
                                             >
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={`text-sm font-bold ${n.type === 'error' || n.type === 'warning' ? 'text-red-600' : 'text-gray-900'}`}>
+                                                    <h4 className="text-sm font-bold" style={{ color: n.type === 'error' || n.type === 'warning' ? '#ef4444' : 'var(--color-text-primary)' }}>
                                                         {n.title}
                                                     </h4>
-                                                    <span className="text-[10px] text-gray-400">
+                                                    <span className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>
                                                         {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{n.message}</p>
+                                                <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{n.message}</p>
                                             </div>
                                         ))
                                     ) : (
                                         <div className="p-8 text-center">
-                                            <BellRing className="mx-auto text-gray-200 mb-2" size={32} />
-                                            <p className="text-xs text-gray-400 font-medium">Hələ ki bildiriş yoxdur</p>
+                                            <BellRing className="mx-auto mb-2" size={32} style={{ color: 'var(--color-text-muted)' }} />
+                                            <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Hələ ki bildiriş yoxdur</p>
                                         </div>
                                     )}
                                 </div>
                                 {notifications.length > 0 && (
-                                    <button className="w-full p-3 text-center text-xs font-bold text-[var(--color-brand)] hover:bg-[var(--color-brand-light)] transition-colors">
+                                    <button className="w-full p-3 text-center text-xs font-bold transition-colors" style={{ color: 'var(--color-brand)' }}>
                                         Hamısına bax
                                     </button>
                                 )}
@@ -159,30 +170,30 @@ const Header = ({ onMenuClick }) => {
                 <div className="relative" ref={profileRef}>
                     <button
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
-                        className="flex items-center gap-3 p-1 pl-2 pr-2 hover:bg-gray-50 rounded-2xl transition-all group"
+                        className="flex items-center gap-3 p-1 pl-2 pr-2 rounded-2xl transition-all group"
                     >
                         <div className="hidden lg:block text-right">
-                            <div className="text-sm font-bold text-gray-900 leading-none">{userDisplayName}</div>
+                            <div className="text-sm font-bold leading-none" style={{ color: 'var(--color-text-primary)' }}>{userDisplayName}</div>
                             <div className="mt-1.5">
                                 {user?.membership === 'pro' && (
-                                    <span className="text-[9px] font-black px-2 py-0.5 bg-blue-500 text-white rounded-full uppercase tracking-widest shadow-sm shadow-blue-200">Pro</span>
+                                    <span className="text-[9px] font-black px-2 py-0.5 bg-blue-500 text-white rounded-full uppercase tracking-widest shadow-sm">Pro</span>
                                 )}
                                 {user?.membership === 'premium' && (
-                                    <span className="text-[9px] font-black px-2 py-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full uppercase tracking-widest shadow-sm shadow-purple-200">Premium</span>
+                                    <span className="text-[9px] font-black px-2 py-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full uppercase tracking-widest shadow-sm">Premium</span>
                                 )}
                                 {(user?.membership === 'free' || !user?.membership) && (
-                                    <span className="text-[9px] font-black px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full uppercase tracking-widest border border-gray-200">Pulsuz</span>
+                                    <span className="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)', border: '1px solid var(--color-card-border)' }}>Pulsuz</span>
                                 )}
                             </div>
                         </div>
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--color-brand)] to-[var(--color-brand-dark)] flex items-center justify-center text-white font-black shadow-lg shadow-[var(--color-brand-shadow)] group-hover:scale-105 transition-transform overflow-hidden">
+                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--color-brand)] to-[var(--color-brand-dark)] flex items-center justify-center text-white font-black shadow-lg group-hover:scale-105 transition-transform overflow-hidden" style={{ boxShadow: `0 4px 15px var(--color-brand-shadow)` }}>
                             {userAvatarUrl ? (
                                 <img src={userAvatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
                                 (userDisplayName || 'A')[0].toUpperCase()
                             )}
                         </div>
-                        <ChevronDown size={16} className={`text-gray-400 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} className={`transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--color-text-muted)' }} />
                     </button>
 
                     <AnimatePresence>
@@ -191,16 +202,18 @@ const Header = ({ onMenuClick }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+                                className="absolute right-0 mt-2 w-64 rounded-2xl shadow-2xl overflow-hidden"
+                                style={{ backgroundColor: 'var(--color-dropdown-bg)', border: '1px solid var(--color-dropdown-border)' }}
                             >
-                                <div className="lg:hidden p-4 border-b bg-gray-50/50">
-                                    <div className="font-bold text-gray-900">{userDisplayName}</div>
+                                <div className="lg:hidden p-4" style={{ borderBottom: '1px solid var(--color-card-border)', backgroundColor: 'var(--color-hover-bg)' }}>
+                                    <div className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{userDisplayName}</div>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter ${user?.membership === 'pro' ? 'bg-blue-500 text-white' : (user?.membership === 'premium' ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500')
-                                            }`}>
+                                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter ${user?.membership === 'pro' ? 'bg-blue-500 text-white' : (user?.membership === 'premium' ? 'bg-purple-500 text-white' : '')}`}
+                                            style={(!user?.membership || user?.membership === 'free') ? { backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' } : {}}
+                                        >
                                             {user?.membership === 'pro' ? 'Pro' : (user?.membership === 'premium' ? 'Premium' : 'Pulsuz')}
                                         </span>
-                                        <div className="text-xs text-gray-400 truncate">{user?.email}</div>
+                                        <div className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{user?.email}</div>
                                     </div>
                                 </div>
                                 <div className="p-2">
@@ -211,10 +224,12 @@ const Header = ({ onMenuClick }) => {
                                                 item.onClick();
                                                 setIsProfileOpen(false);
                                             }}
-                                            className={`w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium transition-colors ${item.variant === 'danger'
-                                                ? 'text-red-600 hover:bg-red-50'
-                                                : 'text-gray-600 hover:bg-[var(--color-brand-light)] hover:text-[var(--color-brand-dark)]'
-                                                }`}
+                                            className="w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium transition-colors"
+                                            style={{
+                                                color: item.variant === 'danger' ? '#ef4444' : 'var(--color-text-secondary)',
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = item.variant === 'danger' ? 'rgba(239,68,68,0.1)' : 'var(--color-hover-bg)'}
+                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                                         >
                                             {item.icon}
                                             {item.label}

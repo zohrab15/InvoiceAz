@@ -41,17 +41,30 @@ export const BusinessProvider = ({ children }) => {
 
     // Auto-select business logic
     useEffect(() => {
-        if (!isLoading && businesses && businesses.length > 0) {
-            // Check if current active business belongs to this account
-            const found = activeBusiness ? businesses.find(b => b.id === activeBusiness.id) : null;
+        if (!isLoading && businesses) {
+            if (activeBusiness) {
+                // If we have an active business, validify it against the list
+                const found = businesses.find(b => b.id === activeBusiness.id);
+                if (found) {
+                    // Update data if changed
+                    if (JSON.stringify(found) !== JSON.stringify(activeBusiness)) {
+                        setActiveBusiness(found);
+                        localStorage.setItem('active_business', JSON.stringify(found));
+                    }
+                } else if (businesses.length > 0) {
+                    // Only switch if the list is NOT empty but our business is missing.
+                    // If list is empty, it might be a stale cache state where we haven't loaded the new business yet.
+                    // However, if we really have 0 businesses, we should clear.
+                    // But 'businesses' is the result of useQuery.
 
-            if (!found) {
-                // If not found (new account or deleted), pick the first one
+                    // Let's assume if the user has businesses, but the active one isn't in it, switch to first.
+                    switchBusiness(businesses[0]);
+                }
+                // If businesses.length === 0, we don't clear activeBusiness immediately to prevent race condition
+                // where invalidateQueries clears the list before fetching the new one.
+            } else if (businesses.length > 0) {
+                // No active business, but we have some, pick first
                 switchBusiness(businesses[0]);
-            } else if (JSON.stringify(found) !== JSON.stringify(activeBusiness)) {
-                // Update active business if data changed (e.g. name update)
-                setActiveBusiness(found);
-                localStorage.setItem('active_business', JSON.stringify(found));
             }
         }
     }, [businesses, isLoading, token]); // Re-run if businesses or token change
@@ -63,7 +76,13 @@ export const BusinessProvider = ({ children }) => {
         if (business) {
             localStorage.setItem('active_business', JSON.stringify(business));
             // CRITICAL: Clear all cached data on switch to prevent cross-business visibility
-            queryClient.clear();
+            // But preserve the business list itself so we don't lose context specific logic
+            queryClient.removeQueries({
+                predicate: (query) => {
+                    // Keep 'business' queries, remove everything else (clients, invoices, etc)
+                    return !query.queryKey.includes('business');
+                }
+            });
         } else {
             localStorage.removeItem('active_business');
         }

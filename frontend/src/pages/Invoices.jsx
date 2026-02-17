@@ -5,28 +5,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check } from 'lucide-react';
+import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
+import usePlanLimits from '../hooks/usePlanLimits';
 
 const UNIT_CHOICES = [
-    { value: 'ədəd', label: 'ədəd' },
-    { value: 'kq', label: 'kg' },
-    { value: 'metr', label: 'metr' },
-    { value: 'm²', label: 'm²' },
-    { value: 'saat', label: 'saat' },
-    { value: 'gün', label: 'gün' },
-    { value: 'xidmət', label: 'xidmət' },
-    { value: 'bağlama', label: 'bağlama' },
-    { value: 'qutu', label: 'qutu' },
-    { value: 'litr', label: 'litr' },
-    { value: 'ton', label: 'ton' },
-    { value: 'km', label: 'km' },
-    { value: 'digər', label: 'Digər...' },
+    { value: 'ədəd', label: 'Ədəd' },
+    { value: 'kq', label: 'Kq' },
+    { value: 'qram', label: 'Qram' },
+    { value: 'litr', label: 'Litr' },
+    { value: 'metr', label: 'Metr' },
+    { value: 'm2', label: 'm²' },
+    { value: 'm3', label: 'm³' },
+    { value: 'qutu', label: 'Qutu' },
+    { value: 'saat', label: 'Saat' },
+    { value: 'gün', label: 'Gün' },
+    { value: 'ay', label: 'Ay' },
+    { value: 'xidmət', label: 'Xidmət' }
 ];
 
 const Invoices = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
+    const { checkLimit, isPro } = usePlanLimits();
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
     const [view, setView] = useState('list'); // 'list' or 'create'
     const [editInvoice, setEditInvoice] = useState(null);
     const [showPreview, setShowPreview] = useState(false);
@@ -42,6 +46,11 @@ const Invoices = () => {
     const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
     const [dueDate, setDueDate] = useState('');
     const [notes, setNotes] = useState('');
+
+    const handleCreateNew = () => {
+        resetForm();
+        setView('create');
+    };
 
     const { data: invoices, isLoading: isLoadingInvoices } = useQuery({
         queryKey: ['invoices', activeBusiness?.id],
@@ -77,8 +86,13 @@ const Invoices = () => {
         },
         onError: (error) => {
             console.error("Create Invoice Error:", error);
-            const detail = error.response?.data ? JSON.stringify(error.response.data) : error.message;
-            showToast(`Xəta: ${detail}`, 'error');
+            const data = error.response?.data;
+            if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
+                setShowUpgradeModal(true);
+            } else {
+                const detail = data ? JSON.stringify(data) : error.message;
+                showToast(`Xəta: ${detail}`, 'error');
+            }
         }
     });
 
@@ -394,13 +408,15 @@ const Invoices = () => {
                     >
                         <div className="flex justify-between items-center">
                             <h2 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">Fakturalar</h2>
-                            <button
-                                onClick={() => { resetForm(); setView('create'); }}
-                                className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
-                            >
-                                <Plus size={20} />
-                                <span>Yeni Faktura</span>
-                            </button>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={handleCreateNew}
+                                    className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
+                                >
+                                    <Plus size={20} />
+                                    <span>Yeni Faktura</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
@@ -687,6 +703,12 @@ const Invoices = () => {
                 onClose={() => setShowPaymentModal(false)}
                 invoice={paymentInvoice}
                 onAddPayment={handleAddPayment}
+            />
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                resourceName="Faktura"
+                limit={checkLimit('invoices').limit}
             />
         </>
     );

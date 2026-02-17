@@ -17,6 +17,7 @@ const Expenses = lazy(() => import('./pages/Expenses'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const SecurityPage = lazy(() => import('./pages/SecurityPage'));
 const SystemSettings = lazy(() => import('./pages/SystemSettings'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
@@ -29,6 +30,7 @@ const ProblematicInvoices = lazy(() => import('./pages/ProblematicInvoices'));
 const ForecastAnalytics = lazy(() => import('./pages/ForecastAnalytics'));
 const PaymentAnalytics = lazy(() => import('./pages/PaymentAnalytics'));
 const TaxReports = lazy(() => import('./pages/TaxReports'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,7 +43,7 @@ const queryClient = new QueryClient({
 
 const ProtectedRoute = ({ children }) => {
   const token = useAuthStore((state) => state.token);
-  if (!token) return <Navigate to="/login" replace />;
+  if (!token) return <Navigate to="/" replace />;
   return children;
 };
 
@@ -91,13 +93,14 @@ function App() {
                   <Route path="/verify-email/:key" element={<VerifyEmail />} />
                   <Route path="/view/:token" element={<PublicInvoice />} />
                   <Route path="/public/pay/:token" element={<PublicPayment />} />
+                  <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
                   <Route
                     path="/*"
                     element={
                       <ProtectedRoute>
                         <Layout>
                           <Routes>
-                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/invoices" element={<Invoices />} />
                             <Route path="/problematic-invoices" element={<ProblematicInvoices />} />
                             <Route path="/analytics/payments" element={<PaymentAnalytics />} />
@@ -107,6 +110,7 @@ function App() {
                             <Route path="/expenses" element={<Expenses />} />
                             <Route path="/clients" element={<Clients />} />
                             <Route path="/settings" element={<BusinessSettings />} />
+                            <Route path="/pricing" element={<PricingPage />} />
                             <Route path="/security" element={<SecurityPage />} />
                             <Route path="/system-settings" element={<SystemSettings />} />
                           </Routes>

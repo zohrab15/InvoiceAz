@@ -4,11 +4,12 @@ import { motion } from 'framer-motion';
 import clientApi from '../api/client';
 import useAuthStore from '../store/useAuthStore';
 import { useToast } from '../components/Toast';
-import { LogIn, Mail, Lock, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Zap, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const setAuth = useAuthStore((state) => state.setAuth);
     const navigate = useNavigate();
@@ -19,7 +20,6 @@ const Login = () => {
         setIsLoading(true);
         try {
             const response = await clientApi.post('/auth/login/', { email, password });
-            console.log('Login response:', response.data);
             const { access, access_token, user } = response.data;
             const token = access || access_token;
 
@@ -31,7 +31,6 @@ const Login = () => {
                 showToast('Token tapılmadı', 'error');
             }
         } catch (error) {
-            console.error('Login error details:', error.response?.data);
             const errorMsg = error.response?.data?.non_field_errors?.[0] ||
                 error.response?.data?.detail ||
                 error.response?.data?.email?.[0] ||
@@ -43,34 +42,74 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 relative overflow-hidden font-inter">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-100 rounded-full blur-[120px] opacity-50" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-100 rounded-full blur-[120px] opacity-50" />
+        <div className="min-h-screen w-full flex bg-[#0a0a0f] text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+
+            {/* Left Side - Branding */}
+            <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
+                {/* Gradient orbs */}
+                <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[150px]" />
+                <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-violet-600/20 rounded-full blur-[120px]" />
+
+                <div className="relative z-10 px-16 max-w-lg">
+                    <div className="flex items-center gap-2.5 mb-12 cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
+                            <Zap size={22} />
+                        </div>
+                        <span className="text-2xl font-black tracking-tight">InvoiceAZ</span>
+                    </div>
+
+                    <h2 className="text-4xl font-black leading-tight mb-6">
+                        Maliyyənizi{' '}
+                        <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+                            nəzarətdə
+                        </span>{' '}
+                        saxlayın
+                    </h2>
+                    <p className="text-white/40 text-lg font-medium leading-relaxed mb-12">
+                        Faktura yaradın, xərcləri izləyin, analitikanı real-vaxtda görün. Bütün bunlar bir platformada.
+                    </p>
+
+                    {/* Mini features */}
+                    <div className="space-y-5">
+                        {[
+                            { emoji: '⚡', text: '30 saniyədə faktura yaradın' },
+                            { emoji: '📊', text: 'Real-vaxt maliyyə analitikası' },
+                            { emoji: '🔒', text: 'Bank səviyyəsində təhlükəsizlik' }
+                        ].map((f, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <span className="text-lg">{f.emoji}</span>
+                                <span className="text-sm text-white/50 font-semibold">{f.text}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md p-8 glass-dark text-white rounded-3xl shadow-2xl z-10 mx-4"
-            >
-                <div className="text-center mb-10">
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="inline-flex p-4 bg-blue-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/30"
-                    >
-                        <ShieldCheck size={32} />
-                    </motion.div>
-                    <h1 className="text-4xl font-black font-outfit tracking-tighter">InvoiceAZ</h1>
-                    <p className="text-slate-400 mt-2">Davam etmək üçün giriş edin</p>
-                </div>
+            {/* Right Side - Form */}
+            <div className="flex-1 flex items-center justify-center px-6 py-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full max-w-md"
+                >
+                    {/* Mobile logo */}
+                    <div className="flex items-center gap-2 mb-10 lg:hidden cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
+                            <Zap size={18} />
+                        </div>
+                        <span className="text-xl font-black tracking-tight">InvoiceAZ</span>
+                    </div>
 
-                <div className="space-y-4 mb-8">
+                    <div className="mb-10">
+                        <h1 className="text-3xl font-black tracking-tight mb-2">Daxil olun</h1>
+                        <p className="text-white/40 font-medium">Hesabınıza giriş edərək davam edin</p>
+                    </div>
+
+                    {/* Google Login */}
                     <button
                         onClick={() => window.location.href = 'http://localhost:8000/accounts/google/login/'}
-                        className="w-full bg-white text-slate-900 font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center space-x-3 transition-all active:scale-[0.98] border border-slate-200"
+                        className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] mb-6"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -81,74 +120,78 @@ const Login = () => {
                         <span>Google ilə davam et</span>
                     </button>
 
-                    <div className="flex items-center space-x-4 py-2">
-                        <div className="flex-1 h-px bg-slate-800" />
-                        <span className="text-[10px] uppercase font-bold text-slate-600 tracking-widest whitespace-nowrap">və ya e-poçt ilə</span>
-                        <div className="flex-1 h-px bg-slate-800" />
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="flex-1 h-px bg-white/[0.06]" />
+                        <span className="text-[10px] uppercase font-bold text-white/20 tracking-widest">və ya e-poçt ilə</span>
+                        <div className="flex-1 h-px bg-white/[0.06]" />
                     </div>
-                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="relative group">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" size={20} />
-                            <input
-                                type="email"
-                                required
-                                placeholder="E-poçt ünvanı"
-                                className="w-full bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 pl-12 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-600"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold text-white/30 uppercase tracking-widest mb-2">E-poçt</label>
+                            <div className="relative">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                                <input
+                                    type="email"
+                                    required
+                                    placeholder="ad@domain.com"
+                                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 pl-12 outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
                         </div>
 
-                        <div className="relative group">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" size={20} />
-                            <input
-                                type="password"
-                                required
-                                placeholder="Şifrə"
-                                className="w-full bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 pl-12 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-600"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                        <div>
+                            <label className="block text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Şifrə</label>
+                            <div className="relative">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    placeholder="••••••••"
+                                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 pl-12 pr-12 outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40 transition-colors">
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
                         </div>
+
+                        <div className="flex justify-end pt-1">
+                            <Link to="/forgot-password" className="text-xs text-blue-400 font-bold hover:text-blue-300 transition-colors">Şifrəni unutmusunuz?</Link>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full bg-gradient-to-r from-blue-500 to-violet-600 text-white font-black py-4 rounded-xl shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 transition-all hover:shadow-blue-500/30 active:scale-[0.98] disabled:opacity-50 text-sm mt-2"
+                        >
+                            {isLoading ? (
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    <span>Giriş et</span>
+                                    <ArrowRight size={18} />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-8 pt-8 border-t border-white/[0.06] text-center">
+                        <p className="text-sm text-white/30 font-medium">
+                            Hələ hesabınız yoxdur?{' '}
+                            <Link to="/register" className="text-blue-400 font-bold hover:text-blue-300 transition-colors">
+                                Pulsuz qeydiyyat
+                            </Link>
+                        </p>
                     </div>
 
-                    <div className="flex justify-end">
-                        <Link to="/forgot-password" size="sm" className="text-xs text-blue-400 font-bold hover:text-blue-300 transition-colors">Şifrəni unutmusunuz?</Link>
-                    </div>
 
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-600/20 flex items-center justify-center space-x-2 transition-all active:scale-[0.98] disabled:opacity-50"
-                    >
-                        {isLoading ? (
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                            <>
-                                <span>Giriş et</span>
-                                <ArrowRight size={20} />
-                            </>
-                        )}
-                    </button>
-                </form>
-
-                <div className="mt-8 pt-8 border-t border-slate-800/50 text-center">
-                    <p className="text-sm text-slate-500 leading-relaxed">
-                        Hələ hesabınız yoxdur? <br />
-                        <Link to="/register" className="text-blue-400 font-bold hover:text-blue-300 transition-colors inline-flex items-center gap-1 group">
-                            İndi qeydiyyatdan keçin
-                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </p>
-                    <div className="mt-6 p-4 bg-slate-800/20 rounded-2xl border border-slate-700/30">
-                        <p className="text-[10px] uppercase font-black text-slate-600 tracking-[0.2em] mb-1">Demo hesab</p>
-                        <p className="text-xs text-slate-500 font-medium">admin@invoice.az · <span className="text-slate-400">admin123</span></p>
-                    </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            </div>
         </div>
     );
 };
