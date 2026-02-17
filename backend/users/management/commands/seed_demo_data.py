@@ -17,34 +17,36 @@ class Command(BaseCommand):
 
         # 1. Create Demo User
         email = 'demo@invoice.az'
-        user, created = User.objects.get_or_create(
+        
+        # Delete existing user to ensure no stale state (SocialAccount, etc.)
+        User.objects.filter(email=email).delete()
+        self.stdout.write(f'Existing user {email} deleted (if any).')
+
+        user = User.objects.create_user(
             email=email,
-            defaults={
-                'first_name': 'Demo',
-                'last_name': 'İstifadəçi',
-                'membership': 'pro',
-                'is_active': True,
-                'is_email_verified': True
-            }
+            password='demo1234',
+            first_name='Demo',
+            last_name='İstifadəçi'
         )
-        user.set_password('demo1234')
+        user.membership = 'pro'
         user.is_active = True
         user.is_email_verified = True
         user.save()
+        self.stdout.write(f'Created fresh user: {email}')
 
         # Ensure allauth EmailAddress exists and is verified
         try:
-            EmailAddress.objects.get_or_create(
+            EmailAddress.objects.create(
                 user=user,
                 email=email,
-                defaults={'verified': True, 'primary': True}
+                verified=True,
+                primary=True
             )
         except Exception as e:
-            self.stdout.write(f'Note: Could not create EmailAddress record ({e}). Continuing...')
+            self.stdout.write(f'Note: Could not create EmailAddress record ({e}).')
         
-        if created:
+        if True: # Always True now since we delete and create
             self.stdout.write(f'Created user: {email}')
-        else:
             self.stdout.write(f'User {email} already exists. Updated and cleaned up demo data.')
             # Cleanup for idempotency
             Business.objects.filter(user=user, name='Modern Solutions MMC').delete()
