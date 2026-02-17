@@ -37,14 +37,17 @@ const DemoLogin = () => {
                     throw new Error('Token tapılmadı');
                 }
             } catch (err) {
-                console.error('--- DEMO LOGIN ERROR ---');
-                console.error('Error Message:', err.message);
-                if (err.response) {
-                    console.error('Response Status:', err.response.status);
-                    console.error('Response Data:', err.response.data);
-                }
-                showToast('Demo giriş xətası. Zəhmət olmasa bir az sonra yenidən cəhd edin.', 'error');
-                navigate('/');
+                console.error('--- DEMO LOGIN ERROR ---', err);
+                const status = err.response?.status;
+                const errorData = err.response?.data;
+                const errorMessage = errorData?.detail || errorData?.non_field_errors?.[0] || err.message;
+
+                showToast(`Demo giriş xətası (${status || 'Network Error'}): ${errorMessage}`, 'error');
+                console.error('Response Status:', status);
+                console.error('Response Data:', errorData);
+
+                // Don't navigate away immediately so the user can see the error
+                setTimeout(() => navigate('/'), 3000);
             }
         };
 
