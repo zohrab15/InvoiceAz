@@ -26,7 +26,7 @@ def seed_demo():
             'first_name': 'Zohrab',
             'last_name': 'Demo',
             'is_active': True,
-            'avatar': 'https://i.pravatar.cc/500?u=demo_user@invoice.az'
+            'avatar': 'https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff'
         }
     )
     if created:
@@ -36,7 +36,7 @@ def seed_demo():
     else:
         # Reset password and ensure avatar is set
         user.set_password(password)
-        user.avatar = 'https://i.pravatar.cc/500?u=demo_user@invoice.az'
+        user.avatar = 'https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff'
         user.save()
         print(f"Found existing demo user: {email}")
 
@@ -49,11 +49,11 @@ def seed_demo():
             'address': 'Baku, Azerbaijan',
             'phone': '+994 50 000 00 00',
             'voen': '1234567890',
-            'logo': 'https://dummyimage.com/500x500/0f172a/ffffff.png&text=MS'
+            'logo': 'https://dummyimage.com/500x500/0f172a/ffffff.png?text=MS'
         }
     )
     if not created:
-        business.logo = 'https://dummyimage.com/500x500/0f172a/ffffff.png&text=MS'
+        business.logo = 'https://dummyimage.com/500x500/0f172a/ffffff.png?text=MS'
         business.save()
     print(f"Business: {business.name}")
 

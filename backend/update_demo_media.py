@@ -13,13 +13,13 @@ def update_media():
     email = 'demo_user@invoice.az'
     try:
         user = User.objects.get(email=email)
-        user.avatar = 'https://i.pravatar.cc/500?u=demo_user@invoice.az'
+        user.avatar = 'https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff'
         user.save()
         print(f"Updated avatar for user: {user.email}")
         
         business = Business.objects.filter(user=user).first()
         if business:
-            business.logo = 'https://dummyimage.com/500x500/0f172a/ffffff.png&text=MS'
+            business.logo = 'https://dummyimage.com/500x500/0f172a/ffffff.png?text=MS'
             business.save()
             print(f"Updated logo for business: {business.name}")
         else:
