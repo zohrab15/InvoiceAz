@@ -38,6 +38,9 @@ class ProductViewSet(viewsets.ModelViewSet):
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     name, desc, sku, price, unit, stock, min_stock = (row + (None, None, None, None, None, None, None))[0:7]
                     
+                    if not name: # Skip rows without a name
+                        continue
+                    
                     Product.objects.update_or_create(
                         business=business,
                         sku=sku,

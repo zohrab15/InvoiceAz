@@ -156,10 +156,19 @@ const Products = () => {
                 </div>
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Anbar Vəziyyəti</div>
-                    <div className={`text-3xl font-black ${products?.some(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)) ? 'text-rose-500' : 'text-emerald-500'}`}>
-                        {products?.filter(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)).length > 0
-                            ? `${products.filter(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)).length} Azalan`
-                            : 'Normal'}
+                    <div className={`text-3xl font-black ${products?.some(p => {
+                        const stock = Number(p.stock_quantity || 0);
+                        const min = Number(p.min_stock_level || 0);
+                        return stock <= min && stock > 0;
+                    }) ? 'text-rose-500' : products?.some(p => Number(p.stock_quantity || 0) <= 0) ? 'text-rose-500' : 'text-emerald-500'}`}>
+                        {(() => {
+                            const lowStockCount = products?.filter(p => {
+                                const stock = Number(p.stock_quantity || 0);
+                                const min = Number(p.min_stock_level || 0);
+                                return stock <= min;
+                            }).length || 0;
+                            return lowStockCount > 0 ? `${lowStockCount} Xəbərdarlıq` : 'Normal';
+                        })()}
                     </div>
                 </div>
             </div>
@@ -241,19 +250,23 @@ const Products = () => {
                                     </td>
                                     <td className="p-5">
                                         <div className="flex flex-col gap-1">
-                                            <div className="font-bold flex items-center gap-2" style={{ color: parseFloat(product.stock_quantity) <= parseFloat(product.min_stock_level) ? 'var(--color-danger)' : 'var(--color-text-primary)' }}>
+                                            <div className="font-bold flex items-center gap-2" style={{
+                                                color: (Number(product.stock_quantity || 0) <= Number(product.min_stock_level || 0))
+                                                    ? 'var(--color-danger)'
+                                                    : 'var(--color-text-primary)'
+                                            }}>
                                                 {product.stock_quantity} <span className="text-[10px] uppercase opacity-60">{product.unit}</span>
-                                                {parseFloat(product.stock_quantity) <= parseFloat(product.min_stock_level) && (
+                                                {Number(product.stock_quantity || 0) <= Number(product.min_stock_level || 0) && (
                                                     <AlertCircle size={14} className="text-rose-500 animate-pulse" />
                                                 )}
                                             </div>
-                                            {parseFloat(product.stock_quantity) <= 0 ? (
-                                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-500 w-fit">Bitib</span>
-                                            ) : parseFloat(product.stock_quantity) <= parseFloat(product.min_stock_level) ? (
-                                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 w-fit">Azalır</span>
-                                            ) : (
-                                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 w-fit">Kifayət qədər</span>
-                                            )}
+                                            {(() => {
+                                                const stock = Number(product.stock_quantity || 0);
+                                                const min = Number(product.min_stock_level || 0);
+                                                if (stock <= 0) return <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-500 w-fit">Bitib</span>;
+                                                if (stock <= min) return <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 w-fit">Azalır</span>;
+                                                return <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 w-fit">Kifayət qədər</span>;
+                                            })()}
                                         </div>
                                     </td>
                                     <td className="p-5 text-right">
@@ -378,8 +391,8 @@ const Products = () => {
                                         <input
                                             name="stock_quantity"
                                             type="number"
-                                            step="0.01"
-                                            defaultValue={editingProduct?.stock_quantity || 0}
+                                            step="0.001"
+                                            defaultValue={editingProduct?.stock_quantity ?? 0}
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                             placeholder="Nə qədərdir?"
@@ -391,11 +404,11 @@ const Products = () => {
                                         <input
                                             name="min_stock_level"
                                             type="number"
-                                            step="0.01"
-                                            defaultValue={editingProduct?.min_stock_level || 5}
+                                            step="0.001"
+                                            defaultValue={editingProduct?.min_stock_level ?? 0}
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
-                                            placeholder="Nə vaxt xəbər verilsin?"
+                                            placeholder="Limit?"
                                         />
                                     </div>
 
@@ -467,7 +480,7 @@ const Products = () => {
                                     <AlertCircle size={18} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
                                     <div className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                                         Faylın sütun ardıcıllığı belə olmalıdır: <br />
-                                        <span className="font-bold">Ad, Təsvir, SKU, Qiymət, Vahid</span>
+                                        <span className="font-bold">Ad, Təsvir, SKU, Qiymət, Vahid, Miqdar, Limit</span>
                                     </div>
                                 </div>
 
