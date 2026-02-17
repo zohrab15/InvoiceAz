@@ -505,6 +505,8 @@ const Invoices = () => {
                                         <option value="paid">Ödənilib</option>
                                         <option value="sent">Göndərilib</option>
                                         <option value="viewed">Baxılıb</option>
+                                        <option value="overdue">Gecikir</option>
+                                        <option value="cancelled">Ləğv edilib</option>
                                         <option value="draft">Qaralama</option>
                                     </select>
                                 </div>
