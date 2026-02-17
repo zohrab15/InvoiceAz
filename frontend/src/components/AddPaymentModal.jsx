@@ -18,6 +18,12 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (invoice?.status === 'draft') {
+            setError('Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz');
+            return;
+        }
+
         const numAmount = parseFloat(amount);
         const balance = parseFloat(invoice.total) - parseFloat(invoice.paid_amount);
 
@@ -161,8 +167,8 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                             type="button"
                                             onClick={() => setMethod(m.id)}
                                             className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${method === m.id
-                                                    ? `border-primary-blue ${m.bg}`
-                                                    : 'border-transparent bg-gray-50 hover:bg-gray-100'
+                                                ? `border-primary-blue ${m.bg}`
+                                                : 'border-transparent bg-gray-50 hover:bg-gray-100'
                                                 }`}
                                         >
                                             <Icon size={20} className={method === m.id ? m.color : 'text-gray-400'} />
