@@ -19,7 +19,8 @@ import {
     Sparkles,
     Receipt,
     PieChart,
-    Clock
+    Clock,
+    QrCode
 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
@@ -305,7 +306,7 @@ const LandingPage = () => {
                             { icon: <BarChart3 size={24} />, title: 'Canlı Analitika', desc: 'Real-vaxt qrafiklər, gəlir/xərc trendləri və AI ilə gələcək proqnozlaşdırma.', gradient: 'from-violet-500 to-purple-500' },
                             { icon: <Bell size={24} />, title: 'Ağıllı Bildirişlər', desc: 'Ödəniş vaxtı yaxınlaşanda və büdcə limiti aşılanda anında xəbərdar olun.', gradient: 'from-amber-500 to-yellow-500' },
                             { icon: <Shield size={24} />, title: 'Təhlükəsiz İnfrastruktur', desc: 'Bütün məlumatlarınız şifrələnmiş serverdə saxlanılır. Tam məxfilik.', gradient: 'from-emerald-500 to-teal-500' },
-                            { icon: <Globe size={24} />, title: 'Çoxvalyutalı Dəstək', desc: 'AZN, USD, EUR — istənilən valyutada faktura yaradın və çevrilmə edin.', gradient: 'from-blue-500 to-indigo-500' },
+                            { icon: <QrCode size={24} />, title: 'QR ilə Ödəniş', desc: 'Fakturalara avtomatik QR kod əlavə olunur, müştəriləriniz mobil bankçılıq ilə anında ödəniş etsin.', gradient: 'from-blue-500 to-indigo-500' },
                         ].map((f, i) => (
                             <motion.div
                                 key={i}
@@ -452,7 +453,7 @@ const LandingPage = () => {
                             </div>
                             <div className="text-4xl font-black mb-8">19.99 ₼ <span className="text-lg text-white/30">/ay</span></div>
                             <ul className="space-y-4 mb-10 flex-1">
-                                {['Ayda 100 faktura', 'Tam analitika + AI proqnoz', 'Limitsiz bildirişlər', 'PDF eksport', 'Çoxvalyutalı dəstək', '7/24 prioritet dəstək'].map((item, i) => (
+                                {['Ayda 100 faktura', 'Tam analitika + AI proqnoz', 'Limitsiz bildirişlər', 'PDF eksport', 'QR ödəniş inteqrasiyası', '7/24 prioritet dəstək'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-white/70 font-bold">
                                         <Zap size={18} className="text-blue-400" />
                                         {item}
