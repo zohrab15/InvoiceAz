@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { API_URL } from '../config';
+import clientApi from '../api/client';
 import useAuthStore from '../store/useAuthStore';
 import { useToast } from '../components/Toast';
 
@@ -13,18 +12,29 @@ const DemoLogin = () => {
     useEffect(() => {
         const loginDemo = async () => {
             try {
-                // We use the standard login endpoint but with demo credentials
-                const response = await axios.post(`${API_URL}/api/auth/login/`, {
+                // Clear existing session manually without reloading
+                localStorage.removeItem('invoice_token');
+                localStorage.removeItem('active_business');
+
+                // We use the centralized clientApi for consistency
+                const response = await clientApi.post('/auth/login/', {
                     email: 'demo@invoice.az',
                     password: 'demo1234'
                 });
 
-                const { key, user } = response.data;
-                setAuth(user, key);
-                showToast('Demo hesaba daxil olundu. Xoş gəlmisiniz!', 'success');
-                navigate('/dashboard');
+                const { access, access_token, user } = response.data;
+                const token = access || access_token || response.data.key; // Added .key for dj-rest-auth default
+
+                if (token) {
+                    setAuth(user || { email: 'demo@invoice.az' }, token);
+                    showToast('Demo hesaba daxil olundu. Xoş gəlmisiniz!', 'success');
+                    navigate('/dashboard');
+                } else {
+                    console.error('No token in response:', response.data);
+                    throw new Error('Token tapılmadı');
+                }
             } catch (err) {
-                console.error('Demo login failed:', err);
+                console.error('Demo login failed:', err.response?.data || err.message);
                 showToast('Demo giriş xətası. Zəhmət olmasa bir az sonra yenidən cəhd edin.', 'error');
                 navigate('/');
             }
