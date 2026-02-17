@@ -73,14 +73,26 @@ const Products = () => {
         onError: (err) => showToast(err.response?.data?.detail || 'Yükləmə zamanı xəta', 'error')
     });
 
+    const unitMap = {
+        'pcs': 'ədəd',
+        'kg': 'kq',
+        'm': 'metr',
+        'l': 'litr',
+        'service': 'xidmət',
+        'ədəd': 'ədəd',
+        'kq': 'kq',
+        'metr': 'metr',
+        'litr': 'litr',
+        'xidmət': 'xidmət'
+    };
+
     const handleInitialQRScan = (result) => {
         setIsQRScannerOpen(false);
-        // We could either filter the list or open the "Add Product" modal with SKU filled
         const found = products?.find(p => p.sku === result);
         if (found) {
             setEditingProduct(found);
         } else {
-            setEditingProduct({ sku: result, name: '', base_price: 0, unit: 'pcs' });
+            setEditingProduct({ sku: result, name: '', base_price: 0, unit: 'ədəd' });
         }
     };
 
@@ -246,7 +258,7 @@ const Products = () => {
                                         <div className="font-black" style={{ color: 'var(--color-text-primary)' }}>
                                             {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                                         </div>
-                                        <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>vahid: {product.unit}</div>
+                                        <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>vahid: {unitMap[product.unit] || product.unit}</div>
                                     </td>
                                     <td className="p-5">
                                         <div className="flex flex-col gap-1">
@@ -255,7 +267,7 @@ const Products = () => {
                                                     ? 'var(--color-danger)'
                                                     : 'var(--color-text-primary)'
                                             }}>
-                                                {product.stock_quantity} <span className="text-[10px] uppercase opacity-60">{product.unit}</span>
+                                                {product.stock_quantity} <span className="text-[10px] uppercase opacity-60">{unitMap[product.unit] || product.unit}</span>
                                                 {Number(product.stock_quantity || 0) <= Number(product.min_stock_level || 0) && (
                                                     <AlertCircle size={14} className="text-rose-500 animate-pulse" />
                                                 )}
@@ -299,15 +311,15 @@ const Products = () => {
             {/* Modals */}
             <AnimatePresence>
                 {(isAddModalOpen || editingProduct) && (
-                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 40 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+                            exit={{ opacity: 0, scale: 0.95, y: 40 }}
+                            className="rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl flex flex-col my-4 md:my-auto max-h-[85vh] sm:max-h-[90vh]"
                             style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                         >
-                            <div className="p-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
+                            <div className="p-6 flex items-center justify-between shrink-0" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
                                 <h3 className="text-xl font-black" style={{ color: 'var(--color-text-primary)' }}>
                                     {editingProduct?.id ? 'Məhsulu Redaktə Et' : 'Yeni Məhsul'}
                                 </h3>
@@ -321,7 +333,7 @@ const Products = () => {
                             </div>
 
                             <form
-                                className="p-6 space-y-4 overflow-y-auto flex-1"
+                                className="p-6 space-y-4 overflow-y-auto flex-1 custom-scrollbar pb-12"
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     const formData = new FormData(e.target);
@@ -340,7 +352,7 @@ const Products = () => {
                                             name="name"
                                             defaultValue={editingProduct?.name || ''}
                                             required
-                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold"
+                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold focus:ring-2 focus:ring-blue-500/20"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                             placeholder="Məhsulun adını daxil edin"
                                         />
@@ -374,15 +386,15 @@ const Products = () => {
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Ölçü Vahidi</label>
                                         <select
                                             name="unit"
-                                            defaultValue={editingProduct?.unit || 'pcs'}
-                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold"
+                                            defaultValue={editingProduct?.unit || 'ədəd'}
+                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold cursor-pointer"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                         >
-                                            <option value="pcs">Ədəd</option>
-                                            <option value="kg">Kq</option>
-                                            <option value="m">Metr</option>
-                                            <option value="l">Litr</option>
-                                            <option value="service">Xidmət</option>
+                                            <option value="ədəd">Ədəd</option>
+                                            <option value="kq">Kq</option>
+                                            <option value="metr">Metr</option>
+                                            <option value="litr">Litr</option>
+                                            <option value="xidmət">Xidmət</option>
                                         </select>
                                     </div>
 
@@ -424,7 +436,7 @@ const Products = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="pt-4">
+                                <div className="pt-6 pb-4 shrink-0">
                                     <button
                                         type="submit"
                                         disabled={addMutation.isPending || updateMutation.isPending}
@@ -444,7 +456,7 @@ const Products = () => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="rounded-3xl w-full max-w-md overflow-hidden"
+                            className="rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
                             style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                         >
                             <div className="p-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
