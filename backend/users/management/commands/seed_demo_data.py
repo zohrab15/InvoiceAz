@@ -142,7 +142,7 @@ class Command(BaseCommand):
             invoice = Invoice.objects.create(
                 business=business,
                 client=client,
-                invoice_number=f"DEMO-{2000 + i}",
+                invoice_number=f"DMO-{timezone.now().strftime('%H%M%S')}-{i+1}",
                 invoice_date=date,
                 due_date=due_date,
                 status=status,

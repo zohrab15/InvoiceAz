@@ -72,7 +72,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Account Settings
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional' 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
@@ -148,7 +148,6 @@ CSRF_TRUSTED_ORIGINS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MIDDLEWARE = [
-    'config.debug_middleware.ExceptionLoggingMiddleware', # Temporary debugger
     'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
