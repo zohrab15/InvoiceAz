@@ -13,6 +13,7 @@ class BusinessViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user, is_active=True)
 
 
+import os
 from django.shortcuts import redirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -35,8 +36,10 @@ def google_auth_bridge(request):
     user = request.user
     tokens = get_tokens_for_user(user)
     
-    # Base frontend URL (adjust if running on different port in production)
-    frontend_url = 'http://localhost:5173/auth/callback'
+    # Base frontend URL - Dynamic for production
+    default_frontend = 'http://localhost:5173'
+    frontend_base = os.environ.get('FRONTEND_URL', default_frontend if settings.DEBUG else 'https://invoiceaz.vercel.app')
+    frontend_url = f"{frontend_base}/auth/callback"
     
     # Construct query parameters
     query_params = urlencode(tokens)

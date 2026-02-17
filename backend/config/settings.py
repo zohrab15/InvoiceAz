@@ -84,18 +84,15 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_SIGNUP_FIELDS = [
-    'email',
     'first_name',
     'last_name',
 ]
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if not DEBUG else 'http'
-ACCOUNT_EMAIL_VERIFICATION = 'optional' # Temporarily optional to allow server start
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_REDIRECT_URL = '/api/users/google/callback/'
-LOGOUT_REDIRECT_URL = 'http://localhost:5173/login'
+LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', 'http://localhost:5173/login' if DEBUG else 'https://invoiceaz.vercel.app/login')
 
 # Social Account Settings
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True

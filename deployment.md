@@ -91,8 +91,12 @@ Since Render's Shell is a paid feature, we will run the setup from your **local 
 1.  **Create a Superuser (Locally)**:
     *   Open your terminal (cmd or Git Bash) in the `backend` folder.
     *   Set your production database URL for this session:
-        *   **Windows (cmd)**: `set DATABASE_URL=(Your Neon Connection String) && python manage.py createsuperuser`
-        *   **Windows (Git Bash/Powershell)**: `DATABASE_URL="(Your Neon Connection String)" python manage.py createsuperuser`
+        *   **PowerShell (with venv)**: 
+          `$env:DATABASE_URL="(Your Neon Connection String)"; .\venv\Scripts\python.exe manage.py createsuperuser`
+        *   **CMD (with venv)**: 
+          `set DATABASE_URL="(Your Neon Connection String)" && venv\Scripts\python.exe manage.py createsuperuser`
+        *   **Generic (using `py`)**: 
+          `$env:DATABASE_URL="(Your Neon Connection String)"; py manage.py createsuperuser`
     *   Follow the prompts to create your admin account.
 2.  **Configure Social App**:
     *   Go to your live site: `https://invoice-az-backend.onrender.com/admin/`.
