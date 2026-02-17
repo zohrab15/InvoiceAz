@@ -258,7 +258,6 @@ const Products = () => {
                                         <div className="font-black" style={{ color: 'var(--color-text-primary)' }}>
                                             {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                                         </div>
-                                        <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>vahid: {unitMap[(product.unit || '').toLowerCase().trim()] || product.unit}</div>
                                     </td>
                                     <td className="p-5">
                                         <div className="flex flex-col gap-1">
