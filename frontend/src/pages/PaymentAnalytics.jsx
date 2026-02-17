@@ -5,7 +5,7 @@ import { useBusiness } from '../context/BusinessContext';
 import { motion } from 'framer-motion';
 import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
-    BarChart, Bar, XAxis, YAxis, CartesianGrid
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area
 } from 'recharts';
 import { Calendar, CreditCard, Activity, Users, TrendingUp, AlertCircle, CheckCircle2, Building, DollarSign } from 'lucide-react';
 
@@ -94,21 +94,36 @@ const PaymentAnalytics = () => {
                     <Activity size={20} className="text-green-500" />
                     Ödəniş Sıxlığı (Heatmap)
                 </h3>
-                <div className="flex flex-wrap gap-1">
-                    {heatmap.map((day, index) => {
-                        let colorClass = "bg-gray-100";
-                        if (day.count > 0) colorClass = "bg-green-200";
-                        if (day.count > 2) colorClass = "bg-green-400";
-                        if (day.count > 5) colorClass = "bg-green-600";
-
-                        return (
-                            <div
-                                key={index}
-                                className={`w-3 h-3 rounded-sm ${colorClass}`}
-                                title={`${day.date}: ${day.count} ödəniş (${day.value} AZN)`}
+                <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={heatmap} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                            <XAxis
+                                dataKey="date"
+                                hide
                             />
-                        );
-                    })}
+                            <YAxis hide />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                labelStyle={{ fontWeight: 'bold', color: '#64748b' }}
+                                formatter={(value) => [`${value} ödəniş`, 'Sayı']}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="count"
+                                stroke="#10B981"
+                                strokeWidth={3}
+                                fillOpacity={1}
+                                fill="url(#colorCount)"
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
                 </div>
             </div>
 
