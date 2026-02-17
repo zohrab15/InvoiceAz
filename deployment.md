@@ -85,14 +85,17 @@ This guide will help you deploy your application for **free** and **long-term** 
     *   Value: `(Paste your Vercel Frontend URL, e.g., https://invoiceaz.vercel.app)`
 3.  Render will restart automatically.
 
-## Step 7: Django Admin & Social App Setup
-1.  **Create a Superuser**:
-    *   Go to your **Render Dashboard** and open your backend service.
-    *   Click the **Shell** tab (left sidebar).
-    *   Run: `python manage.py createsuperuser`
+## Step 7: Django Admin & Social App Setup (FREE Method)
+Since Render's Shell is a paid feature, we will run the setup from your **local terminal** while connected to the Neon database.
+
+1.  **Create a Superuser (Locally)**:
+    *   Open your terminal (cmd or Git Bash) in the `backend` folder.
+    *   Set your production database URL for this session:
+        *   **Windows (cmd)**: `set DATABASE_URL=(Your Neon Connection String) && python manage.py createsuperuser`
+        *   **Windows (Git Bash/Powershell)**: `DATABASE_URL="(Your Neon Connection String)" python manage.py createsuperuser`
     *   Follow the prompts to create your admin account.
 2.  **Configure Social App**:
-    *   Go to `https://invoice-az-backend.onrender.com/admin/`.
+    *   Go to your live site: `https://invoice-az-backend.onrender.com/admin/`.
     *   Login with your superuser.
     *   Go to **Social Applications** -> **Add Social Application**.
     *   **Provider**: Google
