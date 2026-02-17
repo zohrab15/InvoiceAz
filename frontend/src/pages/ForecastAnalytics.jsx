@@ -209,7 +209,7 @@ const ForecastAnalytics = () => {
                 <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
                     <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
                         <Activity size={24} className="text-purple-500" />
-                        Cashflow Proqnozu
+                        Pul Axını Proqnozu
                     </h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -221,7 +221,7 @@ const ForecastAnalytics = () => {
                                 <Legend />
                                 <Bar dataKey="inflow" fill="#3B82F6" name="Gözlənilən Giriş" radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="outflow" fill="#EF4444" name="Gözlənilən Çıxış" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="net" fill="#10B981" name="Net Cashflow" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="net" fill="#10B981" name="Net Pul Axını" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

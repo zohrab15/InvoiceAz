@@ -56,7 +56,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
     };
 
     const methods = [
-        { id: 'cash', label: 'Nağd', icon: Banknote, color: 'text-green-600', bg: 'bg-green-50' },
+        { id: 'cash', label: 'Nəğd', icon: Banknote, color: 'text-green-600', bg: 'bg-green-50' },
         { id: 'bank_transfer', label: 'Köçürmə', icon: Landmark, color: 'text-blue-600', bg: 'bg-blue-50' },
         { id: 'card', label: 'Kart', icon: CreditCard, color: 'text-purple-600', bg: 'bg-purple-50' },
         { id: 'online', label: 'Onlayn', icon: DollarSign, color: 'text-orange-600', bg: 'bg-orange-50' },
@@ -154,7 +154,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                         onChange={(e) => setMethod(e.target.value)}
                                         className="w-full px-3 py-2.5 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none text-sm appearance-none"
                                     >
-                                        <option value="cash">Nağd</option>
+                                        <option value="cash">Nəğd</option>
                                         <option value="bank_transfer">Köçürmə</option>
                                         <option value="card">Kart</option>
                                         <option value="online">Onlayn</option>
