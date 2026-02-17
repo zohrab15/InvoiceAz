@@ -124,6 +124,8 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                             }`}
                                         placeholder="0.00"
                                         required
+                                        onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                        onInput={(e) => e.target.setCustomValidity('')}
                                     />
                                 </div>
                                 {error && <p className="text-red-500 text-xs font-medium">{error}</p>}

@@ -145,6 +145,8 @@ const Register = () => {
                                         type="text"
                                         name="first_name"
                                         required
+                                        onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                        onInput={(e) => e.target.setCustomValidity('')}
                                         placeholder="Adınız"
                                         className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-3.5 pl-10 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                         onChange={handleChange}
@@ -157,6 +159,8 @@ const Register = () => {
                                     type="text"
                                     name="last_name"
                                     required
+                                    onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                    onInput={(e) => e.target.setCustomValidity('')}
                                     placeholder="Soyadınız"
                                     className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-3.5 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                     onChange={handleChange}
@@ -172,6 +176,8 @@ const Register = () => {
                                     type="email"
                                     name="email"
                                     required
+                                    onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                    onInput={(e) => e.target.setCustomValidity('')}
                                     placeholder="ad@domain.com"
                                     className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-3.5 pl-10 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                     onChange={handleChange}
@@ -187,6 +193,8 @@ const Register = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     name="password1"
                                     required
+                                    onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                    onInput={(e) => e.target.setCustomValidity('')}
                                     placeholder="Minimum 8 simvol"
                                     className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-3.5 pl-10 pr-12 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                     onChange={handleChange}
@@ -216,6 +224,8 @@ const Register = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     name="password2"
                                     required
+                                    onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                    onInput={(e) => e.target.setCustomValidity('')}
                                     placeholder="Şifrəni təkrar daxil edin"
                                     className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-3.5 pl-10 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                     onChange={handleChange}

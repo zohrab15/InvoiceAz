@@ -351,6 +351,8 @@ const Products = () => {
                                             name="name"
                                             defaultValue={editingProduct?.name || ''}
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold focus:ring-2 focus:ring-blue-500/20"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                             placeholder="Məhsulun adını daxil edin"
@@ -376,6 +378,8 @@ const Products = () => {
                                             step="0.01"
                                             defaultValue={editingProduct?.base_price || 0}
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                         />

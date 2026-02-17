@@ -276,6 +276,8 @@ const Clients = () => {
                                         <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                         <input
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             type="text"
                                             className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                             placeholder="Ad daxil edin"

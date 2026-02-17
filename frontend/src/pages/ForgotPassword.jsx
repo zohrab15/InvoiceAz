@@ -107,6 +107,8 @@ const ForgotPassword = () => {
                                         <input
                                             type="email"
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             placeholder="ad@domain.com"
                                             className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 pl-12 outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                             value={email}

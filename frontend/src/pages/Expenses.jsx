@@ -480,7 +480,11 @@ const Expenses = () => {
                                 <div className="space-y-4">
                                     <div className="relative">
                                         <Tag className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                        <input type="text" placeholder="Xərcin təsviri *" className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+                                        <input type="text" placeholder="Xərcin təsviri *"
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
+                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                            value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
                                     </div>
 
                                     <div className="relative">
@@ -491,7 +495,11 @@ const Expenses = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="relative">
                                             <DollarSign className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                            <input type="number" step="0.01" placeholder="Məbləğ *" className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
+                                            <input type="number" step="0.01" placeholder="Məbləğ *"
+                                                onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                                onInput={(e) => e.target.setCustomValidity('')}
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                                value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
                                         </div>
                                         <div className="relative">
                                             <select className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer" value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })}>

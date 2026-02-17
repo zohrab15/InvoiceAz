@@ -116,6 +116,8 @@ const SecuritySettings = () => {
                             onChange={(e) => setPasswordData({ ...passwordData, old_password: e.target.value })}
                             className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
                             required
+                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                            onInput={(e) => e.target.setCustomValidity('')}
                         />
                     </div>
                     <div className="space-y-1.5">
@@ -126,6 +128,8 @@ const SecuritySettings = () => {
                             onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
                             className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
                             required
+                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                            onInput={(e) => e.target.setCustomValidity('')}
                             minLength={8}
                         />
                     </div>
@@ -138,6 +142,8 @@ const SecuritySettings = () => {
                                 onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
                                 className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
                                 required
+                                onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                onInput={(e) => e.target.setCustomValidity('')}
                             />
                             <button
                                 type="submit"

@@ -120,6 +120,8 @@ const PublicPayment = () => {
                                     <div className="relative group">
                                         <input
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             type="text"
                                             placeholder="Kartın nömrəsi"
                                             className="w-full h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-bold text-slate-900 focus:border-blue-500 focus:bg-white transition-all outline-none"
@@ -135,6 +137,8 @@ const PublicPayment = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <input
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             type="text"
                                             placeholder="MM/YY"
                                             className="h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-bold text-slate-900 focus:border-blue-500 focus:bg-white transition-all outline-none"
@@ -143,6 +147,8 @@ const PublicPayment = () => {
                                         />
                                         <input
                                             required
+                                            onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                            onInput={(e) => e.target.setCustomValidity('')}
                                             type="text"
                                             placeholder="CVC"
                                             className="h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-bold text-slate-900 focus:border-blue-500 focus:bg-white transition-all outline-none"
@@ -153,6 +159,8 @@ const PublicPayment = () => {
 
                                     <input
                                         required
+                                        onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
+                                        onInput={(e) => e.target.setCustomValidity('')}
                                         type="text"
                                         placeholder="Kart sahibinin adı"
                                         className="w-full h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-bold text-slate-900 focus:border-blue-500 focus:bg-white transition-all outline-none uppercase"
