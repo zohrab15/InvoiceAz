@@ -265,14 +265,20 @@ const Dashboard = () => {
                                         return null;
                                     }}
                                 />
-                                {/* Background Bars for Scale Reference */}
+                                {/* Income and Expense Bars for Comparison */}
                                 <Bar
                                     dataKey="gəlir"
-                                    fill="var(--color-hover-bg)"
-                                    radius={[8, 8, 0, 0]}
-                                    barSize={40}
-                                    opacity={0.3}
-                                    isAnimationActive={false}
+                                    fill="var(--color-brand)"
+                                    radius={[10, 10, 0, 0]}
+                                    barSize={35}
+                                    opacity={0.15}
+                                />
+                                <Bar
+                                    dataKey="xərc"
+                                    fill="#fb7185"
+                                    radius={[10, 10, 0, 0]}
+                                    barSize={35}
+                                    opacity={0.1}
                                 />
 
                                 <Area
