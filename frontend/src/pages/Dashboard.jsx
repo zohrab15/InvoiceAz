@@ -63,7 +63,7 @@ const Dashboard = () => {
             const y = date.getFullYear();
 
             const monthIncome = invoices?.filter(inv => {
-                const d = new Date(inv.created_at);
+                const d = new Date(inv.invoice_date);
                 return d.getMonth() === m && d.getFullYear() === y;
             }).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
 
@@ -89,8 +89,8 @@ const Dashboard = () => {
                 title: `#${inv.invoice_number}`,
                 subtitle: inv.client_name,
                 amount: parseFloat(inv.total),
-                date: new Date(inv.created_at),
-                rawDate: inv.created_at,
+                date: new Date(inv.invoice_date),
+                rawDate: inv.invoice_date,
                 positive: true,
                 status: inv.status
             })),
