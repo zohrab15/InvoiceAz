@@ -140,20 +140,12 @@ const Dashboard = () => {
                         Dashboard <span className="block text-xs sm:text-sm font-bold tracking-widest uppercase mt-2" style={{ color: 'var(--color-brand)' }}>Biznesinizin ümumi görünüşü</span>
                     </h2>
                 </div>
-                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
-                    <motion.a
-                        whileHover={{ y: -2 }}
-                        href="/expenses"
-                        className="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-2xl flex items-center justify-center gap-2 transition-all font-bold text-sm"
-                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
-                    >
-                        <Wallet size={18} /> <span className="whitespace-nowrap">Yeni Xərc</span>
-                    </motion.a>
+                <div className="flex gap-4 mb-2 w-full sm:w-auto">
                     <motion.a
                         whileHover={{ y: -2, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         href="/invoices"
-                        className="flex-2 sm:flex-none text-white px-6 sm:px-8 py-3 rounded-2xl flex items-center justify-center gap-2 shadow-2xl transition-all font-bold text-sm"
+                        className="w-full sm:w-auto text-white px-6 sm:px-8 py-3 rounded-2xl flex items-center justify-center gap-2 shadow-2xl transition-all font-bold text-sm"
                         style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 30px var(--color-brand-shadow)' }}
                     >
                         <Plus size={18} /> <span className="whitespace-nowrap">Yeni Faktura</span>

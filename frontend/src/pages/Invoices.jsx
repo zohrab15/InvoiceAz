@@ -384,7 +384,7 @@ const Invoices = () => {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-8 shadow-2xl rounded-lg border aspect-[1/1.41] sticky top-8 text-gray-800"
+            className="bg-white p-4 sm:p-8 shadow-2xl rounded-2xl border aspect-auto sm:aspect-[1/1.41] sticky top-8 text-gray-800"
         >
             <div className="flex justify-between border-b pb-6 mb-6">
                 <div>
@@ -439,7 +439,7 @@ const Invoices = () => {
                 <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} ₼</span></div>
             </div>
 
-            <div className="absolute bottom-8 left-8 right-8 text-[10px] text-gray-300 border-t pt-4 italic">
+            <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] text-gray-400 italic">
                 {notes || activeBusiness?.bank_name ? `Qeyd: ${notes || activeBusiness?.bank_name}` : ''}
             </div>
         </motion.div>
@@ -640,34 +640,34 @@ const Invoices = () => {
                         exit={{ opacity: 0, scale: 0.98 }}
                         className="space-y-8"
                     >
-                        <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-xl border shadow-sm sticky top-4 z-10 gap-4">
-                            <div className="flex items-center space-x-4 w-full sm:w-auto">
-                                <button onClick={() => setView('list')} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ArrowLeft size={24} /></button>
-                                <h2 className="text-xl font-bold text-gray-800">{editInvoice ? 'Faktura Düzəlişi' : 'Yeni Hesab-faktura'}</h2>
+                        <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-3 sm:p-4 rounded-xl border shadow-sm sticky top-4 z-10 gap-4">
+                            <div className="flex items-center space-x-3 w-full sm:w-auto">
+                                <button onClick={() => setView('list')} className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"><ArrowLeft size={20} className="sm:w-6 sm:h-6" /></button>
+                                <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">{editInvoice ? 'Faktura Düzəlişi' : 'Yeni Hesab-faktura'}</h2>
                             </div>
-                            <div className="flex space-x-2 w-full sm:w-auto justify-end">
+                            <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
                                 <button
                                     onClick={() => setShowPreview(!showPreview)}
-                                    className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all ${showPreview ? 'bg-gray-800 text-white' : 'border hover:bg-gray-50'}`}
+                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all text-xs sm:text-sm ${showPreview ? 'bg-gray-800 text-white' : 'border hover:bg-gray-50'}`}
                                 >
-                                    <Eye size={18} />
-                                    <span>{showPreview ? 'Yazı rejimi' : 'Ön baxış'}</span>
+                                    <Eye size={16} />
+                                    <span className="whitespace-nowrap">{showPreview ? 'Yazı rejimi' : 'Ön baxış'}</span>
                                 </button>
                                 {!editInvoice && (
-                                    <button onClick={() => handleSave('draft')} className="px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center space-x-2 transition-all shadow-sm">
-                                        <Save size={18} />
-                                        <span>Qaralama</span>
+                                    <button onClick={() => handleSave('draft')} className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center justify-center space-x-2 transition-all shadow-sm text-xs sm:text-sm">
+                                        <Save size={16} />
+                                        <span className="whitespace-nowrap">Qaralama</span>
                                     </button>
                                 )}
-                                <button onClick={() => handleSave('draft', true)} className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-md transform active:scale-95 transition-all">
-                                    <Send size={18} />
-                                    <span>{!editInvoice || editInvoice.status === 'draft' ? 'Yadda saxla və Göndər' : 'Yadda saxla'}</span>
+                                <button onClick={() => handleSave('draft', true)} className="flex-grow sm:flex-none bg-primary-blue text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-700 shadow-md transform active:scale-95 transition-all text-xs sm:text-sm font-bold">
+                                    <Send size={16} />
+                                    <span className="whitespace-nowrap">{!editInvoice || editInvoice.status === 'draft' ? 'Yadda saxla və Göndər' : 'Yadda saxla'}</span>
                                 </button>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                            <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-8'} space-y-6 transition-all duration-500 order-2 lg:order-1`}>
+                            <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-8'} space-y-6 transition-all duration-500 order-1`}>
                                 <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
@@ -723,7 +723,7 @@ const Invoices = () => {
                                                         </select>
                                                         <input
                                                             type="text"
-                                                            className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-medium focus:ring-0"
+                                                            className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-bold focus:ring-0 placeholder:font-normal"
                                                             placeholder="Və ya əllə daxil edin..."
                                                             value={item.description}
                                                             onChange={(e) => updateItem(index, 'description', e.target.value)}
@@ -768,11 +768,11 @@ const Invoices = () => {
                                                             <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 pl-10 text-sm font-bold" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
                                                         </div>
                                                     </div>
-                                                    <div className="w-full sm:w-24 text-right font-bold text-primary-blue text-sm flex justify-between sm:block border-t sm:border-t-0 pt-2 sm:pt-0 mt-2 sm:mt-0 italic sm:not-italic">
-                                                        <span className="sm:hidden">Cəm:</span>
-                                                        <span>{(item.quantity * item.unit_price).toFixed(2)} ₼</span>
+                                                    <div className="w-full sm:w-24 text-right font-bold text-primary-blue text-sm flex justify-between items-center sm:block border-t sm:border-t-0 pt-3 sm:pt-0 mt-2 sm:mt-0 italic sm:not-italic">
+                                                        <span className="sm:hidden text-gray-400 font-bold uppercase text-[10px]">Cəm:</span>
+                                                        <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} ₼</span>
                                                     </div>
-                                                    <button onClick={() => removeItem(index)} className="p-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 self-end sm:self-center"><Trash2 size={18} /></button>
+                                                    <button onClick={() => removeItem(index)} className="p-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 self-end sm:self-center mt-2 sm:mt-0"><Trash2 size={20} /></button>
                                                 </motion.div>
                                             ))}
                                         </AnimatePresence>
@@ -783,7 +783,7 @@ const Invoices = () => {
                                 </div>
                             </div>
 
-                            <div className={`${showPreview ? 'lg:col-span-5' : 'lg:col-span-4'} space-y-6 order-1 lg:order-2`}>
+                            <div className={`${showPreview ? 'lg:col-span-5' : 'lg:col-span-4'} space-y-6 order-2`}>
                                 {showPreview ? (
                                     <InvoicePreview />
                                 ) : (
@@ -799,7 +799,7 @@ const Invoices = () => {
 
                                         <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
                                             <h3 className="font-bold text-gray-800 border-b pb-4 shrink-0 flex items-center gap-2"><List size={18} className="text-primary-blue" /> Sürətli Keçid</h3>
-                                            <div className="grid grid-cols-2 gap-3">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <button
                                                     onClick={() => {
                                                         const target = editInvoice || savedInvoice;
