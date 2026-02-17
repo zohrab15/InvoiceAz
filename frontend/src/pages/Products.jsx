@@ -304,7 +304,7 @@ const Products = () => {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl"
+                            className="rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
                             style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                         >
                             <div className="p-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
@@ -321,7 +321,7 @@ const Products = () => {
                             </div>
 
                             <form
-                                className="p-6 space-y-4"
+                                className="p-6 space-y-4 overflow-y-auto flex-1"
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     const formData = new FormData(e.target);
