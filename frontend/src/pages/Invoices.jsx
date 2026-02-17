@@ -546,25 +546,31 @@ const Invoices = () => {
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${inv.status === 'paid' ? 'bg-green-100 text-green-700 border border-green-200' :
                                                         inv.status === 'viewed' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
                                                             inv.status === 'sent' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                                                                'bg-gray-100 text-gray-600 border border-gray-200'
+                                                                inv.status === 'overdue' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                                                    inv.status === 'cancelled' ? 'bg-slate-100 text-slate-500 border border-slate-200' :
+                                                                        'bg-gray-100 text-gray-600 border border-gray-200'
                                                         }`}>
                                                         {inv.status === 'paid' ? 'Ödənilib' :
                                                             inv.status === 'viewed' ? 'Baxıldı' :
-                                                                inv.status === 'sent' ? 'Göndərilib' : 'Qaralama'}
+                                                                inv.status === 'sent' ? 'Göndərilib' :
+                                                                    inv.status === 'overdue' ? 'Gecikir' :
+                                                                        inv.status === 'cancelled' ? 'Ləğv edilib' : 'Qaralama'}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right space-x-1">
                                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end space-x-1">
                                                         <button
                                                             onClick={() => {
-                                                                if (inv.status === 'draft' || inv.status === 'paid') return;
+                                                                const canPay = ['sent', 'viewed', 'overdue'].includes(inv.status);
+                                                                if (!canPay) return;
                                                                 setPaymentInvoice(inv);
                                                                 setShowPaymentModal(true);
                                                             }}
                                                             title={inv.status === 'draft' ? "Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz" :
-                                                                inv.status === 'paid' ? "Bu faktura tam ödənilib" : "Ödəniş Əlavə Et"}
-                                                            disabled={inv.status === 'draft' || inv.status === 'paid'}
-                                                            className={`p-2 rounded-lg transition-colors ${inv.status === 'draft' || inv.status === 'paid' ? 'text-gray-300 cursor-not-allowed' : 'text-green-600 hover:bg-green-50'}`}
+                                                                inv.status === 'paid' ? "Bu faktura tam ödənilib" :
+                                                                    inv.status === 'cancelled' ? "Ləğv edilmiş fakturaya ödəniş əlavə etmək olmaz" : "Ödəniş Əlavə Et"}
+                                                            disabled={!['sent', 'viewed', 'overdue'].includes(inv.status)}
+                                                            className={`p-2 rounded-lg transition-colors ${!['sent', 'viewed', 'overdue'].includes(inv.status) ? 'text-gray-300 cursor-not-allowed' : 'text-green-600 hover:bg-green-50'}`}
                                                         >
                                                             <CheckCircle size={18} />
                                                         </button>

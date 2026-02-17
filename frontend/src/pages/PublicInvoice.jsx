@@ -59,6 +59,7 @@ const PublicInvoice = () => {
     );
 
     const isPaid = invoice.status === 'paid';
+    const isPayable = ['sent', 'viewed', 'overdue'].includes(invoice.status);
     const subtotal = parseFloat(invoice.subtotal);
     const tax = parseFloat(invoice.tax_amount);
     const total = parseFloat(invoice.total);
@@ -86,11 +87,11 @@ const PublicInvoice = () => {
                             <span>PDF Endir</span>
                         </button>
                         <button
-                            disabled={isPaid}
+                            disabled={!isPayable}
                             onClick={handlePay}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-lg ${isPaid ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100'}`}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-lg ${!isPayable ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100'}`}
                         >
-                            <span>{isPaid ? 'Ödənilib' : 'İndi Ödə'}</span>
+                            <span>{isPaid ? 'Ödənilib' : invoice.status === 'draft' ? 'Qaralama' : 'İndi Ödə'}</span>
                         </button>
                     </div>
                 </div>
@@ -105,6 +106,8 @@ const PublicInvoice = () => {
                     <div className={`py-4 px-8 text-center text-sm font-bold uppercase tracking-widest ${isPaid ? 'bg-green-500 text-white' : 'bg-blue-600 text-white'}`}>
                         {isPaid ? (
                             <span className="flex items-center justify-center gap-2"><CheckCircle size={18} /> Bu faktura ödənilib</span>
+                        ) : invoice.status === 'draft' ? (
+                            <span className="flex items-center justify-center gap-2"><FileText size={18} /> Qaralama Faktura</span>
                         ) : (
                             <span className="flex items-center justify-center gap-2"><Clock size={18} /> Ödəniş Gözlənilir</span>
                         )}
@@ -177,7 +180,7 @@ const PublicInvoice = () => {
                                     </div>
                                 </div>
 
-                                {!isPaid && (
+                                {isPayable && (
                                     <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-6">
                                         <div className="p-3 bg-white rounded-2xl shadow-sm border border-blue-100">
                                             <QRCodeSVG
