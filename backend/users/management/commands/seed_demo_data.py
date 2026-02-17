@@ -3,6 +3,7 @@ from datetime import timedelta
 from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from allauth.account.models import EmailAddress
 from users.models import User, Business
 from clients.models import Client
 from inventory.models import Product
@@ -30,6 +31,16 @@ class Command(BaseCommand):
         user.is_active = True
         user.is_email_verified = True
         user.save()
+
+        # Ensure allauth EmailAddress exists and is verified
+        try:
+            EmailAddress.objects.get_or_create(
+                user=user,
+                email=email,
+                defaults={'verified': True, 'primary': True}
+            )
+        except Exception as e:
+            self.stdout.write(f'Note: Could not create EmailAddress record ({e}). Continuing...')
         
         if created:
             self.stdout.write(f'Created user: {email}')
