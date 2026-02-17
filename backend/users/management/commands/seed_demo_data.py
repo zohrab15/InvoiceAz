@@ -16,7 +16,7 @@ class Command(BaseCommand):
         self.stdout.write('Seeding demo data...')
 
         # 1. Create Demo User
-        email = 'demo@invoice.az'
+        email = 'demo_user@invoice.az'
         
         # Delete existing user to ensure no stale state (SocialAccount, etc.)
         User.objects.filter(email=email).delete()
@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         user = User.objects.create_user(
             email=email,
-            password='demo1234',
+            password='demopassword123',
             first_name='Demo',
             last_name='İstifadəçi'
         )

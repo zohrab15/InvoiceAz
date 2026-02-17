@@ -71,9 +71,9 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Account Settings (Rescue Mode)
+# Account Settings
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_LOGIN_METHODS = {'email'} # Replaces ACCOUNT_AUTHENTICATION_METHOD
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional' 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_UNIQUE_EMAIL = True
