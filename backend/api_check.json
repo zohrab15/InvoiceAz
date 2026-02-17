@@ -1,0 +1,39 @@
+{
+  "login": {
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNDQyNTg2LCJpYXQiOjE3NzEzNTYxODYsImp0aSI6IjY3M2FiNThlODU1ODQyY2I5NTRhNDhhMmIxOWJhZDQwIiwidXNlcl9pZCI6IjE3In0.XsYhxdeFUlkEMq9YoCUlCS-rPbeYClNHquWPHFaKGCE",
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTk2MDk4NiwiaWF0IjoxNzcxMzU2MTg2LCJqdGkiOiI4NDQ0ZjliOTcxY2Y0ZjBiYjM4MWViYjRmYTQwMDMxOSIsInVzZXJfaWQiOiIxNyJ9.-mgxyscBB9QxVli3XVobznb_8L9ZPIPTkV5cgH8XTF0",
+    "user": {
+      "id": 17,
+      "email": "demo_user@invoice.az",
+      "first_name": "Demo",
+      "last_name": "\u0130stifad\u0259\u00e7i",
+      "phone": null,
+      "avatar": "https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff",
+      "timezone": "UTC",
+      "language": "az",
+      "membership": "pro",
+      "is_2fa_enabled": false
+    }
+  },
+  "business": [
+    {
+      "id": 24,
+      "name": "Modern Solutions MMC",
+      "voen": "1234567891",
+      "logo": "https://dummyimage.com/500x500/0f172a/ffffff.png?text=MS",
+      "address": "Bak\u0131 \u015f., Nizami k\u00fc\u00e7. 10",
+      "city": "Bak\u0131",
+      "phone": "+994 50 123 45 67",
+      "email": "info@modernsolutions.az",
+      "website": "https://modernsolutions.az",
+      "bank_name": "Pa\u015fa Bank ASC",
+      "iban": "AZ12PRBA0000001234567890",
+      "swift": "PRBAAZ2X",
+      "budget_limit": "5000.00",
+      "is_active": true,
+      "created_at": "2026-02-17T17:48:54.217528Z",
+      "updated_at": "2026-02-17T18:55:45.155935Z",
+      "user": 17
+    }
+  ]
+}
