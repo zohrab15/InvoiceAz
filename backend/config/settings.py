@@ -78,10 +78,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Account Settings (Rescue Mode)
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {'email'} # Replaces ACCOUNT_AUTHENTICATION_METHOD
+ACCOUNT_EMAIL_VERIFICATION = 'optional' 
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_SIGNUP_FIELDS = [
     'email',
@@ -89,7 +89,7 @@ ACCOUNT_SIGNUP_FIELDS = [
     'last_name',
 ]
 
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if not DEBUG else 'http'
 ACCOUNT_EMAIL_VERIFICATION = 'optional' # Temporarily optional to allow server start
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -140,14 +140,16 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_HTTPONLY = True 
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = not DEBUG # True in production
+SESSION_COOKIE_SECURE = not DEBUG # True in production
 CSRF_USE_SESSIONS = False
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://invoiceaz.vercel.app", 
+    "https://invoice-az-backend.onrender.com",
 ]
 
 # Default primary key field type
@@ -276,6 +278,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://invoiceaz.vercel.app",
 ]
 
 # Jazzmin Settings

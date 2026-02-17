@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { API_URL } from '../config';
 import {
     LayoutDashboard,
     Users,
@@ -84,7 +85,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             >
                                 {activeBusiness?.logo ? (
                                     <img
-                                        src={activeBusiness.logo.startsWith('http') ? activeBusiness.logo : `http://localhost:8000${activeBusiness.logo}`}
+                                        src={activeBusiness.logo.startsWith('http') ? activeBusiness.logo : `${API_URL}${activeBusiness.logo}`}
                                         alt="Logo"
                                         className="w-full h-full object-cover"
                                     />

@@ -68,11 +68,21 @@ This guide will help you deploy your application for **free** and **long-term** 
 
 ---
 
-## Step 4: Final Connection
+## Step 5: Google Cloud Console (OAuth)
+1.  Go to [Google Cloud Console](https://console.cloud.google.com/).
+2.  Select your project and go to **APIs & Services** > **Credentials**.
+3.  Edit your **OAuth 2.0 Client ID**.
+4.  **Authorized JavaScript origins**:
+    *   Add: `https://invoiceaz.vercel.app` (Your Vercel Domain)
+5.  **Authorized redirect URIs**:
+    *   Add: `https://invoice-az-backend.onrender.com/accounts/google/login/callback/` (Your Render Backend URL + callback path)
+6.  Click **Save**.
+
+## Step 6: Final Connection
 1.  Go back to your **Render** Dashboard -> Environment Variables.
 2.  Add/Update:
     *   Key: `CORS_ALLOWED_ORIGINS`
-    *   Value: `(Paste your Vercel Frontend URL, e.g., https://invoice-az.vercel.app)`
+    *   Value: `(Paste your Vercel Frontend URL, e.g., https://invoiceaz.vercel.app)`
 3.  Render will restart automatically.
 
 **Done!** Your app is now live.

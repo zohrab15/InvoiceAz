@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 import { motion } from 'framer-motion';
 import { Download, CheckCircle, Clock, AlertCircle, FileText, Globe, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -15,7 +16,7 @@ const PublicInvoice = () => {
     useEffect(() => {
         const fetchInvoice = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/invoices/public/${token}/`);
+                const response = await axios.get(`${API_URL}/api/invoices/public/${token}/`);
                 setInvoice(response.data);
             } catch (err) {
                 setError(err.response?.data?.error || 'Faktura tapılmadı');
@@ -27,7 +28,7 @@ const PublicInvoice = () => {
     }, [token]);
 
     const handleDownload = () => {
-        const url = `http://localhost:8000/api/invoices/${invoice.id}/pdf/?business_id=${invoice.business}`;
+        const url = `${API_URL}/api/invoices/${invoice.id}/pdf/?business_id=${invoice.business}`;
         window.open(url, '_blank');
     };
 
@@ -114,7 +115,7 @@ const PublicInvoice = () => {
                         <div className="flex flex-col md:flex-row justify-between gap-12 mb-16">
                             <div className="space-y-4">
                                 {invoice.business_details?.logo && (
-                                    <img src={invoice.business_details.logo.startsWith('http') ? invoice.business_details.logo : `http://localhost:8000${invoice.business_details.logo}`} alt="Logo" className="h-16 w-auto object-contain mb-4 rounded-xl shadow-sm" />
+                                    <img src={invoice.business_details.logo.startsWith('http') ? invoice.business_details.logo : `${API_URL}${invoice.business_details.logo}`} alt="Logo" className="h-16 w-auto object-contain mb-4 rounded-xl shadow-sm" />
                                 )}
                                 <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">{invoice.business_details?.name}</h2>
                                 <div className="text-sm text-slate-500 space-y-1">

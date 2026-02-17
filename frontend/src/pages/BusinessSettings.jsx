@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
@@ -290,7 +291,7 @@ const BusinessSettings = () => {
                                             <div className="relative group">
                                                 <div className="w-24 h-24 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 border-2 border-dashed border-gray-200 overflow-hidden group-hover:border-primary-blue transition-colors">
                                                     {logoPreview ? (
-                                                        <img src={logoPreview.startsWith('http') ? logoPreview : (logoPreview.startsWith('blob') ? logoPreview : `http://localhost:8000${logoPreview}`)} alt="Logo" className="w-full h-full object-contain" />
+                                                        <img src={logoPreview.startsWith('http') ? logoPreview : (logoPreview.startsWith('blob') ? logoPreview : `${API_URL}${logoPreview}`)} alt="Logo" className="w-full h-full object-contain" />
                                                     ) : (
                                                         <Building2 size={32} />
                                                     )}

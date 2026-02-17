@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
@@ -28,7 +29,7 @@ const UserSettings = () => {
                 phone: user.phone || '',
             });
             if (user.avatar) {
-                setAvatarPreview(user.avatar.startsWith('http') ? user.avatar : `http://localhost:8000${user.avatar}`);
+                setAvatarPreview(user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`);
             }
         }
     }, [user]);

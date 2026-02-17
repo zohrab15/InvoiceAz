@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, ShieldCheck, ArrowLeft, CheckCircle2, Loader2, Smartphone } from 'lucide-react';
 
@@ -21,7 +22,7 @@ const PublicPayment = () => {
     useEffect(() => {
         const fetchInvoice = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/invoices/public/${token}/`);
+                const response = await axios.get(`${API_URL}/api/invoices/public/${token}/`);
                 setInvoice(response.data);
             } catch (err) {
                 console.error('Faktura tapılmadı');
@@ -39,7 +40,7 @@ const PublicPayment = () => {
         // Simulate network delay
         setTimeout(async () => {
             try {
-                const response = await axios.post(`http://localhost:8000/api/invoices/public/${token}/pay/`);
+                const response = await axios.post(`${API_URL}/api/invoices/public/${token}/pay/`);
                 if (response.data.status === 'paid') {
                     setSuccess(true);
                 }

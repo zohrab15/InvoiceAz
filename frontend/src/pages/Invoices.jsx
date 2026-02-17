@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useBusiness } from '../context/BusinessContext';
+import { API_URL } from '../config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
@@ -211,7 +212,7 @@ const Invoices = () => {
     const calculateTotal = () => calculateSubtotal() + calculateTax();
 
     const handleDownloadPdf = (id) => {
-        const url = `http://localhost:8000/api/invoices/${id}/pdf/?business_id=${activeBusiness?.id}`;
+        const url = `${API_URL}/api/invoices/${id}/pdf/?business_id=${activeBusiness?.id}`;
         window.open(url, '_blank');
     };
 

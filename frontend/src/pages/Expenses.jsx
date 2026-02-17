@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
@@ -265,7 +266,7 @@ const Expenses = () => {
                                                 <div className="flex items-center gap-2">
                                                     <div className="font-bold text-gray-900 leading-tight">{exp.description}</div>
                                                     {exp.attachment && (
-                                                        <a href={exp.attachment.startsWith('http') ? exp.attachment : `http://localhost:8000${exp.attachment}`} target="_blank" rel="noreferrer">
+                                                        <a href={exp.attachment.startsWith('http') ? exp.attachment : `${API_URL}${exp.attachment}`} target="_blank" rel="noreferrer">
                                                             <Paperclip size={12} className="text-blue-400" />
                                                         </a>
                                                     )}

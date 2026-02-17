@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { API_URL } from '../config';
 import {
     Bell,
     User,
@@ -60,7 +61,7 @@ const Header = ({ onMenuClick }) => {
         : (user?.name || 'İstifadəçi');
 
     const userAvatarUrl = user?.avatar
-        ? (user.avatar.startsWith('http') ? user.avatar : `http://localhost:8000${user.avatar}`)
+        ? (user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`)
         : null;
 
     const menuItems = [
