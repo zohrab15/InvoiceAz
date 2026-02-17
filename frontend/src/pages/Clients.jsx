@@ -302,8 +302,9 @@ const Clients = () => {
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Mobil Nömrə</label>
                                         <PhoneInput
+                                            name="phone"
                                             value={formData.phone}
-                                            onChange={(val) => setFormData({ ...formData, phone: val })}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                         />
                                     </div>
                                 </div>
