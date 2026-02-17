@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { useMotionValue, useSpring, useTransform, animate } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
 const CountUp = ({ to, duration = 1.5, decimals = 0, prefix = '', suffix = '' }) => {
     const count = useMotionValue(0);
     const rounded = useTransform(count, (latest) => {
-        return latest.toLocaleString('az-AZ', {
+        return (latest || 0).toLocaleString('az-AZ', {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals
         });
@@ -15,7 +15,7 @@ const CountUp = ({ to, duration = 1.5, decimals = 0, prefix = '', suffix = '' })
         return controls.stop;
     }, [to, duration]);
 
-    return <span>{prefix}{rounded}{suffix}</span>;
+    return <motion.span>{prefix}{rounded}{suffix}</motion.span>;
 };
 
 export default CountUp;
