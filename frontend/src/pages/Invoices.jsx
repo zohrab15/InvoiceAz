@@ -498,13 +498,14 @@ const Invoices = () => {
                                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end space-x-1">
                                                         <button
                                                             onClick={() => {
-                                                                if (inv.status === 'draft') return;
+                                                                if (inv.status === 'draft' || inv.status === 'paid') return;
                                                                 setPaymentInvoice(inv);
                                                                 setShowPaymentModal(true);
                                                             }}
-                                                            title={inv.status === 'draft' ? "Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz" : "Ödəniş Əlavə Et"}
-                                                            disabled={inv.status === 'draft'}
-                                                            className={`p-2 rounded-lg transition-colors ${inv.status === 'draft' ? 'text-gray-300 cursor-not-allowed' : 'text-green-600 hover:bg-green-50'}`}
+                                                            title={inv.status === 'draft' ? "Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz" :
+                                                                inv.status === 'paid' ? "Bu faktura tam ödənilib" : "Ödəniş Əlavə Et"}
+                                                            disabled={inv.status === 'draft' || inv.status === 'paid'}
+                                                            className={`p-2 rounded-lg transition-colors ${inv.status === 'draft' || inv.status === 'paid' ? 'text-gray-300 cursor-not-allowed' : 'text-green-600 hover:bg-green-50'}`}
                                                         >
                                                             <CheckCircle size={18} />
                                                         </button>

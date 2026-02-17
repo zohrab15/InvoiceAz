@@ -7,11 +7,23 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'avatar', 'timezone', 'language', 'membership', 'is_2fa_enabled')
         read_only_fields = ('id', 'email')
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.avatar and str(instance.avatar).startswith('http'):
+            data['avatar'] = str(instance.avatar)
+        return data
+
 class BusinessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Business
         fields = '__all__'
         read_only_fields = ('id', 'user')
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.logo and str(instance.logo).startswith('http'):
+            data['logo'] = str(instance.logo)
+        return data
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
 class CustomRegisterSerializer(RegisterSerializer):
