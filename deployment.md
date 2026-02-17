@@ -85,4 +85,21 @@ This guide will help you deploy your application for **free** and **long-term** 
     *   Value: `(Paste your Vercel Frontend URL, e.g., https://invoiceaz.vercel.app)`
 3.  Render will restart automatically.
 
-**Done!** Your app is now live.
+## Step 7: Django Admin & Social App Setup
+1.  **Create a Superuser**:
+    *   Go to your **Render Dashboard** and open your backend service.
+    *   Click the **Shell** tab (left sidebar).
+    *   Run: `python manage.py createsuperuser`
+    *   Follow the prompts to create your admin account.
+2.  **Configure Social App**:
+    *   Go to `https://invoice-az-backend.onrender.com/admin/`.
+    *   Login with your superuser.
+    *   Go to **Social Applications** -> **Add Social Application**.
+    *   **Provider**: Google
+    *   **Name**: Google Login
+    *   **Client id**: (Paste from Google Cloud Console)
+    *   **Secret key**: (Paste from Google Cloud Console)
+    *   **Sites**: Move `example.com` (or your domain) to the **Chosen sites** list.
+    *   Click **Save**.
+
+**Done!** Your app is now fully functional with Google Login live.
