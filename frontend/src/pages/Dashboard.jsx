@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { TrendingUp, Clock, AlertCircle, Plus, Wallet, ArrowUpRight, ArrowDownRight, BarChart3 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, ComposedChart, Line } from 'recharts';
 
 import { useBusiness } from '../context/BusinessContext';
 import TopProductsChart from '../components/TopProductsChart';
@@ -218,35 +218,91 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="h-80 w-full">
+                    <div className="h-80 w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={monthlyData}>
+                            <ComposedChart data={monthlyData}>
                                 <defs>
                                     <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                                     </linearGradient>
                                     <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#FB7185" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#FB7185" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#fb7185" stopOpacity={0.15} />
+                                        <stop offset="95%" stopColor="#fb7185" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }} dy={10} />
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 700 }}
+                                    dy={10}
+                                />
                                 <YAxis hide />
                                 <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '24px',
-                                        border: '1px solid var(--color-card-border)',
-                                        boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-                                        padding: '16px',
-                                        backgroundColor: 'var(--color-dropdown-bg)',
-                                        color: 'var(--color-text-primary)'
+                                    cursor={{ stroke: 'var(--color-card-border)', strokeWidth: 2, strokeDasharray: '4 4' }}
+                                    content={({ active, payload, label }) => {
+                                        if (active && payload && payload.length) {
+                                            return (
+                                                <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white/20 dark:border-slate-800/50 min-w-[200px]">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">{label} Ayı</p>
+                                                    <div className="space-y-4">
+                                                        {payload.map((entry, index) => (
+                                                            <div key={index} className="flex justify-between items-center gap-8">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color, boxShadow: `0 0 10px ${entry.color}80` }} />
+                                                                    <span className="text-xs font-bold text-slate-500 capitalize">{entry.name}</span>
+                                                                </div>
+                                                                <span className="text-sm font-black dark:text-white" style={{ color: 'var(--color-text-primary)' }}>
+                                                                    {entry.value.toLocaleString()} ₼
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
                                     }}
-                                    itemStyle={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '10px' }}
                                 />
-                                <Area type="monotone" dataKey="gəlir" stroke="#3B82F6" strokeWidth={4} fillOpacity={1} fill="url(#colorIncome)" />
-                                <Area type="monotone" dataKey="xərc" stroke="#FB7185" strokeWidth={4} fillOpacity={1} fill="url(#colorExpense)" />
-                            </AreaChart>
+                                {/* Background Bars for Scale Reference */}
+                                <Bar
+                                    dataKey="gəlir"
+                                    fill="var(--color-hover-bg)"
+                                    radius={[8, 8, 0, 0]}
+                                    barSize={40}
+                                    opacity={0.3}
+                                    isAnimationActive={false}
+                                />
+
+                                <Area
+                                    type="monotone"
+                                    dataKey="gəlir"
+                                    name="gəlir"
+                                    stroke="#2563eb"
+                                    strokeWidth={4}
+                                    fillOpacity={1}
+                                    fill="url(#colorIncome)"
+                                    activeDot={{ r: 8, strokeWidth: 0, fill: '#2563eb', shadow: '0 0 15px rgba(37, 99, 235, 0.5)' }}
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="xərc"
+                                    name="xərc"
+                                    stroke="#fb7185"
+                                    strokeWidth={4}
+                                    fillOpacity={1}
+                                    fill="url(#colorExpense)"
+                                    activeDot={{ r: 6, strokeWidth: 0, fill: '#fb7185' }}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="gəlir"
+                                    stroke="transparent"
+                                    dot={false}
+                                    activeDot={{ r: 10, fill: '#2563eb', opacity: 0.1 }}
+                                />
+                            </ComposedChart>
                         </ResponsiveContainer>
                     </div>
                 </motion.div>
