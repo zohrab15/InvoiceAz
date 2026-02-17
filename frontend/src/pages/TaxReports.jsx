@@ -47,7 +47,7 @@ const TaxReports = () => {
             {/* Header - Hidden in Print */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <div>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight font-outfit uppercase">Vergi və Hesabatlar</h2>
+                    <h2 className="text-3xl font-black text-slate-900 tracking-tight font-roboto uppercase">Vergi və Hesabatlar</h2>
                     <p className="text-slate-500 mt-1">Vergi öhdəliklərinizi və maliyyə hesabatlarınızı buradan izləyin.</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ const TaxReports = () => {
                 {/* Quarterly table */}
                 <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-6">
                     <div>
-                        <h3 className="text-xl font-bold font-outfit">Rüblük Hesabatlar</h3>
+                        <h3 className="text-xl font-bold font-roboto">Rüblük Hesabatlar</h3>
                         <p className="text-sm text-slate-500">Hər rüb üzrə maliyyə və vergi xülasəsi</p>
                     </div>
                     <div className="overflow-x-auto">
@@ -252,7 +252,7 @@ const TaxReports = () => {
                 <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-6">
                     <div className="flex justify-between items-center">
                         <div>
-                            <h3 className="text-xl font-bold font-outfit">Təxmini Vergilər</h3>
+                            <h3 className="text-xl font-bold font-roboto">Təxmini Vergilər</h3>
                             <p className="text-sm text-slate-500">Müxtəlif vergi modelləri üzrə proqnozlar</p>
                         </div>
                         <div className="flex bg-slate-100 p-1 rounded-xl">

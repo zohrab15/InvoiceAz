@@ -136,7 +136,7 @@ const Dashboard = () => {
         >
             <div className="flex justify-between items-end">
                 <div>
-                    <h2 className="text-4xl font-black tracking-tight mb-2 font-outfit" style={{ color: 'var(--color-text-primary)' }}>
+                    <h2 className="text-4xl font-black tracking-tight mb-2 font-roboto" style={{ color: 'var(--color-text-primary)' }}>
                         Dashboard <span className="block text-sm font-bold tracking-widest uppercase mt-2" style={{ color: 'var(--color-brand)' }}>Biznesinizin ümumi görünüşü</span>
                     </h2>
                 </div>
@@ -337,7 +337,7 @@ const Dashboard = () => {
                     <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                         <TrendingUp size={32} />
                     </div>
-                    <h3 className="font-outfit font-black text-lg" style={{ color: 'var(--color-text-primary)' }}>Satış Artımı</h3>
+                    <h3 className="font-roboto font-black text-lg" style={{ color: 'var(--color-text-primary)' }}>Satış Artımı</h3>
                     <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Mehsul bazasında statistikalar satış strategiyanızı gücləndirir.</p>
                 </div>
             </div>

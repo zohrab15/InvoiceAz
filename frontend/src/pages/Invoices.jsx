@@ -457,7 +457,7 @@ const Invoices = () => {
                         className="space-y-6"
                     >
                         <div className="flex justify-between items-center">
-                            <h2 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">Fakturalar</h2>
+                            <h2 className="text-3xl font-black text-slate-900 tracking-tight font-roboto">Fakturalar</h2>
                             <div className="flex items-center gap-4">
                                 <button
                                     onClick={handleCreateNew}

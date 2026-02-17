@@ -119,7 +119,7 @@ const Clients = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">Müştərilər</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight font-roboto">Müştərilər</h1>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={handleAddNew}

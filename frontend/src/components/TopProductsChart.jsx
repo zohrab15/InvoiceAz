@@ -78,13 +78,13 @@ const TopProductsChart = () => {
                         <ShoppingBag size={28} />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black text-slate-900 font-outfit tracking-tight">En çox satılan mallar</h3>
+                        <h3 className="text-2xl font-black text-slate-900 font-roboto tracking-tight">En çox satılan mallar</h3>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic mt-1">Satış sayına görə TOP 10</p>
                     </div>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cəmi Mallar</span>
-                    <span className="text-2xl font-black text-slate-900 font-outfit">{topProducts.length} <span className="text-xs text-slate-400">çeşid</span></span>
+                    <span className="text-2xl font-black text-slate-900 font-roboto">{topProducts.length} <span className="text-xs text-slate-400">çeşid</span></span>
                 </div>
             </div>
 
@@ -120,7 +120,7 @@ const TopProductsChart = () => {
                                             fill="#64748b"
                                             fontSize={11}
                                             fontWeight={800}
-                                            className="font-outfit"
+                                            className="font-roboto"
                                         >
                                             {payload.value.length > 15 ? payload.value.substring(0, 15) + '...' : payload.value}
                                         </text>
@@ -187,7 +187,7 @@ const TopProductsChart = () => {
                                             fill="#1e293b"
                                             fontSize={12}
                                             fontWeight={900}
-                                            className="font-outfit tracking-tighter"
+                                            className="font-roboto tracking-tighter"
                                         >
                                             <CountUp to={value} decimals={0} /> ədəd
                                         </text>

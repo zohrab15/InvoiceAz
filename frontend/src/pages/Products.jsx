@@ -119,7 +119,7 @@ const Products = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight flex items-center gap-3 font-outfit" style={{ color: 'var(--color-text-primary)' }}>
+                    <h1 className="text-3xl font-black tracking-tight flex items-center gap-3 font-roboto" style={{ color: 'var(--color-text-primary)' }}>
                         <div className="p-2.5 rounded-2xl text-white shadow-lg" style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 20px var(--color-brand-shadow)' }}>
                             <Package size={28} />
                         </div>

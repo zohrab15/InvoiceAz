@@ -10,7 +10,7 @@ const PricingPage = () => {
     const currentPlan = user?.membership || 'free';
 
     return (
-        <div className="min-h-screen p-6 relative overflow-hidden font-outfit" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
+        <div className="min-h-screen p-6 relative overflow-hidden font-roboto" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
             {/* Background Effects */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[200px] -translate-y-1/3 pointer-events-none" style={{ backgroundColor: 'var(--color-brand-shadow)', opacity: 0.1 }} />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none" style={{ backgroundColor: 'var(--color-brand-shadow)', opacity: 0.05 }} />
