@@ -174,6 +174,10 @@ const Invoices = () => {
     };
 
     const handleEdit = (inv) => {
+        if (inv.status !== 'draft') {
+            showToast('Yalnız qaralama statusunda olan fakturaları redaktə etmək olar', 'error');
+            return;
+        }
         setEditInvoice(inv);
         setSelectedClientId(inv.client);
         setInvoiceDate(inv.invoice_date);
@@ -576,9 +580,9 @@ const Invoices = () => {
                                                         </button>
                                                         <button
                                                             onClick={() => handleEdit(inv)}
-                                                            title={inv.status === 'paid' || inv.status === 'viewed' || (inv.status === 'sent' && inv.sent_at) ? "Göndərilmiş fakturanı redaktə etmək olmaz" : "Redaktə"}
-                                                            disabled={inv.status === 'paid' || inv.status === 'viewed' || (inv.status === 'sent' && inv.sent_at)}
-                                                            className={`p-2 rounded-lg transition-colors ${inv.status === 'paid' || inv.status === 'viewed' || (inv.status === 'sent' && inv.sent_at) ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-50'}`}
+                                                            title={inv.status !== 'draft' ? "Yalnız qaralama statusunda olan sənədlər redaktə edilə bilər" : "Redaktə"}
+                                                            disabled={inv.status !== 'draft'}
+                                                            className={`p-2 rounded-lg transition-colors ${inv.status !== 'draft' ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-50'}`}
                                                         >
                                                             <Edit2 size={18} />
                                                         </button>
