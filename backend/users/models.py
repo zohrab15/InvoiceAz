@@ -38,7 +38,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, max_length=500)
     timezone = models.CharField(max_length=50, default='UTC')
     language = models.CharField(max_length=10, default='az')
     MEMBERSHIP_CHOICES = (
@@ -69,7 +69,7 @@ class Business(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='businesses')
     name = models.CharField(max_length=255)
     voen = models.CharField(max_length=20, blank=True, null=True) # Tax ID
-    logo = models.ImageField(upload_to='logos/', blank=True, null=True)
+    logo = models.ImageField(upload_to='logos/', blank=True, null=True, max_length=500)
     address = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)

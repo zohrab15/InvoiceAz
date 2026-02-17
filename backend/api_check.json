@@ -1,14 +1,14 @@
 {
   "login": {
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNDQyNTg2LCJpYXQiOjE3NzEzNTYxODYsImp0aSI6IjY3M2FiNThlODU1ODQyY2I5NTRhNDhhMmIxOWJhZDQwIiwidXNlcl9pZCI6IjE3In0.XsYhxdeFUlkEMq9YoCUlCS-rPbeYClNHquWPHFaKGCE",
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTk2MDk4NiwiaWF0IjoxNzcxMzU2MTg2LCJqdGkiOiI4NDQ0ZjliOTcxY2Y0ZjBiYjM4MWViYjRmYTQwMDMxOSIsInVzZXJfaWQiOiIxNyJ9.-mgxyscBB9QxVli3XVobznb_8L9ZPIPTkV5cgH8XTF0",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNDQzMzczLCJpYXQiOjE3NzEzNTY5NzMsImp0aSI6Ijg5NjJlMDRkOWY2MTRlZmQ4NWE2MGE1MTk3MmJjMjIxIiwidXNlcl9pZCI6IjE3In0.NxDSwPfB85Jmylm9NOnRSULtEPDN80ALK_49tdvX8Go",
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTk2MTc3MywiaWF0IjoxNzcxMzU2OTczLCJqdGkiOiIxZTIxY2Y5OGI5MzM0YTA4OGI4NzUwNzhmMDE5ZDdiMiIsInVzZXJfaWQiOiIxNyJ9.lCUXpjGrEVKMDIdzXgJW2RKsLDj-mhqLegzEEK7OXPY",
     "user": {
       "id": 17,
       "email": "demo_user@invoice.az",
       "first_name": "Demo",
       "last_name": "\u0130stifad\u0259\u00e7i",
       "phone": null,
-      "avatar": "https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200&h=200&t=1771356955",
       "timezone": "UTC",
       "language": "az",
       "membership": "pro",
@@ -20,7 +20,7 @@
       "id": 24,
       "name": "Modern Solutions MMC",
       "voen": "1234567891",
-      "logo": "https://dummyimage.com/500x500/0f172a/ffffff.png?text=MS",
+      "logo": "https://dummyimage.com/500x500/0f172a/ffffff.png?text=MS&t=1771356955",
       "address": "Bak\u0131 \u015f., Nizami k\u00fc\u00e7. 10",
       "city": "Bak\u0131",
       "phone": "+994 50 123 45 67",
@@ -32,7 +32,7 @@
       "budget_limit": "5000.00",
       "is_active": true,
       "created_at": "2026-02-17T17:48:54.217528Z",
-      "updated_at": "2026-02-17T18:55:45.155935Z",
+      "updated_at": "2026-02-17T19:35:55.804023Z",
       "user": 17
     }
   ]
