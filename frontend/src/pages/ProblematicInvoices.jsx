@@ -11,10 +11,14 @@ import {
     Calendar, Send, ArrowRight, Download, MessageCircle, Phone, Mail
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
+import UpgradeModal from '../components/UpgradeModal';
+import usePlanLimits from '../hooks/usePlanLimits';
+import { utils, writeFile } from 'xlsx';
 const ProblematicInvoices = () => {
     const { activeBusiness } = useBusiness();
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const { isFeatureLocked } = usePlanLimits();
 
     const { data: analytics, isLoading } = useQuery({
         queryKey: ['issues-analytics', activeBusiness?.id],
@@ -26,6 +30,42 @@ const ProblematicInvoices = () => {
         },
         enabled: !!activeBusiness
     });
+
+    const handleDownload = () => {
+        if (isFeatureLocked('csv_export')) {
+            setShowUpgradeModal(true);
+            return;
+        }
+
+        if (!analytics?.debtors) return;
+
+        // Prepare data for Excel
+        const data = analytics.debtors.map(debtor => ({
+            'Müştəri': debtor.name,
+            'Email': debtor.email,
+            'Telefon': debtor.phone,
+            'Faktura Sayı': debtor.invoices_count,
+            'Maks. Gecikmə (Gün)': debtor.max_overdue_days,
+            'Cəmi Borc (AZN)': debtor.total_debt.toFixed(2)
+        }));
+
+        const worksheet = utils.json_to_sheet(data);
+        const workbook = utils.book_new();
+        utils.book_append_sheet(workbook, worksheet, "Borclular");
+
+        // Column widths
+        const wscols = [
+            { wch: 20 }, // Müştəri
+            { wch: 25 }, // Email
+            { wch: 15 }, // Telefon
+            { wch: 12 }, // Faktura Sayı
+            { wch: 18 }, // Maks. Gecikmə
+            { wch: 15 }, // Cəmi Borc
+        ];
+        worksheet['!cols'] = wscols;
+
+        writeFile(workbook, "borclular_siyahisi.xlsx");
+    };
 
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center">
@@ -126,16 +166,19 @@ const ProblematicInvoices = () => {
                 </div>
 
                 {/* Quick Actions / Tips */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-3xl shadow-lg text-white">
+                <div
+                    className="p-8 rounded-3xl shadow-xl border space-y-6"
+                    style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-primary)' }}
+                >
                     <h3 className="text-xl font-black mb-4">Məsləhətlər 💡</h3>
                     <div className="space-y-6">
-                        <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
-                            <h4 className="font-bold text-red-200 mb-1">90+ Günü Keçənlər</h4>
-                            <p className="text-sm text-gray-300">Bu müştərilərlə şəxsən əlaqə saxlamağınız tövsiyə olunur. Hüquqi addımlar barədə düşünün.</p>
+                        <div className="p-4 rounded-2xl border" style={{ backgroundColor: 'var(--color-badge-bg)', borderColor: 'var(--color-card-border)' }}>
+                            <h4 className="font-bold text-red-500 mb-1">90+ Günü Keçənlər</h4>
+                            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Bu müştərilərlə şəxsən əlaqə saxlamağınız tövsiyə olunur. Hüquqi addımlar barədə düşünün.</p>
                         </div>
-                        <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
-                            <h4 className="font-bold text-blue-200 mb-1">Xatırlatma Göndərin</h4>
-                            <p className="text-sm text-gray-300">Gecikmənin ilk həftəsində göndərilən xatırlatmalar ödəmə şansını 60% artırır.</p>
+                        <div className="p-4 rounded-2xl border" style={{ backgroundColor: 'var(--color-badge-bg)', borderColor: 'var(--color-card-border)' }}>
+                            <h4 className="font-bold text-blue-500 mb-1">Xatırlatma Göndərin</h4>
+                            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Gecikmənin ilk həftəsində göndərilən xatırlatmalar ödəmə şansını 60% artırır.</p>
                         </div>
                     </div>
                 </div>
@@ -150,7 +193,10 @@ const ProblematicInvoices = () => {
                         </div>
                         <h3 className="text-lg font-black text-slate-900">Borcluların Siyahısı</h3>
                     </div>
-                    <button className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                    <button
+                        onClick={handleDownload}
+                        className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
+                    >
                         <Download size={16} />
                         Siyahını Yüklə
                     </button>
@@ -238,6 +284,12 @@ const ProblematicInvoices = () => {
                     </table>
                 </div>
             </div>
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                resourceName="Excel Eksport"
+                limit="məhdud"
+            />
         </motion.div>
     );
 };

@@ -228,31 +228,34 @@ const ForecastAnalytics = () => {
                 </div>
 
                 {/* Risk Radar */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-3xl text-white shadow-xl">
+                <div
+                    className="p-8 rounded-3xl shadow-xl border space-y-4"
+                    style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-primary)' }}
+                >
                     <h3 className="text-xl font-black mb-6 flex items-center gap-2">
                         <AlertTriangle size={24} className="text-orange-400" />
                         Risk Analizi (Churn)
                     </h3>
                     <div className="space-y-4">
                         {risks.churn_list.length === 0 ? (
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-center italic text-gray-400">
+                            <div className="p-4 rounded-2xl border text-center italic" style={{ backgroundColor: 'var(--color-badge-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-muted)' }}>
                                 Hazırda yüksək riskli müştəri yoxdur ✅
                             </div>
                         ) : (
                             risks.churn_list.map((client) => (
-                                <div key={client.id} className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
+                                <div key={client.id} className="p-4 rounded-2xl border flex items-center justify-between" style={{ backgroundColor: 'var(--color-badge-bg)', borderColor: 'var(--color-card-border)' }}>
                                     <div>
                                         <h4 className="font-bold">{client.name}</h4>
-                                        <p className="text-xs text-gray-400 mt-1">Son fəaliyyət: {client.last_seen}</p>
+                                        <p className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>Son fəaliyyət: {client.last_seen}</p>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-sm font-black text-orange-400">{client.days_inactive} gün</div>
-                                        <div className="text-[10px] uppercase font-bold text-gray-500">İnaktivlik</div>
+                                        <div className="text-[10px] uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>İnaktivlik</div>
                                     </div>
                                 </div>
                             ))
                         )}
-                        <div className="mt-6 p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-xs text-blue-200 leading-relaxed">
+                        <div className="mt-6 p-4 rounded-2xl border text-xs leading-relaxed" style={{ backgroundColor: 'var(--color-brand-light)', borderColor: 'var(--color-brand-shadow)', color: 'var(--color-brand)' }}>
                             💡 **Məsləhət:** İnaktivlik müddəti 90 günü keçən müştərilərə endirim təklifi və ya "Sizi özlədik" kampaniyası ilə müraciət edin.
                         </div>
                     </div>

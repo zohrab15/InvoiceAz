@@ -7,19 +7,23 @@ import client from '../api/client';
 import { useToast } from '../components/Toast';
 import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-
 import UserSettings from '../components/settings/UserSettings';
 import PhoneInput from '../components/common/PhoneInput';
 import { useLocation } from 'react-router-dom';
+import UpgradeModal from '../components/UpgradeModal';
+import usePlanLimits from '../hooks/usePlanLimits';
 
 const BusinessSettings = () => {
     const queryClient = useQueryClient();
     const showToast = useToast();
     const location = useLocation();
     const { theme: currentTheme } = useTheme();
+    const { checkLimit } = usePlanLimits();
 
     // Manage tabs
     const [activeTab, setActiveTab] = useState('user'); // 'user', 'business'
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [limitInfo, setLimitInfo] = useState({ resourceName: 'Biznes', limit: 1 });
 
     const [selectedBusiness, setSelectedBusiness] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -66,6 +70,12 @@ const BusinessSettings = () => {
     }, [businesses, selectedBusiness, isCreating]);
 
     const handleNewBusiness = () => {
+        const check = checkLimit('businesses');
+        if (!check.allowed) {
+            setLimitInfo({ resourceName: 'Biznes Profili', limit: check.limit });
+            setShowUpgradeModal(true);
+            return;
+        }
         setIsCreating(true);
         setSelectedBusiness(null);
         setFormData(initialFormState);
@@ -453,6 +463,12 @@ const BusinessSettings = () => {
                 )}
 
             </AnimatePresence>
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                resourceName={limitInfo.resourceName}
+                limit={limitInfo.limit}
+            />
         </motion.div>
     );
 };

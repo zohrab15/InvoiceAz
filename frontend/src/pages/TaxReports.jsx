@@ -171,40 +171,47 @@ const TaxReports = () => {
                     </div>
                 </div>
 
-                <div className="lg:col-span-4 bg-slate-900 text-white p-8 rounded-3xl shadow-xl space-y-8 relative overflow-hidden">
-                    <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/10 rounded-tl-full -mr-12 -mb-12 pointer-events-none" />
+                <div
+                    className="lg:col-span-4 p-8 rounded-3xl shadow-xl space-y-8 relative overflow-hidden border"
+                    style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-primary)' }}
+                >
+                    <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/5 rounded-tl-full -mr-12 -mb-12 pointer-events-none" />
                     <div>
-                        <h3 className="text-xl font-bold">ƏDV Bölgüsü</h3>
-                        <p className="text-slate-400 text-sm mt-1">Rate üzrə vergi daxilolmaları</p>
+                        <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>ƏDV Bölgüsü</h3>
+                        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Rate üzrə vergi daxilolmaları</p>
                     </div>
 
                     <div className="space-y-6">
-                        <div className="flex justify-between items-end border-b border-slate-800 pb-4">
+                        <div className="flex justify-between items-end border-b pb-4" style={{ borderColor: 'var(--color-card-border)' }}>
                             <div>
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">18% Rate</span>
-                                <p className="text-2xl font-black mt-1">{taxData.vat.by_rate.rate_18.toLocaleString()} <span className="text-sm font-bold opacity-50">AZN</span></p>
+                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>18% Rate</span>
+                                <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
+                                    {taxData.vat.by_rate.rate_18.toLocaleString()} <span className="text-sm font-bold opacity-50">AZN</span>
+                                </p>
                             </div>
-                            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
                                 <Percent size={20} />
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-end border-b border-slate-800 pb-4">
+                        <div className="flex justify-between items-end border-b pb-4" style={{ borderColor: 'var(--color-card-border)' }}>
                             <div>
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">0% Rate (Azad)</span>
-                                <p className="text-2xl font-black mt-1">{taxData.vat.by_rate.rate_0.toLocaleString()} <span className="text-sm font-bold opacity-50">AZN</span></p>
+                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>0% Rate (Azad)</span>
+                                <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
+                                    {taxData.vat.by_rate.rate_0.toLocaleString()} <span className="text-sm font-bold opacity-50">AZN</span>
+                                </p>
                             </div>
-                            <div className="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-500">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}>
                                 <Percent size={20} />
                             </div>
                         </div>
 
                         <div className="pt-4">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm font-bold text-slate-400">Yekun Ödənilməli ƏDV</span>
-                                <span className="text-xl font-bold text-blue-400">{taxData.vat.total.toLocaleString()} AZN</span>
+                                <span className="text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>Yekun Ödənilməli ƏDV</span>
+                                <span className="text-xl font-bold text-blue-500">{taxData.vat.total.toLocaleString()} AZN</span>
                             </div>
-                            <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
                                 <div className="bg-blue-500 h-full w-[100%]" />
                             </div>
                         </div>

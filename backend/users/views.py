@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions
-from users.models import Business
-from users.serializers import BusinessSerializer
+from .models import Business
+from .serializers import BusinessSerializer
+from .plan_limits import check_business_limit
+from rest_framework.exceptions import PermissionDenied
 
 class BusinessViewSet(viewsets.ModelViewSet):
     serializer_class = BusinessSerializer
@@ -10,6 +12,13 @@ class BusinessViewSet(viewsets.ModelViewSet):
         return Business.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        limit_check = check_business_limit(self.request.user)
+        if not limit_check['allowed']:
+            raise PermissionDenied({
+                "code": "plan_limit",
+                "detail": f"Hazırkı planınızda maksimum {limit_check['limit']} biznes yarada bilərsiniz.",
+                "limit": limit_check['limit']
+            })
         serializer.save(user=self.request.user, is_active=True)
 
 
