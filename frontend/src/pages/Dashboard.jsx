@@ -220,17 +220,7 @@ const Dashboard = () => {
                     </div>
                     <div className="h-80 w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
-                            <ComposedChart data={monthlyData}>
-                                <defs>
-                                    <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                                    </linearGradient>
-                                    <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#fb7185" stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor="#fb7185" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
+                            <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
@@ -240,7 +230,7 @@ const Dashboard = () => {
                                 />
                                 <YAxis hide />
                                 <Tooltip
-                                    cursor={{ stroke: 'var(--color-card-border)', strokeWidth: 2, strokeDasharray: '4 4' }}
+                                    cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.4 }}
                                     content={({ active, payload, label }) => {
                                         if (active && payload && payload.length) {
                                             return (
@@ -265,50 +255,23 @@ const Dashboard = () => {
                                         return null;
                                     }}
                                 />
-                                {/* Income and Expense Bars for Comparison */}
                                 <Bar
-                                    dataKey="gəlir"
-                                    fill="var(--color-brand)"
-                                    radius={[10, 10, 0, 0]}
-                                    barSize={35}
-                                    opacity={0.15}
-                                />
-                                <Bar
-                                    dataKey="xərc"
-                                    fill="#fb7185"
-                                    radius={[10, 10, 0, 0]}
-                                    barSize={35}
-                                    opacity={0.1}
-                                />
-
-                                <Area
-                                    type="monotone"
                                     dataKey="gəlir"
                                     name="gəlir"
-                                    stroke="#2563eb"
-                                    strokeWidth={4}
-                                    fillOpacity={1}
-                                    fill="url(#colorIncome)"
-                                    activeDot={{ r: 8, strokeWidth: 0, fill: '#2563eb', shadow: '0 0 15px rgba(37, 99, 235, 0.5)' }}
+                                    fill="#2563eb"
+                                    radius={[10, 10, 0, 0]}
+                                    barSize={20}
+                                    animationDuration={1500}
                                 />
-                                <Area
-                                    type="monotone"
+                                <Bar
                                     dataKey="xərc"
                                     name="xərc"
-                                    stroke="#fb7185"
-                                    strokeWidth={4}
-                                    fillOpacity={1}
-                                    fill="url(#colorExpense)"
-                                    activeDot={{ r: 6, strokeWidth: 0, fill: '#fb7185' }}
+                                    fill="#fb7185"
+                                    radius={[10, 10, 0, 0]}
+                                    barSize={20}
+                                    animationDuration={1500}
                                 />
-                                <Line
-                                    type="monotone"
-                                    dataKey="gəlir"
-                                    stroke="transparent"
-                                    dot={false}
-                                    activeDot={{ r: 10, fill: '#2563eb', opacity: 0.1 }}
-                                />
-                            </ComposedChart>
+                            </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </motion.div>

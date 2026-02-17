@@ -10,8 +10,8 @@ class Command(BaseCommand):
         email = 'demo_user@invoice.az'
         try:
             user = User.objects.get(email=email)
-            # Distinct avatar from DiceBear with timestamp to bust cache
-            user.avatar = f'https://api.dicebear.com/7.x/avataaars/svg?seed=Zohrab&backgroundColor=b6e3f4&t={timestamp}'
+            # High-quality woman headshot from Unsplash with timestamp to bust cache
+            user.avatar = f'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200&h=200&t={timestamp}'
             user.save()
             self.stdout.write(self.style.SUCCESS(f"Updated avatar for user: {user.email}"))
             
