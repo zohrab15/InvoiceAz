@@ -258,7 +258,7 @@ const Products = () => {
                                         <div className="font-black" style={{ color: 'var(--color-text-primary)' }}>
                                             {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                                         </div>
-                                        <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>vahid: {unitMap[product.unit] || product.unit}</div>
+                                        <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>vahid: {unitMap[(product.unit || '').toLowerCase().trim()] || product.unit}</div>
                                     </td>
                                     <td className="p-5">
                                         <div className="flex flex-col gap-1">
@@ -267,7 +267,7 @@ const Products = () => {
                                                     ? 'var(--color-danger)'
                                                     : 'var(--color-text-primary)'
                                             }}>
-                                                {product.stock_quantity} <span className="text-[10px] uppercase opacity-60">{unitMap[product.unit] || product.unit}</span>
+                                                {product.stock_quantity} <span className="text-[10px] uppercase opacity-60">{unitMap[(product.unit || '').toLowerCase().trim()] || product.unit}</span>
                                                 {Number(product.stock_quantity || 0) <= Number(product.min_stock_level || 0) && (
                                                     <AlertCircle size={14} className="text-rose-500 animate-pulse" />
                                                 )}
