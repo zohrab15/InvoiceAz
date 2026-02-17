@@ -26,7 +26,7 @@ def seed_demo():
             'first_name': 'Zohrab',
             'last_name': 'Demo',
             'is_active': True,
-            'avatar': 'https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff'
+            'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200&h=200'
         }
     )
     if created:
@@ -36,7 +36,7 @@ def seed_demo():
     else:
         # Reset password and ensure avatar is set
         user.set_password(password)
-        user.avatar = 'https://ui-avatars.com/api/?name=Zohrab+Demo&background=3b82f6&color=fff'
+        user.avatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200&h=200'
         user.save()
         print(f"Found existing demo user: {email}")
 
