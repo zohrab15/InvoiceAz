@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import clientApi from '../api/client';
+import axios from 'axios';
+import { API_URL } from '../config';
 import useAuthStore from '../store/useAuthStore';
 import { useToast } from '../components/Toast';
 
@@ -16,25 +17,32 @@ const DemoLogin = () => {
                 localStorage.removeItem('invoice_token');
                 localStorage.removeItem('active_business');
 
-                // We use the centralized clientApi for consistency
-                const response = await clientApi.post('/auth/login/', {
+                // Use fresh axios call to bypass any interceptors
+                const response = await axios.post(`${API_URL}/api/auth/login/`, {
                     email: 'demo@invoice.az',
                     password: 'demo1234'
                 });
 
-                const { access, access_token, user } = response.data;
-                const token = access || access_token || response.data.key; // Added .key for dj-rest-auth default
+                console.log('Demo Login Success Response:', response.data);
+
+                const { access, access_token, user, key } = response.data;
+                const token = access || access_token || key;
 
                 if (token) {
                     setAuth(user || { email: 'demo@invoice.az' }, token);
                     showToast('Demo hesaba daxil olundu. Xoş gəlmisiniz!', 'success');
                     navigate('/dashboard');
                 } else {
-                    console.error('No token in response:', response.data);
+                    console.error('No token in demo response:', response.data);
                     throw new Error('Token tapılmadı');
                 }
             } catch (err) {
-                console.error('Demo login failed:', err.response?.data || err.message);
+                console.error('--- DEMO LOGIN ERROR ---');
+                console.error('Error Message:', err.message);
+                if (err.response) {
+                    console.error('Response Status:', err.response.status);
+                    console.error('Response Data:', err.response.data);
+                }
                 showToast('Demo giriş xətası. Zəhmət olmasa bir az sonra yenidən cəhd edin.', 'error');
                 navigate('/');
             }

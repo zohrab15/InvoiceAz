@@ -27,12 +27,14 @@ class Command(BaseCommand):
             }
         )
         user.set_password('demo1234')
+        user.is_active = True
+        user.is_email_verified = True
         user.save()
         
         if created:
             self.stdout.write(f'Created user: {email}')
         else:
-            self.stdout.write(f'User {email} already exists. Password reset. Cleaning up existing demo data...')
+            self.stdout.write(f'User {email} already exists. Updated and cleaned up demo data.')
             # Cleanup for idempotency
             Business.objects.filter(user=user, name='Modern Solutions MMC').delete()
             self.stdout.write('Existing demo business and related data deleted.')
