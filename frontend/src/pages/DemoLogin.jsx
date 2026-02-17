@@ -20,6 +20,7 @@ const DemoLogin = () => {
                 // Use fresh axios call to bypass any interceptors
                 const response = await axios.post(`${API_URL}/api/auth/login/`, {
                     email: 'demo@invoice.az',
+                    username: 'demo@invoice.az', // Added for better compatibility
                     password: 'demo1234'
                 });
 
