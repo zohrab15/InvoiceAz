@@ -32,6 +32,7 @@ const PaymentAnalytics = lazy(() => import('./pages/PaymentAnalytics'));
 const TaxReports = lazy(() => import('./pages/TaxReports'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Products = lazy(() => import('./pages/Products'));
+const DemoLogin = lazy(() => import('./pages/DemoLogin'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +95,7 @@ function App() {
                   <Route path="/verify-email/:key" element={<VerifyEmail />} />
                   <Route path="/view/:token" element={<PublicInvoice />} />
                   <Route path="/public/pay/:token" element={<PublicPayment />} />
+                  <Route path="/demo-login" element={<DemoLogin />} />
                   <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
                   <Route
                     path="/*"

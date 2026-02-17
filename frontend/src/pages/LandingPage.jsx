@@ -127,7 +127,8 @@ const LandingPage = () => {
                                     <motion.button
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
-                                        className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
+                                        onClick={() => navigate('/demo-login')}
+                                        className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-white/10 transition-all font-outfit"
                                     >
                                         <Play size={18} className="fill-white text-white" />
                                         Demoya Bax
