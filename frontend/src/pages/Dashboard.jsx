@@ -8,6 +8,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import { useBusiness } from '../context/BusinessContext';
 import TopProductsChart from '../components/TopProductsChart';
+import CountUp from '../components/CountUp';
 
 const Dashboard = () => {
     const { activeBusiness } = useBusiness();
@@ -189,7 +190,7 @@ const Dashboard = () => {
                             <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)' }}>{s.label}</p>
                         </div>
                         <p className="text-3xl font-black tracking-tighter" style={{ color: 'var(--color-text-primary)' }}>
-                            {s.val.toLocaleString()} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
+                            <CountUp to={s.val} decimals={0} /> <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                         </p>
                     </motion.div>
                 ))}
@@ -311,7 +312,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div className={`text-sm font-black ${t.positive ? 'text-emerald-500' : 'text-red-500'}`}>
-                                    {t.positive ? '+' : '-'}{t.amount.toLocaleString()}
+                                    {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
                                 </div>
                             </div>
                         ))}
