@@ -12,27 +12,32 @@ from users.models import User
 from allauth.account.models import EmailAddress
 
 def diagnose():
-    email = 'demo@invoice.az'
-    password = 'demo1234'
-    print(f"--- Diagnosing Authentication: {email} ---")
+    print("--- Listing All Users ---")
+    for u in User.objects.all():
+        print(f"ID: {u.id} | Email: {u.email} | Active: {u.is_active} | Staff: {u.is_staff}")
+    
+    email = 'demo_user@invoice.az'
+    password = 'demopassword123'
+    print(f"\n--- Testing Authentication: {email} ---")
     
     try:
         user = User.objects.get(email=email)
         print(f"User exists: YES")
-        print(f"is_active: {user.is_active}")
         
         # Test standard authenticate
-        print("Testing authenticate(email=email, password=password)...")
         auth_user = authenticate(email=email, password=password)
         if auth_user:
             print(f"AUTHENTICATE SUCCESS: {auth_user}")
         else:
             print("AUTHENTICATE FAILED: Returned None")
             
-        # Check password directly
-        pw_ok = user.check_password(password)
-        print(f"check_password directly: {pw_ok}")
-        
+        # Check allauth EmailAddress
+        email_addr = EmailAddress.objects.filter(user=user, email=email).first()
+        if email_addr:
+            print(f"EmailAddress record: Found (Verified: {email_addr.verified})")
+        else:
+            print(f"EmailAddress record: NOT FOUND")
+            
     except User.DoesNotExist:
         print(f"User {email} DOES NOT EXIST!")
 
