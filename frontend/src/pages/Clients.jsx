@@ -6,6 +6,7 @@ import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { Plus, Search, Mail, Phone, MoreVertical, X, User, Building, MapPin, Hash, Edit, Trash2 } from 'lucide-react';
 import PhoneInput from '../components/common/PhoneInput';
+import * as XLSX from 'xlsx';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 
@@ -120,7 +121,30 @@ const Clients = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight font-roboto">Müştərilər</h1>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => {
+                            const data = (clients || []).map(c => ({
+                                'Ad': c.name,
+                                'Email': c.email || '',
+                                'Telefon': c.phone || '',
+                                'VÖEN': c.tax_number || '',
+                                'Ünvan': c.address || '',
+                                'Bank': c.bank_name || '',
+                                'Hesab (IBAN)': c.bank_account || ''
+                            }));
+
+                            const ws = XLSX.utils.json_to_sheet(data);
+                            const wb = XLSX.utils.book_new();
+                            XLSX.utils.book_append_sheet(wb, ws, "Müştərilər");
+                            XLSX.writeFile(wb, `musteriler_siyahisi_${new Date().toISOString().split('T')[0]}.xlsx`);
+                        }}
+                        className="p-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-all font-bold text-sm flex items-center gap-2"
+                        title="Excel kimi yüklə"
+                    >
+                        <Download size={18} />
+                        <span className="hidden sm:inline">Eksport</span>
+                    </button>
                     <button
                         onClick={handleAddNew}
                         className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"

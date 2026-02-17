@@ -6,6 +6,7 @@ import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { Plus, Trash2, Search, Filter, DollarSign, Calendar, Tag, CreditCard, ChevronDown, X, Building, User, Paperclip, Download, Info, Edit2, Check } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import * as XLSX from 'xlsx';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 
@@ -201,16 +202,21 @@ const Expenses = () => {
                 <div className="flex gap-2">
                     <button
                         onClick={() => {
-                            const csvContent = "data:text/csv;charset=utf-8,"
-                                + ["Təsvir,Təchizatçı,Kateqoriya,Tarix,Məbləğ,Valyuta,Status"].concat(
-                                    expenses?.map(e => `${e.description},${e.vendor || ''},${categories.find(c => c.id === e.category)?.name},${e.date},${e.amount},${e.currency},${e.status === 'paid' ? 'Ödənilib' : 'Gözləmədə'}`)
-                                ).join("\n");
-                            const encodedUri = encodeURI(csvContent);
-                            const link = document.createElement("a");
-                            link.setAttribute("href", encodedUri);
-                            link.setAttribute("download", "xərclər_hesabatı.csv");
-                            document.body.appendChild(link);
-                            link.click();
+                            const data = (expenses || []).map(e => ({
+                                'Təsvir': e.description,
+                                'Təchizatçı': e.vendor || '',
+                                'Kateqoriya': categories.find(c => c.id === e.category)?.name || e.category,
+                                'Tarix': e.date,
+                                'Məbləğ': parseFloat(e.amount),
+                                'Valyuta': e.currency,
+                                'Status': e.status === 'paid' ? 'Ödənilib' : 'Gözləmədə',
+                                'Ödəniş Üsulu': e.payment_method || ''
+                            }));
+
+                            const ws = XLSX.utils.json_to_sheet(data);
+                            const wb = XLSX.utils.book_new();
+                            XLSX.utils.book_append_sheet(wb, ws, "Xərclər");
+                            XLSX.writeFile(wb, `xercler_hesabati_${new Date().toISOString().split('T')[0]}.xlsx`);
                         }}
                         className="p-2.5 bg-white border border-gray-200 text-gray-500 rounded-xl hover:bg-gray-50 transition-all font-bold text-sm flex items-center gap-2"
                         title="CSV kimi yüklə"

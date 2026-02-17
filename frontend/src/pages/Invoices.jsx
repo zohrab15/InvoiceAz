@@ -8,6 +8,7 @@ import { useToast } from '../components/Toast';
 import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X } from 'lucide-react';
 import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
+import * as XLSX from 'xlsx';
 import usePlanLimits from '../hooks/usePlanLimits';
 
 const UNIT_CHOICES = [
@@ -458,7 +459,37 @@ const Invoices = () => {
                     >
                         <div className="flex justify-between items-center">
                             <h2 className="text-3xl font-black text-slate-900 tracking-tight font-roboto">Fakturalar</h2>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => {
+                                        const data = (invoices || []).map(inv => {
+                                            const clientName = clients?.find(c => c.id === inv.client)?.name || 'Naməlum';
+                                            return {
+                                                'Faktura №': inv.invoice_number,
+                                                'Müştəri': clientName,
+                                                'Tarix': new Date(inv.invoice_date).toLocaleDateString('az-AZ'),
+                                                'Son Tarix': new Date(inv.due_date).toLocaleDateString('az-AZ'),
+                                                'Məbləğ': parseFloat(inv.total_amount),
+                                                'Valyuta': inv.currency || '₼',
+                                                'Status': inv.status === 'paid' ? 'Ödənilib' :
+                                                    inv.status === 'sent' ? 'Göndərilib' :
+                                                        inv.status === 'viewed' ? 'Baxılıb' :
+                                                            inv.status === 'overdue' ? 'Gecikir' :
+                                                                inv.status === 'cancelled' ? 'Ləğv edilib' : 'Qaralama'
+                                            };
+                                        });
+
+                                        const ws = XLSX.utils.json_to_sheet(data);
+                                        const wb = XLSX.utils.book_new();
+                                        XLSX.utils.book_append_sheet(wb, ws, "Fakturalar");
+                                        XLSX.writeFile(wb, `fakturalar_hesabati_${new Date().toISOString().split('T')[0]}.xlsx`);
+                                    }}
+                                    className="p-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-all font-bold text-sm flex items-center gap-2"
+                                    title="Excel kimi yüklə"
+                                >
+                                    <Download size={18} />
+                                    <span className="hidden sm:inline">Eksport</span>
+                                </button>
                                 <button
                                     onClick={handleCreateNew}
                                     className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
