@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
-import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X } from 'lucide-react';
 import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
 import usePlanLimits from '../hooks/usePlanLimits';
@@ -41,6 +41,10 @@ const Invoices = () => {
     const [paymentInvoice, setPaymentInvoice] = useState(null);
     const [triggerSendModal, setTriggerSendModal] = useState(false);
 
+    // Filter & Search State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+
     // Form State
     const [items, setItems] = useState([{ description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd' }]);
     const [selectedClientId, setSelectedClientId] = useState('');
@@ -61,6 +65,19 @@ const Invoices = () => {
         },
         enabled: !!activeBusiness,
     });
+
+    const filteredInvoices = useMemo(() => {
+        if (!invoices) return [];
+        return invoices.filter(inv => {
+            const matchesSearch =
+                inv.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                inv.client_name.toLowerCase().includes(searchTerm.toLowerCase());
+
+            const matchesStatus = statusFilter === 'all' || inv.status === statusFilter;
+
+            return matchesSearch && matchesStatus;
+        });
+    }, [invoices, searchTerm, statusFilter]);
 
     const { data: clients } = useQuery({
         queryKey: ['clients', activeBusiness?.id],
@@ -448,6 +465,48 @@ const Invoices = () => {
                             </div>
                         </div>
 
+                        <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-4 rounded-xl border shadow-sm items-center">
+                            <div className="relative flex-1 group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-blue transition-colors">
+                                    <Search size={18} />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Faktura # və ya Müştəri axtar..."
+                                    className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-0 focus:bg-white focus:border-primary-blue transition-all"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                {searchTerm && (
+                                    <button
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-2 w-full md:w-auto">
+                                <div className="relative flex-1 md:w-48 group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-blue transition-colors">
+                                        <Filter size={18} />
+                                    </div>
+                                    <select
+                                        className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:ring-0 focus:bg-white focus:border-primary-blue transition-all appearance-none cursor-pointer"
+                                        value={statusFilter}
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                    >
+                                        <option value="all">Bütün Statuslar</option>
+                                        <option value="paid">Ödənilib</option>
+                                        <option value="sent">Göndərilib</option>
+                                        <option value="viewed">Baxılıb</option>
+                                        <option value="draft">Qaralama</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse min-w-[800px]">
@@ -464,9 +523,9 @@ const Invoices = () => {
                                     <tbody className="divide-y divide-gray-100">
                                         {isLoadingInvoices ? (
                                             <tr><td colSpan="6" className="p-12 text-center text-gray-400">Melumat Yuklenir...</td></tr>
-                                        ) : invoices?.length === 0 ? (
+                                        ) : filteredInvoices.length === 0 ? (
                                             <tr><td colSpan="6" className="p-12 text-center text-gray-400">Faktura tapılmadı</td></tr>
-                                        ) : invoices?.map((inv) => (
+                                        ) : filteredInvoices.map((inv) => (
                                             <motion.tr
                                                 layout
                                                 key={inv.id}

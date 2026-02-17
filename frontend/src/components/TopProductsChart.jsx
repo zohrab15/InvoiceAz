@@ -5,6 +5,7 @@ import { useBusiness } from '../context/BusinessContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { Package, TrendingUp, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import CountUp from './CountUp';
 
 const CustomBar = (props) => {
     const { fill, x, y, width, height } = props;
@@ -140,12 +141,12 @@ const TopProductsChart = () => {
                                             <div className="flex items-center gap-6 mt-1">
                                                 <div>
                                                     <p className="text-[10px] font-bold text-slate-400 uppercase">Gəlir</p>
-                                                    <p className="text-lg font-black text-slate-900 tracking-tighter">{data.total_revenue.toLocaleString()} ₼</p>
+                                                    <p className="text-lg font-black text-slate-900 tracking-tighter"><CountUp to={data.total_revenue} decimals={2} /> ₼</p>
                                                 </div>
                                                 <div className="w-px h-8 bg-slate-100" />
                                                 <div>
                                                     <p className="text-[10px] font-bold text-slate-400 uppercase">Miqdar</p>
-                                                    <p className="text-lg font-black text-blue-600 tracking-tighter">{data.total_quantity} <span className="text-[10px]">ədəd</span></p>
+                                                    <p className="text-lg font-black text-blue-600 tracking-tighter"><CountUp to={data.total_quantity} decimals={0} /> <span className="text-[10px]">ədəd</span></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -188,7 +189,7 @@ const TopProductsChart = () => {
                                             fontWeight={900}
                                             className="font-outfit tracking-tighter"
                                         >
-                                            {value.toLocaleString()} ədəd
+                                            <CountUp to={value} decimals={0} /> ədəd
                                         </text>
                                     );
                                 }}
