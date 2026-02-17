@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!(yj$6&qa##p=p@(v!+k0kq8k@y(wd9y$7%_gwf870^r4=nn$t')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 import warnings
 warnings.filterwarnings('ignore', message='.*allauth.*deprecated.*')
