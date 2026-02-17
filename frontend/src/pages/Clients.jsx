@@ -231,7 +231,7 @@ const Clients = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end space-x-2">
+                                        <div className="flex justify-end space-x-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                                             <button
                                                 onClick={() => handleEdit(client)}
                                                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -287,7 +287,7 @@ const Clients = () => {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
                                         <div className="relative">
@@ -311,7 +311,7 @@ const Clients = () => {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">VÖEN</label>
                                         <div className="relative">

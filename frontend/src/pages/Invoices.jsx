@@ -595,7 +595,7 @@ const Invoices = () => {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right space-x-1">
-                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end space-x-1">
+                                                    <div className="flex justify-end space-x-1 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                                                         <button
                                                             onClick={() => {
                                                                 const canPay = ['sent', 'viewed', 'overdue'].includes(inv.status);
@@ -708,7 +708,7 @@ const Invoices = () => {
                                                     animate={{ opacity: 1, height: 'auto' }}
                                                     exit={{ opacity: 0, height: 0 }}
                                                     key={index}
-                                                    className="flex gap-4 items-center bg-gray-50/50 p-3 rounded-xl hover:bg-white border border-transparent hover:border-gray-100 transition-all group shadow-sm"
+                                                    className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-gray-50/50 p-4 rounded-xl hover:bg-white border border-transparent hover:border-gray-100 transition-all group shadow-sm"
                                                 >
                                                     <div className="flex-1 space-y-1">
                                                         <select
@@ -729,10 +729,12 @@ const Invoices = () => {
                                                             onChange={(e) => updateItem(index, 'description', e.target.value)}
                                                         />
                                                     </div>
-                                                    <div className="w-16">
+                                                    <div className="w-full sm:w-20">
+                                                        <label className="sm:hidden text-[10px] font-bold text-gray-400 uppercase mb-1 block">Miqdar</label>
                                                         <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 text-sm text-center font-bold" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)} />
                                                     </div>
-                                                    <div className="w-24">
+                                                    <div className="w-full sm:w-28">
+                                                        <label className="sm:hidden text-[10px] font-bold text-gray-400 uppercase mb-1 block">Vahid</label>
                                                         <select
                                                             className="w-full bg-gray-100/50 border-none rounded-lg p-2 text-xs font-bold"
                                                             value={UNIT_CHOICES.find(u => u.value === item.unit) ? item.unit : 'digər'}
@@ -759,12 +761,18 @@ const Invoices = () => {
                                                             />
                                                         )}
                                                     </div>
-                                                    <div className="w-28 relative">
-                                                        <span className="absolute left-3 top-2.5 text-xs text-gray-400 font-bold">₼</span>
-                                                        <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 pl-10 text-sm font-bold" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
+                                                    <div className="w-full sm:w-32 relative">
+                                                        <label className="sm:hidden text-[10px] font-bold text-gray-400 uppercase mb-1 block">Qiymət</label>
+                                                        <div className="relative">
+                                                            <span className="absolute left-3 top-2 text-xs text-gray-400 font-bold">₼</span>
+                                                            <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 pl-10 text-sm font-bold" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
+                                                        </div>
                                                     </div>
-                                                    <div className="w-24 text-right font-bold text-primary-blue text-sm">{(item.quantity * item.unit_price).toFixed(2)}</div>
-                                                    <button onClick={() => removeItem(index)} className="p-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"><Trash2 size={18} /></button>
+                                                    <div className="w-full sm:w-24 text-right font-bold text-primary-blue text-sm flex justify-between sm:block border-t sm:border-t-0 pt-2 sm:pt-0 mt-2 sm:mt-0 italic sm:not-italic">
+                                                        <span className="sm:hidden">Cəm:</span>
+                                                        <span>{(item.quantity * item.unit_price).toFixed(2)} ₼</span>
+                                                    </div>
+                                                    <button onClick={() => removeItem(index)} className="p-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 self-end sm:self-center"><Trash2 size={18} /></button>
                                                 </motion.div>
                                             ))}
                                         </AnimatePresence>

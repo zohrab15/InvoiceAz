@@ -77,7 +77,7 @@ const Header = ({ onMenuClick }) => {
 
     return (
         <header
-            className="sticky top-0 z-30 flex h-16 w-full items-center justify-between px-4 backdrop-blur-md lg:px-8"
+            className="sticky top-0 z-30 flex h-16 w-full items-center justify-between px-3 backdrop-blur-md lg:px-8"
             style={{
                 backgroundColor: 'var(--color-header-bg)',
                 borderBottom: '1px solid var(--color-header-border)'
@@ -114,7 +114,7 @@ const Header = ({ onMenuClick }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden"
+                                className="absolute right-[-40px] sm:right-0 mt-2 w-[calc(100vw-32px)] sm:w-80 rounded-2xl shadow-2xl overflow-hidden"
                                 style={{ backgroundColor: 'var(--color-dropdown-bg)', border: '1px solid var(--color-dropdown-border)' }}
                             >
                                 <div className="p-4 flex justify-between items-center" style={{ borderBottom: '1px solid var(--color-card-border)', backgroundColor: 'var(--color-hover-bg)' }}>
@@ -203,7 +203,7 @@ const Header = ({ onMenuClick }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute right-0 mt-2 w-64 rounded-2xl shadow-2xl overflow-hidden"
+                                className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-32px)] rounded-2xl shadow-2xl overflow-hidden"
                                 style={{ backgroundColor: 'var(--color-dropdown-bg)', border: '1px solid var(--color-dropdown-border)' }}
                             >
                                 <div className="lg:hidden p-4" style={{ borderBottom: '1px solid var(--color-card-border)', backgroundColor: 'var(--color-hover-bg)' }}>

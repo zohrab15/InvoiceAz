@@ -134,34 +134,34 @@ const Dashboard = () => {
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="space-y-10 pb-20"
         >
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                 <div>
-                    <h2 className="text-4xl font-black tracking-tight mb-2 font-roboto" style={{ color: 'var(--color-text-primary)' }}>
-                        Dashboard <span className="block text-sm font-bold tracking-widest uppercase mt-2" style={{ color: 'var(--color-brand)' }}>Biznesinizin ümumi görünüşü</span>
+                    <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-2 font-roboto" style={{ color: 'var(--color-text-primary)' }}>
+                        Dashboard <span className="block text-xs sm:text-sm font-bold tracking-widest uppercase mt-2" style={{ color: 'var(--color-brand)' }}>Biznesinizin ümumi görünüşü</span>
                     </h2>
                 </div>
-                <div className="flex gap-4 mb-2">
+                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                     <motion.a
                         whileHover={{ y: -2 }}
                         href="/expenses"
-                        className="px-6 py-3 rounded-2xl flex items-center gap-2 transition-all font-bold text-sm"
+                        className="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-2xl flex items-center justify-center gap-2 transition-all font-bold text-sm"
                         style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
                     >
-                        <Wallet size={18} /> Yeni Xərc
+                        <Wallet size={18} /> <span className="whitespace-nowrap">Yeni Xərc</span>
                     </motion.a>
                     <motion.a
                         whileHover={{ y: -2, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         href="/invoices"
-                        className="text-white px-8 py-3 rounded-2xl flex items-center gap-2 shadow-2xl transition-all font-bold text-sm"
+                        className="flex-2 sm:flex-none text-white px-6 sm:px-8 py-3 rounded-2xl flex items-center justify-center gap-2 shadow-2xl transition-all font-bold text-sm"
                         style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 30px var(--color-brand-shadow)' }}
                     >
-                        <Plus size={18} /> Yeni Faktura
+                        <Plus size={18} /> <span className="whitespace-nowrap">Yeni Faktura</span>
                     </motion.a>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                     { label: 'Ümumi Gəlir', val: stats.totalRevenue, icon: <TrendingUp size={20} />, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
                     { label: 'Gözləyən', val: stats.pendingRevenue, icon: <Clock size={20} />, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
@@ -179,7 +179,7 @@ const Dashboard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         key={s.label}
-                        className="p-7 rounded-[2rem] hover:shadow-2xl transition-all group relative overflow-hidden backdrop-blur-sm"
+                        className="p-5 sm:p-7 rounded-[2rem] hover:shadow-2xl transition-all group relative overflow-hidden backdrop-blur-sm"
                         style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                     >
                         <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-20 group-hover:scale-150 transition-transform duration-700" style={{ backgroundColor: s.bg }} />
@@ -189,7 +189,7 @@ const Dashboard = () => {
                             </div>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)' }}>{s.label}</p>
                         </div>
-                        <p className="text-3xl font-black tracking-tighter" style={{ color: 'var(--color-text-primary)' }}>
+                        <p className="text-2xl sm:text-3xl font-black tracking-tighter" style={{ color: 'var(--color-text-primary)' }}>
                             <CountUp to={s.val} decimals={0} /> <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                         </p>
                     </motion.div>
@@ -200,15 +200,15 @@ const Dashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="lg:col-span-2 p-10 rounded-[2.5rem] backdrop-blur-sm"
+                    className="lg:col-span-2 p-6 sm:p-10 rounded-[2.5rem] backdrop-blur-sm"
                     style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
-                    <div className="flex justify-between items-center mb-10">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
                         <h3 className="font-black text-lg tracking-tight flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
                             <div className="w-2 h-8 rounded-full" style={{ backgroundColor: 'var(--color-brand)' }} />
                             Performans Analitikası
                         </h3>
-                        <div className="flex gap-6">
+                        <div className="flex gap-4 sm:gap-6">
                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
                                 <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-lg" style={{ boxShadow: '0 2px 8px rgba(59,130,246,0.4)' }} />
                                 <span>Gəlir</span>
@@ -219,7 +219,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="h-80 w-full relative">
+                    <div className="h-64 sm:h-80 w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis
@@ -280,7 +280,7 @@ const Dashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="p-10 rounded-[2.5rem] flex flex-col backdrop-blur-sm"
+                    className="p-6 sm:p-10 rounded-[2.5rem] flex flex-col backdrop-blur-sm"
                     style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
                     <h3 className="font-black text-lg tracking-tight mb-8" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
@@ -331,14 +331,14 @@ const Dashboard = () => {
                 <div className="lg:col-span-2">
                     <TopProductsChart />
                 </div>
-                <div className="p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-4 backdrop-blur-sm"
+                <div className="p-6 sm:p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-4 backdrop-blur-sm"
                     style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                         <TrendingUp size={32} />
                     </div>
                     <h3 className="font-roboto font-black text-lg" style={{ color: 'var(--color-text-primary)' }}>Satış Artımı</h3>
-                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Mehsul bazasında statistikalar satış strategiyanızı gücləndirir.</p>
+                    <p className="text-sm px-4" style={{ color: 'var(--color-text-secondary)' }}>Mehsul bazasında statistikalar satış strategiyanızı gücləndirir.</p>
                 </div>
             </div>
         </motion.div>

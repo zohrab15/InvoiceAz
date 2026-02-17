@@ -95,9 +95,9 @@ const ForecastAnalytics = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8 pb-12"
         >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
                         <Sparkles className="text-blue-500" size={32} />
                         Trend və Proqnoz
                     </h1>
@@ -170,7 +170,7 @@ const ForecastAnalytics = () => {
                         </div>
                     </div>
                 </div>
-                <div className="h-[400px]">
+                <div className="h-[300px] sm:h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                             <defs>
@@ -186,7 +186,7 @@ const ForecastAnalytics = () => {
                                 contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                 itemStyle={{ fontWeight: 'bold' }}
                             />
-                            <Legend verticalAlign="top" height={36} />
+                            <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
 
                             {/* Worst Case */}
                             <Area type="monotone" dataKey="worst" stroke="#EF4444" strokeDasharray="5 5" fill="transparent" name="Worst Case" />
@@ -211,7 +211,7 @@ const ForecastAnalytics = () => {
                         <Activity size={24} className="text-purple-500" />
                         Pul Axını Proqnozu
                     </h3>
-                    <div className="h-[300px]">
+                    <div className="h-[250px] sm:h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={cashflow}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />

@@ -301,7 +301,7 @@ const Expenses = () => {
                                                 -{parseFloat(exp.amount).toFixed(2)} {exp.currency}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                                <div className="flex items-center justify-end gap-1 flex-wrap lg:opacity-0 lg:group-hover:opacity-100 transition-all">
                                                     <button
                                                         onClick={() => {
                                                             setEditingExpense(exp);
@@ -492,7 +492,7 @@ const Expenses = () => {
                                         <input type="text" placeholder="Təchizatçı (Vendor)" className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold" value={formData.vendor} onChange={(e) => setFormData({ ...formData, vendor: e.target.value })} />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="relative">
                                             <DollarSign className="absolute left-4 top-3.5 text-gray-300" size={18} />
                                             <input type="number" step="0.01" placeholder="Məbləğ *"
@@ -510,7 +510,7 @@ const Expenses = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="relative">
                                             <Calendar className="absolute left-4 top-3.5 text-gray-300" size={18} />
                                             <input type="date" className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
@@ -523,7 +523,7 @@ const Expenses = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="relative">
                                             <select className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
                                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}

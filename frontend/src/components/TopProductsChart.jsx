@@ -67,28 +67,28 @@ const TopProductsChart = () => {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50 h-full flex flex-col overflow-hidden relative"
+            className="bg-white p-6 sm:p-10 rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50 h-full flex flex-col overflow-hidden relative"
         >
             {/* Background Accent */}
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50/30 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="flex justify-between items-start mb-10 relative">
+            <div className="flex flex-col sm:flex-row justify-between items-start mb-10 relative gap-6">
                 <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 rotate-3 transform transition-transform hover:rotate-0">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 rotate-3 transform transition-transform hover:rotate-0 flex-shrink-0">
                         <ShoppingBag size={28} />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black text-slate-900 font-roboto tracking-tight">En çox satılan mallar</h3>
+                        <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-roboto tracking-tight">En çox satılan mallar</h3>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic mt-1">Satış sayına görə TOP 10</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cəmi Mallar</span>
-                    <span className="text-2xl font-black text-slate-900 font-roboto">{topProducts.length} <span className="text-xs text-slate-400">çeşid</span></span>
+                <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:mb-1">Cəmi Mallar</span>
+                    <span className="text-xl sm:text-2xl font-black text-slate-900 font-roboto">{topProducts.length} <span className="text-xs text-slate-400">çeşid</span></span>
                 </div>
             </div>
 
-            <div className="flex-1 min-h-[350px] relative">
+            <div className="flex-1 min-h-[300px] sm:min-h-[350px] relative">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                         data={chartData}
