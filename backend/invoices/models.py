@@ -101,6 +101,7 @@ class Invoice(models.Model):
 
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, blank=True, null=True, related_name='invoice_items')
     description = models.CharField(max_length=255)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     unit = models.CharField(max_length=50, blank=True, null=True) # e.g. hours, pcs

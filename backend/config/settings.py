@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'clients',
     'invoices',
     'notifications',
+    'inventory',
 ]
 
 SITE_ID = 1

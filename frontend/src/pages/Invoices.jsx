@@ -71,6 +71,15 @@ const Invoices = () => {
         enabled: !!activeBusiness,
     });
 
+    const { data: products } = useQuery({
+        queryKey: ['products', activeBusiness?.id],
+        queryFn: async () => {
+            const res = await clientApi.get('/inventory/');
+            return res.data;
+        },
+        enabled: !!activeBusiness,
+    });
+
     const createMutation = useMutation({
         mutationFn: (data) => clientApi.post('/invoices/', data),
         onSuccess: (res) => {
@@ -188,6 +197,7 @@ const Invoices = () => {
                 unit_price: item.unit_price,
                 tax_rate: item.tax_rate,
                 unit: item.unit,
+                product: item.product,
                 order: index
             })),
         };
@@ -199,11 +209,29 @@ const Invoices = () => {
         }
     };
 
-    const addItem = () => setItems([...items, { description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd' }]);
+    const addItem = () => setItems([...items, { description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd', product: null }]);
     const removeItem = (index) => setItems(items.filter((_, i) => i !== index));
+
     const updateItem = (index, field, value) => {
         const newItems = [...items];
-        newItems[index][field] = value;
+
+        if (field === 'product_id') {
+            const product = products?.find(p => String(p.id) === String(value));
+            if (product) {
+                newItems[index] = {
+                    ...newItems[index],
+                    product: product.id,
+                    description: product.name,
+                    unit_price: parseFloat(product.base_price),
+                    unit: product.unit || 'ədəd'
+                };
+            } else {
+                newItems[index].product = null;
+            }
+        } else {
+            newItems[index][field] = value;
+        }
+
         setItems(newItems);
     };
 
@@ -579,8 +607,24 @@ const Invoices = () => {
                                                     key={index}
                                                     className="flex gap-4 items-center bg-gray-50/50 p-3 rounded-xl hover:bg-white border border-transparent hover:border-gray-100 transition-all group shadow-sm"
                                                 >
-                                                    <div className="flex-1">
-                                                        <input type="text" className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-medium focus:ring-0" placeholder="Məhsul və ya xidmət adı..." value={item.description} onChange={(e) => updateItem(index, 'description', e.target.value)} />
+                                                    <div className="flex-1 space-y-1">
+                                                        <select
+                                                            className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold focus:border-blue-500 outline-none"
+                                                            value={item.product || ''}
+                                                            onChange={(e) => updateItem(index, 'product_id', e.target.value)}
+                                                        >
+                                                            <option value="">-- Məhsul Seçin (Opsional) --</option>
+                                                            {products?.map(p => (
+                                                                <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
+                                                            ))}
+                                                        </select>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-medium focus:ring-0"
+                                                            placeholder="Və ya əllə daxil edin..."
+                                                            value={item.description}
+                                                            onChange={(e) => updateItem(index, 'description', e.target.value)}
+                                                        />
                                                     </div>
                                                     <div className="w-16">
                                                         <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 text-sm text-center font-bold" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)} />

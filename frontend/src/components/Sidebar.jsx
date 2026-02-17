@@ -13,7 +13,8 @@ import {
     Check,
     Building2,
     ChevronDown,
-    Lock
+    Lock,
+    Package
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
@@ -41,6 +42,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     const navItems = [
         { to: '/', icon: <LayoutDashboard size={20} />, label: 'Ana səhifə' },
         { to: '/invoices', icon: <FileText size={20} />, label: 'Fakturalar' },
+        { to: '/products', icon: <Package size={20} />, label: 'Məhsullar' },
         { to: '/expenses', icon: <Wallet size={20} />, label: 'Xərclər' },
         { to: '/clients', icon: <Users size={20} />, label: 'Müştərilər' },
         { to: '/analytics/payments', icon: <TrendingUp size={20} />, label: 'Ödəniş Analitikası' },

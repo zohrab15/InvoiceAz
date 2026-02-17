@@ -35,6 +35,7 @@ urlpatterns = [
     path('api/invoices/', include('invoices.urls')),
     path('api/users/', include('users.urls')),
     path('api/notifications/', include('notifications.urls')),
+    path('api/inventory/', include('inventory.urls')),
 ]
 
 if settings.DEBUG:
