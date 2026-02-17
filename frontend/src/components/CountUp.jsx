@@ -1,21 +1,29 @@
-import React, { useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { animate } from 'framer-motion';
 
 const CountUp = ({ to, duration = 1.5, decimals = 0, prefix = '', suffix = '' }) => {
-    const count = useMotionValue(0);
-    const rounded = useTransform(count, (latest) => {
-        return (latest || 0).toLocaleString('az-AZ', {
-            minimumFractionDigits: decimals,
-            maximumFractionDigits: decimals
-        });
-    });
+    const [displayValue, setDisplayValue] = useState(0);
 
     useEffect(() => {
-        const controls = animate(count, to, { duration: duration, ease: "easeOut" });
-        return controls.stop;
+        const targetValue = parseFloat(to) || 0;
+        const controls = animate(0, targetValue, {
+            duration: duration,
+            ease: "easeOut",
+            onUpdate: (value) => setDisplayValue(value)
+        });
+        return () => controls.stop();
     }, [to, duration]);
 
-    return <motion.span>{prefix}{rounded}{suffix}</motion.span>;
+    return (
+        <span>
+            {prefix}
+            {displayValue.toLocaleString('az-AZ', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            })}
+            {suffix}
+        </span>
+    );
 };
 
 export default CountUp;
