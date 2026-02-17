@@ -17,6 +17,10 @@ class Product(models.Model):
     base_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     unit = models.CharField(max_length=20, choices=UNIT_CHOICES, default='pcs')
     
+    # Stock management
+    stock_quantity = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    min_stock_level = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, help_text="Bildiriş üçün minimum miqdar")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

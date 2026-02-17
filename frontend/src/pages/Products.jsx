@@ -156,7 +156,11 @@ const Products = () => {
                 </div>
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Anbar Vəziyyəti</div>
-                    <div className="text-3xl font-black text-emerald-500">Normal</div>
+                    <div className={`text-3xl font-black ${products?.some(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)) ? 'text-rose-500' : 'text-emerald-500'}`}>
+                        {products?.filter(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)).length > 0
+                            ? `${products.filter(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)).length} Azalan`
+                            : 'Normal'}
+                    </div>
                 </div>
             </div>
 
@@ -191,6 +195,7 @@ const Products = () => {
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Məhsul</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>SKU / Barkod</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Qiymət</th>
+                                <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Anbar (Stok)</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest text-right" style={{ color: 'var(--color-text-muted)' }}>Əməliyyatlar</th>
                             </tr>
                         </thead>
@@ -233,6 +238,23 @@ const Products = () => {
                                             {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                                         </div>
                                         <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>vahid: {product.unit}</div>
+                                    </td>
+                                    <td className="p-5">
+                                        <div className="flex flex-col gap-1">
+                                            <div className="font-bold flex items-center gap-2" style={{ color: parseFloat(product.stock_quantity) <= parseFloat(product.min_stock_level) ? 'var(--color-danger)' : 'var(--color-text-primary)' }}>
+                                                {product.stock_quantity} <span className="text-[10px] uppercase opacity-60">{product.unit}</span>
+                                                {parseFloat(product.stock_quantity) <= parseFloat(product.min_stock_level) && (
+                                                    <AlertCircle size={14} className="text-rose-500 animate-pulse" />
+                                                )}
+                                            </div>
+                                            {parseFloat(product.stock_quantity) <= 0 ? (
+                                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-500 w-fit">Bitib</span>
+                                            ) : parseFloat(product.stock_quantity) <= parseFloat(product.min_stock_level) ? (
+                                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 w-fit">Azalır</span>
+                                            ) : (
+                                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 w-fit">Kifayət qədər</span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="p-5 text-right">
                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -349,6 +371,32 @@ const Products = () => {
                                             <option value="l">Litr</option>
                                             <option value="service">Xidmət</option>
                                         </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Mövcud Miqdar</label>
+                                        <input
+                                            name="stock_quantity"
+                                            type="number"
+                                            step="0.01"
+                                            defaultValue={editingProduct?.stock_quantity || 0}
+                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold"
+                                            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                                            placeholder="Nə qədərdir?"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Kritik Limit</label>
+                                        <input
+                                            name="min_stock_level"
+                                            type="number"
+                                            step="0.01"
+                                            defaultValue={editingProduct?.min_stock_level || 5}
+                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold"
+                                            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                                            placeholder="Nə vaxt xəbər verilsin?"
+                                        />
                                     </div>
 
                                     <div className="sm:col-span-2">
