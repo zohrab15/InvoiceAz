@@ -51,11 +51,12 @@ const TopProductsChart = () => {
     ];
 
     // Django Decimal fields come as strings in JSON — parse them
-    const parsed = topProducts.map(p => ({
+    const parsed = (topProducts || []).map(p => ({
         ...p,
-        total_quantity: parseFloat(p.total_quantity) || 0,
-        total_revenue: parseFloat(p.total_revenue) || 0,
+        total_quantity: Number(p.total_quantity) || 0,
+        total_revenue: Number(p.total_revenue) || 0,
     }));
+
     const maxVal = Math.max(...parsed.map(p => p.total_quantity), 0) * 1.15 || 10;
     const chartData = parsed.map(p => ({ ...p, maxVal }));
 
@@ -64,7 +65,11 @@ const TopProductsChart = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             className="p-6 rounded-2xl flex flex-col overflow-hidden relative"
-            style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', minHeight: '400px' }}
+            style={{
+                backgroundColor: 'var(--color-card-bg)',
+                border: '1px solid var(--color-card-border)',
+                height: '450px'
+            }}
         >
             <div className="flex flex-col sm:flex-row justify-between items-start mb-8 gap-4">
                 <div className="flex items-center gap-4">
@@ -89,13 +94,12 @@ const TopProductsChart = () => {
                 </div>
             </div>
 
-            <div className="flex-1 min-h-[280px] sm:min-h-[320px]">
+            <div className="flex-1 w-full h-full relative" style={{ minHeight: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                         data={chartData}
                         layout="vertical"
-                        margin={{ top: 0, right: 70, left: 0, bottom: 0 }}
-                        barGap={-18}
+                        margin={{ top: 0, right: 80, left: 0, bottom: 0 }}
                     >
                         <defs>
                             {colors.map((colorSet, i) => (
@@ -169,18 +173,10 @@ const TopProductsChart = () => {
                             }}
                         />
 
-                        {/* Background Track */}
-                        <Bar
-                            dataKey="maxVal"
-                            fill="var(--color-badge-bg)"
-                            radius={[0, 6, 6, 0]}
-                            barSize={18}
-                            isAnimationActive={false}
-                        />
-
-                        {/* Data Bar */}
+                        {/* Data Bar with built-in background */}
                         <Bar
                             dataKey="total_quantity"
+                            background={{ fill: 'var(--color-badge-bg)', radius: [0, 6, 6, 0] }}
                             radius={[0, 6, 6, 0]}
                             barSize={18}
                             animationDuration={1200}
