@@ -28,7 +28,11 @@ class Command(BaseCommand):
             first_name='Demo',
             last_name='İstifadəçi'
         )
-        user.membership = 'pro'
+        # Assign free plan by default if it exists
+        from users.models import SubscriptionPlan
+        free_plan = SubscriptionPlan.objects.filter(name='free').first()
+        user.subscription_plan = free_plan
+        user.membership = 'pro' # Keep legacy field for now
         user.is_active = True
         user.is_email_verified = True
         user.save()
