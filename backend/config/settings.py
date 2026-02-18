@@ -179,7 +179,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -220,7 +220,6 @@ CORS_ALLOWED_ORIGINS = [
     "https://invoiceaz.vercel.app",
 ]
 
-# Jazzmin Settings
 JAZZMIN_SETTINGS = {
     "site_title": "InvoiceAZ Admin",
     "site_header": "InvoiceAZ",
