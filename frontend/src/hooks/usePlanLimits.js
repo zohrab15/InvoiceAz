@@ -66,6 +66,8 @@ export const usePlanLimits = () => {
                 return !planStatus.limits.csv_export;
             case 'premium_pdf':
                 return !planStatus.limits.premium_pdf;
+            case 'custom_themes':
+                return !planStatus.limits.custom_themes;
             default:
                 return false;
         }
@@ -78,7 +80,8 @@ export const usePlanLimits = () => {
         isLoading,
         checkLimit,
         isFeatureLocked,
-        isPro: ['pro', 'premium'].includes(planStatus?.plan)
+        isPro: ['pro', 'premium'].includes(planStatus?.plan),
+        canUseThemes: planStatus?.limits?.custom_themes || false
     };
 };
 

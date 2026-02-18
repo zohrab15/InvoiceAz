@@ -36,7 +36,7 @@ const Invoices = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
-    const { checkLimit, isPro } = usePlanLimits();
+    const { checkLimit, isPro, canUseThemes } = usePlanLimits();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
 
     const [view, setView] = useState('list'); // 'list' or 'create'
@@ -687,12 +687,12 @@ const Invoices = () => {
                                         <div>
                                             <label className="block text-xs font-bold text-gray-400 uppercase mb-2 flex items-center gap-2">
                                                 Dizayn (Mövzu)
-                                                {!isPro && <Lock size={12} className="text-gray-400" />}
+                                                {!canUseThemes && <Lock size={12} className="text-gray-400" />}
                                             </label>
                                             <div className="relative group/theme">
                                                 <select
-                                                    disabled={!isPro}
-                                                    className={`w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white text-sm font-bold ${!isPro ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    disabled={!canUseThemes}
+                                                    className={`w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white text-sm font-bold ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     value={invoiceTheme}
                                                     onChange={(e) => setInvoiceTheme(e.target.value)}
                                                 >
@@ -700,7 +700,7 @@ const Invoices = () => {
                                                         <option key={t.value} value={t.value}>{t.label}</option>
                                                     ))}
                                                 </select>
-                                                {!isPro && (
+                                                {!canUseThemes && (
                                                     <div onClick={() => setUpgradeConfig({
                                                         isOpen: true,
                                                         title: 'Professional Dizaynlar 🎨',

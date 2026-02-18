@@ -15,12 +15,10 @@ import usePlanLimits from '../hooks/usePlanLimits';
 import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
-    const queryClient = useQueryClient();
-    const showToast = useToast();
     const location = useLocation();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
     const { theme: currentTheme } = useTheme();
-    const { checkLimit } = usePlanLimits();
+    const { checkLimit, canUseThemes } = usePlanLimits();
 
     // Manage tabs
     const [activeTab, setActiveTab] = useState('user'); // 'user', 'business'
@@ -372,21 +370,21 @@ const BusinessSettings = () => {
                                             <div className="pt-4 border-t border-gray-50">
                                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
                                                     Standart Faktura Mövzusu
-                                                    {!checkLimit('custom_themes').allowed && <Lock size={12} className="text-gray-400" />}
+                                                    {!canUseThemes && <Lock size={12} className="text-gray-400" />}
                                                 </label>
                                                 <div className="relative mt-1.5">
                                                     <select
                                                         name="default_invoice_theme"
-                                                        disabled={!checkLimit('custom_themes').allowed}
+                                                        disabled={!canUseThemes}
                                                         value={formData.default_invoice_theme || 'modern'}
                                                         onChange={handleChange}
-                                                        className={`w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!checkLimit('custom_themes').allowed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        className={`w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     >
                                                         <option value="modern">Müasir (Göy)</option>
                                                         <option value="classic">Klassik (Formal)</option>
                                                         <option value="minimal">Minimal (İncə)</option>
                                                     </select>
-                                                    {!checkLimit('custom_themes').allowed && (
+                                                    {!canUseThemes && (
                                                         <div onClick={() => setUpgradeConfig({
                                                             isOpen: true,
                                                             title: 'Professional Dizaynlar 🎨',
