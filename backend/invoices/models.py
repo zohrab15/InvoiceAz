@@ -11,6 +11,7 @@ import uuid
 class Invoice(models.Model):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
+        ('finalized', 'Finalized'),
         ('sent', 'Sent'),
         ('viewed', 'Viewed'),
         ('paid', 'Paid'),
