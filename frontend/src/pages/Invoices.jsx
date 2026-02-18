@@ -41,6 +41,7 @@ const Invoices = () => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentInvoice, setPaymentInvoice] = useState(null);
     const [triggerSendModal, setTriggerSendModal] = useState(false);
+    const [sendingEmail, setSendingEmail] = useState(false);
     const previewRef = useRef(null);
 
     useEffect(() => {
@@ -310,8 +311,9 @@ const Invoices = () => {
 
     const handleSendEmail = async (inv) => {
         const targetInvoice = inv || savedInvoice;
-        if (!targetInvoice) return;
+        if (!targetInvoice || sendingEmail) return;
 
+        setSendingEmail(true);
         try {
             await clientApi.post(`/invoices/${targetInvoice.id}/send_email/`);
             showToast('Email uğurla göndərildi!');
@@ -320,6 +322,8 @@ const Invoices = () => {
             console.error('Email error:', error);
             const detail = error.response?.data?.error || 'Email göndərilərkən xəta baş verdi';
             showToast(detail, 'error');
+        } finally {
+            setSendingEmail(false);
         }
     };
 
@@ -849,13 +853,18 @@ const Invoices = () => {
 
                                     <button
                                         onClick={() => handleSendEmail(savedInvoice)}
-                                        className="flex items-center justify-between p-4 bg-slate-50 text-slate-700 rounded-xl hover:bg-slate-100 transition-all border border-slate-200 font-bold"
+                                        disabled={sendingEmail}
+                                        className={`flex items-center justify-between p-4 rounded-xl transition-all border font-bold ${sendingEmail ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'}`}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <Send size={20} />
-                                            <span>Email ilə göndər</span>
+                                            {sendingEmail ? (
+                                                <div className="w-5 h-5 border-2 border-primary-blue border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                                <Send size={20} />
+                                            )}
+                                            <span>{sendingEmail ? 'Göndərilir...' : 'Email ilə göndər'}</span>
                                         </div>
-                                        <Plus size={16} className="rotate-45" />
+                                        {!sendingEmail && <Plus size={16} className="rotate-45" />}
                                     </button>
 
                                     <button
