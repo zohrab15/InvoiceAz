@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
-import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X, Lock } from 'lucide-react';
 import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
 import * as XLSX from 'xlsx';
