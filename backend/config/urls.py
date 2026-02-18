@@ -6,17 +6,32 @@ from django.http import JsonResponse, HttpResponse
 import os
 
 def debug_static(request):
+    import os
+    from django.conf import settings
+    from pathlib import Path
+    
+    results = []
+    results.append(f"__file__: {__file__}")
+    results.append(f"BASE_DIR: {settings.BASE_DIR}")
+    results.append(f"STATIC_ROOT: {settings.STATIC_ROOT}")
+    results.append(f"STATIC_URL: {settings.STATIC_URL}")
+    
     path = settings.STATIC_ROOT
-    if not os.path.exists(path):
-        return HttpResponse(f"Static root {path} does not exist")
-    try:
-        content = os.listdir(path)
-        return HttpResponse(f"Static root {path} contains: {content}")
-    except Exception as e:
-        return HttpResponse(f"Error listing {path}: {str(e)}")
+    if os.path.exists(path):
+        results.append(f"Static root exists! Contents: {str(os.listdir(path)[:10])}")
+    else:
+        results.append("Static root DOES NOT EXIST")
+        
+    # Brute force search
+    results.append("Starting brute force search for 'staticfiles'...")
+    for root, dirs, files in os.walk("/opt/render/project/src"):
+        if "staticfiles" in dirs:
+            results.append(f"FOUND staticfiles at: {os.path.join(root, 'staticfiles')}")
+            
+    return HttpResponse("<br>".join(results))
 
 def health_check(request):
-    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.0.6-reset"})
+    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.0.7-path"})
 
 urlpatterns = [
     path('', health_check, name='health_check'),
