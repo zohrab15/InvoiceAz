@@ -215,6 +215,7 @@ const Invoices = () => {
     };
 
     const handleSave = (status = 'draft', triggerSend = false) => {
+        if (createMutation.isPending || updateMutation.isPending) return;
         if (!selectedClientId) return showToast('Müştəri seçin', 'error');
 
         // Filter out empty items
@@ -323,81 +324,6 @@ const Invoices = () => {
     };
 
     const selectedClient = useMemo(() => clients?.find(c => String(c.id) === String(selectedClientId)), [clients, selectedClientId]);
-
-    const SendSelectionModal = () => (
-        <AnimatePresence>
-            {showSendModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="bg-white rounded-2xl shadow-2xl w-full max-auto max-w-md overflow-hidden"
-                    >
-                        <div className="p-8 text-center space-y-6">
-                            <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <CheckCircle size={40} />
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-black text-slate-900">Faktura Hazırdır!</h3>
-                                <p className="text-slate-500 mt-2">Müştəriyə necə göndərmək istəyirsiniz?</p>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-3">
-                                <button
-                                    onClick={() => { handleWhatsApp(savedInvoice); setShowSendModal(false); }}
-                                    className="flex items-center justify-between p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-all border border-green-100 font-bold"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <MessageSquare size={20} />
-                                        <span>WhatsApp ilə göndər</span>
-                                    </div>
-                                    <Plus size={16} className="rotate-45" />
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        const url = `http://localhost:5173/view/${savedInvoice.share_token}`;
-                                        navigator.clipboard.writeText(url);
-                                        if (!savedInvoice.sent_at) {
-                                            markAsSentMutation.mutate(savedInvoice.id);
-                                        }
-                                        showToast('Link kopyalandı!');
-                                        setShowSendModal(false);
-                                    }}
-                                    className="flex items-center justify-between p-4 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-all border border-blue-100 font-bold"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <FileText size={20} />
-                                        <span>Linki Kopyala</span>
-                                    </div>
-                                    <Plus size={16} className="rotate-45" />
-                                </button>
-
-                                <button
-                                    onClick={() => handleSendEmail(savedInvoice)}
-                                    className="flex items-center justify-between p-4 bg-slate-50 text-slate-700 rounded-xl hover:bg-slate-100 transition-all border border-slate-200 font-bold"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <Send size={20} />
-                                        <span>Email ilə göndər</span>
-                                    </div>
-                                    <Plus size={16} className="rotate-45" />
-                                </button>
-
-                                <button
-                                    onClick={() => setShowSendModal(false)}
-                                    className="p-4 text-slate-400 text-sm font-medium hover:text-slate-600 transition-colors"
-                                >
-                                    Daha sonra
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>
-    );
 
     const InvoicePreview = () => (
         <motion.div
@@ -872,7 +798,78 @@ const Invoices = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <SendSelectionModal />
+            <AnimatePresence>
+                {showSendModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-2xl shadow-2xl w-full max-auto max-w-md overflow-hidden"
+                        >
+                            <div className="p-8 text-center space-y-6">
+                                <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <CheckCircle size={40} />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black text-slate-900">Faktura Hazırdır!</h3>
+                                    <p className="text-slate-500 mt-2">Müştəriyə necə göndərmək istəyirsiniz?</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    <button
+                                        onClick={() => { handleWhatsApp(savedInvoice); setShowSendModal(false); }}
+                                        className="flex items-center justify-between p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-all border border-green-100 font-bold"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <MessageSquare size={20} />
+                                            <span>WhatsApp ilə göndər</span>
+                                        </div>
+                                        <Plus size={16} className="rotate-45" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            const url = `http://localhost:5173/view/${savedInvoice.share_token}`;
+                                            navigator.clipboard.writeText(url);
+                                            if (savedInvoice && !savedInvoice.sent_at) {
+                                                markAsSentMutation.mutate(savedInvoice.id);
+                                            }
+                                            showToast('Link kopyalandı!');
+                                            setShowSendModal(false);
+                                        }}
+                                        className="flex items-center justify-between p-4 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-all border border-blue-100 font-bold"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <FileText size={20} />
+                                            <span>Linki Kopyala</span>
+                                        </div>
+                                        <Plus size={16} className="rotate-45" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleSendEmail(savedInvoice)}
+                                        className="flex items-center justify-between p-4 bg-slate-50 text-slate-700 rounded-xl hover:bg-slate-100 transition-all border border-slate-200 font-bold"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Send size={20} />
+                                            <span>Email ilə göndər</span>
+                                        </div>
+                                        <Plus size={16} className="rotate-45" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => setShowSendModal(false)}
+                                        className="p-4 text-slate-400 text-sm font-medium hover:text-slate-600 transition-colors"
+                                    >
+                                        Daha sonra
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
             <AddPaymentModal
                 isOpen={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
