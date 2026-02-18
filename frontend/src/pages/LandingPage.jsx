@@ -453,7 +453,7 @@ const LandingPage = () => {
                             </div>
                             <div className="text-4xl font-black mb-8">19.99 ₼ <span className="text-lg text-white/30">/ay</span></div>
                             <ul className="space-y-4 mb-10 flex-1">
-                                {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI proqnoz', 'Limitsiz bildirişlər', 'PDF eksport', 'QR ödəniş inteqrasiyası', '7/24 prioritet dəstək'].map((item, i) => (
+                                {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI proqnoz', 'Limitsiz bildirişlər', 'PDF və Excel eksport', 'QR ödəniş inteqrasiyası', '7/24 prioritet dəstək'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-white/70 font-bold">
                                         <Zap size={18} className="text-blue-400" />
                                         {item}

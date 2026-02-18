@@ -106,7 +106,7 @@ const PricingPage = () => {
                         </div>
                         <div className="text-4xl font-black mb-8" style={{ color: 'var(--color-text-primary)' }}>19.99 ₼ <span className="text-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>/ay</span></div>
                         <ul className="space-y-4 mb-10 flex-1">
-                            {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI', 'Limitsiz bildirişlər', 'PDF eksport', '3 biznes profili'].map((item, i) => (
+                            {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI', 'Limitsiz bildirişlər', 'PDF və Excel eksport', '3 biznes profili'].map((item, i) => (
                                 <li key={i} className="flex items-center gap-3 text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>
                                     <Zap size={18} style={{ color: 'var(--color-brand)' }} />
                                     {item}
