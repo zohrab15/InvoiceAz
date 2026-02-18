@@ -99,7 +99,7 @@ const ProductAnalytics = () => {
             </div>
 
             {/* Top Section: Chart */}
-            <TopProductsChart />
+            <TopProductsChart hideLink={true} />
 
             {/* Bottom Section: Detailed Table */}
             <div className="rounded-2xl overflow-hidden border border-[var(--color-card-border)] bg-[var(--color-card-bg)]">

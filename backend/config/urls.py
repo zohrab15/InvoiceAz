@@ -31,7 +31,7 @@ def debug_static(request):
     return HttpResponse("<br>".join(results))
 
 def health_check(request):
-    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.1.6-fix"})
+    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.1.7-final-touches"})
 
 urlpatterns = [
     path('', health_check, name='health_check'),

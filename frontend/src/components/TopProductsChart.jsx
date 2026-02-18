@@ -8,7 +8,7 @@ import { Package, TrendingUp, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CountUp from './CountUp';
 
-const TopProductsChart = () => {
+const TopProductsChart = ({ hideLink = false }) => {
     const { activeBusiness } = useBusiness();
 
     const { data: topProducts, isLoading } = useQuery({
@@ -205,12 +205,14 @@ const TopProductsChart = () => {
                 </ResponsiveContainer>
             </div>
 
-            <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--color-card-border)' }}>
-                <Link to="/analytics/products" className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs hover:underline cursor-pointer">
-                    <ArrowUpRight size={14} />
-                    <span>Real vaxt hesabatı</span>
-                </Link>
-            </div>
+            {!hideLink && (
+                <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--color-card-border)' }}>
+                    <Link to="/analytics/products" className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs hover:underline cursor-pointer">
+                        <ArrowUpRight size={14} />
+                        <span>Real vaxt hesabatı</span>
+                    </Link>
+                </div>
+            )}
         </motion.div>
     );
 };
