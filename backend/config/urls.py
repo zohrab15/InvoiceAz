@@ -6,19 +6,17 @@ from django.http import JsonResponse, HttpResponse
 import os
 
 def debug_static(request):
-    root = "/opt/render/project/src"
-    results = []
-    for dirpath, dirnames, filenames in os.walk(root):
-        if "staticfiles" in dirnames or "staticfiles" in dirpath:
-             results.append(f"Found: {dirpath}")
-             if "staticfiles" in dirpath:
-                 results.append(f"  Files: {str(filenames[:10])}")
-    if not results:
-        return HttpResponse(f"No 'staticfiles' directory found under {root}")
-    return HttpResponse("<br>".join(results))
+    path = settings.STATIC_ROOT
+    if not os.path.exists(path):
+        return HttpResponse(f"Static root {path} does not exist")
+    try:
+        content = os.listdir(path)
+        return HttpResponse(f"Static root {path} contains: {content}")
+    except Exception as e:
+        return HttpResponse(f"Error listing {path}: {str(e)}")
 
 def health_check(request):
-    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.0.5-debug-ls"})
+    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.0.6-reset"})
 
 urlpatterns = [
     path('', health_check, name='health_check'),
