@@ -216,6 +216,14 @@ const Invoices = () => {
 
     const handleSave = (status = 'draft', triggerSend = false) => {
         if (!selectedClientId) return showToast('Müştəri seçin', 'error');
+
+        // Filter out empty items
+        const validItems = items.filter(item => item.description.trim() !== '');
+
+        if (validItems.length === 0) {
+            return showToast('Ən azı bir məhsul daxil edilməlidir', 'error');
+        }
+
         setTriggerSendModal(triggerSend);
         const data = {
             id: editInvoice?.id,
@@ -224,7 +232,7 @@ const Invoices = () => {
             due_date: dueDate || invoiceDate,
             notes,
             status: editInvoice ? editInvoice.status : (triggerSend ? 'draft' : status),
-            items: items.map((item, index) => ({
+            items: validItems.map((item, index) => ({
                 description: item.description,
                 quantity: item.quantity,
                 unit_price: item.unit_price,
