@@ -102,7 +102,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     {activeBusiness ? activeBusiness.name : 'Biznes Seçin'}
                                 </div>
                                 <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                                    {activeBusiness ? 'Aktiv Profil' : '---'}
+                                    {activeBusiness ? 'Aktiv Profil (v1.1.6)' : '---'}
                                 </div>
                             </div>
                         </div>

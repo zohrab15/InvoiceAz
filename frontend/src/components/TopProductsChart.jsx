@@ -90,7 +90,6 @@ const TopProductsChart = () => {
                         </p>
                     </div>
                 </div>
-                </div>
             </div>
 
             <div className="flex-1 w-full h-full relative" style={{ minHeight: 0 }}>
