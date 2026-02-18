@@ -50,8 +50,14 @@ const TopProductsChart = () => {
         ['#10b981', '#34d399'],
     ];
 
-    const maxVal = Math.max(...topProducts.map(p => p.total_quantity)) * 1.15;
-    const chartData = topProducts.map(p => ({ ...p, maxVal }));
+    // Django Decimal fields come as strings in JSON — parse them
+    const parsed = topProducts.map(p => ({
+        ...p,
+        total_quantity: parseFloat(p.total_quantity) || 0,
+        total_revenue: parseFloat(p.total_revenue) || 0,
+    }));
+    const maxVal = Math.max(...parsed.map(p => p.total_quantity)) * 1.15;
+    const chartData = parsed.map(p => ({ ...p, maxVal }));
 
     return (
         <motion.div
