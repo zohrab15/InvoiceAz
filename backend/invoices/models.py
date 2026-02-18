@@ -23,6 +23,11 @@ class Invoice(models.Model):
         ('USD', 'USD'),
         ('EUR', 'EUR'),
     )
+    THEME_CHOICES = (
+        ('modern', 'Müasir'),
+        ('classic', 'Klassik'),
+        ('minimal', 'Minimal'),
+    )
 
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='invoices')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='invoices')
@@ -46,6 +51,7 @@ class Invoice(models.Model):
     terms = models.TextField(blank=True, null=True)
     
     pdf_file = models.FileField(upload_to='invoices/', blank=True, null=True)
+    invoice_theme = models.CharField(max_length=20, choices=THEME_CHOICES, default='modern')
     share_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     
     viewed_at = models.DateTimeField(blank=True, null=True)

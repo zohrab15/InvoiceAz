@@ -9,9 +9,9 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
 
 @admin.register(Business)
 class BusinessAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'voen', 'is_active')
+    list_display = ('name', 'user', 'voen', 'default_invoice_theme', 'is_active')
     search_fields = ('name', 'voen', 'user__email')
-    list_filter = ('is_active',)
+    list_filter = ('is_active', 'default_invoice_theme')
 
 @admin.register(User)
 class MyUserAdmin(UserAdmin):
