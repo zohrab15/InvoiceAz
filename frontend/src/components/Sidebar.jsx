@@ -14,7 +14,8 @@ import {
     Building2,
     ChevronDown,
     Lock,
-    Package
+    Package,
+    BarChart3
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
@@ -46,6 +47,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/expenses', icon: <Wallet size={20} />, label: 'Xərclər' },
         { to: '/clients', icon: <Users size={20} />, label: 'Müştərilər' },
         { to: '/analytics/payments', icon: <TrendingUp size={20} />, label: 'Ödəniş Analitikası' },
+        { to: '/analytics/products', icon: <BarChart3 size={20} />, label: 'Məhsul Analitikası' },
         { to: '/analytics/issues', icon: <AlertTriangle size={20} />, label: 'Problemli Fakturalar' },
         { to: '/analytics/forecast', icon: <Sparkles size={20} />, label: 'Trend və Proqnoz', locked: isFeatureLocked('forecast_analytics') },
         { to: '/analytics/tax', icon: <Calculator size={20} />, label: 'Vergi və Hesabatlar' },
