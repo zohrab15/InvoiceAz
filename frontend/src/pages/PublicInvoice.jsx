@@ -6,6 +6,234 @@ import { motion } from 'framer-motion';
 import { Download, CheckCircle, Clock, AlertCircle, FileText, Globe, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
+const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }) => (
+    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+        <div className={`py-4 px-8 text-center text-sm font-bold uppercase tracking-widest ${isPaid ? 'bg-green-500 text-white' : 'bg-blue-600 text-white'}`}>
+            {isPaid ? (
+                <span className="flex items-center justify-center gap-2"><CheckCircle size={18} /> Bu faktura ödənilib</span>
+            ) : invoice.status === 'draft' ? (
+                <span className="flex items-center justify-center gap-2"><FileText size={18} /> Qaralama Faktura</span>
+            ) : (
+                <span className="flex items-center justify-center gap-2"><Clock size={18} /> Ödəniş Gözlənilir</span>
+            )}
+        </div>
+
+        <div className="p-8 md:p-12">
+            <div className="flex flex-col md:flex-row justify-between gap-12 mb-16">
+                <div className="space-y-4">
+                    {invoice.business_details?.logo && (
+                        <img src={invoice.business_details.logo.startsWith('http') ? invoice.business_details.logo : `${API_URL}${invoice.business_details.logo}`} alt="Logo" className="h-16 w-auto object-contain mb-4 rounded-xl shadow-sm" />
+                    )}
+                    <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">{invoice.business_details?.name}</h2>
+                    <div className="text-sm text-slate-500 space-y-1">
+                        <p>{invoice.business_details?.address}</p>
+                        <p>VÖEN: {invoice.business_details?.voen}</p>
+                        <p>{invoice.business_details?.email}</p>
+                    </div>
+                </div>
+                <div className="text-right space-y-6">
+                    <div>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Müştəri</h3>
+                        <p className="text-lg font-bold text-slate-900">{invoice.client_details?.name}</p>
+                        <p className="text-sm text-slate-500">{invoice.client_details?.email}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-8 text-right">
+                        <div>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Tarix</h3>
+                            <p className="text-sm font-bold text-slate-800">{new Date(invoice.invoice_date).toLocaleDateString('az-AZ')}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Son Tarix</h3>
+                            <p className="text-sm font-bold text-slate-800">{new Date(invoice.due_date).toLocaleDateString('az-AZ')}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="overflow-x-auto mb-12">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr className="border-b-2 border-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                            <th className="py-4 pr-4">Mehsul / Xidmət</th>
+                            <th className="py-4 px-4 text-center">Sayı</th>
+                            <th className="py-4 px-4 text-right">Qiymət</th>
+                            <th className="py-4 pl-4 text-right">Məbləğ</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                        {invoice.items.map((item, i) => (
+                            <tr key={i} className="text-slate-700">
+                                <td className="py-6 pr-4 font-bold text-slate-900">{item.description}</td>
+                                <td className="py-6 px-4 text-center text-sm">{item.quantity} {item.unit}</td>
+                                <td className="py-6 px-4 text-right text-sm">{parseFloat(item.unit_price).toFixed(2)}</td>
+                                <td className="py-6 pl-4 text-right font-bold text-slate-900">{(item.quantity * item.unit_price).toFixed(2)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between items-start gap-12">
+                <div className="flex-1 space-y-8">
+                    <div>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Qeyd və Şərtlər</h3>
+                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs text-slate-500 leading-relaxed italic">
+                            {invoice.notes || "Bu faktura kompyuter vasitəsilə generasiya olunub. Zəhmət olmasa vaxtında ödəniş edin."}
+                        </div>
+                    </div>
+
+                    {isPayable && (
+                        <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-6">
+                            <div className="p-3 bg-white rounded-2xl shadow-sm border border-blue-100">
+                                <QRCodeSVG value={window.location.origin + '/public/pay/' + token} size={100} level="H" includeMargin={false} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Smartphone size={18} className="text-blue-600" />
+                                    <h4 className="font-black text-slate-900 uppercase tracking-tight text-sm">Sürətli Ödəniş</h4>
+                                </div>
+                                <p className="text-xs text-slate-500 font-medium leading-relaxed">Mobil telefonunuzla skan edərək <br /> dərhal ödəniş edin.</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="w-full md:w-80 space-y-4 pt-4 border-t-4 border-slate-900">
+                    <div className="flex justify-between text-sm text-slate-500 font-medium px-2"><span>Cəm:</span><span>{subtotal.toFixed(2)} ₼</span></div>
+                    <div className="flex justify-between text-sm text-slate-500 font-medium px-2"><span>ƏDV (18%):</span><span>{tax.toFixed(2)} ₼</span></div>
+                    <div className="flex justify-between text-2xl font-black text-slate-900 bg-slate-100 p-4 rounded-2xl"><span>YEKUN:</span><span className="text-blue-600">{total.toFixed(2)} ₼</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }) => (
+    <div className="bg-white shadow-xl border border-slate-200 overflow-hidden font-serif">
+        <div className="p-12 md:p-20">
+            <div className="text-center mb-16 space-y-4">
+                <h1 className="text-5xl font-bold uppercase tracking-widest text-slate-900 border-b-4 border-slate-900 inline-block pb-4 px-8">HESAB-FAKTURA</h1>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Faktura №: {invoice.invoice_number}</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
+                <div className="space-y-6">
+                    <div className="border-l-4 border-slate-900 pl-6">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">GÖNDƏRƏN</h3>
+                        <h2 className="text-2xl font-bold text-slate-900">{invoice.business_details?.name}</h2>
+                        <div className="text-sm text-slate-600 space-y-2 mt-4 leading-relaxed">
+                            <p>{invoice.business_details?.address}</p>
+                            <p>VÖEN: {invoice.business_details?.voen}</p>
+                            <p>{invoice.business_details?.email}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="space-y-6">
+                    <div className="border-l-4 border-slate-200 pl-6">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">MÜŞTƏRİ</h3>
+                        <h2 className="text-2xl font-bold text-slate-900">{invoice.client_details?.name}</h2>
+                        <div className="text-sm text-slate-600 space-y-2 mt-4 leading-relaxed">
+                            <p>{invoice.client_details?.address || '---'}</p>
+                            <p>{invoice.client_details?.email}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mb-16 border-y-2 border-slate-900 py-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center bg-slate-50/50">
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Tarix</h4><p className="font-bold">{new Date(invoice.invoice_date).toLocaleDateString('az-AZ')}</p></div>
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ödəniş Müddəti</h4><p className="font-bold">{new Date(invoice.due_date).toLocaleDateString('az-AZ')}</p></div>
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</h4><p className="font-bold uppercase text-blue-700">{invoice.status}</p></div>
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ümumi</h4><p className="font-bold text-xl">{total.toFixed(2)} ₼</p></div>
+            </div>
+
+            <table className="w-full mb-16">
+                <thead>
+                    <tr className="bg-slate-900 text-white text-xs uppercase tracking-widest">
+                        <th className="p-4 text-left">Təsvir</th>
+                        <th className="p-4 text-center">Miqdar</th>
+                        <th className="p-4 text-right">Vahid Qiymət</th>
+                        <th className="p-4 text-right">Cəm</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 border-b-2 border-slate-900">
+                    {invoice.items.map((item, i) => (
+                        <tr key={i} className="text-slate-800">
+                            <td className="p-5 font-bold">{item.description}</td>
+                            <td className="p-5 text-center italic">{item.quantity} {item.unit}</td>
+                            <td className="p-5 text-right font-mono">{parseFloat(item.unit_price).toFixed(2)}</td>
+                            <td className="p-5 text-right font-bold font-mono">{item.amount}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <div className="flex flex-col md:flex-row justify-between items-end gap-12">
+                <div className="flex-1 space-y-6">
+                    <div className="max-w-xs">{isPayable && <QRCodeSVG value={window.location.origin + '/public/pay/' + token} size={120} level="H" includeMargin={true} />}</div>
+                    <div className="p-6 bg-slate-50 border italic text-xs text-slate-500 leading-relaxed">{invoice.notes || "Zəhmət olmasa vaxtında ödəniş edin."}</div>
+                </div>
+                <div className="w-full md:w-80 space-y-4">
+                    <div className="flex justify-between text-sm py-2 border-b"><span>Alt-cəm</span><span className="font-mono">{subtotal.toFixed(2)} ₼</span></div>
+                    <div className="flex justify-between text-sm py-2 border-b"><span>Vergi (18%)</span><span className="font-mono">{tax.toFixed(2)} ₼</span></div>
+                    <div className="flex justify-between text-2xl font-black pt-4"><span>YEKUN</span><span>{total.toFixed(2)} ₼</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const MinimalTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }) => (
+    <div className="bg-white p-8 md:p-16 space-y-20 font-inter">
+        <div className="flex justify-between items-start">
+            <div className="space-y-2">
+                {invoice.business_details?.logo && (
+                    <img src={invoice.business_details.logo.startsWith('http') ? invoice.business_details.logo : `${API_URL}${invoice.business_details.logo}`} alt="Logo" className="h-10 w-auto opacity-80 grayscale hover:grayscale-0 transition-all" />
+                )}
+                <h1 className="text-sm font-bold tracking-widest uppercase text-slate-400">Invoice #{invoice.invoice_number}</h1>
+            </div>
+            <div className="text-right">
+                <p className="text-4xl font-light tracking-tighter text-slate-900">{total.toFixed(2)} ₼</p>
+                <p className={`text-[10px] font-black uppercase mt-2 ${isPaid ? 'text-green-500' : 'text-slate-400'}`}>{isPaid ? 'Payment Received' : 'Balance Due'}</p>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-sm">
+            <div className="space-y-2"><p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">From</p><p className="font-bold text-slate-800">{invoice.business_details?.name}</p><p className="text-slate-500 text-xs">{invoice.business_details?.email}</p></div>
+            <div className="space-y-2"><p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">To</p><p className="font-bold text-slate-800">{invoice.client_details?.name}</p><p className="text-slate-500 text-xs">{invoice.client_details?.email}</p></div>
+            <div className="space-y-2"><p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Issued</p><p className="font-medium text-slate-600">{new Date(invoice.invoice_date).toLocaleDateString()}</p></div>
+            <div className="space-y-2"><p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Due</p><p className="font-medium text-slate-600">{new Date(invoice.due_date).toLocaleDateString()}</p></div>
+        </div>
+
+        <div className="space-y-8">
+            <div className="border-t border-slate-100" />
+            <div className="space-y-6">
+                {invoice.items.map((item, i) => (
+                    <div key={i} className="flex justify-between items-center group">
+                        <div className="space-y-1">
+                            <p className="font-bold text-slate-900">{item.description}</p>
+                            <p className="text-[10px] text-slate-400">{item.quantity} × {parseFloat(item.unit_price).toFixed(2)}</p>
+                        </div>
+                        <p className="font-bold text-slate-900">{item.amount} ₼</p>
+                    </div>
+                ))}
+            </div>
+            <div className="border-t border-slate-100" />
+        </div>
+
+        <div className="flex flex-col md:flex-row justify-between gap-12">
+            <div className="max-w-xs text-xs text-slate-400 leading-relaxed font-medium">{invoice.notes || "Thank you for your business."}</div>
+            <div className="w-full md:w-64 space-y-4">
+                <div className="flex justify-between text-xs text-slate-400"><span>Subtotal</span><span>{subtotal.toFixed(2)} ₼</span></div>
+                <div className="flex justify-between text-xs text-slate-400"><span>Tax (18%)</span><span>{tax.toFixed(2)} ₼</span></div>
+                <div className="flex justify-between text-lg font-bold text-slate-900 border-t pt-4"><span>Total</span><span>{total.toFixed(2)} ₼</span></div>
+                <div className="pt-6 flex justify-end opacity-20 hover:opacity-100 transition-opacity">
+                    {isPayable && <QRCodeSVG value={window.location.origin + '/public/pay/' + token} size={70} level="M" />}
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
 const PublicInvoice = () => {
     const { token } = useParams();
     const navigate = useNavigate();
@@ -63,6 +291,7 @@ const PublicInvoice = () => {
     const subtotal = parseFloat(invoice.subtotal);
     const tax = parseFloat(invoice.tax_amount);
     const total = parseFloat(invoice.total);
+    const currentTheme = invoice.invoice_theme || 'modern';
 
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4 md:px-8 font-inter">
@@ -96,144 +325,29 @@ const PublicInvoice = () => {
                     </div>
                 </div>
 
-                {/* Main Invoice Card */}
+                {/* Main Invoice Content */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100"
+                    key={currentTheme}
                 >
-                    {/* Status Banner */}
-                    <div className={`py-4 px-8 text-center text-sm font-bold uppercase tracking-widest ${isPaid ? 'bg-green-500 text-white' : 'bg-blue-600 text-white'}`}>
-                        {isPaid ? (
-                            <span className="flex items-center justify-center gap-2"><CheckCircle size={18} /> Bu faktura ödənilib</span>
-                        ) : invoice.status === 'draft' ? (
-                            <span className="flex items-center justify-center gap-2"><FileText size={18} /> Qaralama Faktura</span>
-                        ) : (
-                            <span className="flex items-center justify-center gap-2"><Clock size={18} /> Ödəniş Gözlənilir</span>
-                        )}
-                    </div>
-
-                    <div className="p-8 md:p-12">
-                        {/* Branding & Info */}
-                        <div className="flex flex-col md:flex-row justify-between gap-12 mb-16">
-                            <div className="space-y-4">
-                                {invoice.business_details?.logo && (
-                                    <img src={invoice.business_details.logo.startsWith('http') ? invoice.business_details.logo : `${API_URL}${invoice.business_details.logo}`} alt="Logo" className="h-16 w-auto object-contain mb-4 rounded-xl shadow-sm" />
-                                )}
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">{invoice.business_details?.name}</h2>
-                                <div className="text-sm text-slate-500 space-y-1">
-                                    <p>{invoice.business_details?.address}</p>
-                                    <p>VÖEN: {invoice.business_details?.voen}</p>
-                                    <p>{invoice.business_details?.email}</p>
-                                </div>
-                            </div>
-                            <div className="text-right space-y-6">
-                                <div>
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Müştəri</h3>
-                                    <p className="text-lg font-bold text-slate-900">{invoice.client_details?.name}</p>
-                                    <p className="text-sm text-slate-500">{invoice.client_details?.email}</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-8 text-right">
-                                    <div>
-                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Tarix</h3>
-                                        <p className="text-sm font-bold text-slate-800">{new Date(invoice.invoice_date).toLocaleDateString('az-AZ')}</p>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Son Tarix</h3>
-                                        <p className="text-sm font-bold text-slate-800">{new Date(invoice.due_date).toLocaleDateString('az-AZ')}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Items Table */}
-                        <div className="overflow-x-auto mb-12">
-                            <table className="w-full text-left border-collapse min-w-[600px]">
-                                <thead>
-                                    <tr className="border-b-2 border-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                        <th className="py-4 pr-4">Mehsul / Xidmət</th>
-                                        <th className="py-4 px-4 text-center">Sayı</th>
-                                        <th className="py-4 px-4 text-right">Qiymət</th>
-                                        <th className="py-4 pl-4 text-right">Məbləğ</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    {invoice.items.map((item, i) => (
-                                        <tr key={i} className="text-slate-700">
-                                            <td className="py-6 pr-4 font-bold text-slate-900">{item.description}</td>
-                                            <td className="py-6 px-4 text-center text-sm">{item.quantity} {item.unit}</td>
-                                            <td className="py-6 px-4 text-right text-sm">{parseFloat(item.unit_price).toFixed(2)}</td>
-                                            <td className="py-6 pl-4 text-right font-bold text-slate-900">{(item.quantity * item.unit_price).toFixed(2)}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Totals & QR Code */}
-                        <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-                            <div className="flex-1 space-y-8">
-                                <div>
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Qeyd və Şərtlər</h3>
-                                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs text-slate-500 leading-relaxed italic">
-                                        {invoice.notes || "Bu faktura kompyuter vasitəsilə generasiya olunub. Zəhmət olmasa vaxtında ödəniş edin."}
-                                    </div>
-                                </div>
-
-                                {isPayable && (
-                                    <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-6">
-                                        <div className="p-3 bg-white rounded-2xl shadow-sm border border-blue-100">
-                                            <QRCodeSVG
-                                                value={window.location.origin + '/public/pay/' + token}
-                                                size={100}
-                                                level="H"
-                                                includeMargin={false}
-                                                imageSettings={{
-                                                    src: "/favicon.ico",
-                                                    x: undefined,
-                                                    y: undefined,
-                                                    height: 24,
-                                                    width: 24,
-                                                    excavate: true,
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Smartphone size={18} className="text-blue-600" />
-                                                <h4 className="font-black text-slate-900 uppercase tracking-tight text-sm">Sürətli Ödəniş</h4>
-                                            </div>
-                                            <p className="text-xs text-slate-500 font-medium leading-relaxed">Mobil telefonunuzla skan edərək <br /> dərhal ödəniş edin.</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="w-full md:w-80 space-y-4 pt-4 border-t-4 border-slate-900">
-                                <div className="flex justify-between text-sm text-slate-500 font-medium px-2">
-                                    <span>Cəm:</span>
-                                    <span>{subtotal.toFixed(2)} ₼</span>
-                                </div>
-                                <div className="flex justify-between text-sm text-slate-500 font-medium px-2">
-                                    <span>ƏDV (18%):</span>
-                                    <span>{tax.toFixed(2)} ₼</span>
-                                </div>
-                                <div className="flex justify-between text-2xl font-black text-slate-900 bg-slate-100 p-4 rounded-2xl">
-                                    <span>YEKUN:</span>
-                                    <span className="text-blue-600">{total.toFixed(2)} ₼</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer Branding */}
-                    <div className="bg-slate-50 py-10 px-8 border-t border-slate-100 text-center">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                            <div className="w-5 h-5 bg-slate-800 rounded flex items-center justify-center text-[10px] text-white font-bold">AZ</div>
-                            <span className="text-xs font-bold text-slate-800 tracking-tighter">Powered by InvoiceAZ</span>
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-medium">Bütün Hüquqlar Qorunur © 2026</p>
-                    </div>
+                    {currentTheme === 'classic' ? (
+                        <ClassicTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} />
+                    ) : currentTheme === 'minimal' ? (
+                        <MinimalTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} />
+                    ) : (
+                        <ModernTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} />
+                    )}
                 </motion.div>
+
+                {/* Footer Branding */}
+                <div className="py-10 text-center opacity-50">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                        <div className="w-5 h-5 bg-slate-800 rounded flex items-center justify-center text-[10px] text-white font-bold">AZ</div>
+                        <span className="text-xs font-bold text-slate-800 tracking-tighter">Powered by InvoiceAZ</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-medium">Bütün Hüquqlar Qorunur © 2026</p>
+                </div>
             </div>
         </div>
     );

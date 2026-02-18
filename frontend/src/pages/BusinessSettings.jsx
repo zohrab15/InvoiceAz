@@ -12,6 +12,7 @@ import PhoneInput from '../components/common/PhoneInput';
 import { useLocation } from 'react-router-dom';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
+import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
     const queryClient = useQueryClient();
@@ -51,6 +52,7 @@ const BusinessSettings = () => {
         bank_name: '',
         iban: '',
         swift: '',
+        default_invoice_theme: 'modern',
     };
     const [formData, setFormData] = useState(initialFormState);
 
@@ -365,6 +367,28 @@ const BusinessSettings = () => {
                                                     onChange={handleChange}
                                                     className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
                                                 />
+                                            </div>
+                                            <div className="pt-4 border-t border-gray-50">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
+                                                    Standart Faktura Mövzusu
+                                                    {!checkLimit('custom_themes').allowed && <Lock size={12} className="text-gray-400" />}
+                                                </label>
+                                                <div className="relative mt-1.5">
+                                                    <select
+                                                        name="default_invoice_theme"
+                                                        disabled={!checkLimit('custom_themes').allowed}
+                                                        value={formData.default_invoice_theme || 'modern'}
+                                                        onChange={handleChange}
+                                                        className={`w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!checkLimit('custom_themes').allowed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        <option value="modern">Müasir (Göy)</option>
+                                                        <option value="classic">Klassik (Formal)</option>
+                                                        <option value="minimal">Minimal (İncə)</option>
+                                                    </select>
+                                                    {!checkLimit('custom_themes').allowed && (
+                                                        <div onClick={() => setShowUpgradeModal(true)} className="absolute inset-0 z-10 cursor-pointer" />
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

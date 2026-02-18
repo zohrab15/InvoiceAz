@@ -26,6 +26,12 @@ const UNIT_CHOICES = [
     { value: 'xidmət', label: 'Xidmət' }
 ];
 
+const THEME_CHOICES = [
+    { value: 'modern', label: 'Müasir' },
+    { value: 'classic', label: 'Klassik' },
+    { value: 'minimal', label: 'Minimal' }
+];
+
 const Invoices = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
@@ -64,6 +70,7 @@ const Invoices = () => {
     const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
     const [dueDate, setDueDate] = useState('');
     const [notes, setNotes] = useState('');
+    const [invoiceTheme, setInvoiceTheme] = useState('modern');
 
     const handleCreateNew = () => {
         resetForm();
@@ -196,6 +203,7 @@ const Invoices = () => {
         setInvoiceDate(inv.invoice_date);
         setDueDate(inv.due_date);
         setNotes(inv.notes || '');
+        setInvoiceTheme(inv.invoice_theme || 'modern');
         setItems(inv.items.length > 0 ? inv.items.map(item => ({
             ...item,
             quantity: Number(item.quantity) || 0,
@@ -211,6 +219,7 @@ const Invoices = () => {
         setInvoiceDate(new Date().toISOString().split('T')[0]);
         setDueDate('');
         setNotes('');
+        setInvoiceTheme('modern');
         setEditInvoice(null);
         setShowPreview(false);
     };
@@ -233,6 +242,7 @@ const Invoices = () => {
             invoice_date: invoiceDate,
             due_date: dueDate || invoiceDate,
             notes,
+            invoice_theme: invoiceTheme,
             status: (triggerSend && (!editInvoice || editInvoice.status === 'draft')) ? 'finalized' : (editInvoice ? editInvoice.status : status),
             items: validItems.map((item, index) => ({
                 description: item.description,
@@ -646,11 +656,11 @@ const Invoices = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                             <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-8'} space-y-6 transition-all duration-500 order-1`}>
                                 <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div>
                                             <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Müştəri seçimi</label>
                                             <select
-                                                className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white"
+                                                className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white text-sm font-bold"
                                                 value={selectedClientId}
                                                 onChange={(e) => setSelectedClientId(e.target.value)}
                                             >
@@ -663,11 +673,32 @@ const Invoices = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Tarix</label>
-                                                <input type="date" className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none bg-gray-50 hover:bg-white" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
+                                                <input type="date" className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none bg-gray-50 hover:bg-white text-sm font-bold" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Son Tarix</label>
-                                                <input type="date" className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none bg-gray-50 hover:bg-white" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+                                                <input type="date" className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none bg-gray-50 hover:bg-white text-sm font-bold" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-400 uppercase mb-2 flex items-center gap-2">
+                                                Dizayn (Mövzu)
+                                                {!isPro && <Lock size={12} className="text-gray-400" />}
+                                            </label>
+                                            <div className="relative group/theme">
+                                                <select
+                                                    disabled={!isPro}
+                                                    className={`w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white text-sm font-bold ${!isPro ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    value={invoiceTheme}
+                                                    onChange={(e) => setInvoiceTheme(e.target.value)}
+                                                >
+                                                    {THEME_CHOICES.map(t => (
+                                                        <option key={t.value} value={t.value}>{t.label}</option>
+                                                    ))}
+                                                </select>
+                                                {!isPro && (
+                                                    <div onClick={() => setShowUpgradeModal(true)} className="absolute inset-0 cursor-pointer z-10" />
+                                                )}
                                             </div>
                                         </div>
                                     </div>
