@@ -7,18 +7,12 @@ from .models import Product
 from .serializers import ProductSerializer, ExcelUploadSerializer
 from users.models import Business
 
-class ProductViewSet(viewsets.ModelViewSet):
+from users.mixins import BusinessContextMixin
+
+class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Product.objects.filter(business__user=self.request.user)
-
-    def perform_create(self, serializer):
-        # Ensure business belongs to user
-        business_id = self.request.data.get('business')
-        business = get_object_or_404(Business, id=business_id, user=self.request.user)
-        serializer.save(business=business)
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
     def upload_excel(self, request):

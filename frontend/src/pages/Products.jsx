@@ -40,7 +40,19 @@ const Products = () => {
             showToast('Məhsul əlavə edildi');
             setIsAddModalOpen(false);
         },
-        onError: (err) => showToast(err.response?.data?.detail || 'Xəta baş verdi', 'error')
+        onError: (err) => {
+            const data = err.response?.data;
+            if (data?.detail) {
+                showToast(data.detail, 'error');
+            } else if (data && typeof data === 'object') {
+                // Handle field-specific errors
+                const firstKey = Object.keys(data)[0];
+                const msg = Array.isArray(data[firstKey]) ? data[firstKey][0] : data[firstKey];
+                showToast(`${firstKey}: ${msg}`, 'error');
+            } else {
+                showToast('Xəta baş verdi', 'error');
+            }
+        }
     });
 
     const updateMutation = useMutation({
@@ -92,7 +104,7 @@ const Products = () => {
         if (found) {
             setEditingProduct(found);
         } else {
-            setEditingProduct({ sku: result, name: '', base_price: 0, unit: 'ədəd' });
+            setEditingProduct({ sku: result, name: '', base_price: 0, unit: 'pcs' });
         }
     };
 
@@ -389,15 +401,15 @@ const Products = () => {
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Ölçü Vahidi</label>
                                         <select
                                             name="unit"
-                                            defaultValue={editingProduct?.unit || 'ədəd'}
+                                            defaultValue={editingProduct?.unit || 'pcs'}
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold cursor-pointer"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                         >
-                                            <option value="ədəd">Ədəd</option>
-                                            <option value="kq">Kq</option>
-                                            <option value="metr">Metr</option>
-                                            <option value="litr">Litr</option>
-                                            <option value="xidmət">Xidmət</option>
+                                            <option value="pcs">Ədəd</option>
+                                            <option value="kg">Kq</option>
+                                            <option value="m">Metr</option>
+                                            <option value="l">Litr</option>
+                                            <option value="service">Xidmət</option>
                                         </select>
                                     </div>
 
