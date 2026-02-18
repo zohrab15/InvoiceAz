@@ -45,7 +45,7 @@ const UserSettings = () => {
             if (avatarFile) {
                 fd.append('avatar', avatarFile);
             }
-            return client.patch('/auth/user/', fd, {
+            return client.patch('/users/me/', fd, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
         },

@@ -31,7 +31,7 @@ def debug_static(request):
     return HttpResponse("<br>".join(results))
 
 def health_check(request):
-    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.1.1-final"})
+    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.1.2-avatar"})
 
 urlpatterns = [
     path('', health_check, name='health_check'),
@@ -49,6 +49,8 @@ urlpatterns = [
     path('api/inventory/', include('inventory.urls')),
 ]
 
+# Serve media files in production (Temporary for Render demo)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
