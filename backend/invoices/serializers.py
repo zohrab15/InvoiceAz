@@ -32,6 +32,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
     client_name = serializers.ReadOnlyField(source='client.name')
     client_phone = serializers.ReadOnlyField(source='client.phone')
     client_email = serializers.ReadOnlyField(source='client.email')
+    status = serializers.ChoiceField(choices=Invoice.STATUS_CHOICES, default='draft')
 
     class Meta:
         model = Invoice

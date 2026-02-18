@@ -571,6 +571,16 @@ const Invoices = () => {
                                                             <Edit2 size={18} />
                                                         </button>
 
+                                                        {inv.status !== 'draft' && (
+                                                            <button
+                                                                onClick={() => { setSavedInvoice(inv); setShowSendModal(true); }}
+                                                                title="Göndər"
+                                                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                                            >
+                                                                <Send size={18} />
+                                                            </button>
+                                                        )}
+
                                                         <button onClick={() => handleDownloadPdf(inv.id)} title="Yüklə" className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"><Download size={18} /></button>
                                                         <button onClick={() => duplicateMutation.mutate(inv.id)} title="Kopyala" className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"><List size={18} /></button>
                                                         <button onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(inv.id); }} title="Sil" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>

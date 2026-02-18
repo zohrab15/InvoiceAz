@@ -226,7 +226,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             email.send()
             
             # Update status if needed
-            if invoice.status == 'draft':
+            if invoice.status in ['draft', 'finalized']:
                 invoice.status = 'sent'
                 import django.utils.timezone as timezone
                 invoice.sent_at = timezone.now()
@@ -241,7 +241,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         invoice = self.get_object()
         from django.utils import timezone
         invoice.sent_at = timezone.now()
-        if invoice.status == 'draft':
+        if invoice.status in ['draft', 'finalized']:
             invoice.status = 'sent'
         invoice.save()
         return Response({"message": "Faktura göndərildi kimi qeyd edildi.", "sent_at": invoice.sent_at})
@@ -253,7 +253,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             invoice = Invoice.objects.get(share_token=share_token)
             
             # Tracking logic
-            if invoice.status == 'sent':
+            if invoice.status in ['sent', 'finalized']:
                 invoice.status = 'viewed'
             
             if not invoice.viewed_at:
