@@ -349,9 +349,8 @@ const LandingPage = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.2 }}
-                                className="relative text-center p-8"
+                                className="relative text-center p-8 group"
                             >
-                                <div className="text-6xl font-black text-white/[0.04] absolute top-0 left-1/2 -translate-x-1/2">{s.step}</div>
                                 <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-violet-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center mb-6 text-violet-400">
                                     {s.icon}
                                 </div>
