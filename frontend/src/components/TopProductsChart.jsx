@@ -56,15 +56,15 @@ const TopProductsChart = () => {
         total_quantity: parseFloat(p.total_quantity) || 0,
         total_revenue: parseFloat(p.total_revenue) || 0,
     }));
-    const maxVal = Math.max(...parsed.map(p => p.total_quantity)) * 1.15;
+    const maxVal = Math.max(...parsed.map(p => p.total_quantity), 0) * 1.15 || 10;
     const chartData = parsed.map(p => ({ ...p, maxVal }));
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-6 rounded-2xl h-full flex flex-col overflow-hidden relative"
-            style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+            className="p-6 rounded-2xl flex flex-col overflow-hidden relative"
+            style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', minHeight: '400px' }}
         >
             <div className="flex flex-col sm:flex-row justify-between items-start mb-8 gap-4">
                 <div className="flex items-center gap-4">
@@ -95,6 +95,7 @@ const TopProductsChart = () => {
                         data={chartData}
                         layout="vertical"
                         margin={{ top: 0, right: 70, left: 0, bottom: 0 }}
+                        barGap={-18}
                     >
                         <defs>
                             {colors.map((colorSet, i) => (
@@ -184,7 +185,7 @@ const TopProductsChart = () => {
                             barSize={18}
                             animationDuration={1200}
                         >
-                            {topProducts.map((entry, index) => (
+                            {chartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={`url(#grad-${index % colors.length})`} />
                             ))}
                             <LabelList
