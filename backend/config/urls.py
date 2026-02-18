@@ -16,7 +16,7 @@ def debug_static(request):
         return HttpResponse(f"Error listing {path}: {str(e)}")
 
 def health_check(request):
-    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running"})
+    return JsonResponse({"status": "ok", "message": "InvoiceAZ Backend is running", "version": "v1.0.2-debug-static"})
 
 urlpatterns = [
     path('', health_check, name='health_check'),
