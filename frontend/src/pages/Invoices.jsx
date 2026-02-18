@@ -37,7 +37,7 @@ const Invoices = () => {
     const queryClient = useQueryClient();
     const showToast = useToast();
     const { checkLimit, isPro } = usePlanLimits();
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
 
     const [view, setView] = useState('list'); // 'list' or 'create'
     const [editInvoice, setEditInvoice] = useState(null);
@@ -135,7 +135,11 @@ const Invoices = () => {
             console.error("Create Invoice Error:", error);
             const data = error.response?.data;
             if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
-                setShowUpgradeModal(true);
+                setUpgradeConfig({
+                    isOpen: true,
+                    title: 'Faktura limitinə çatdınız! 🚀',
+                    message: `Hazırkı planınızda maksimum ${checkLimit('invoices').limit} faktura yarada bilərsiniz.`
+                });
             } else {
                 const detail = data ? JSON.stringify(data) : error.message;
                 showToast(`Xəta: ${detail}`, 'error');
@@ -697,7 +701,11 @@ const Invoices = () => {
                                                     ))}
                                                 </select>
                                                 {!isPro && (
-                                                    <div onClick={() => setShowUpgradeModal(true)} className="absolute inset-0 cursor-pointer z-10" />
+                                                    <div onClick={() => setUpgradeConfig({
+                                                        isOpen: true,
+                                                        title: 'Professional Dizaynlar 🎨',
+                                                        message: 'Faktura mövzularını dəyişmək və brendinizə uyğun özəl dizaynlar seçmək üçün Pro plana keçin.'
+                                                    })} className="absolute inset-0 cursor-pointer z-10" />
                                                 )}
                                             </div>
                                         </div>
@@ -945,8 +953,10 @@ const Invoices = () => {
                 onAddPayment={handleAddPayment}
             />
             <UpgradeModal
-                isOpen={showUpgradeModal}
-                onClose={() => setShowUpgradeModal(false)}
+                isOpen={upgradeConfig.isOpen}
+                onClose={() => setUpgradeConfig({ ...upgradeConfig, isOpen: false })}
+                title={upgradeConfig.title}
+                message={upgradeConfig.message}
                 resourceName="Faktura"
                 limit={checkLimit('invoices').limit}
             />

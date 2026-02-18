@@ -18,6 +18,7 @@ const BusinessSettings = () => {
     const queryClient = useQueryClient();
     const showToast = useToast();
     const location = useLocation();
+    const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
     const { theme: currentTheme } = useTheme();
     const { checkLimit } = usePlanLimits();
 
@@ -386,7 +387,11 @@ const BusinessSettings = () => {
                                                         <option value="minimal">Minimal (İncə)</option>
                                                     </select>
                                                     {!checkLimit('custom_themes').allowed && (
-                                                        <div onClick={() => setShowUpgradeModal(true)} className="absolute inset-0 z-10 cursor-pointer" />
+                                                        <div onClick={() => setUpgradeConfig({
+                                                            isOpen: true,
+                                                            title: 'Professional Dizaynlar 🎨',
+                                                            message: 'Biznesiniz üçün standart faktura mövzusunu təyin etmək və professional dizaynlardan yararlanmaq üçün Pro plana keçin.'
+                                                        })} className="absolute inset-0 z-10 cursor-pointer" />
                                                     )}
                                                 </div>
                                             </div>
@@ -488,10 +493,10 @@ const BusinessSettings = () => {
 
             </AnimatePresence>
             <UpgradeModal
-                isOpen={showUpgradeModal}
-                onClose={() => setShowUpgradeModal(false)}
-                resourceName={limitInfo.resourceName}
-                limit={limitInfo.limit}
+                isOpen={upgradeConfig.isOpen}
+                onClose={() => setUpgradeConfig({ ...upgradeConfig, isOpen: false })}
+                title={upgradeConfig.title}
+                message={upgradeConfig.message}
             />
         </motion.div>
     );

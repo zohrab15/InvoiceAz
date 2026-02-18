@@ -3,10 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Crown, Check, X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const UpgradeModal = ({ isOpen, onClose, resourceName, limit }) => {
+const UpgradeModal = ({ isOpen, onClose, resourceName, limit, title, message }) => {
     const navigate = useNavigate();
 
     if (!isOpen) return null;
+
+    const displayTitle = title || "Limitə çatdınız! 🚀";
+    const displayMessage = message || (limit !== undefined && resourceName ? (
+        <>
+            Hazırkı planınızda maksimum <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{limit} {resourceName}</span> yaratmaq mümkündür.
+            Limitsiz imkanlar üçün Pro plana keçin.
+        </>
+    ) : (
+        "Bu xüsusiyyəti aktiv etmək üçün Pro plana keçin."
+    ));
 
     return (
         <AnimatePresence>
@@ -46,10 +56,9 @@ const UpgradeModal = ({ isOpen, onClose, resourceName, limit }) => {
                                 <Crown size={32} className="text-white" />
                             </div>
 
-                            <h2 className="text-2xl font-black mb-2" style={{ color: 'var(--color-text-primary)' }}>Limitə çatdınız! 🚀</h2>
+                            <h2 className="text-2xl font-black mb-2" style={{ color: 'var(--color-text-primary)' }}>{displayTitle}</h2>
                             <p className="mb-8 max-w-sm" style={{ color: 'var(--color-text-muted)' }}>
-                                Hazırkı planınızda maksimum <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{limit} {resourceName}</span> yaratmaq mümkündür.
-                                Limitsiz imkanlar üçün Pro plana keçin.
+                                {displayMessage}
                             </p>
 
                             <div className="w-full space-y-3 mb-8">

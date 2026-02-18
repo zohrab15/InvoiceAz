@@ -8,7 +8,7 @@ export const usePlanLimits = () => {
     const { data: planStatus, isLoading } = useQuery({
         queryKey: ['planStatus'],
         queryFn: async () => {
-            const res = await clientApi.get('/auth/users/plan/status/');
+            const res = await clientApi.get('/users/plan/status/');
             return res.data;
         },
         enabled: !!token,
