@@ -2,24 +2,10 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import clientApi from '../api/client';
 import { useBusiness } from '../context/BusinessContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { Package, TrendingUp, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CountUp from './CountUp';
-
-const CustomBar = (props) => {
-    const { fill, x, y, width, height } = props;
-    // Create a pill-shaped bar with rounded right side
-    const radius = 10;
-    return (
-        <g>
-            <path
-                d={`M${x},${y} h${width - radius} a${radius},${radius} 0 0 1 ${radius},${radius} v${height - 2 * radius} a${radius},${radius} 0 0 1 -${radius},${radius} h-${width - radius} Z`}
-                fill={fill}
-            />
-        </g>
-    );
-};
 
 const TopProductsChart = () => {
     const { activeBusiness } = useBusiness();
@@ -34,66 +20,75 @@ const TopProductsChart = () => {
     });
 
     if (isLoading) return (
-        <div className="h-[450px] flex items-center justify-center text-slate-400 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div
+            className="h-[400px] flex items-center justify-center rounded-2xl"
+            style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-muted)' }}
+        >
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}>
-                <TrendingUp size={32} className="opacity-20" />
+                <TrendingUp size={28} style={{ opacity: 0.3 }} />
             </motion.div>
         </div>
     );
 
     if (!topProducts || topProducts.length === 0) return (
-        <div className="h-[450px] flex flex-col items-center justify-center text-slate-300 gap-4 bg-white rounded-[2.5rem] border-2 border-dashed border-slate-100 shadow-sm">
-            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center">
-                <Package size={32} opacity={0.3} />
+        <div
+            className="h-[400px] flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed"
+            style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-muted)' }}
+        >
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
+                <Package size={28} style={{ opacity: 0.4 }} />
             </div>
-            <p className="font-black uppercase tracking-[0.2em] text-xs">Məlumat yoxdur</p>
+            <p className="font-bold uppercase tracking-widest text-xs">Məlumat yoxdur</p>
         </div>
     );
 
-    // Color palette for items
     const colors = [
-        ['#3b82f6', '#60a5fa'], // Blue
-        ['#8b5cf6', '#a78bfa'], // Violet
-        ['#ec4899', '#f472b6'], // Pink
-        ['#f59e0b', '#fbbf24'], // Amber
-        ['#10b981', '#34d399'], // Emerald
+        ['#3b82f6', '#60a5fa'],
+        ['#8b5cf6', '#a78bfa'],
+        ['#ec4899', '#f472b6'],
+        ['#f59e0b', '#fbbf24'],
+        ['#10b981', '#34d399'],
     ];
 
-    // Max value for the background track
-    const maxVal = Math.max(...topProducts.map(p => p.total_quantity)) * 1.1;
+    const maxVal = Math.max(...topProducts.map(p => p.total_quantity)) * 1.15;
     const chartData = topProducts.map(p => ({ ...p, maxVal }));
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-6 sm:p-10 rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50 h-full flex flex-col overflow-hidden relative"
+            className="p-6 rounded-2xl h-full flex flex-col overflow-hidden relative"
+            style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
         >
-            {/* Background Accent */}
-            <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50/30 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="flex flex-col sm:flex-row justify-between items-start mb-10 relative gap-6">
-                <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 rotate-3 transform transition-transform hover:rotate-0 flex-shrink-0">
-                        <ShoppingBag size={28} />
+            <div className="flex flex-col sm:flex-row justify-between items-start mb-8 gap-4">
+                <div className="flex items-center gap-4">
+                    <div
+                        className="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0"
+                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))' }}
+                    >
+                        <ShoppingBag size={22} />
                     </div>
                     <div>
-                        <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-roboto tracking-tight">En çox satılan mallar</h3>
-                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic mt-1">Satış sayına görə TOP 10</p>
+                        <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                            Ən çox satılan mallar
+                        </h3>
+                        <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                            Satış sayına görə TOP {topProducts.length}
+                        </p>
                     </div>
                 </div>
-                <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:mb-1">Cəmi Mallar</span>
-                    <span className="text-xl sm:text-2xl font-black text-slate-900 font-roboto">{topProducts.length} <span className="text-xs text-slate-400">çeşid</span></span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
+                    <span className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>Cəmi:</span>
+                    <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{topProducts.length} çeşid</span>
                 </div>
             </div>
 
-            <div className="flex-1 min-h-[300px] sm:min-h-[350px] relative">
+            <div className="flex-1 min-h-[280px] sm:min-h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                         data={chartData}
                         layout="vertical"
-                        margin={{ top: 0, right: 80, left: 0, bottom: 0 }}
+                        margin={{ top: 0, right: 70, left: 0, bottom: 0 }}
                     >
                         <defs>
                             {colors.map((colorSet, i) => (
@@ -117,10 +112,9 @@ const TopProductsChart = () => {
                                             y={0}
                                             dy={4}
                                             textAnchor="end"
-                                            fill="#64748b"
+                                            fill="var(--color-text-secondary)"
                                             fontSize={11}
-                                            fontWeight={800}
-                                            className="font-roboto"
+                                            fontWeight={700}
                                         >
                                             {payload.value.length > 15 ? payload.value.substring(0, 15) + '...' : payload.value}
                                         </text>
@@ -131,22 +125,34 @@ const TopProductsChart = () => {
                             tickLine={false}
                         />
                         <Tooltip
-                            cursor={{ fill: 'rgba(241, 245, 249, 0.5)', radius: 10 }}
+                            cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.5 }}
                             content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
+                                if (active && payload?.length) {
                                     const data = payload[0].payload;
                                     return (
-                                        <div className="bg-white/90 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-slate-50 flex flex-col gap-2">
-                                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest underline decoration-blue-200 underline-offset-4">{data.product_name}</p>
-                                            <div className="flex items-center gap-6 mt-1">
+                                        <div
+                                            className="p-4 rounded-xl shadow-xl backdrop-blur-md"
+                                            style={{
+                                                backgroundColor: 'var(--color-dropdown-bg)',
+                                                border: '1px solid var(--color-dropdown-border)'
+                                            }}
+                                        >
+                                            <p className="text-xs font-bold mb-2 pb-2" style={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-card-border)' }}>
+                                                {data.product_name}
+                                            </p>
+                                            <div className="flex items-center gap-5">
                                                 <div>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Gəlir</p>
-                                                    <p className="text-lg font-black text-slate-900 tracking-tighter"><CountUp to={data.total_revenue} decimals={2} /> ₼</p>
+                                                    <p className="text-[10px] font-semibold uppercase" style={{ color: 'var(--color-text-muted)' }}>Gəlir</p>
+                                                    <p className="text-base font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                                                        <CountUp to={data.total_revenue} decimals={2} /> ₼
+                                                    </p>
                                                 </div>
-                                                <div className="w-px h-8 bg-slate-100" />
+                                                <div className="w-px h-8" style={{ backgroundColor: 'var(--color-card-border)' }} />
                                                 <div>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Miqdar</p>
-                                                    <p className="text-lg font-black text-blue-600 tracking-tighter"><CountUp to={data.total_quantity} decimals={0} /> <span className="text-[10px]">ədəd</span></p>
+                                                    <p className="text-[10px] font-semibold uppercase" style={{ color: 'var(--color-text-muted)' }}>Miqdar</p>
+                                                    <p className="text-base font-bold tracking-tight" style={{ color: 'var(--color-brand)' }}>
+                                                        <CountUp to={data.total_quantity} decimals={0} /> ədəd
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -156,21 +162,21 @@ const TopProductsChart = () => {
                             }}
                         />
 
-                        {/* Background Track Bar */}
+                        {/* Background Track */}
                         <Bar
                             dataKey="maxVal"
-                            fill="#f8fafc"
-                            radius={[0, 10, 10, 0]}
-                            barSize={20}
+                            fill="var(--color-badge-bg)"
+                            radius={[0, 6, 6, 0]}
+                            barSize={18}
                             isAnimationActive={false}
                         />
 
-                        {/* Actual Data Bar */}
+                        {/* Data Bar */}
                         <Bar
                             dataKey="total_quantity"
-                            radius={[0, 10, 10, 0]}
-                            barSize={20}
-                            animationDuration={1500}
+                            radius={[0, 6, 6, 0]}
+                            barSize={18}
+                            animationDuration={1200}
                         >
                             {topProducts.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={`url(#grad-${index % colors.length})`} />
@@ -182,12 +188,11 @@ const TopProductsChart = () => {
                                     const { x, y, width, value } = props;
                                     return (
                                         <text
-                                            x={x + width + 10}
-                                            y={y + 14}
-                                            fill="#1e293b"
-                                            fontSize={12}
-                                            fontWeight={900}
-                                            className="font-roboto tracking-tighter"
+                                            x={x + width + 8}
+                                            y={y + 13}
+                                            fill="var(--color-text-primary)"
+                                            fontSize={11}
+                                            fontWeight={700}
                                         >
                                             <CountUp to={value} decimals={0} /> ədəd
                                         </text>
@@ -199,14 +204,11 @@ const TopProductsChart = () => {
                 </ResponsiveContainer>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-slate-50 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-emerald-500 font-bold text-xs uppercase tracking-widest">
-                    <ArrowUpRight size={16} />
+            <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--color-card-border)' }}>
+                <div className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs">
+                    <ArrowUpRight size={14} />
                     <span>Real vaxt hesabatı</span>
                 </div>
-                <button className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 hover:text-blue-700 transition-colors underline underline-offset-4 decoration-blue-100 hover:decoration-blue-600">
-                    Bütün detallara bax
-                </button>
             </div>
         </motion.div>
     );

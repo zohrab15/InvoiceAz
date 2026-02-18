@@ -1,18 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import clientApi from '../api/client';
-import { TrendingUp, Clock, AlertCircle, Plus, Wallet, ArrowUpRight, ArrowDownRight, BarChart3 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, ComposedChart, Line } from 'recharts';
+import {
+    TrendingUp, Clock, AlertCircle, Plus, Wallet,
+    ArrowUpRight, ArrowDownRight, BarChart3,
+    FileText, Calendar, Activity
+} from 'lucide-react';
+import {
+    AreaChart, Area, XAxis, YAxis, Tooltip,
+    ResponsiveContainer, ComposedChart, Bar, CartesianGrid
+} from 'recharts';
 
 import { useBusiness } from '../context/BusinessContext';
 import TopProductsChart from '../components/TopProductsChart';
 import CountUp from '../components/CountUp';
+import useAuthStore from '../store/useAuthStore';
 
 const Dashboard = () => {
     const { activeBusiness } = useBusiness();
     const navigate = useNavigate();
+    const user = useAuthStore(state => state.user);
 
     const { data: invoices, isLoading: isLoadingInvoices } = useQuery({
         queryKey: ['invoices', activeBusiness?.id],
@@ -43,16 +52,30 @@ const Dashboard = () => {
 
     const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments;
 
+    // Time-aware greeting
+    const greeting = useMemo(() => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Sabahınız xeyir';
+        if (hour < 17) return 'Günortanız xeyir';
+        return 'Axşamınız xeyir';
+    }, []);
+
+    const todayStr = new Date().toLocaleDateString('az-AZ', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
     const stats = {
         totalRevenue: invoices?.reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
         paidRevenue: invoices?.filter(i => i.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
         pendingRevenue: invoices?.filter(i => i.status === 'sent').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
         totalExpenses: expenses?.reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0,
+        invoiceCount: invoices?.length || 0,
+        paidCount: invoices?.filter(i => i.status === 'paid').length || 0,
     };
 
     const profit = stats.paidRevenue - stats.totalExpenses;
 
-    const monthlyData = React.useMemo(() => {
+    const monthlyData = useMemo(() => {
         const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyun', 'İyul', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
         const currentMonth = new Date().getMonth();
         const data = [];
@@ -82,7 +105,7 @@ const Dashboard = () => {
         return data;
     }, [invoices, expenses]);
 
-    const recentTransactions = React.useMemo(() => {
+    const recentTransactions = useMemo(() => {
         const trans = [
             ...(invoices || []).map(inv => ({
                 id: `inv-${inv.id}`,
@@ -116,7 +139,7 @@ const Dashboard = () => {
                 positive: true
             }))
         ];
-        return trans.sort((a, b) => b.date - a.date).slice(0, 6);
+        return trans.sort((a, b) => b.date - a.date).slice(0, 7);
     }, [invoices, expenses, payments]);
 
     if (isLoading) return (
@@ -127,117 +150,181 @@ const Dashboard = () => {
         </div>
     );
 
+    const statCards = [
+        {
+            label: 'Ümumi Gəlir',
+            val: stats.totalRevenue,
+            icon: <TrendingUp size={20} />,
+            color: '#3b82f6',
+            bg: 'rgba(59,130,246,0.08)',
+            border: '#3b82f6'
+        },
+        {
+            label: 'Gözləyən',
+            val: stats.pendingRevenue,
+            icon: <Clock size={20} />,
+            color: '#f59e0b',
+            bg: 'rgba(245,158,11,0.08)',
+            border: '#f59e0b'
+        },
+        {
+            label: 'Ümumi Xərclər',
+            val: stats.totalExpenses,
+            icon: <Wallet size={20} />,
+            color: '#ef4444',
+            bg: 'rgba(239,68,68,0.08)',
+            border: '#ef4444'
+        },
+        {
+            label: 'Xalis Mənfəət',
+            val: profit,
+            icon: profit >= 0 ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />,
+            color: profit >= 0 ? '#10b981' : '#ef4444',
+            bg: profit >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
+            border: profit >= 0 ? '#10b981' : '#ef4444'
+        },
+    ];
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="space-y-10 pb-20"
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="space-y-8 pb-16"
         >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+            {/* ── HEADER ── */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-2 font-roboto" style={{ color: 'var(--color-text-primary)' }}>
-                        Dashboard <span className="block text-xs sm:text-sm font-bold tracking-widest uppercase mt-2" style={{ color: 'var(--color-brand)' }}>Biznesinizin ümumi görünüşü</span>
+                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-roboto" style={{ color: 'var(--color-text-primary)' }}>
+                        {greeting}{user?.first_name ? `, ${user.first_name}` : ''} 👋
                     </h2>
+                    <div className="flex items-center gap-2 mt-2">
+                        <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
+                        <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
+                    </div>
                 </div>
-                <div className="flex gap-4 mb-2 w-full sm:w-auto">
-                    <motion.a
-                        whileHover={{ y: -2, scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        href="/invoices"
-                        className="w-full sm:w-auto text-white px-6 sm:px-8 py-3 rounded-2xl flex items-center justify-center gap-2 shadow-2xl transition-all font-bold text-sm"
-                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 30px var(--color-brand-shadow)' }}
-                    >
-                        <Plus size={18} /> <span className="whitespace-nowrap">Yeni Faktura</span>
-                    </motion.a>
-                </div>
+                <motion.button
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate('/invoices')}
+                    className="text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm shadow-lg transition-all"
+                    style={{
+                        background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
+                        boxShadow: '0 4px 14px var(--color-brand-shadow)'
+                    }}
+                >
+                    <Plus size={16} strokeWidth={3} />
+                    <span>Yeni Faktura</span>
+                </motion.button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[
-                    { label: 'Ümumi Gəlir', val: stats.totalRevenue, icon: <TrendingUp size={20} />, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
-                    { label: 'Gözləyən', val: stats.pendingRevenue, icon: <Clock size={20} />, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-                    { label: 'Ümumi Xərclər', val: stats.totalExpenses, icon: <Wallet size={20} />, color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-                    {
-                        label: 'Xalis Mənfəət',
-                        val: profit,
-                        icon: profit >= 0 ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />,
-                        color: profit >= 0 ? '#10b981' : '#ef4444',
-                        bg: profit >= 0 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'
-                    },
-                ].map((s, i) => (
+            {/* ── STAT CARDS ── */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {statCards.map((s, i) => (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
+                        transition={{ delay: i * 0.07 }}
                         key={s.label}
-                        className="p-5 sm:p-7 rounded-[2rem] hover:shadow-2xl transition-all group relative overflow-hidden backdrop-blur-sm"
-                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                        className="p-5 rounded-2xl transition-all relative overflow-hidden"
+                        style={{
+                            backgroundColor: 'var(--color-card-bg)',
+                            border: '1px solid var(--color-card-border)',
+                            borderLeft: `3px solid ${s.border}`
+                        }}
                     >
-                        <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-20 group-hover:scale-150 transition-transform duration-700" style={{ backgroundColor: s.bg }} />
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="p-3.5 rounded-2xl" style={{ backgroundColor: s.bg, color: s.color }}>
+                        <div className="flex items-center justify-between mb-3">
+                            <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>{s.label}</p>
+                            <div className="p-2 rounded-lg" style={{ backgroundColor: s.bg, color: s.color }}>
                                 {s.icon}
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)' }}>{s.label}</p>
                         </div>
-                        <p className="text-2xl sm:text-3xl font-black tracking-tighter" style={{ color: 'var(--color-text-primary)' }}>
-                            <CountUp to={s.val} decimals={0} /> <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
+                        <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                            <CountUp to={s.val} decimals={0} />
+                            <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                         </p>
                     </motion.div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* ── CHART + TRANSACTIONS ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                {/* Chart — 3 cols */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="lg:col-span-2 p-6 sm:p-10 rounded-[2.5rem] backdrop-blur-sm"
+                    className="lg:col-span-3 p-6 rounded-2xl"
                     style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-                        <h3 className="font-black text-lg tracking-tight flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
-                            <div className="w-2 h-8 rounded-full" style={{ backgroundColor: 'var(--color-brand)' }} />
-                            Performans Analitikası
-                        </h3>
-                        <div className="flex gap-4 sm:gap-6">
-                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
-                                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-lg" style={{ boxShadow: '0 2px 8px rgba(59,130,246,0.4)' }} />
-                                <span>Gəlir</span>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+                        <div>
+                            <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Maliyyə İcmalı</h3>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Son 6 aylıq gəlir və xərc</p>
+                        </div>
+                        <div className="flex gap-5">
+                            <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                                <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                                Gəlir
                             </div>
-                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
-                                <div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-lg" style={{ boxShadow: '0 2px 8px rgba(251,113,133,0.4)' }} />
-                                <span>Xərc</span>
+                            <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                                <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                                Xərc
                             </div>
                         </div>
                     </div>
-                    <div className="h-64 sm:h-80 w-full relative">
+
+                    <div className="h-72 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <ComposedChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="gəlirGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+                                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid
+                                    strokeDasharray="3 3"
+                                    stroke="var(--color-card-border)"
+                                    vertical={false}
+                                />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 700 }}
-                                    dy={10}
+                                    tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }}
+                                    dy={8}
                                 />
-                                <YAxis hide />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: 'var(--color-text-muted)', fontSize: 10, fontWeight: 600 }}
+                                    tickFormatter={v => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'}
+                                />
                                 <Tooltip
-                                    cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.4 }}
+                                    cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.5 }}
                                     content={({ active, payload, label }) => {
-                                        if (active && payload && payload.length) {
+                                        if (active && payload?.length) {
                                             return (
-                                                <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white/20 dark:border-slate-800/50 min-w-[200px]">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">{label} Ayı</p>
-                                                    <div className="space-y-4">
-                                                        {payload.map((entry, index) => (
-                                                            <div key={index} className="flex justify-between items-center gap-8">
+                                                <div
+                                                    className="p-4 rounded-xl shadow-xl backdrop-blur-md min-w-[180px]"
+                                                    style={{
+                                                        backgroundColor: 'var(--color-dropdown-bg)',
+                                                        border: '1px solid var(--color-dropdown-border)'
+                                                    }}
+                                                >
+                                                    <p className="text-[10px] font-bold uppercase tracking-wider mb-3 pb-2"
+                                                        style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-card-border)' }}>
+                                                        {label}
+                                                    </p>
+                                                    <div className="space-y-2">
+                                                        {payload.map((entry, idx) => (
+                                                            <div key={idx} className="flex justify-between items-center gap-6">
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color, boxShadow: `0 0 10px ${entry.color}80` }} />
-                                                                    <span className="text-xs font-bold text-slate-500 capitalize">{entry.name}</span>
+                                                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                                    <span className="text-xs font-medium capitalize" style={{ color: 'var(--color-text-secondary)' }}>{entry.name}</span>
                                                                 </div>
-                                                                <span className="text-sm font-black dark:text-white" style={{ color: 'var(--color-text-primary)' }}>
-                                                                    {entry.value.toLocaleString()} ₼
+                                                                <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                                                                    {entry.value?.toLocaleString()} ₼
                                                                 </span>
                                                             </div>
                                                         ))}
@@ -248,91 +335,97 @@ const Dashboard = () => {
                                         return null;
                                     }}
                                 />
-                                <Bar
+                                <Area
+                                    type="monotone"
                                     dataKey="gəlir"
                                     name="gəlir"
-                                    fill="#2563eb"
-                                    radius={[10, 10, 0, 0]}
-                                    barSize={20}
-                                    animationDuration={1500}
+                                    fill="url(#gəlirGrad)"
+                                    stroke="#3b82f6"
+                                    strokeWidth={2.5}
+                                    animationDuration={1200}
                                 />
                                 <Bar
                                     dataKey="xərc"
                                     name="xərc"
                                     fill="#fb7185"
-                                    radius={[10, 10, 0, 0]}
-                                    barSize={20}
-                                    animationDuration={1500}
+                                    radius={[4, 4, 0, 0]}
+                                    barSize={16}
+                                    animationDuration={1200}
+                                    opacity={0.85}
                                 />
-                            </BarChart>
+                            </ComposedChart>
                         </ResponsiveContainer>
                     </div>
                 </motion.div>
 
+                {/* Transactions — 2 cols */}
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="p-6 sm:p-10 rounded-[2.5rem] flex flex-col backdrop-blur-sm"
+                    className="lg:col-span-2 p-6 rounded-2xl flex flex-col"
                     style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
-                    <h3 className="font-black text-lg tracking-tight mb-8" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
-                    <div className="space-y-6 flex-1 overflow-y-auto pr-2">
-                        {recentTransactions.map((t, i) => (
+                    <div className="flex justify-between items-center mb-5">
+                        <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
+                        <Activity size={16} style={{ color: 'var(--color-text-muted)' }} />
+                    </div>
+
+                    <div className="space-y-1 flex-1 overflow-y-auto">
+                        {recentTransactions.map((t) => (
                             <div
                                 key={t.id}
                                 onClick={() => navigate(t.type === 'expense' ? '/expenses' : '/invoices')}
-                                className="flex justify-between items-center group cursor-pointer hover:translate-x-1 transition-transform"
+                                className="flex justify-between items-center py-3 px-3 rounded-xl cursor-pointer transition-colors"
+                                style={{ '--hover-bg': 'var(--color-hover-bg)' }}
+                                onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'}
+                                onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center transition-colors"
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                                         style={{
                                             backgroundColor: t.type === 'payment' ? 'rgba(16,185,129,0.1)' :
-                                                t.type === 'expense' ? 'rgba(239,68,68,0.1)' : 'var(--color-hover-bg)',
+                                                t.type === 'expense' ? 'rgba(239,68,68,0.1)' : 'var(--color-badge-bg)',
                                             color: t.type === 'payment' ? '#10b981' :
                                                 t.type === 'expense' ? '#ef4444' : 'var(--color-text-secondary)'
                                         }}
                                     >
-                                        {t.type === 'expense' ? <ArrowDownRight size={18} /> : <ArrowUpRight size={18} />}
+                                        {t.type === 'expense' ? <ArrowDownRight size={16} /> : <ArrowUpRight size={16} />}
                                     </div>
-                                    <div>
-                                        <div className="font-black text-sm" style={{ color: 'var(--color-text-primary)' }}>{t.title}</div>
-                                        <div className="text-[10px] font-bold tracking-wider uppercase flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                    <div className="min-w-0">
+                                        <div className="font-bold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{t.title}</div>
+                                        <div className="text-[10px] font-medium truncate" style={{ color: 'var(--color-text-muted)' }}>
                                             {t.subtitle}
-                                            {t.type === 'payment' && <span className="w-1 h-1 rounded-full" style={{ backgroundColor: 'var(--color-text-muted)' }} />}
-                                            {t.type === 'payment' && <span className="text-emerald-500 lowercase">ödəniş</span>}
+                                            {t.type === 'payment' && <span className="text-emerald-500 ml-1">• ödəniş</span>}
                                         </div>
                                     </div>
                                 </div>
-                                <div className={`text-sm font-black ${t.positive ? 'text-emerald-500' : 'text-red-500'}`}>
-                                    {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
+                                <div className="text-right flex-shrink-0 ml-2">
+                                    <div className={`text-sm font-bold ${t.positive ? 'text-emerald-500' : 'text-red-500'}`}>
+                                        {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
+                                    </div>
+                                    <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                                        {t.date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'short' })}
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
+
                     <button
                         onClick={() => navigate('/analytics/tax')}
-                        className="w-full py-4 mt-8 text-white font-black rounded-2xl transition-all text-[10px] uppercase tracking-widest"
-                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 30px var(--color-brand-shadow)' }}
+                        className="w-full py-3 mt-4 text-white font-bold rounded-xl transition-all text-xs uppercase tracking-wider"
+                        style={{
+                            background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
+                            boxShadow: '0 4px 12px var(--color-brand-shadow)'
+                        }}
                     >
                         Bütün Hesabata Bax
                     </button>
                 </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                    <TopProductsChart />
-                </div>
-                <div className="p-6 sm:p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-4 backdrop-blur-sm"
-                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
-                >
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
-                        <TrendingUp size={32} />
-                    </div>
-                    <h3 className="font-roboto font-black text-lg" style={{ color: 'var(--color-text-primary)' }}>Satış Artımı</h3>
-                    <p className="text-sm px-4" style={{ color: 'var(--color-text-secondary)' }}>Mehsul bazasında statistikalar satış strategiyanızı gücləndirir.</p>
-                </div>
-            </div>
+            {/* ── TOP PRODUCTS — Full Width ── */}
+            <TopProductsChart />
         </motion.div>
     );
 };
