@@ -34,7 +34,7 @@ const Products = () => {
 
     // Mutations
     const addMutation = useMutation({
-        mutationFn: (newProd) => clientApi.post('/inventory/', { ...newProd, business: activeBusiness.id }),
+        mutationFn: (newProd) => clientApi.post('/inventory/', newProd),
         onSuccess: () => {
             queryClient.invalidateQueries(['products']);
             showToast('Məhsul əlavə edildi');
@@ -45,12 +45,13 @@ const Products = () => {
             if (data?.detail) {
                 showToast(data.detail, 'error');
             } else if (data && typeof data === 'object') {
-                // Handle field-specific errors
-                const firstKey = Object.keys(data)[0];
-                const msg = Array.isArray(data[firstKey]) ? data[firstKey][0] : data[firstKey];
-                showToast(`${firstKey}: ${msg}`, 'error');
+                const errors = Object.entries(data).map(([key, value]) => {
+                    const msg = Array.isArray(value) ? value[0] : value;
+                    return `${key}: ${msg}`;
+                });
+                showToast(errors[0] || 'Xəta baş verdi', 'error');
             } else {
-                showToast('Xəta baş verdi', 'error');
+                showToast('Server xətası baş verdi', 'error');
             }
         }
     });
@@ -61,6 +62,10 @@ const Products = () => {
             queryClient.invalidateQueries(['products']);
             showToast('Məhsul yeniləndi');
             setEditingProduct(null);
+        },
+        onError: (err) => {
+            const data = err.response?.data;
+            showToast(data?.detail || 'Yenilənmə zamanı xəta', 'error');
         }
     });
 
@@ -348,11 +353,20 @@ const Products = () => {
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     const formData = new FormData(e.target);
-                                    const data = Object.fromEntries(formData.entries());
+                                    const rawData = Object.fromEntries(formData.entries());
+
+                                    // Sanitize numeric fields — convert empty strings or invalid inputs to 0
+                                    const sanitizedData = {
+                                        ...rawData,
+                                        base_price: parseFloat(rawData.base_price) || 0,
+                                        stock_quantity: parseFloat(rawData.stock_quantity) || 0,
+                                        min_stock_level: parseFloat(rawData.min_stock_level) || 0,
+                                    };
+
                                     if (editingProduct?.id) {
-                                        updateMutation.mutate({ ...editingProduct, ...data });
+                                        updateMutation.mutate({ ...editingProduct, ...sanitizedData });
                                     } else {
-                                        addMutation.mutate(data);
+                                        addMutation.mutate(sanitizedData);
                                     }
                                 }}
                             >
