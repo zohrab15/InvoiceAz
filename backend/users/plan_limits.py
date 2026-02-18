@@ -7,57 +7,27 @@ from django.utils import timezone
 from django.db.models import Count
 
 
-# Limits per plan
-PLAN_LIMITS = {
-    'free': {
-        'invoices_per_month': 5,
-        'clients': 10,
-        'expenses_per_month': 20,
-        'businesses': 1,
-        'forecast_analytics': False,
-        'csv_export': False,
-        'premium_pdf': False,
-        'api_access': False,
-        'team_members': 0,
-        'custom_themes': False,
-    },
-    'pro': {
-        'invoices_per_month': 100,
-        'clients': None,
-        'expenses_per_month': None,
-        'businesses': 5,
-        'forecast_analytics': True,
-        'csv_export': True,
-        'premium_pdf': True,
-        'api_access': False,
-        'team_members': 0,
-        'custom_themes': False,
-    },
-    'premium': {
-        'invoices_per_month': None,
-        'clients': None,
-        'expenses_per_month': None,
-        'businesses': None,
-        'forecast_analytics': True,
-        'csv_export': True,
-        'premium_pdf': True,
-        'api_access': True,
-        'team_members': None,
-        'custom_themes': True,
-    }
-}
+# Plan limits fetched from database
 
 
 def get_plan_limits(user):
-    """Get the limits dict for a user's current plan."""
-    plan = getattr(user, 'membership', 'free') or 'free'
-    return PLAN_LIMITS.get(plan, PLAN_LIMITS['free'])
+    """Get the limits for a user's current plan from database."""
+    if user.subscription_plan:
+        return user.subscription_plan
+    
+    # Fallback to free plan from DB if not set
+    from users.models import SubscriptionPlan
+    free_plan = SubscriptionPlan.objects.filter(name='free').first()
+    return free_plan
 
 
 def check_invoice_limit(user, business):
     """Check if user can create a new invoice this month."""
-    limits = get_plan_limits(user)
-    max_invoices = limits['invoices_per_month']
+    plan = get_plan_limits(user)
+    if not plan:
+        return {'allowed': True, 'current': 0, 'limit': None} # Should not happen
+
+    max_invoices = plan.invoices_per_month
     
     if max_invoices is None:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -79,8 +49,11 @@ def check_invoice_limit(user, business):
 
 def check_client_limit(user):
     """Check if user can create a new client."""
-    limits = get_plan_limits(user)
-    max_clients = limits['clients']
+    plan = get_plan_limits(user)
+    if not plan:
+        return {'allowed': True, 'current': 0, 'limit': None}
+
+    max_clients = plan.clients_limit
     
     if max_clients is None:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -100,8 +73,11 @@ def check_client_limit(user):
 
 def check_expense_limit(user, business):
     """Check if user can create a new expense this month."""
-    limits = get_plan_limits(user)
-    max_expenses = limits['expenses_per_month']
+    plan = get_plan_limits(user)
+    if not plan:
+        return {'allowed': True, 'current': 0, 'limit': None}
+
+    max_expenses = plan.expenses_per_month
     
     if max_expenses is None:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -123,8 +99,11 @@ def check_expense_limit(user, business):
 
 def check_business_limit(user):
     """Check if user can create a new business profile."""
-    limits = get_plan_limits(user)
-    max_businesses = limits['businesses']
+    plan = get_plan_limits(user)
+    if not plan:
+        return {'allowed': True, 'current': 0, 'limit': None}
+
+    max_businesses = plan.businesses_limit
     
     if max_businesses is None:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -144,10 +123,17 @@ def get_full_plan_status(user):
     from invoices.models import Invoice, Expense
     from clients.models import Client
     from users.models import Business
+    from users.models import SubscriptionPlan
     
     now = timezone.now()
-    plan = getattr(user, 'membership', 'free') or 'free'
-    limits = get_plan_limits(user)
+    plan = get_plan_limits(user)
+    if not plan:
+        # Fallback to avoid crash
+        return {
+            'plan': 'free',
+            'limits': {},
+            'usage': {}
+        }
     
     # Get first active business for context
     active_businesses = Business.objects.filter(user=user)
@@ -156,34 +142,36 @@ def get_full_plan_status(user):
     # Current usage
     invoices_this_month = 0
     expenses_this_month = 0
-    if first_business:
-        invoices_this_month = Invoice.objects.filter(
-            business__user=user,
-            created_at__year=now.year,
-            created_at__month=now.month
-        ).count()
-        expenses_this_month = Expense.objects.filter(
-            business__user=user,
-            date__year=now.year,
-            date__month=now.month
-        ).count()
+    # Usage should probably be aggregated across all businesses or specific to active one
+    # Currently use all businesses for total usage check if applicable
+    invoices_this_month = Invoice.objects.filter(
+        business__user=user,
+        created_at__year=now.year,
+        created_at__month=now.month
+    ).count()
+    expenses_this_month = Expense.objects.filter(
+        business__user=user,
+        date__year=now.year,
+        date__month=now.month
+    ).count()
     
     total_clients = Client.objects.filter(business__user=user).count()
     total_businesses = active_businesses.count()
     
     return {
-        'plan': plan,
+        'plan': plan.name,
+        'label': plan.label,
         'limits': {
-            'invoices_per_month': limits['invoices_per_month'],
-            'clients': limits['clients'],
-            'expenses_per_month': limits['expenses_per_month'],
-            'businesses': limits['businesses'],
-            'forecast_analytics': limits['forecast_analytics'],
-            'csv_export': limits['csv_export'],
-            'premium_pdf': limits['premium_pdf'],
-            'api_access': limits['api_access'],
-            'team_members': limits['team_members'],
-            'custom_themes': limits['custom_themes'],
+            'invoices_per_month': plan.invoices_per_month,
+            'clients': plan.clients_limit,
+            'expenses_per_month': plan.expenses_per_month,
+            'businesses': plan.businesses_limit,
+            'forecast_analytics': plan.has_forecast_analytics,
+            'csv_export': plan.has_csv_export,
+            'premium_pdf': plan.has_premium_pdf,
+            'api_access': plan.has_api_access,
+            'team_members': plan.team_members_limit,
+            'custom_themes': plan.has_custom_themes,
         },
         'usage': {
             'invoices_this_month': invoices_this_month,

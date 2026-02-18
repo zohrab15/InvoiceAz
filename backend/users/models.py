@@ -34,6 +34,29 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
 
+class SubscriptionPlan(models.Model):
+    name = models.CharField(max_length=50, unique=True, help_text="Slug name (e.g., 'free', 'pro')")
+    label = models.CharField(max_length=100, help_text="Display name (e.g., 'Pulsuz', 'Pro')")
+    
+    invoices_per_month = models.IntegerField(default=5, null=True, blank=True)
+    clients_limit = models.IntegerField(default=10, null=True, blank=True)
+    expenses_per_month = models.IntegerField(default=20, null=True, blank=True)
+    businesses_limit = models.IntegerField(default=1, null=True, blank=True)
+    
+    has_forecast_analytics = models.BooleanField(default=False)
+    has_csv_export = models.BooleanField(default=False)
+    has_premium_pdf = models.BooleanField(default=False)
+    has_api_access = models.BooleanField(default=False)
+    
+    team_members_limit = models.IntegerField(default=0, null=True, blank=True)
+    has_custom_themes = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.label
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
@@ -41,6 +64,9 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, max_length=500)
     timezone = models.CharField(max_length=50, default='UTC')
     language = models.CharField(max_length=10, default='az')
+    
+    subscription_plan = models.ForeignKey(SubscriptionPlan, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
+    
     MEMBERSHIP_CHOICES = (
         ('free', 'Pulsuz'),
         ('pro', 'Pro'),
