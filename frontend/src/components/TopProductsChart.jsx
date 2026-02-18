@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import clientApi from '../api/client';
 import { useBusiness } from '../context/BusinessContext';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
@@ -17,6 +18,7 @@ const TopProductsChart = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        refetchInterval: 30000, // Auto-refresh every 30 seconds
     });
 
     if (isLoading) return (
@@ -208,10 +210,10 @@ const TopProductsChart = () => {
             </div>
 
             <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--color-card-border)' }}>
-                <div className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs">
+                <Link to="/analytics/products" className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs hover:underline cursor-pointer">
                     <ArrowUpRight size={14} />
                     <span>Real vaxt hesabatı</span>
-                </div>
+                </Link>
             </div>
         </motion.div>
     );

@@ -32,6 +32,7 @@ const PaymentAnalytics = lazy(() => import('./pages/PaymentAnalytics'));
 const TaxReports = lazy(() => import('./pages/TaxReports'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Products = lazy(() => import('./pages/Products'));
+const ProductAnalytics = lazy(() => import('./pages/ProductAnalytics'));
 const DemoLogin = lazy(() => import('./pages/DemoLogin'));
 
 const queryClient = new QueryClient({
@@ -110,6 +111,7 @@ function App() {
                             <Route path="/analytics/payments" element={<PaymentAnalytics />} />
                             <Route path="/analytics/issues" element={<ProblematicInvoices />} />
                             <Route path="/analytics/forecast" element={<ForecastAnalytics />} />
+                            <Route path="/analytics/products" element={<ProductAnalytics />} />
                             <Route path="/analytics/tax" element={<TaxReports />} />
                             <Route path="/expenses" element={<Expenses />} />
                             <Route path="/clients" element={<Clients />} />
