@@ -603,13 +603,29 @@ const Invoices = () => {
                                     <span className="whitespace-nowrap">{showPreview ? 'Yazı rejimi' : 'Ön baxış'}</span>
                                 </button>
                                 {!editInvoice && (
-                                    <button onClick={() => handleSave('draft')} className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center justify-center space-x-2 transition-all shadow-sm text-xs sm:text-sm">
-                                        <Save size={16} />
+                                    <button
+                                        onClick={() => handleSave('draft')}
+                                        disabled={createMutation.isPending || updateMutation.isPending}
+                                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 border rounded-lg flex items-center justify-center space-x-2 transition-all shadow-sm text-xs sm:text-sm ${createMutation.isPending || updateMutation.isPending ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                                    >
+                                        {(createMutation.isPending || updateMutation.isPending) && !triggerSendModal ? (
+                                            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <Save size={16} />
+                                        )}
                                         <span className="whitespace-nowrap">Qaralama</span>
                                     </button>
                                 )}
-                                <button onClick={() => handleSave('draft', true)} className="flex-grow sm:flex-none bg-primary-blue text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-700 shadow-md transform active:scale-95 transition-all text-xs sm:text-sm font-bold">
-                                    <Send size={16} />
+                                <button
+                                    onClick={() => handleSave('draft', true)}
+                                    disabled={createMutation.isPending || updateMutation.isPending}
+                                    className={`flex-grow sm:flex-none bg-primary-blue text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center space-x-2 shadow-md transform active:scale-95 transition-all text-xs sm:text-sm font-bold ${createMutation.isPending || updateMutation.isPending ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                                >
+                                    {(createMutation.isPending || updateMutation.isPending) && triggerSendModal ? (
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    ) : (
+                                        <Send size={16} />
+                                    )}
                                     <span className="whitespace-nowrap">{!editInvoice || editInvoice.status === 'draft' ? 'Yadda saxla və Göndər' : 'Yadda saxla'}</span>
                                 </button>
                             </div>
