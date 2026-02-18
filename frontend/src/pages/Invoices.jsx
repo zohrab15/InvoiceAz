@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useBusiness } from '../context/BusinessContext';
 import { API_URL } from '../config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -41,6 +41,17 @@ const Invoices = () => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentInvoice, setPaymentInvoice] = useState(null);
     const [triggerSendModal, setTriggerSendModal] = useState(false);
+    const previewRef = useRef(null);
+
+    useEffect(() => {
+        if (showPreview && previewRef.current) {
+            // Delay to ensure the section is rendered before scrolling
+            const timer = setTimeout(() => {
+                previewRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [showPreview]);
 
     // Filter & Search State
     const [searchTerm, setSearchTerm] = useState('');
@@ -783,7 +794,7 @@ const Invoices = () => {
                                 </div>
                             </div>
 
-                            <div className={`${showPreview ? 'lg:col-span-5' : 'lg:col-span-4'} space-y-6 order-2`}>
+                            <div ref={previewRef} className={`${showPreview ? 'lg:col-span-5' : 'lg:col-span-4'} space-y-6 order-2`}>
                                 {showPreview ? (
                                     <InvoicePreview />
                                 ) : (
