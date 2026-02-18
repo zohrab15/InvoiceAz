@@ -293,7 +293,7 @@ const Invoices = () => {
         const phone = targetInvoice.client_phone;
         if (!phone) return showToast('Müştərinin telefon nömrəsi yoxdur', 'error');
 
-        const publicUrl = `http://localhost:5173/view/${targetInvoice.share_token}`;
+        const publicUrl = `${window.location.origin}/view/${targetInvoice.share_token}`;
         const text = `Salam! ${activeBusiness?.name} tərəfindən fakturanız hazırdır.\n\nMəbləğ: ${parseFloat(targetInvoice.total).toFixed(2)} ₼\nBaxmaq və ödəmək üçün link: ${publicUrl}`;
 
         if (!targetInvoice.sent_at) {
@@ -749,7 +749,7 @@ const Invoices = () => {
                                                     onClick={() => {
                                                         const target = editInvoice || savedInvoice;
                                                         if (!target) return showToast('Əvvəlcə yadda saxlayın', 'error');
-                                                        const url = `http://localhost:5173/view/${target.share_token}`;
+                                                        const url = `${window.location.origin}/view/${target.share_token}`;
                                                         navigator.clipboard.writeText(url);
                                                         showToast('Link kopyalandı!');
                                                     }}
@@ -830,7 +830,7 @@ const Invoices = () => {
 
                                     <button
                                         onClick={() => {
-                                            const url = `http://localhost:5173/view/${savedInvoice.share_token}`;
+                                            const url = `${window.location.origin}/view/${savedInvoice.share_token}`;
                                             navigator.clipboard.writeText(url);
                                             if (savedInvoice && !savedInvoice.sent_at) {
                                                 markAsSentMutation.mutate(savedInvoice.id);
