@@ -1,10 +1,77 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, Check, Coins, Bell, Moon, Sun } from 'lucide-react';
+import { Palette, Check, Coins, Bell, Moon, Sun, Mail, AppWindow, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import client from '../api/client';
+import { toast } from 'react-hot-toast';
 
 const SystemSettings = () => {
     const { theme: currentTheme, setTheme, themes } = useTheme();
+    const [settings, setSettings] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        fetchSettings();
+    }, []);
+
+    const fetchSettings = async () => {
+        try {
+            const response = await client.get('/notifications/settings/me/');
+            setSettings(response.data);
+        } catch (error) {
+            console.error('Bildiriş ayarlarını yükləmək mümkün olmadı:', error);
+            toast.error('Bildiriş ayarlarını yükləmək mümkün olmadı');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleSetting = async (key) => {
+        if (!settings || saving) return;
+
+        const newValue = !settings[key];
+        setSaving(true);
+
+        try {
+            const response = await client.patch('/notifications/settings/me/', { [key]: newValue });
+            setSettings(response.data);
+            toast.success('Ayarlar yeniləndi');
+        } catch (error) {
+            console.error('Ayarı yeniləmək mümkün olmadı:', error);
+            toast.error('Ayarı yeniləmək mümkün olmadı');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const NotificationToggle = ({ id, label, description, icon: Icon, isEmail = false }) => {
+        const key = isEmail ? `email_${id}` : `in_app_${id}`;
+        const isActive = settings?.[key];
+
+        return (
+            <div className="flex items-center justify-between p-4 rounded-2xl transition-colors hover:bg-[var(--color-hover-bg)]">
+                <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-xl ${isEmail ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-600'}`}>
+                        <Icon size={20} />
+                    </div>
+                    <div>
+                        <div className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{label}</div>
+                        <div className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{description}</div>
+                    </div>
+                </div>
+                <button
+                    onClick={() => toggleSetting(key)}
+                    disabled={saving || loading}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isActive ? 'bg-[var(--color-brand)]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                >
+                    <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-6' : 'translate-x-1'}`}
+                    />
+                </button>
+            </div>
+        );
+    };
 
     return (
         <motion.div
@@ -97,11 +164,46 @@ const SystemSettings = () => {
 
                 {/* Notifications */}
                 <div className="p-8 rounded-3xl space-y-8" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
-                    <h3 className="font-black flex items-center gap-3 text-xl tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                        <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400"><Bell size={20} /></div>
-                        Bildirişlər
-                    </h3>
-                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>Bu bölmə hələ ki, hazırlıq mərhələsindədir.</p>
+                    <div className="flex items-center justify-between">
+                        <h3 className="font-black flex items-center gap-3 text-xl tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                            <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400"><Bell size={24} /></div>
+                            Bildirişlər
+                        </h3>
+                        {saving && <Loader2 size={16} className="animate-spin text-[var(--color-brand)]" />}
+                    </div>
+
+                    {loading ? (
+                        <div className="flex justify-center p-8">
+                            <Loader2 size={32} className="animate-spin text-[var(--color-brand)] opacity-50" />
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* In-App Notifications */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-black uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                    <AppWindow size={14} /> Sistem Daxili Bildirişlər
+                                </h4>
+                                <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
+                                    <NotificationToggle id="invoice_created" label="Yeni Faktura" description="Yeni faktura yaradıldıqda bildir" icon={Bell} />
+                                    <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
+                                    <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə bildir" icon={Bell} />
+                                    <NotificationToggle id="client_created" label="Yeni Müştəri" description="Yeni müştəri əlavə edildikdə bildir" icon={Bell} />
+                                    <NotificationToggle id="expense_created" label="Yeni Xərc" description="Yeni xərc əlavə edildikdə bildir" icon={Bell} />
+                                </div>
+                            </div>
+
+                            {/* Email Notifications */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-black uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                    <Mail size={14} /> E-poçt Bildirişləri
+                                </h4>
+                                <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
+                                    <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
+                                    <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </motion.div>

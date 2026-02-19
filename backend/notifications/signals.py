@@ -22,7 +22,8 @@ def client_created(sender, instance, created, **kwargs):
             user=instance.business.user,
             title="Yeni Müştəri",
             message=f"'{instance.name}' adlı yeni müştəri əlavə edildi.",
-            type='info'
+            type='info',
+            setting_key='client_created'
         )
 
 @receiver(post_save, sender=Invoice)
@@ -33,7 +34,8 @@ def invoice_created(sender, instance, created, **kwargs):
             title="Yeni Faktura",
             message=f"#{instance.invoice_number} nömrəli yeni faktura yaradıldı.",
             type='info',
-            link={ 'path': '/invoices', 'id': instance.id }
+            link={ 'path': '/invoices', 'id': instance.id },
+            setting_key='invoice_created'
         )
 
 @receiver(post_save, sender=Payment)
@@ -44,5 +46,6 @@ def payment_received(sender, instance, created, **kwargs):
             title="Yeni Ödəniş",
             message=f"#{instance.invoice.invoice_number} nömrəli faktura üzrə {instance.amount} AZN ödəniş qəbul edildi.",
             type='success',
-            link={ 'path': '/invoices' }
+            link={ 'path': '/invoices' },
+            setting_key='payment_received'
         )

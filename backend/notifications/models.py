@@ -22,3 +22,20 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.title}"
+
+class NotificationSetting(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notification_settings')
+    
+    # Email notifications
+    email_invoice_viewed = models.BooleanField(default=True)
+    email_payment_received = models.BooleanField(default=True)
+    
+    # In-app notifications
+    in_app_invoice_created = models.BooleanField(default=True)
+    in_app_invoice_viewed = models.BooleanField(default=True)
+    in_app_payment_received = models.BooleanField(default=True)
+    in_app_client_created = models.BooleanField(default=True)
+    in_app_expense_created = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Settings for {self.user.email}"
