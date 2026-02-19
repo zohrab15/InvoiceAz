@@ -63,11 +63,11 @@ const LandingPage = () => {
                         if (window.location.pathname === '/') window.location.reload();
                         else navigate('/');
                     }}>
-                        <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
-                            <Zap size={16} className="text-white md:hidden" />
+                        <div className="w-7 h-7 md:w-9 md:h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
+                            <Zap size={14} className="text-white md:hidden" />
                             <Zap size={18} className="text-white hidden md:block" />
                         </div>
-                        <span className="text-lg md:text-xl font-black tracking-tight">InvoiceAZ</span>
+                        <span className="text-base md:text-xl font-black tracking-tight">InvoiceAZ</span>
                     </div>
                     <div className="hidden md:flex items-center gap-6">
                         <a href="#features" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Özəlliklər</a>
