@@ -265,7 +265,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         except Invoice.DoesNotExist:
             return Response({"error": "Faktura tapılmadı"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], url_path='public/(?P<share_token>[^/.]+)/pay')
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='public/(?P<share_token>[^/.]+)/pay')
     def public_pay(self, request, share_token=None):
         try:
             invoice = Invoice.objects.get(share_token=share_token)
@@ -284,6 +284,22 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             )
             
             return Response({"message": "Ödəniş uğurla tamamlandı", "status": "paid"})
+        except Invoice.DoesNotExist:
+            return Response({"error": "Faktura tapılmadı"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='public/(?P<share_token>[^/.]+)/pdf')
+    def public_pdf(self, request, share_token=None):
+        try:
+            invoice = Invoice.objects.get(share_token=share_token)
+            pdf_content = self._generate_pdf(invoice)
+            
+            if pdf_content:
+                response = HttpResponse(pdf_content, content_type='application/pdf')
+                filename = f"invoice_{invoice.invoice_number}.pdf"
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                return response
+            
+            return Response({"error": "PDF yaradıla bilmədi."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Invoice.DoesNotExist:
             return Response({"error": "Faktura tapılmadı"}, status=status.HTTP_404_NOT_FOUND)
     @action(detail=False, methods=['get'], url_path='top-products')

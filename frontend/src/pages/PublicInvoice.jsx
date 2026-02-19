@@ -256,7 +256,7 @@ const PublicInvoice = () => {
     }, [token]);
 
     const handleDownload = () => {
-        const url = `${API_URL}/api/invoices/${invoice.id}/pdf/?business_id=${invoice.business}`;
+        const url = `${API_URL}/api/invoices/public/${token}/pdf/`;
         window.open(url, '_blank');
     };
 
