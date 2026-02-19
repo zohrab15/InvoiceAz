@@ -19,5 +19,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         Constructs the email confirmation (activation) url.
         """
         # Frontend URL for verification
-        url = f"http://localhost:5173/verify-email/{emailconfirmation.key}/"
+        from django.conf import settings
+        frontend_url = 'https://invoiceaz.vercel.app' if not settings.DEBUG else 'http://localhost:5173'
+        url = f"{frontend_url}/verify-email/{emailconfirmation.key}/"
         return url

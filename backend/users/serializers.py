@@ -40,6 +40,11 @@ class CustomRegisterSerializer(RegisterSerializer):
     def validate_username(self, username):
         return None
 
+    def validate_email(self, email):
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Bu e-poçt ilə artıq hesab mövcuddur.")
+        return email
+
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True, min_length=8)
