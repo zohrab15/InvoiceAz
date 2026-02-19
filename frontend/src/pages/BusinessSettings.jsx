@@ -18,6 +18,8 @@ import { Lock, FileText } from 'lucide-react';
 const BusinessSettings = () => {
     const queryClient = useQueryClient();
     const { token, user } = useAuthStore();
+    const showToast = useToast();
+    const { switchBusiness, refetchBusinesses } = useBusiness();
     const location = useLocation();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
     const { theme: currentTheme } = useTheme();
@@ -96,22 +98,21 @@ const BusinessSettings = () => {
         setLogoFile(null);
     };
 
-    const { switchBusiness } = useBusiness();
 
     const mutation = useMutation({
         mutationFn: (data) => {
-            const formData = new FormData();
+            const fd = new FormData();
 
             // Append all fields to FormData
             Object.keys(data).forEach(key => {
                 if (key === 'logo' || key === 'user') return; // Handled separately or read-only
                 if (data[key] !== null && data[key] !== undefined) {
-                    formData.append(key, data[key]);
+                    fd.append(key, data[key]);
                 }
             });
 
             if (logoFile) {
-                formData.append('logo', logoFile);
+                fd.append('logo', logoFile);
             }
 
             const config = {
@@ -119,9 +120,9 @@ const BusinessSettings = () => {
             };
 
             if (!data.id) {
-                return client.post('/users/business/', formData, config);
+                return client.post('/users/business/', fd, config);
             }
-            return client.patch(`/users/business/${data.id}/`, formData, config);
+            return client.patch(`/users/business/${data.id}/`, fd, config);
         },
         onSuccess: async (response) => {
             const savedBusiness = response.data;
@@ -147,7 +148,6 @@ const BusinessSettings = () => {
         }
     });
 
-    const { refetchBusinesses } = useBusiness();
 
     const deleteMutation = useMutation({
         mutationFn: (id) => client.delete(`/users/business/${id}/`),
