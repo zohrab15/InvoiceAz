@@ -121,7 +121,7 @@ const SecuritySettings = () => {
                             type="password"
                             value={passwordData.old_password}
                             onChange={(e) => setPasswordData({ ...passwordData, old_password: e.target.value })}
-                            className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                            className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                             style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                             required
                             onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
@@ -134,7 +134,7 @@ const SecuritySettings = () => {
                             type="password"
                             value={passwordData.new_password}
                             onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
-                            className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                            className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                             style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                             required
                             onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}

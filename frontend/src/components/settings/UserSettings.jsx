@@ -128,7 +128,7 @@ const UserSettings = () => {
                             name="last_name"
                             value={formData.last_name}
                             onChange={handleChange}
-                            className="w-full border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-xl p-3 outline-none transition-all font-bold"
+                            className="w-full border-2 border-transparent focus:border-[var(--color-brand)] rounded-xl p-3 outline-none transition-all font-bold"
                             style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                             placeholder="Soyadınız"
                         />

@@ -358,7 +358,7 @@ const BusinessSettings = () => {
                                                     name="name"
                                                     value={formData.name}
                                                     onChange={handleChange}
-                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                     style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
@@ -369,7 +369,7 @@ const BusinessSettings = () => {
                                                         name="voen"
                                                         value={formData.voen}
                                                         onChange={handleChange}
-                                                        className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                        className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                         style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     />
                                                 </div>
@@ -388,7 +388,7 @@ const BusinessSettings = () => {
                                                     name="address"
                                                     value={formData.address}
                                                     onChange={handleChange}
-                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                     style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     rows="2"
                                                 />
@@ -399,7 +399,7 @@ const BusinessSettings = () => {
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                     style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
@@ -414,7 +414,7 @@ const BusinessSettings = () => {
                                                         disabled={!canUseThemes}
                                                         value={formData.default_invoice_theme || 'modern'}
                                                         onChange={handleChange}
-                                                        className={`w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        className={`w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                         style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     >
                                                         <option value="modern">Müasir (Göy)</option>
@@ -452,7 +452,7 @@ const BusinessSettings = () => {
                                                     name="bank_name"
                                                     value={formData.bank_name}
                                                     onChange={handleChange}
-                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                     style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
@@ -462,7 +462,7 @@ const BusinessSettings = () => {
                                                     name="iban"
                                                     value={formData.iban}
                                                     onChange={handleChange}
-                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold font-mono tracking-wider"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold font-mono tracking-wider"
                                                     style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     placeholder="AZ00..."
                                                 />
@@ -473,7 +473,7 @@ const BusinessSettings = () => {
                                                     name="swift"
                                                     value={formData.swift}
                                                     onChange={handleChange}
-                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                     style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>

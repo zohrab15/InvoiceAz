@@ -123,7 +123,7 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
                         value={formatDisplay(phoneState.number)}
                         onChange={handleNumberChange}
                         placeholder="123 45 67"
-                        className="w-full border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-r-xl p-2.5 pl-4 outline-none transition-all font-bold text-sm"
+                        className="w-full border-2 border-transparent focus:border-[var(--color-brand)] rounded-r-xl p-2.5 pl-4 outline-none transition-all font-bold text-sm"
                         style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                     />
                 </div>
