@@ -155,11 +155,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             static_dir = str(settings.BASE_DIR / "static")
             fonts_dir = os.path.join(static_dir, "fonts")
             
-            # Register Inter
-            pdfmetrics.registerFont(TTFont('Inter', os.path.join(fonts_dir, "Inter-Regular.ttf")))
-            pdfmetrics.registerFont(TTFont('Inter-Bold', os.path.join(fonts_dir, "Inter-Bold.ttf")))
-            registerFontFamily('Inter', normal='Inter', bold='Inter-Bold')
-            
             # Register Arial (Good for Az characters)
             pdfmetrics.registerFont(TTFont('Arial', os.path.join(fonts_dir, "arial.ttf")))
             pdfmetrics.registerFont(TTFont('Arial-Bold', os.path.join(fonts_dir, "arialbd.ttf")))
@@ -176,38 +171,52 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
             if not uri: return uri
             
+            # Normalize and strip to avoid path issues
+            uri_clean = uri.strip().replace('\\', '/')
+            
+            path = None
+            
             # 1. Handle absolute local paths
-            if os.path.isabs(uri) and os.path.isfile(uri):
-                return uri
+            if os.path.isabs(uri_clean) and os.path.isfile(uri_clean):
+                path = uri_clean
 
-            # 2. Handle HTTP/HTTPS URLs (important for Logos in production)
-            if uri.startswith('http://') or uri.startswith('https://'):
+            # 2. Handle HTTP/HTTPS URLs
+            elif uri_clean.startswith('http://') or uri_clean.startswith('https://'):
                 try:
-                    response = requests.get(uri, timeout=5)
+                    response = requests.get(uri_clean, timeout=5)
                     if response.status_code == 200:
                         temp_img = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
                         temp_img.write(response.content)
                         temp_img.close()
-                        return temp_img.name
+                        path = temp_img.name
                 except Exception as e:
-                    print(f"Error downloading image {uri}: {e}")
-                return uri
+                    print(f"Error downloading image {uri_clean}: {e}")
 
             # 3. Handle local URL paths
-            path = None
-            if uri.startswith(settings.STATIC_URL):
-                path = os.path.join(settings.STATIC_ROOT, uri[len(settings.STATIC_URL):])
+            elif uri_clean.startswith('/static/'):
+                rel_path = uri_clean[len('/static/'):]
+                path = os.path.join(settings.STATIC_ROOT, rel_path)
                 if not os.path.isfile(path):
-                    path = os.path.join(str(settings.BASE_DIR), "static", uri[len(settings.STATIC_URL):])
+                    path = os.path.join(str(settings.BASE_DIR), "static", rel_path)
             
-            elif uri.startswith(settings.MEDIA_URL):
-                path = os.path.join(settings.MEDIA_ROOT, uri[len(settings.MEDIA_URL):])
+            elif uri_clean.startswith('/media/'):
+                rel_path = uri_clean[len('/media/'):]
+                path = os.path.join(settings.MEDIA_ROOT, rel_path)
                 if not os.path.isfile(path):
-                    path = os.path.join(str(settings.BASE_DIR), "media", uri[len(settings.MEDIA_URL):])
+                    path = os.path.join(str(settings.BASE_DIR), "media", rel_path)
+            
+            else:
+                # 4. Fallback for relative paths
+                path = os.path.join(str(settings.BASE_DIR), "static", uri_clean)
+                if not os.path.isfile(path):
+                    path = os.path.join(str(settings.BASE_DIR), "media", uri_clean)
 
             if path and os.path.isfile(path):
-                return path
+                res = os.path.abspath(path)
+                # print(f"DEBUG: PDF Link - {uri} -> {res}")
+                return res
             
+            # print(f"DEBUG: PDF Link FAILED - {uri}")
             return uri
 
         try:
