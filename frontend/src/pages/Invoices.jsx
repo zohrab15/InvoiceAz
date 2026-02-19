@@ -477,7 +477,7 @@ const Invoices = () => {
                                 {searchTerm && (
                                     <button
                                         onClick={() => setSearchTerm('')}
-                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
                                     >
                                         <X size={16} />
                                     </button>
@@ -528,7 +528,7 @@ const Invoices = () => {
                                             <motion.tr
                                                 layout
                                                 key={inv.id}
-                                                className="hover:bg-blue-50/30 transition-colors group"
+                                                className="hover:bg-[var(--color-hover-bg)] transition-colors group"
                                             >
                                                 <td className="px-6 py-4 font-medium text-primary-blue">{inv.invoice_number}</td>
                                                 <td className="px-6 py-4 font-medium text-[var(--color-text-primary)]">{inv.client_name}</td>
@@ -769,7 +769,7 @@ const Invoices = () => {
                                                         {(!UNIT_CHOICES.find(u => u.value === item.unit) || item.unit === 'digər') && (
                                                             <input
                                                                 type="text"
-                                                                className="w-full mt-1 bg-white border border-gray-200 rounded-lg p-1 text-[10px] font-bold"
+                                                                className="w-full mt-1 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-lg p-1 text-[10px] font-bold text-[var(--color-text-primary)]"
                                                                 placeholder="Vahid..."
                                                                 value={item.unit === 'digər' ? '' : item.unit}
                                                                 onChange={(e) => updateItem(index, 'unit', e.target.value)}
@@ -787,7 +787,7 @@ const Invoices = () => {
                                                         <span className="sm:hidden text-gray-400 font-bold uppercase text-[10px]">Cəm:</span>
                                                         <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} ₼</span>
                                                     </div>
-                                                    <button onClick={() => removeItem(index)} className="p-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 self-end sm:self-center mt-2 sm:mt-0"><Trash2 size={20} /></button>
+                                                    <button onClick={() => removeItem(index)} className="p-2 text-[var(--color-text-muted)] hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10 self-end sm:self-center mt-2 sm:mt-0"><Trash2 size={20} /></button>
                                                 </motion.div>
                                             ))}
                                         </AnimatePresence>
@@ -878,7 +878,7 @@ const Invoices = () => {
                             className="bg-[var(--color-card-bg)] rounded-2xl shadow-2xl w-full max-auto max-w-md overflow-hidden border border-[var(--color-card-border)]"
                         >
                             <div className="p-8 text-center space-y-6">
-                                <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
                                     <CheckCircle size={40} />
                                 </div>
                                 <div>

@@ -132,13 +132,20 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600;
   }
 
-  .font-outfit, .font-roboto {
+  .font-outfit,
+  .font-roboto {
     font-family: 'Roboto', sans-serif;
   }
 }
 
 @layer base {
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Roboto', sans-serif !important;
     letter-spacing: -0.01em;
   }
@@ -165,6 +172,16 @@ body {
   background-color: #0a0a0f;
   color: #ffffff;
   background-attachment: fixed;
+}
+
+/* Fix for dropdown menus in dark mode */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: var(--color-dropdown-bg);
+  color: var(--color-text-primary);
 }
 
 /* Custom Scrollbar for Premium Feel */
