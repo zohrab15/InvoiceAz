@@ -61,6 +61,11 @@ const Register = () => {
                 errorMsg = error.message;
             }
 
+            // Final fallback to ensure no blank toasts
+            if (!errorMsg || errorMsg.trim() === '') {
+                errorMsg = 'Gözlənilməz bir xəta baş verdi. Zəhmət olmasa internet bağlantınızı yoxlayın.';
+            }
+
             showToast(errorMsg, 'error');
         } finally {
             setIsLoading(false);
