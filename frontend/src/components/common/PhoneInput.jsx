@@ -68,7 +68,7 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
     return (
         <div className="space-y-1.5">
             {label && (
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>
                     {label}
                 </label>
             )}
@@ -78,21 +78,35 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
                     <button
                         type="button"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="h-full flex items-center gap-1.5 px-2.5 bg-gray-100 border-2 border-transparent border-r-gray-200 rounded-l-xl hover:bg-gray-200 transition-colors focus:outline-none"
+                        className="h-full flex items-center gap-1.5 px-2.5 border-2 border-transparent border-r-[var(--color-card-border)] rounded-l-xl transition-colors focus:outline-none"
+                        style={{ backgroundColor: 'var(--color-hover-bg)' }}
                     >
-                        <span className="font-bold text-gray-700 text-xs">{phoneState.operator}</span>
-                        <ChevronDown size={10} className={`text-gray-400 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
+                        <span className="font-bold text-xs" style={{ color: 'var(--color-text-primary)' }}>{phoneState.operator}</span>
+                        <ChevronDown size={10} className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--color-text-muted)' }} />
                     </button>
 
                     {isMenuOpen && (
-                        <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden py-1">
+                        <div
+                            className="absolute top-full left-0 mt-2 w-48 rounded-xl shadow-2xl border z-50 overflow-hidden py-1"
+                            style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}
+                        >
                             <div className="max-h-60 overflow-y-auto">
                                 {OPERATORS.map(op => (
                                     <button
                                         key={op.code}
                                         type="button"
                                         onClick={() => handleOperatorSelect(op)}
-                                        className={`w-full text-left px-4 py-2.5 text-xs font-bold transition-colors hover:bg-blue-50 hover:text-blue-600 ${phoneState.operator === op.code ? 'bg-blue-50 text-blue-600' : 'text-gray-600'}`}
+                                        className={`w-full text-left px-4 py-2.5 text-xs font-bold transition-colors`}
+                                        style={{
+                                            backgroundColor: phoneState.operator === op.code ? 'var(--color-brand-light)' : 'transparent',
+                                            color: phoneState.operator === op.code ? 'var(--color-brand)' : 'var(--color-text-primary)'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (phoneState.operator !== op.code) e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (phoneState.operator !== op.code) e.currentTarget.style.backgroundColor = 'transparent';
+                                        }}
                                     >
                                         {op.label}
                                     </button>
@@ -109,7 +123,8 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
                         value={formatDisplay(phoneState.number)}
                         onChange={handleNumberChange}
                         placeholder="123 45 67"
-                        className="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-r-xl p-2.5 pl-4 outline-none transition-all font-bold text-sm"
+                        className="w-full border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-r-xl p-2.5 pl-4 outline-none transition-all font-bold text-sm"
+                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                     />
                 </div>
             </div>

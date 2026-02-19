@@ -457,12 +457,13 @@ const BusinessSettings = () => {
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Hesab Nömrəsi (IBAN)</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Hesab Nömrəsi (IBAN)</label>
                                                 <input
                                                     name="iban"
                                                     value={formData.iban}
                                                     onChange={handleChange}
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold font-mono tracking-wider"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold font-mono tracking-wider"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     placeholder="AZ00..."
                                                 />
                                             </div>
@@ -490,15 +491,18 @@ const BusinessSettings = () => {
 
                                 {/* Danger Zone */}
                                 {!isCreating && selectedBusiness && (
-                                    <div className="bg-red-50/50 rounded-3xl border border-red-100 p-8 space-y-6">
-                                        <div className="flex items-center gap-3 text-red-600">
+                                    <div
+                                        className="rounded-3xl p-8 space-y-6"
+                                        style={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.1)' }}
+                                    >
+                                        <div className="flex items-center gap-3" style={{ color: 'var(--color-error)' }}>
                                             <AlertTriangle size={24} />
-                                            <h3 className="font-black text-xl tracking-tight text-red-800">Təhlükəli Zona</h3>
+                                            <h3 className="font-black text-xl tracking-tight">Təhlükəli Zona</h3>
                                         </div>
                                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                             <div>
-                                                <div className="font-bold text-red-900">Biznesi Sil</div>
-                                                <p className="text-sm text-red-600/70 font-medium max-w-md">
+                                                <div className="font-bold" style={{ color: 'var(--color-error)' }}>Biznesi Sil</div>
+                                                <p className="text-sm font-medium max-w-md" style={{ color: 'var(--color-error)', opacity: 0.7 }}>
                                                     Bu biznes profilini və ona bağlı olan bütün faktura, xərc və müştəri məlumatlarını daimi olaraq silmək istədiyinizdən əminsiniz? Bu addım geri qaytarıla bilməz.
                                                 </p>
                                             </div>
