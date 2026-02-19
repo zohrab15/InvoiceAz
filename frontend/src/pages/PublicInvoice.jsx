@@ -24,7 +24,7 @@ const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }
                     {invoice.business_details?.logo && (
                         <img src={invoice.business_details.logo.startsWith('http') ? invoice.business_details.logo : `${API_URL}${invoice.business_details.logo}`} alt="Logo" className="h-16 w-auto object-contain mb-4 rounded-xl shadow-sm" />
                     )}
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">{invoice.business_details?.name}</h2>
+                    <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase">{invoice.business_details?.name}</h2>
                     <div className="text-sm text-slate-500 space-y-1">
                         <p>{invoice.business_details?.address}</p>
                         <p>VÖEN: {invoice.business_details?.voen}</p>

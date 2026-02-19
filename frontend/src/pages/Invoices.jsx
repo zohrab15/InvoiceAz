@@ -351,7 +351,7 @@ const Invoices = () => {
         >
             <div className="flex justify-between border-b pb-6 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-primary-blue uppercase">{activeBusiness?.name || 'ŞİRKƏT ADI'}</h1>
+                    <h1 className="text-xl font-bold text-primary-blue uppercase break-words max-w-[300px]">{activeBusiness?.name || 'ŞİRKƏT ADI'}</h1>
                     <p className="text-sm text-gray-500 mt-1">{activeBusiness?.address || 'Ünvan daxil edilməyib'}</p>
                     <p className="text-xs text-gray-400">VÖEN: {activeBusiness?.voen || '---'}</p>
                 </div>
@@ -402,8 +402,8 @@ const Invoices = () => {
                 <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} ₼</span></div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] text-gray-400 italic">
-                {notes || activeBusiness?.bank_name ? `Qeyd: ${notes || activeBusiness?.bank_name}` : ''}
+            <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] text-gray-400 italic leading-relaxed">
+                {notes || activeBusiness?.bank_name ? `Qeyd: ${notes || activeBusiness?.bank_name}` : 'Qeyd: Bu faktura kompyuter vasitəsilə generasiya olunub. Zəhmət olmasa vaxtında ödəniş edin.'}
             </div>
         </motion.div>
     );
@@ -795,6 +795,19 @@ const Invoices = () => {
                                             <Plus size={18} /><span>Yeni sətir</span>
                                         </button>
                                     </div>
+                                </div>
+
+                                <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] shadow-sm space-y-4">
+                                    <h3 className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-card-border)] pb-4 flex items-center gap-2">
+                                        <FileText size={18} className="text-primary-blue" /> Qeydlər
+                                    </h3>
+                                    <textarea
+                                        className="w-full bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-xl p-4 text-sm text-[var(--color-text-primary)] focus:border-primary-blue outline-none transition-all placeholder:[var(--color-text-muted)]"
+                                        rows="3"
+                                        placeholder="Faktura qeydlərini bura daxil edin (məs: Bank məlumatları, ödəniş sertləri və s.)..."
+                                        value={notes}
+                                        onChange={(e) => setNotes(e.target.value)}
+                                    ></textarea>
                                 </div>
                             </div>
 
