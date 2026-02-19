@@ -79,10 +79,20 @@ const UserSettings = () => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-8">
-                <div className="flex flex-col items-center pb-6 border-b border-gray-50">
+            <div
+                className="p-8 rounded-3xl space-y-8"
+                style={{
+                    backgroundColor: 'var(--color-card-bg)',
+                    border: '1px solid var(--color-card-border)',
+                    boxShadow: 'var(--color-card-shadow)'
+                }}
+            >
+                <div className="flex flex-col items-center pb-6 border-b" style={{ borderColor: 'var(--color-card-border)' }}>
                     <div className="relative group">
-                        <div className="w-24 h-24 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 border-2 border-dashed border-gray-200 overflow-hidden group-hover:border-[var(--color-brand)] transition-colors">
+                        <div
+                            className="w-24 h-24 rounded-2xl flex items-center justify-center border-2 border-dashed overflow-hidden group-hover:border-[var(--color-brand)] transition-colors"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-muted)' }}
+                        >
                             {avatarPreview ? (
                                 <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
@@ -94,41 +104,44 @@ const UserSettings = () => {
                             <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} />
                         </label>
                     </div>
-                    <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Profil Şəkli</p>
+                    <p className="mt-4 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Profil Şəkli</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Ad</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Ad</label>
                         <div className="relative group">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[var(--color-brand)]" size={18} />
                             <input
                                 name="first_name"
                                 value={formData.first_name}
                                 onChange={handleChange}
-                                className="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                className="w-full border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                 placeholder="Adınız"
                             />
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Soyad</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Soyad</label>
                         <input
                             name="last_name"
                             value={formData.last_name}
                             onChange={handleChange}
-                            className="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-xl p-3 outline-none transition-all font-bold"
+                            className="w-full border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-xl p-3 outline-none transition-all font-bold"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                             placeholder="Soyadınız"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">E-poçt (Dəyişdirilə bilməz)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>E-poçt (Dəyişdirilə bilməz)</label>
                         <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)', opacity: 0.5 }} size={18} />
                             <input
                                 value={formData.email}
                                 disabled
-                                className="w-full bg-gray-100 border-2 border-transparent rounded-xl p-3 pl-12 outline-none text-gray-400 font-bold"
+                                className="w-full border-2 border-transparent rounded-xl p-3 pl-12 outline-none font-bold"
+                                style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-muted)', opacity: 0.8 }}
                             />
                         </div>
                     </div>

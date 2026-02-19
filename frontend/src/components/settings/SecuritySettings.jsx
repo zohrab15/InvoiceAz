@@ -102,31 +102,40 @@ const SecuritySettings = () => {
     return (
         <div className="space-y-8">
             {/* Password Change */}
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-                <h3 className="font-black text-gray-800 flex items-center gap-3 text-lg tracking-tight">
-                    <div className="p-2 bg-blue-50 rounded-lg text-primary-blue"><Key size={20} /></div>
+            <div
+                className="p-8 rounded-3xl space-y-6"
+                style={{
+                    backgroundColor: 'var(--color-card-bg)',
+                    border: '1px solid var(--color-card-border)',
+                    boxShadow: 'var(--color-card-shadow)'
+                }}
+            >
+                <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                    <div className="p-2 bg-blue-500/10 rounded-lg text-primary-blue"><Key size={20} /></div>
                     Şifrəni Yenilə
                 </h3>
                 <form onSubmit={handlePasswordSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Mövcud Şifrə</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Mövcud Şifrə</label>
                         <input
                             type="password"
                             value={passwordData.old_password}
                             onChange={(e) => setPasswordData({ ...passwordData, old_password: e.target.value })}
-                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                            className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                             required
                             onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
                             onInput={(e) => e.target.setCustomValidity('')}
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Yeni Şifrə</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Yeni Şifrə</label>
                         <input
                             type="password"
                             value={passwordData.new_password}
                             onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
-                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                            className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                             required
                             onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
                             onInput={(e) => e.target.setCustomValidity('')}
@@ -134,13 +143,14 @@ const SecuritySettings = () => {
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Təkrar Yeni Şifrə</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Təkrar Yeni Şifrə</label>
                         <div className="flex gap-2">
                             <input
                                 type="password"
                                 value={passwordData.confirm_password}
                                 onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
-                                className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                 required
                                 onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
                                 onInput={(e) => e.target.setCustomValidity('')}
@@ -158,10 +168,17 @@ const SecuritySettings = () => {
             </div>
 
             {/* 2FA Section */}
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+            <div
+                className="p-8 rounded-3xl space-y-6"
+                style={{
+                    backgroundColor: 'var(--color-card-bg)',
+                    border: '1px solid var(--color-card-border)',
+                    boxShadow: 'var(--color-card-shadow)'
+                }}
+            >
                 <div className="flex justify-between items-center">
-                    <h3 className="font-black text-gray-800 flex items-center gap-3 text-lg tracking-tight">
-                        <div className="p-2 bg-purple-50 rounded-lg text-purple-600"><Smartphone size={20} /></div>
+                    <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                        <div className="p-2 bg-purple-500/10 rounded-lg text-purple-600"><Smartphone size={20} /></div>
                         İki Mərhələli Doğrulama (2FA)
                     </h3>
                     {user?.is_2fa_enabled && (
@@ -169,7 +186,7 @@ const SecuritySettings = () => {
                     )}
                 </div>
 
-                <p className="text-sm text-gray-500 max-w-2xl leading-relaxed font-medium">
+                <p className="text-sm max-w-2xl leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>
                     Hesabınızın təhlükəsizliyini artırmaq üçün 2FA aktivləşdirin. Giriş zamanı mobil tətbiqinizdən gələn kodu daxil etməli olacaqsınız.
                 </p>
 
@@ -183,9 +200,15 @@ const SecuritySettings = () => {
                             {generate2FAMutation.isPending ? 'Hazırlanır...' : 'Aktivləşdir'}
                         </button>
                     ) : (
-                        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-6 animate-in fade-in slide-in-from-top-4">
+                        <div
+                            className="p-6 rounded-2xl space-y-6 animate-in fade-in slide-in-from-top-4"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}
+                        >
                             <div className="flex flex-col md:flex-row gap-8 items-center">
-                                <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                                <div
+                                    className="p-3 rounded-2xl shadow-sm"
+                                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                                >
                                     <img
                                         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(twoFactorData?.provisioning_uri)}`}
                                         alt="2FA QR Code"
@@ -197,7 +220,7 @@ const SecuritySettings = () => {
                                         <p className="text-xs font-bold text-gray-700">1. QR kodu skan edin</p>
                                         <p className="text-[10px] text-gray-400 font-medium leading-relaxed">
                                             Google Authenticator və ya oxşar tətbiqlə mətni skan edin. QR kodu skan edə bilmirsinizsə, bu kodu əllə daxil edin:
-                                            <code className="ml-1 bg-white px-1.5 py-0.5 rounded border border-gray-200 text-primary-blue font-bold">{twoFactorData?.secret}</code>
+                                            <code className="ml-1 px-1.5 py-0.5 rounded border font-bold" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-brand)' }}>{twoFactorData?.secret}</code>
                                         </p>
                                     </div>
                                     <div className="space-y-2">
@@ -209,7 +232,8 @@ const SecuritySettings = () => {
                                                 placeholder="000000"
                                                 value={otpCode}
                                                 onChange={(e) => setOtpCode(e.target.value)}
-                                                className="w-32 bg-white border-2 border-transparent focus:border-primary-blue rounded-xl p-2 text-center font-black tracking-[0.5em] outline-none transition-all"
+                                                className="w-32 border-2 border-transparent focus:border-primary-blue rounded-xl p-2 text-center font-black tracking-[0.5em] outline-none transition-all"
+                                                style={{ backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text-primary)' }}
                                             />
                                             <button
                                                 onClick={() => enable2FAMutation.mutate(otpCode)}
@@ -246,9 +270,16 @@ const SecuritySettings = () => {
             </div>
 
             {/* Active Sessions */}
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-                <h3 className="font-black text-gray-800 flex items-center gap-3 text-lg tracking-tight">
-                    <div className="p-2 bg-green-50 rounded-lg text-green-600"><LogOut size={20} /></div>
+            <div
+                className="p-8 rounded-3xl space-y-6"
+                style={{
+                    backgroundColor: 'var(--color-card-bg)',
+                    border: '1px solid var(--color-card-border)',
+                    boxShadow: 'var(--color-card-shadow)'
+                }}
+            >
+                <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                    <div className="p-2 bg-green-500/10 rounded-lg text-green-600"><LogOut size={20} /></div>
                     Aktiv Sessiyalar
                 </h3>
                 <div className="space-y-4">
@@ -256,14 +287,21 @@ const SecuritySettings = () => {
                         <div className="text-gray-400 text-center py-4">Sessiyalar yüklənir...</div>
                     ) : sessions.length > 0 ? (
                         sessions.map(s => (
-                            <div key={s.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <div
+                                key={s.id}
+                                className="flex items-center justify-between p-4 rounded-2xl"
+                                style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}
+                            >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 border border-gray-100">
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center border"
+                                        style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-muted)' }}
+                                    >
                                         <Smartphone size={18} />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-gray-800 text-sm">{s.device}</div>
-                                        <div className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">
+                                        <div className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{s.device}</div>
+                                        <div className="text-[10px] font-black uppercase tracking-tighter" style={{ color: 'var(--color-text-muted)' }}>
                                             Son fəaliyyət: {new Date(s.created_at).toLocaleString('az-AZ')}
                                         </div>
                                     </div>
@@ -284,12 +322,15 @@ const SecuritySettings = () => {
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-red-50/30 p-8 rounded-3xl border border-red-100 space-y-6">
-                <h3 className="font-black text-red-600 flex items-center gap-3 text-lg tracking-tight">
-                    <div className="p-2 bg-red-100 rounded-lg text-red-600"><Trash2 size={20} /></div>
+            <div
+                className="p-8 rounded-3xl space-y-6"
+                style={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.1)' }}
+            >
+                <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-error)' }}>
+                    <div className="p-2 bg-red-500/10 rounded-lg"><Trash2 size={20} /></div>
                     Hesabı Sil
                 </h3>
-                <p className="text-sm text-red-600/70 max-w-2xl leading-relaxed font-medium">
+                <p className="text-sm max-w-2xl leading-relaxed font-medium" style={{ color: 'var(--color-error)', opacity: 0.7 }}>
                     Hesabınızı sildiyiniz təqdirdə bütün biznes məlumatlarınız, fakturalarınız və müştəri siyahılarınız <b>daimi olaraq</b> silinəcək. Bu əməliyyat geri qaytarıla bilməz.
                 </p>
                 <button

@@ -197,24 +197,35 @@ const BusinessSettings = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto space-y-6 pb-12 px-4"
         >
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm sticky top-4 z-20">
+            <div
+                className="p-6 rounded-3xl sticky top-4 z-20"
+                style={{
+                    backgroundColor: 'var(--color-card-bg)',
+                    border: '1px solid var(--color-card-border)',
+                    boxShadow: 'var(--color-card-shadow)'
+                }}
+            >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight">Hesab və Biznes</h2>
-                        <p className="text-gray-400 text-sm font-medium mt-1">
+                        <h2 className="text-3xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Hesab və Biznes</h2>
+                        <p className="text-sm font-medium mt-1" style={{ color: 'var(--color-text-muted)' }}>
                             Hesab və biznes tənzimləmələrini idarə edin
                         </p>
                     </div>
 
-                    <div className="flex bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
+                    <div className="flex p-1.5 rounded-2xl" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab.id
-                                    ? 'bg-white text-[var(--color-brand)] shadow-sm ring-1 ring-black/[0.05]'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'shadow-sm ring-1 ring-black/[0.05]'
+                                    : ''
                                     }`}
+                                style={{
+                                    backgroundColor: activeTab === tab.id ? 'var(--color-card-bg)' : 'transparent',
+                                    color: activeTab === tab.id ? 'var(--color-brand)' : 'var(--color-text-muted)'
+                                }}
                             >
                                 {tab.icon}
                                 <span className="hidden sm:inline">{tab.name}</span>
@@ -253,15 +264,22 @@ const BusinessSettings = () => {
                             </div>
                         ) : (
                             <>
-                                <div className="flex justify-between items-center bg-white/50 backdrop-blur-sm p-4 rounded-2xl border border-gray-100">
-                                    <h3 className="font-bold text-gray-800">
+                                <div
+                                    className="flex justify-between items-center backdrop-blur-sm p-4 rounded-2xl"
+                                    style={{
+                                        backgroundColor: 'var(--color-hover-bg)',
+                                        border: '1px solid var(--color-card-border)'
+                                    }}
+                                >
+                                    <h3 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>
                                         {isCreating ? 'Yeni Biznes' : (businesses?.length > 1 ? 'Biznes Seçin' : 'Biznes Məlumatları')}
                                     </h3>
                                     <div className="flex gap-2">
                                         {businesses?.length > 0 && (
                                             <button
                                                 onClick={handleNewBusiness}
-                                                className="bg-gray-100 text-gray-600 px-4 py-2 rounded-xl flex items-center space-x-2 hover:bg-gray-200 transition-all font-bold text-xs"
+                                                className="px-4 py-2 rounded-xl flex items-center space-x-2 transition-all font-bold text-xs"
+                                                style={{ backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-card-border)' }}
                                             >
                                                 <Plus size={16} />
                                                 <span>Yeni</span>
@@ -286,10 +304,14 @@ const BusinessSettings = () => {
                                             <div
                                                 key={b.id}
                                                 onClick={() => handleSelectBusiness(b)}
-                                                className={`min-w-[180px] p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedBusiness?.id === b.id ? 'border-primary-blue bg-blue-50/50' : 'border-white bg-white hover:border-gray-200 shadow-sm'}`}
+                                                className={`min-w-[180px] p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm`}
+                                                style={{
+                                                    backgroundColor: selectedBusiness?.id === b.id ? 'var(--color-brand-light)' : 'var(--color-card-bg)',
+                                                    borderColor: selectedBusiness?.id === b.id ? 'var(--color-brand)' : 'var(--color-card-border)'
+                                                }}
                                             >
-                                                <div className="font-bold text-gray-800 truncate text-sm">{b.name}</div>
-                                                <div className="text-[10px] text-gray-400 font-black mt-1 uppercase tracking-tighter">{b.voen || 'VÖEN yoxdur'}</div>
+                                                <div className="font-bold truncate text-sm" style={{ color: 'var(--color-text-primary)' }}>{b.name}</div>
+                                                <div className="text-[10px] font-black mt-1 uppercase tracking-tighter" style={{ color: 'var(--color-text-muted)' }}>{b.voen || 'VÖEN yoxdur'}</div>
                                             </div>
                                         ))}
                                     </div>
@@ -297,10 +319,20 @@ const BusinessSettings = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {/* Reusing existing business form fields but organized for readability */}
-                                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-8">
-                                        <div className="flex flex-col items-center pb-6 border-b border-gray-50">
+                                    <div
+                                        className="p-8 rounded-3xl space-y-8"
+                                        style={{
+                                            backgroundColor: 'var(--color-card-bg)',
+                                            border: '1px solid var(--color-card-border)',
+                                            boxShadow: 'var(--color-card-shadow)'
+                                        }}
+                                    >
+                                        <div className="flex flex-col items-center pb-6 border-b" style={{ borderColor: 'var(--color-card-border)' }}>
                                             <div className="relative group">
-                                                <div className="w-24 h-24 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 border-2 border-dashed border-gray-200 overflow-hidden group-hover:border-primary-blue transition-colors">
+                                                <div
+                                                    className="w-24 h-24 rounded-2xl flex items-center justify-center border-2 border-dashed overflow-hidden group-hover:border-primary-blue transition-colors"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-muted)' }}
+                                                >
                                                     {logoPreview ? (
                                                         <img src={logoPreview.startsWith('http') ? logoPreview : (logoPreview.startsWith('blob') ? logoPreview : `${API_URL}${logoPreview}`)} alt="Logo" className="w-full h-full object-contain" />
                                                     ) : (
@@ -312,31 +344,33 @@ const BusinessSettings = () => {
                                                     <input type="file" className="hidden" accept="image/*" onChange={handleLogoChange} />
                                                 </label>
                                             </div>
-                                            <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Şirkət Logosu</p>
+                                            <p className="mt-4 text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Şirkət Logosu</p>
                                         </div>
 
-                                        <h3 className="font-black text-gray-800 flex items-center gap-3 text-lg tracking-tight">
-                                            <div className="p-2 bg-blue-50 rounded-lg text-primary-blue"><Building2 size={20} /></div>
+                                        <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                                            <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}><Building2 size={20} /></div>
                                             Rəsmi Məlumatlar
                                         </h3>
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Şirkət adı / Fərdi Sahibkar</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Şirkət adı / Fərdi Sahibkar</label>
                                                 <input
                                                     name="name"
                                                     value={formData.name}
                                                     onChange={handleChange}
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">VÖEN</label>
+                                                    <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>VÖEN</label>
                                                     <input
                                                         name="voen"
                                                         value={formData.voen}
                                                         onChange={handleChange}
-                                                        className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                        className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
@@ -349,28 +383,30 @@ const BusinessSettings = () => {
                                                 </div>
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Faktiki Ünvan</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Faktiki Ünvan</label>
                                                 <textarea
                                                     name="address"
                                                     value={formData.address}
                                                     onChange={handleChange}
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     rows="2"
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">E-poçt</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>E-poçt</label>
                                                 <input
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
-                                            <div className="pt-4 border-t border-gray-50">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-2">
+                                            <div className="pt-4 border-t" style={{ borderColor: 'var(--color-card-border)' }}>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
                                                     Standart Faktura Mövzusu
-                                                    {!canUseThemes && <Lock size={12} className="text-gray-400" />}
+                                                    {!canUseThemes && <Lock size={12} style={{ color: 'var(--color-text-muted)' }} />}
                                                 </label>
                                                 <div className="relative mt-1.5">
                                                     <select
@@ -378,7 +414,8 @@ const BusinessSettings = () => {
                                                         disabled={!canUseThemes}
                                                         value={formData.default_invoice_theme || 'modern'}
                                                         onChange={handleChange}
-                                                        className={`w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        className={`w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     >
                                                         <option value="modern">Müasir (Göy)</option>
                                                         <option value="classic">Klassik (Formal)</option>
@@ -396,19 +433,27 @@ const BusinessSettings = () => {
                                         </div>
                                     </div>
 
-                                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-8">
-                                        <h3 className="font-black text-gray-800 flex items-center gap-3 text-lg tracking-tight">
-                                            <div className="p-2 bg-purple-50 rounded-lg text-purple-600"><Landmark size={20} /></div>
+                                    <div
+                                        className="p-8 rounded-3xl space-y-8"
+                                        style={{
+                                            backgroundColor: 'var(--color-card-bg)',
+                                            border: '1px solid var(--color-card-border)',
+                                            boxShadow: 'var(--color-card-shadow)'
+                                        }}
+                                    >
+                                        <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                                            <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500"><Landmark size={20} /></div>
                                             Ödəniş Rekvizitləri
                                         </h3>
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Xidmət etdyiniz Bank</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Xidmət etdyiniz Bank</label>
                                                 <input
                                                     name="bank_name"
                                                     value={formData.bank_name}
                                                     onChange={handleChange}
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
@@ -422,17 +467,21 @@ const BusinessSettings = () => {
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">SWIFT / BIC</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>SWIFT / BIC</label>
                                                 <input
                                                     name="swift"
                                                     value={formData.swift}
                                                     onChange={handleChange}
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    className="w-full border-2 border-transparent focus:border-primary-blue focus:bg-white rounded-xl p-2.5 outline-none transition-all font-bold"
+                                                    style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="mt-8 pt-8 border-t border-gray-50 text-[10px] text-gray-400 italic flex items-start gap-2">
+                                        <div
+                                            className="mt-8 pt-8 border-t text-[10px] italic flex items-start gap-2"
+                                            style={{ borderColor: 'var(--color-card-border)', color: 'var(--color-text-muted)' }}
+                                        >
                                             <Check size={14} className="text-green-500 shrink-0" />
                                             <p>Bu məlumatlar bütün hesab-fakturaların aşağı hissəsində (footer) avtomatik əks olunacaq.</p>
                                         </div>
