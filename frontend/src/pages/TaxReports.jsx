@@ -47,14 +47,14 @@ const TaxReports = () => {
             {/* Header - Hidden in Print */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <div>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight font-roboto uppercase">Vergi və Hesabatlar</h2>
-                    <p className="text-slate-500 mt-1">Vergi öhdəliklərinizi və maliyyə hesabatlarınızı buradan izləyin.</p>
+                    <h2 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight font-roboto uppercase">Vergi və Hesabatlar</h2>
+                    <p className="text-[var(--color-text-secondary)] mt-1">Vergi öhdəliklərinizi və maliyyə hesabatlarınızı buradan izləyin.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="bg-white border rounded-xl px-4 py-2 font-bold text-slate-700 shadow-sm outline-none focus:ring-2 focus:ring-primary-blue transition-all"
+                        className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl px-4 py-2 font-bold text-[var(--color-text-primary)] shadow-sm outline-none focus:ring-2 focus:ring-primary-blue transition-all"
                     >
                         {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
@@ -85,58 +85,58 @@ const TaxReports = () => {
 
             {/* 1. KPI SECTION */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-blue-100 text-blue-600 rounded-2xl w-fit mb-4">
+                        <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl w-fit mb-4">
                             <TrendingUp size={24} />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Ümumi Gəlir</span>
+                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Ümumi Gəlir</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-slate-900">{taxData.income_tax.revenue.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-slate-500">AZN</span>
+                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.income_tax.revenue.toLocaleString()}</span>
+                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-red-100 text-red-600 rounded-2xl w-fit mb-4">
+                        <div className="p-3 bg-red-500/10 text-red-500 rounded-2xl w-fit mb-4">
                             <TrendingDown size={24} />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Ümumi Xərclər</span>
+                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Ümumi Xərclər</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-slate-900">{taxData.income_tax.expenses.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-slate-500">AZN</span>
+                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.income_tax.expenses.toLocaleString()}</span>
+                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-green-100 text-green-600 rounded-2xl w-fit mb-4">
+                        <div className="p-3 bg-green-500/10 text-green-500 rounded-2xl w-fit mb-4">
                             <Calculator size={24} />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Vergi Bazası</span>
+                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Vergi Bazası</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-slate-900">{taxData.income_tax.tax_base.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-slate-500">AZN</span>
+                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.income_tax.tax_base.toLocaleString()}</span>
+                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-amber-100 text-amber-600 rounded-2xl w-fit mb-4">
+                        <div className="p-3 bg-amber-500/10 text-amber-500 rounded-2xl w-fit mb-4">
                             <Coins size={24} />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Toplanmış ƏDV</span>
+                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Toplanmış ƏDV</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-slate-900">{taxData.vat.total.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-slate-500">AZN</span>
+                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.vat.total.toLocaleString()}</span>
+                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
                         </div>
                     </div>
                 </div>
@@ -144,10 +144,10 @@ const TaxReports = () => {
 
             {/* 2. VAT SECTION */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 bg-white p-8 rounded-3xl border shadow-sm space-y-6">
+                <div className="lg:col-span-8 bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm space-y-6">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-xl font-bold flex items-center gap-2"><PieChart className="text-primary-blue" /> Aylıq ƏDV Dinamikası</h3>
-                        <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Hesablanmış</div>
+                        <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text-primary)]"><PieChart className="text-primary-blue" /> Aylıq ƏDV Dinamikası</h3>
+                        <div className="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Hesablanmış</div>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -158,11 +158,11 @@ const TaxReports = () => {
                                         <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '16px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                     formatter={(val) => [`${val.toLocaleString()} AZN`, 'ƏDV']}
                                 />
                                 <Area type="monotone" dataKey="vat" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorVat)" />
@@ -222,15 +222,15 @@ const TaxReports = () => {
             {/* 3. QUARTERLY & INCOME TAX */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Quarterly table */}
-                <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-6">
+                <div className="bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm space-y-6">
                     <div>
-                        <h3 className="text-xl font-bold font-roboto">Rüblük Hesabatlar</h3>
-                        <p className="text-sm text-slate-500">Hər rüb üzrə maliyyə və vergi xülasəsi</p>
+                        <h3 className="text-xl font-bold font-roboto text-[var(--color-text-primary)]">Rüblük Hesabatlar</h3>
+                        <p className="text-sm text-[var(--color-text-secondary)]">Hər rüb üzrə maliyyə və vergi xülasəsi</p>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="text-xs text-slate-400 uppercase tracking-widest border-b">
+                                <tr className="text-xs text-[var(--color-text-muted)] uppercase tracking-widest border-b border-[var(--color-card-border)]">
                                     <th className="pb-4 pt-2">Rüb</th>
                                     <th className="pb-4 pt-2">Gəlir</th>
                                     <th className="pb-4 pt-2">Xərc</th>
@@ -238,13 +238,13 @@ const TaxReports = () => {
                                     <th className="pb-4 pt-2 text-right">Mənfəət</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-50">
+                            <tbody className="divide-y divide-[var(--color-card-border)]">
                                 {taxData.quarterly.map((q, idx) => (
-                                    <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
-                                        <td className="py-4 font-black text-slate-900">{q.name}</td>
-                                        <td className="py-4 font-bold text-slate-700">{q.revenue.toLocaleString()}</td>
-                                        <td className="py-4 text-slate-500">{q.expenses.toLocaleString()}</td>
-                                        <td className="py-4 text-slate-500">{q.vat.toLocaleString()}</td>
+                                    <tr key={idx} className="group hover:bg-[var(--color-hover-bg)] transition-colors">
+                                        <td className="py-4 font-black text-[var(--color-text-primary)]">{q.name}</td>
+                                        <td className="py-4 font-bold text-[var(--color-text-secondary)]">{q.revenue.toLocaleString()}</td>
+                                        <td className="py-4 text-[var(--color-text-muted)]">{q.expenses.toLocaleString()}</td>
+                                        <td className="py-4 text-[var(--color-text-muted)]">{q.vat.toLocaleString()}</td>
                                         <td className={`py-4 font-black text-right ${q.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                             {q.profit.toLocaleString()}
                                         </td>
@@ -256,22 +256,22 @@ const TaxReports = () => {
                 </div>
 
                 {/* Tax Estimates */}
-                <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-6">
+                <div className="bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm space-y-6">
                     <div className="flex justify-between items-center">
                         <div>
-                            <h3 className="text-xl font-bold font-roboto">Təxmini Vergilər</h3>
-                            <p className="text-sm text-slate-500">Müxtəlif vergi modelləri üzrə proqnozlar</p>
+                            <h3 className="text-xl font-bold font-roboto text-[var(--color-text-primary)]">Təxmini Vergilər</h3>
+                            <p className="text-sm text-[var(--color-text-secondary)]">Müxtəlif vergi modelləri üzrə proqnozlar</p>
                         </div>
-                        <div className="flex bg-slate-100 p-1 rounded-xl">
+                        <div className="flex bg-[var(--color-hover-bg)] p-1 rounded-xl">
                             <button
                                 onClick={() => setTaxMode('simplified')}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${taxMode === 'simplified' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${taxMode === 'simplified' ? 'bg-[var(--color-card-bg)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-muted)]'}`}
                             >
                                 Sadə
                             </button>
                             <button
                                 onClick={() => setTaxMode('profit')}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${taxMode === 'profit' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${taxMode === 'profit' ? 'bg-[var(--color-card-bg)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-muted)]'}`}
                             >
                                 Mənfəət
                             </button>
@@ -308,11 +308,11 @@ const TaxReports = () => {
                     </div>
 
                     <div className="pt-2">
-                        <div className="bg-gray-50 rounded-2xl p-4 flex items-start gap-3">
-                            <div className="p-2 bg-white rounded-lg border text-slate-400">
+                        <div className="bg-[var(--color-hover-bg)] rounded-2xl p-4 flex items-start gap-3">
+                            <div className="p-2 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-card-border)] text-[var(--color-text-muted)]">
                                 <FileText size={16} />
                             </div>
-                            <p className="text-[10px] text-slate-500 leading-relaxed italic">
+                            <p className="text-[10px] text-[var(--color-text-muted)] leading-relaxed italic">
                                 * Bu rəqəmlər yalnız məlumatlandırma məqsədi daşıyır və tətbiqdə olan dataya əsaslanır.
                                 Rəsmi bəyannamələr üçün peşəkar mühasibat xidmətindən istifadə etməyiniz tövsiyə olunur.
                             </p>

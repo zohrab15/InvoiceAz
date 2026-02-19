@@ -421,7 +421,7 @@ const Invoices = () => {
                         className="space-y-6"
                     >
                         <div className="flex justify-between items-center">
-                            <h2 className="text-3xl font-black text-slate-900 tracking-tight font-roboto">Fakturalar</h2>
+                            <h2 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight font-roboto">Fakturalar</h2>
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => {
@@ -441,13 +441,12 @@ const Invoices = () => {
                                                                 inv.status === 'cancelled' ? 'Ləğv edilib' : 'Qaralama'
                                             };
                                         });
-
                                         const ws = XLSX.utils.json_to_sheet(data);
                                         const wb = XLSX.utils.book_new();
                                         XLSX.utils.book_append_sheet(wb, ws, "Fakturalar");
                                         XLSX.writeFile(wb, `fakturalar_hesabati_${new Date().toISOString().split('T')[0]}.xlsx`);
                                     }}
-                                    className="p-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-all font-bold text-sm flex items-center gap-2"
+                                    className="p-2 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] rounded-lg hover:bg-[var(--color-hover-bg)] transition-all font-bold text-sm flex items-center gap-2"
                                     title="Excel kimi yüklə"
                                 >
                                     <Download size={18} />
@@ -463,15 +462,15 @@ const Invoices = () => {
                             </div>
                         </div>
 
-                        <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-4 rounded-xl border shadow-sm items-center">
+                        <div className="flex flex-col md:flex-row gap-4 mb-6 bg-[var(--color-card-bg)] p-4 rounded-xl border border-[var(--color-card-border)] shadow-sm items-center">
                             <div className="relative flex-1 group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-blue transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--color-text-muted)] group-focus-within:text-primary-blue transition-colors">
                                     <Search size={18} />
                                 </div>
                                 <input
                                     type="text"
                                     placeholder="Faktura # və ya Müştəri axtar..."
-                                    className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-0 focus:bg-white focus:border-primary-blue transition-all"
+                                    className="block w-full pl-11 pr-4 py-3 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-xl text-sm placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-0 focus:bg-[var(--color-card-bg)] focus:border-primary-blue transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -491,7 +490,7 @@ const Invoices = () => {
                                         <Filter size={18} />
                                     </div>
                                     <select
-                                        className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:ring-0 focus:bg-white focus:border-primary-blue transition-all appearance-none cursor-pointer"
+                                        className="block w-full pl-11 pr-4 py-3 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-xl text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-0 focus:bg-[var(--color-card-bg)] focus:border-primary-blue transition-all appearance-none cursor-pointer"
                                         value={statusFilter}
                                         onChange={(e) => setStatusFilter(e.target.value)}
                                     >
@@ -507,10 +506,10 @@ const Invoices = () => {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                        <div className="bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-card-border)] shadow-sm overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse min-w-[800px]">
-                                    <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
+                                    <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-xs uppercase font-semibold">
                                         <tr>
                                             <th className="px-6 py-4">Faktura #</th>
                                             <th className="px-6 py-4">Müştəri</th>
@@ -532,11 +531,11 @@ const Invoices = () => {
                                                 className="hover:bg-blue-50/30 transition-colors group"
                                             >
                                                 <td className="px-6 py-4 font-medium text-primary-blue">{inv.invoice_number}</td>
-                                                <td className="px-6 py-4 font-medium text-gray-700">{inv.client_name}</td>
-                                                <td className="px-6 py-4 text-gray-500">{new Date(inv.invoice_date).toLocaleDateString('az-AZ')}</td>
+                                                <td className="px-6 py-4 font-medium text-[var(--color-text-primary)]">{inv.client_name}</td>
+                                                <td className="px-6 py-4 text-[var(--color-text-secondary)]">{new Date(inv.invoice_date).toLocaleDateString('az-AZ')}</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-gray-900">{parseFloat(inv.total).toFixed(2)} ₼</span>
+                                                        <span className="font-bold text-[var(--color-text-primary)]">{parseFloat(inv.total).toFixed(2)} ₼</span>
                                                         {parseFloat(inv.paid_amount) > 0 && parseFloat(inv.paid_amount) < parseFloat(inv.total) && (
                                                             <span className="text-[10px] text-orange-500 font-bold">Ödənilib: {parseFloat(inv.paid_amount).toFixed(2)}</span>
                                                         )}
@@ -615,15 +614,15 @@ const Invoices = () => {
                         exit={{ opacity: 0, scale: 0.98 }}
                         className="space-y-8"
                     >
-                        <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-3 sm:p-4 rounded-xl border shadow-sm sticky top-4 z-10 gap-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-center bg-[var(--color-card-bg)] p-3 sm:p-4 rounded-xl border border-[var(--color-card-border)] shadow-sm sticky top-4 z-10 gap-4">
                             <div className="flex items-center space-x-3 w-full sm:w-auto">
-                                <button onClick={() => setView('list')} className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"><ArrowLeft size={20} className="sm:w-6 sm:h-6" /></button>
-                                <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">{editInvoice ? 'Faktura Düzəlişi' : 'Yeni Hesab-faktura'}</h2>
+                                <button onClick={() => setView('list')} className="p-2 hover:bg-[var(--color-hover-bg)] text-[var(--color-text-primary)] rounded-full transition-colors flex-shrink-0"><ArrowLeft size={20} className="sm:w-6 sm:h-6" /></button>
+                                <h2 className="text-lg sm:text-xl font-bold text-[var(--color-text-primary)] truncate">{editInvoice ? 'Faktura Düzəlişi' : 'Yeni Hesab-faktura'}</h2>
                             </div>
                             <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
                                 <button
                                     onClick={() => setShowPreview(!showPreview)}
-                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all text-xs sm:text-sm ${showPreview ? 'bg-gray-800 text-white' : 'border hover:bg-gray-50'}`}
+                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all text-xs sm:text-sm ${showPreview ? 'bg-gray-800 text-white' : 'bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-hover-bg)]'}`}
                                 >
                                     <Eye size={16} />
                                     <span className="whitespace-nowrap">{showPreview ? 'Yazı rejimi' : 'Ön baxış'}</span>
@@ -632,7 +631,7 @@ const Invoices = () => {
                                     <button
                                         onClick={() => handleSave('draft')}
                                         disabled={createMutation.isPending || updateMutation.isPending}
-                                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 border rounded-lg flex items-center justify-center space-x-2 transition-all shadow-sm text-xs sm:text-sm ${createMutation.isPending || updateMutation.isPending ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-primary)] rounded-lg flex items-center justify-center space-x-2 transition-all shadow-sm text-xs sm:text-sm ${createMutation.isPending || updateMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[var(--color-hover-bg)]'}`}
                                     >
                                         {(createMutation.isPending || updateMutation.isPending) && !triggerSendModal ? (
                                             <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
@@ -659,12 +658,12 @@ const Invoices = () => {
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                             <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-8'} space-y-6 transition-all duration-500 order-1`}>
-                                <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
+                                <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div>
-                                            <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Müştəri seçimi</label>
+                                            <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Müştəri seçimi</label>
                                             <select
-                                                className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white text-sm font-bold"
+                                                className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold text-[var(--color-text-primary)]"
                                                 value={selectedClientId}
                                                 onChange={(e) => setSelectedClientId(e.target.value)}
                                             >
@@ -674,25 +673,25 @@ const Invoices = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-2 gap-4 text-[var(--color-text-primary)]">
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Tarix</label>
-                                                <input type="date" className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none bg-gray-50 hover:bg-white text-sm font-bold" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
+                                                <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Tarix</label>
+                                                <input type="date" className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Son Tarix</label>
-                                                <input type="date" className="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none bg-gray-50 hover:bg-white text-sm font-bold" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+                                                <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Son Tarix</label>
+                                                <input type="date" className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-gray-400 uppercase mb-2 flex items-center gap-2">
+                                            <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2 flex items-center gap-2">
                                                 Dizayn (Mövzu)
-                                                {!canUseThemes && <Lock size={12} className="text-gray-400" />}
+                                                {!canUseThemes && <Lock size={12} className="text-[var(--color-text-muted)]" />}
                                             </label>
-                                            <div className="relative group/theme">
+                                            <div className="relative group/theme text-[var(--color-text-primary)]">
                                                 <select
                                                     disabled={!canUseThemes}
-                                                    className={`w-full border-2 border-gray-100 rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-gray-50 hover:bg-white text-sm font-bold ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    className={`w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     value={invoiceTheme}
                                                     onChange={(e) => setInvoiceTheme(e.target.value)}
                                                 >
@@ -712,9 +711,9 @@ const Invoices = () => {
                                     </div>
                                 </div>
 
-                                <div className="bg-white p-6 rounded-xl border shadow-sm space-y-6">
-                                    <div className="flex justify-between items-center border-b pb-4">
-                                        <h3 className="font-bold text-gray-800 flex items-center gap-2"><List size={18} className="text-primary-blue" /> Məhsul Siyahısı</h3>
+                                <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] space-y-6">
+                                    <div className="flex justify-between items-center border-b border-[var(--color-card-border)] pb-4">
+                                        <h3 className="font-bold text-[var(--color-text-primary)] flex items-center gap-2"><List size={18} className="text-primary-blue" /> Məhsul Siyahısı</h3>
                                     </div>
                                     <div className="space-y-4">
                                         <AnimatePresence>
@@ -724,11 +723,11 @@ const Invoices = () => {
                                                     animate={{ opacity: 1, height: 'auto' }}
                                                     exit={{ opacity: 0, height: 0 }}
                                                     key={index}
-                                                    className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-gray-50/50 p-4 rounded-xl hover:bg-white border border-transparent hover:border-gray-100 transition-all group shadow-sm"
+                                                    className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-[var(--color-hover-bg)] p-4 rounded-xl hover:bg-[var(--color-card-bg)] border border-transparent hover:border-[var(--color-card-border)] transition-all group shadow-sm"
                                                 >
                                                     <div className="flex-1 space-y-1">
                                                         <select
-                                                            className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold focus:border-blue-500 outline-none"
+                                                            className="w-full bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-lg p-2 text-xs font-bold text-[var(--color-text-primary)] focus:border-blue-500 outline-none"
                                                             value={item.product || ''}
                                                             onChange={(e) => updateItem(index, 'product_id', e.target.value)}
                                                         >
@@ -739,20 +738,20 @@ const Invoices = () => {
                                                         </select>
                                                         <input
                                                             type="text"
-                                                            className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-bold focus:ring-0 placeholder:font-normal"
+                                                            className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-bold text-[var(--color-text-primary)] focus:ring-0 placeholder:[var(--color-text-muted)] placeholder:font-normal"
                                                             placeholder="Və ya əllə daxil edin..."
                                                             value={item.description}
                                                             onChange={(e) => updateItem(index, 'description', e.target.value)}
                                                         />
                                                     </div>
                                                     <div className="w-full sm:w-20">
-                                                        <label className="sm:hidden text-[10px] font-bold text-gray-400 uppercase mb-1 block">Miqdar</label>
-                                                        <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 text-sm text-center font-bold" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)} />
+                                                        <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Miqdar</label>
+                                                        <input type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 text-sm text-center font-bold text-[var(--color-text-primary)]" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)} />
                                                     </div>
                                                     <div className="w-full sm:w-28">
-                                                        <label className="sm:hidden text-[10px] font-bold text-gray-400 uppercase mb-1 block">Vahid</label>
+                                                        <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Vahid</label>
                                                         <select
-                                                            className="w-full bg-gray-100/50 border-none rounded-lg p-2 text-xs font-bold"
+                                                            className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 text-xs font-bold text-[var(--color-text-primary)]"
                                                             value={UNIT_CHOICES.find(u => u.value === item.unit) ? item.unit : 'digər'}
                                                             onChange={(e) => {
                                                                 const val = e.target.value;
@@ -778,10 +777,10 @@ const Invoices = () => {
                                                         )}
                                                     </div>
                                                     <div className="w-full sm:w-32 relative">
-                                                        <label className="sm:hidden text-[10px] font-bold text-gray-400 uppercase mb-1 block">Qiymət</label>
+                                                        <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Qiymət</label>
                                                         <div className="relative">
-                                                            <span className="absolute left-3 top-2 text-xs text-gray-400 font-bold">₼</span>
-                                                            <input type="number" className="w-full bg-gray-100/50 border-none rounded-lg p-2 pl-10 text-sm font-bold" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
+                                                            <span className="absolute left-3 top-2 text-xs text-[var(--color-text-muted)] font-bold">₼</span>
+                                                            <input type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 pl-10 text-sm font-bold text-[var(--color-text-primary)]" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
                                                         </div>
                                                     </div>
                                                     <div className="w-full sm:w-24 text-right font-bold text-primary-blue text-sm flex justify-between items-center sm:block border-t sm:border-t-0 pt-3 sm:pt-0 mt-2 sm:mt-0 italic sm:not-italic">
@@ -792,7 +791,7 @@ const Invoices = () => {
                                                 </motion.div>
                                             ))}
                                         </AnimatePresence>
-                                        <button onClick={addItem} className="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 font-bold hover:border-primary-blue hover:text-primary-blue transition-all flex justify-center items-center gap-2 active:bg-blue-50">
+                                        <button onClick={addItem} className="w-full py-3 border-2 border-dashed border-[var(--color-card-border)] rounded-xl text-[var(--color-text-secondary)] font-bold hover:border-primary-blue hover:text-primary-blue transition-all flex justify-center items-center gap-2 active:bg-blue-50/10">
                                             <Plus size={18} /><span>Yeni sətir</span>
                                         </button>
                                     </div>
@@ -804,18 +803,18 @@ const Invoices = () => {
                                     <InvoicePreview />
                                 ) : (
                                     <>
-                                        <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                                            <h3 className="font-bold text-gray-800 border-b pb-4">Xülasə</h3>
+                                        <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] shadow-sm space-y-4">
+                                            <h3 className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-card-border)] pb-4">Xülasə</h3>
                                             <div className="space-y-4">
-                                                <div className="flex justify-between text-gray-500 font-medium"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} ₼</span></div>
-                                                <div className="flex justify-between text-gray-500 font-medium"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} ₼</span></div>
-                                                <div className="flex justify-between text-2xl font-black border-t-2 border-gray-50 pt-4 text-gray-900 italic"><span>YEKUN:</span><span className="text-primary-blue">{calculateTotal().toFixed(2)} ₼</span></div>
+                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} ₼</span></div>
+                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} ₼</span></div>
+                                                <div className="flex justify-between text-2xl font-black border-t-2 border-[var(--color-hover-bg)] pt-4 text-[var(--color-text-primary)] italic"><span>YEKUN:</span><span className="text-primary-blue">{calculateTotal().toFixed(2)} ₼</span></div>
                                             </div>
                                         </div>
 
-                                        <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                                            <h3 className="font-bold text-gray-800 border-b pb-4 shrink-0 flex items-center gap-2"><List size={18} className="text-primary-blue" /> Sürətli Keçid</h3>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] shadow-sm space-y-4">
+                                            <h3 className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-card-border)] pb-4 shrink-0 flex items-center gap-2"><List size={18} className="text-primary-blue" /> Sürətli Keçid</h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[var(--color-text-primary)]">
                                                 <button
                                                     onClick={() => {
                                                         const target = editInvoice || savedInvoice;
@@ -824,7 +823,7 @@ const Invoices = () => {
                                                         navigator.clipboard.writeText(url);
                                                         showToast('Link kopyalandı!');
                                                     }}
-                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all gap-2 group ${editInvoice || savedInvoice ? 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100' : 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'}`}
+                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all gap-2 group ${editInvoice || savedInvoice ? 'bg-blue-50/10 text-blue-500 border-blue-500/20 hover:bg-blue-50/20' : 'bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] border-[var(--color-card-border)] cursor-not-allowed'}`}
                                                 >
                                                     <FileText size={24} className="group-hover:scale-110 transition-transform" />
                                                     <span className="text-xs font-bold uppercase tracking-tighter">Linki Kopyala</span>
@@ -835,7 +834,7 @@ const Invoices = () => {
                                                         if (!target) return showToast('Əvvəlcə yadda saxlayın', 'error');
                                                         handleDownloadPdf(target.id);
                                                     }}
-                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all gap-2 group ${editInvoice || savedInvoice ? 'bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100' : 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'}`}
+                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all gap-2 group ${editInvoice || savedInvoice ? 'bg-indigo-50/10 text-indigo-500 border-indigo-500/20 hover:bg-indigo-50/20' : 'bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] border-[var(--color-card-border)] cursor-not-allowed'}`}
                                                 >
                                                     <Download size={24} className="group-hover:scale-110 transition-transform" />
                                                     <span className="text-xs font-bold uppercase tracking-tighter">PDF Yüklə</span>
@@ -844,20 +843,20 @@ const Invoices = () => {
                                         </div>
 
                                         {selectedClient && (
-                                            <div className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                                                <h3 className="font-bold text-gray-800 border-b pb-4 shrink-0 flex items-center gap-2"><CheckCircle size={18} className="text-green-500" /> Müştəri Məlumatı</h3>
+                                            <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] shadow-sm space-y-4">
+                                                <h3 className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-card-border)] pb-4 shrink-0 flex items-center gap-2"><CheckCircle size={18} className="text-green-500" /> Müştəri Məlumatı</h3>
                                                 <div className="space-y-3">
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] uppercase font-bold text-gray-400">Telefon</span>
-                                                        <span className="text-sm font-medium text-gray-700">{selectedClient.phone || 'Daxil edilməyib'}</span>
+                                                        <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Telefon</span>
+                                                        <span className="text-sm font-medium text-[var(--color-text-primary)]">{selectedClient.phone || 'Daxil edilməyib'}</span>
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] uppercase font-bold text-gray-400">VÖEN</span>
-                                                        <span className="text-sm font-medium text-gray-700">{selectedClient.voen || '---'}</span>
+                                                        <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">VÖEN</span>
+                                                        <span className="text-sm font-medium text-[var(--color-text-primary)]">{selectedClient.voen || '---'}</span>
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] uppercase font-bold text-gray-400">Ünvan</span>
-                                                        <span className="text-sm font-medium text-gray-700 line-clamp-2">{selectedClient.address || '---'}</span>
+                                                        <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Ünvan</span>
+                                                        <span className="text-sm font-medium text-[var(--color-text-primary)] line-clamp-2">{selectedClient.address || '---'}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -871,26 +870,26 @@ const Invoices = () => {
             </AnimatePresence>
             <AnimatePresence>
                 {showSendModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-white rounded-2xl shadow-2xl w-full max-auto max-w-md overflow-hidden"
+                            className="bg-[var(--color-card-bg)] rounded-2xl shadow-2xl w-full max-auto max-w-md overflow-hidden border border-[var(--color-card-border)]"
                         >
                             <div className="p-8 text-center space-y-6">
                                 <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
                                     <CheckCircle size={40} />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900">Faktura Hazırdır!</h3>
-                                    <p className="text-slate-500 mt-2">Müştəriyə necə göndərmək istəyirsiniz?</p>
+                                    <h3 className="text-2xl font-black text-[var(--color-text-primary)]">Faktura Hazırdır!</h3>
+                                    <p className="text-[var(--color-text-secondary)] mt-2">Müştəriyə necə göndərmək istəyirsiniz?</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3">
                                     <button
                                         onClick={() => { handleWhatsApp(savedInvoice); setShowSendModal(false); }}
-                                        className="flex items-center justify-between p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-all border border-green-100 font-bold"
+                                        className="flex items-center justify-between p-4 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500/20 transition-all border border-emerald-500/20 font-bold"
                                     >
                                         <div className="flex items-center gap-3">
                                             <MessageSquare size={20} />
@@ -909,7 +908,7 @@ const Invoices = () => {
                                             showToast('Link kopyalandı!');
                                             setShowSendModal(false);
                                         }}
-                                        className="flex items-center justify-between p-4 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-all border border-blue-100 font-bold"
+                                        className="flex items-center justify-between p-4 bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500/20 transition-all border border-blue-500/20 font-bold"
                                     >
                                         <div className="flex items-center gap-3">
                                             <FileText size={20} />
@@ -921,7 +920,7 @@ const Invoices = () => {
                                     <button
                                         onClick={() => handleSendEmail(savedInvoice)}
                                         disabled={sendingEmail}
-                                        className={`flex items-center justify-between p-4 rounded-xl transition-all border font-bold ${sendingEmail ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'}`}
+                                        className={`flex items-center justify-between p-4 rounded-xl transition-all border font-bold ${sendingEmail ? 'opacity-50 cursor-not-allowed' : 'bg-[var(--color-hover-bg)] text-[var(--color-text-primary)] hover:bg-[var(--color-card-bg)] border-[var(--color-card-border)]'}`}
                                     >
                                         <div className="flex items-center gap-3">
                                             {sendingEmail ? (

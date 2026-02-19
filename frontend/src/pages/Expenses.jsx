@@ -198,7 +198,7 @@ const Expenses = () => {
             className="space-y-6 pb-20"
         >
             <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">Xərclər</h2>
+                <h2 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight">Xərclər</h2>
                 <div className="flex gap-2">
                     <button
                         onClick={() => {
@@ -218,7 +218,7 @@ const Expenses = () => {
                             XLSX.utils.book_append_sheet(wb, ws, "Xərclər");
                             XLSX.writeFile(wb, `xercler_hesabati_${new Date().toISOString().split('T')[0]}.xlsx`);
                         }}
-                        className="p-2.5 bg-white border border-gray-200 text-gray-500 rounded-xl hover:bg-gray-50 transition-all font-bold text-sm flex items-center gap-2"
+                        className="p-2.5 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] rounded-xl hover:bg-[var(--color-hover-bg)] transition-all font-bold text-sm flex items-center gap-2"
                         title="CSV kimi yüklə"
                     >
                         <Download size={18} />
@@ -243,13 +243,13 @@ const Expenses = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="p-4 border-b border-gray-50 flex items-center space-x-3 bg-gray-50/30">
-                            <Search size={20} className="text-gray-400 ml-2" />
+                    <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-card-border)] shadow-sm overflow-hidden">
+                        <div className="p-4 border-b border-[var(--color-card-border)] flex items-center space-x-3 bg-[var(--color-hover-bg)]">
+                            <Search size={20} className="text-[var(--color-text-muted)] ml-2" />
                             <input
                                 type="text"
                                 placeholder="Xərclərdə axtar..."
-                                className="bg-transparent border-none focus:ring-0 w-full font-medium text-gray-600"
+                                className="bg-transparent border-none focus:ring-0 w-full font-medium text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -257,7 +257,7 @@ const Expenses = () => {
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left min-w-[600px]">
-                                <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                                <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-[10px] uppercase font-black tracking-widest">
                                     <tr>
                                         <th className="px-6 py-4">Təsvir / Kateqoriya</th>
                                         <th className="px-6 py-4 text-center">Tarix</th>
@@ -265,12 +265,12 @@ const Expenses = () => {
                                         <th className="px-6 py-4 text-right"></th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-[var(--color-card-border)]">
                                     {filteredExpenses?.map((exp) => (
-                                        <tr key={exp.id} className="hover:bg-red-50/30 transition-colors group">
+                                        <tr key={exp.id} className="hover:bg-[var(--color-hover-bg)] transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="font-bold text-gray-900 leading-tight">{exp.description}</div>
+                                                    <div className="font-bold text-[var(--color-text-primary)] leading-tight">{exp.description}</div>
                                                     {exp.attachment && (
                                                         <a href={exp.attachment.startsWith('http') ? exp.attachment : `${API_URL}${exp.attachment}`} target="_blank" rel="noreferrer">
                                                             <Paperclip size={12} className="text-blue-400" />
@@ -278,22 +278,22 @@ const Expenses = () => {
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400">
+                                                    <span className="text-[10px] font-black uppercase tracking-tighter text-[var(--color-text-muted)]">
                                                         {categories.find(c => c.id === exp.category)?.name}
                                                     </span>
                                                     {exp.vendor && (
                                                         <>
-                                                            <span className="text-[10px] text-gray-300">•</span>
-                                                            <span className="text-[10px] font-bold text-gray-500">{exp.vendor}</span>
+                                                            <span className="text-[10px] text-[var(--color-text-muted)] opacity-50">•</span>
+                                                            <span className="text-[10px] font-bold text-[var(--color-text-secondary)]">{exp.vendor}</span>
                                                         </>
                                                     )}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <div className="text-xs font-semibold text-gray-400">
+                                                <div className="text-xs font-semibold text-[var(--color-text-muted)]">
                                                     {new Date(exp.date).toLocaleDateString('az-AZ')}
                                                 </div>
-                                                <div className={`text-[9px] font-black uppercase mt-1 px-1.5 py-0.5 rounded-md inline-block ${exp.status === 'paid' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                <div className={`text-[9px] font-black uppercase mt-1 px-1.5 py-0.5 rounded-md inline-block ${exp.status === 'paid' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
                                                     {exp.status === 'paid' ? 'Ödənilib' : 'Gözləmədə'}
                                                 </div>
                                             </td>
@@ -320,13 +320,13 @@ const Expenses = () => {
                                                             setAttachment(exp.attachment);
                                                             setShowAddModal(true);
                                                         }}
-                                                        className="p-2 hover:bg-blue-50 rounded-lg text-blue-300 hover:text-blue-500 transition-colors"
+                                                        className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-400 hover:text-blue-500 transition-colors"
                                                     >
                                                         <Edit2 size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(exp.id); }}
-                                                        className="p-2 hover:bg-red-50 rounded-lg text-red-300 hover:text-red-500 transition-colors"
+                                                        className="p-2 hover:bg-red-500/10 rounded-lg text-red-300 hover:text-red-500 transition-colors"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
@@ -344,8 +344,8 @@ const Expenses = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                        <h3 className="font-black text-gray-800 text-sm tracking-widest uppercase mb-8 border-b pb-4">Kateqoriya üzrə</h3>
+                    <div className="bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm">
+                        <h3 className="font-black text-[var(--color-text-primary)] text-sm tracking-widest uppercase mb-8 border-b border-[var(--color-card-border)] pb-4">Kateqoriya üzrə</h3>
                         <div className="h-[400px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart
@@ -364,8 +364,8 @@ const Expenses = () => {
                                         tickLine={false}
                                     />
                                     <Tooltip
-                                        cursor={{ fill: '#f8fafc' }}
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                        cursor={{ fill: 'var(--color-hover-bg)' }}
+                                        contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '12px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                     />
                                     <Bar
                                         dataKey="value"
@@ -381,16 +381,16 @@ const Expenses = () => {
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                        <h3 className="font-black text-gray-800 text-sm tracking-widest uppercase mb-4 mb-6 border-b pb-4 flex items-center justify-between">
+                    <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm">
+                        <h3 className="font-black text-[var(--color-text-primary)] text-sm tracking-widest uppercase mb-4 mb-6 border-b border-[var(--color-card-border)] pb-4 flex items-center justify-between">
                             <span>Büdcə Limiti</span>
-                            <Info size={14} className="text-gray-400" />
+                            <Info size={14} className="text-[var(--color-text-muted)]" />
                         </h3>
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between text-xs font-bold mb-2">
-                                    <span className="text-gray-400 uppercase tracking-wider">Aylıq Xərclər</span>
-                                    <span className="text-gray-800">
+                                    <span className="text-[var(--color-text-muted)] uppercase tracking-wider">Aylıq Xərclər</span>
+                                    <span className="text-[var(--color-text-primary)]">
                                         {expenses?.filter(e => {
                                             const d = new Date(e.date);
                                             const now = new Date();
@@ -398,7 +398,7 @@ const Expenses = () => {
                                         }).reduce((sum, e) => sum + parseFloat(e.amount), 0).toFixed(2)} ₼
                                     </span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                <div className="w-full bg-[var(--color-hover-bg)] h-2 rounded-full overflow-hidden">
                                     <div
                                         className={`${(expenses?.filter(e => {
                                             const d = new Date(e.date);
@@ -416,7 +416,7 @@ const Expenses = () => {
                                     />
                                 </div>
                                 <div className="flex justify-between items-center mt-3">
-                                    <div className="text-[10px] text-gray-400 font-medium italic">
+                                    <div className="text-[10px] text-[var(--color-text-muted)] font-medium italic">
                                         Limit: {monthlyBudget} ₼
                                     </div>
                                     <button
@@ -459,13 +459,13 @@ const Expenses = () => {
             <AnimatePresence>
                 {showAddModal && (
                     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" />
-                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative overflow-hidden">
-                            <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                                <h3 className="text-2xl font-black text-gray-800 tracking-tight">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm" />
+                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-[var(--color-card-bg)] rounded-3xl shadow-2xl w-full max-w-lg relative overflow-hidden border border-[var(--color-card-border)]">
+                            <div className="p-8 border-b border-[var(--color-card-border)] flex justify-between items-center bg-[var(--color-hover-bg)]">
+                                <h3 className="text-2xl font-black text-[var(--color-text-primary)] tracking-tight">
                                     {editingExpense ? 'Xərci Redaktə Et' : 'Yeni Xərc'}
                                 </h3>
-                                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600"><X size={24} /></button>
+                                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-[var(--color-card-bg)] rounded-full transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"><X size={24} /></button>
                             </div>
 
                             <form onSubmit={(e) => {
@@ -479,30 +479,30 @@ const Expenses = () => {
                             }} className="p-8 space-y-5 overflow-y-auto max-h-[70vh]">
                                 <div className="space-y-4">
                                     <div className="relative">
-                                        <Tag className="absolute left-4 top-3.5 text-gray-300" size={18} />
+                                        <Tag className="absolute left-4 top-3.5 text-[var(--color-text-muted)]" size={18} />
                                         <input type="text" placeholder="Xərcin təsviri *"
                                             onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
                                             onInput={(e) => e.target.setCustomValidity('')}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                            className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
                                             value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
                                     </div>
 
                                     <div className="relative">
-                                        <Building className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                        <input type="text" placeholder="Təchizatçı (Vendor)" className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold" value={formData.vendor} onChange={(e) => setFormData({ ...formData, vendor: e.target.value })} />
+                                        <Building className="absolute left-4 top-3.5 text-[var(--color-text-muted)]" size={18} />
+                                        <input type="text" placeholder="Təchizatçı (Vendor)" className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]" value={formData.vendor} onChange={(e) => setFormData({ ...formData, vendor: e.target.value })} />
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="relative">
-                                            <DollarSign className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                            <input type="number" step="0.01" placeholder="Məbləğ *"
+                                            <DollarSign className="absolute left-4 top-3.5 text-[var(--color-text-muted)]" size={18} />
+                                            <input type="number" step="0.01" placeholder="Məlbəğ *"
                                                 onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
                                                 onInput={(e) => e.target.setCustomValidity('')}
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                                className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
                                                 value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
                                         </div>
                                         <div className="relative">
-                                            <select className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer" value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })}>
+                                            <select className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer text-[var(--color-text-primary)]" value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })}>
                                                 <option value="AZN">AZN</option>
                                                 <option value="USD">USD</option>
                                                 <option value="EUR">EUR</option>
@@ -512,11 +512,11 @@ const Expenses = () => {
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="relative">
-                                            <Calendar className="absolute left-4 top-3.5 text-gray-300" size={18} />
-                                            <input type="date" className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
+                                            <Calendar className="absolute left-4 top-3.5 text-[var(--color-text-muted)]" size={18} />
+                                            <input type="date" className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold text-[var(--color-text-primary)]" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
                                         </div>
                                         <div className="relative">
-                                            <select className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                                            <select className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer text-[var(--color-text-primary)]" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
                                                 <option value="paid">Ödənilib</option>
                                                 <option value="pending">Gözləmədə</option>
                                             </select>
@@ -525,14 +525,14 @@ const Expenses = () => {
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="relative">
-                                            <select className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                                            <select className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 outline-none transition-all font-bold cursor-pointer text-[var(--color-text-primary)]" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
                                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </select>
                                         </div>
                                         <div className="relative">
-                                            <CreditCard className="absolute left-4 top-3.5 text-gray-300" size={18} />
+                                            <CreditCard className="absolute left-4 top-3.5 text-[var(--color-text-muted)]" size={18} />
                                             <select
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold cursor-pointer"
+                                                className="w-full bg-[var(--color-input-bg)] border-2 border-transparent focus:border-red-500 rounded-xl p-3 pl-12 outline-none transition-all font-bold cursor-pointer text-[var(--color-text-primary)]"
                                                 value={formData.payment_method}
                                                 onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
                                             >
@@ -546,17 +546,17 @@ const Expenses = () => {
 
 
                                     <div className="relative">
-                                        <div className={`w-full bg-gray-50 border-2 border-dashed ${attachment ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 transition-all`}>
+                                        <div className={`w-full bg-[var(--color-input-bg)] border-2 border-dashed ${attachment ? 'border-green-500 bg-green-500/10' : 'border-[var(--color-card-border)]'} rounded-xl p-4 transition-all`}>
                                             <label className="flex flex-col items-center justify-center cursor-pointer gap-2">
                                                 {attachment ? (
                                                     <>
                                                         <Check size={24} className="text-green-500" />
-                                                        <span className="text-xs font-bold text-green-700">{attachment.name}</span>
+                                                        <span className="text-xs font-bold text-green-500">{attachment.name}</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Paperclip size={24} className="text-gray-400" />
-                                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Qəbz / Faktura əlavə et</span>
+                                                        <Paperclip size={24} className="text-[var(--color-text-muted)]" />
+                                                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Qəbz / Faktura əlavə et</span>
                                                     </>
                                                 )}
                                                 <input type="file" className="hidden" onChange={(e) => setAttachment(e.target.files[0])} accept="image/*,.pdf" />
@@ -565,7 +565,7 @@ const Expenses = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-4 pt-4">
-                                    <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-4 rounded-2xl font-bold text-gray-500 hover:bg-gray-50 transition-all">Ləğv et</button>
+                                    <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-4 rounded-2xl font-bold text-[var(--color-text-muted)] hover:bg-[var(--color-hover-bg)] transition-all">Ləğv et</button>
                                     <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest bg-red-500 text-white shadow-xl shadow-red-100 hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50">
                                         {createMutation.isPending || updateMutation.isPending ? 'Göndərilir...' : (editingExpense ? 'Yadda Saxla' : 'Əlavə et')}
                                     </button>

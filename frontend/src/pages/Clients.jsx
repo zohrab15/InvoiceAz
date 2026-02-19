@@ -120,7 +120,7 @@ const Clients = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight font-roboto">Müştərilər</h1>
+                <h1 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight font-roboto">Müştərilər</h1>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => {
@@ -139,7 +139,7 @@ const Clients = () => {
                             XLSX.utils.book_append_sheet(wb, ws, "Müştərilər");
                             XLSX.writeFile(wb, `musteriler_siyahisi_${new Date().toISOString().split('T')[0]}.xlsx`);
                         }}
-                        className="p-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-all font-bold text-sm flex items-center gap-2"
+                        className="p-2 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] rounded-lg hover:bg-[var(--color-hover-bg)] transition-all font-bold text-sm flex items-center gap-2"
                         title="Excel kimi yüklə"
                     >
                         <Download size={18} />
@@ -155,13 +155,13 @@ const Clients = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                <div className="p-4 border-b bg-gray-50/50 flex items-center space-x-4">
-                    <Search className="text-gray-400" size={20} />
+            <div className="bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-card-border)] shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-[var(--color-card-border)] bg-[var(--color-hover-bg)] flex items-center space-x-4">
+                    <Search className="text-[var(--color-text-muted)]" size={20} />
                     <input
                         type="text"
                         placeholder="Ad, email və ya telefon ilə axtar..."
-                        className="bg-transparent border-none outline-none w-full text-sm font-medium"
+                        className="bg-transparent border-none outline-none w-full text-sm font-medium text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -169,7 +169,7 @@ const Clients = () => {
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
+                        <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-xs uppercase font-semibold">
                             <tr>
                                 <th className="px-6 py-4">Müştəri</th>
                                 <th className="px-6 py-4">Əlaqə</th>
@@ -192,13 +192,13 @@ const Clients = () => {
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
+                                            <div className="w-10 h-10 bg-blue-500/10 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
                                                 {client.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
-                                                <div className="font-bold text-gray-900">{client.name}</div>
-                                                <div className="text-xs text-gray-500 flex items-center gap-1">
-                                                    <Building size={10} /> {client.voen ? `VÖEN: ${client.voen}` : 'VÖEN yoxdur'}
+                                                <div className="font-bold text-[var(--color-text-primary)]">{client.name}</div>
+                                                <div className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
+                                                    <Building size={10} className="text-[var(--color-text-muted)]" /> {client.voen ? `VÖEN: ${client.voen}` : 'VÖEN yoxdur'}
                                                 </div>
                                             </div>
                                         </div>
@@ -206,20 +206,20 @@ const Clients = () => {
                                     <td className="px-6 py-4">
                                         <div className="space-y-1">
                                             {client.email && (
-                                                <div className="flex items-center text-sm text-gray-600 gap-2">
-                                                    <Mail size={14} className="text-gray-400" />
+                                                <div className="flex items-center text-sm text-[var(--color-text-secondary)] gap-2">
+                                                    <Mail size={14} className="text-[var(--color-text-muted)]" />
                                                     {client.email}
                                                 </div>
                                             )}
                                             {client.phone && (
-                                                <div className="flex items-center text-sm text-gray-600 gap-2">
-                                                    <Phone size={14} className="text-gray-400" />
+                                                <div className="flex items-center text-sm text-[var(--color-text-secondary)] gap-2">
+                                                    <Phone size={14} className="text-[var(--color-text-muted)]" />
                                                     {client.phone}
                                                 </div>
                                             )}
                                             {client.address && (
-                                                <div className="flex items-center text-sm text-gray-600 gap-2">
-                                                    <MapPin size={14} className="text-gray-400" />
+                                                <div className="flex items-center text-sm text-[var(--color-text-secondary)] gap-2">
+                                                    <MapPin size={14} className="text-[var(--color-text-muted)]" />
                                                     <span className="truncate max-w-[200px]">{client.address}</span>
                                                 </div>
                                             )}
@@ -255,31 +255,31 @@ const Clients = () => {
 
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+                            className="bg-[var(--color-card-bg)] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-[var(--color-card-border)]"
                         >
-                            <div className="p-6 border-b bg-gray-50 flex justify-between items-center">
-                                <h2 className="text-xl font-bold text-gray-800">{editingClient ? 'Müştəri Məlumatlarını Yenilə' : 'Yeni Müştəri Əlavə Et'}</h2>
-                                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                            <div className="p-6 border-b border-[var(--color-card-border)] bg-[var(--color-hover-bg)] flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-[var(--color-text-primary)]">{editingClient ? 'Müştəri Məlumatlarını Yenilə' : 'Yeni Müştəri Əlavə Et'}</h2>
+                                <button onClick={() => setIsModalOpen(false)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors">
                                     <X size={24} />
                                 </button>
                             </div>
 
                             <form onSubmit={handleSubmit} className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Tam Ad / Şirkət Adı</label>
+                                    <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Tam Ad / Şirkət Adı</label>
                                     <div className="relative">
-                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
                                         <input
                                             required
                                             onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
                                             onInput={(e) => e.target.setCustomValidity('')}
                                             type="text"
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                            className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                             placeholder="Ad daxil edin"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -289,12 +289,12 @@ const Clients = () => {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
+                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Email</label>
                                         <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
                                             <input
                                                 type="email"
-                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                                 placeholder="example@mail.com"
                                                 value={formData.email}
                                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -302,7 +302,7 @@ const Clients = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Mobil Nömrə</label>
+                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Mobil Nömrə</label>
                                         <PhoneInput
                                             name="phone"
                                             value={formData.phone}
@@ -313,12 +313,12 @@ const Clients = () => {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">VÖEN</label>
+                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">VÖEN</label>
                                         <div className="relative">
-                                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
                                             <input
                                                 type="text"
-                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                                 placeholder="10 rəqəmli VÖEN"
                                                 value={formData.voen}
                                                 onChange={(e) => setFormData({ ...formData, voen: e.target.value })}
@@ -326,12 +326,12 @@ const Clients = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Ünvan</label>
+                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Ünvan</label>
                                         <div className="relative">
-                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
                                             <input
                                                 type="text"
-                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-blue focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                                 placeholder="Şəhər, küçə..."
                                                 value={formData.address}
                                                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -344,7 +344,7 @@ const Clients = () => {
                                     <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                                        className="flex-1 py-3 bg-[var(--color-hover-bg)] text-[var(--color-text-secondary)] font-bold rounded-xl hover:bg-[var(--color-card-bg)] border border-[var(--color-card-border)] transition-colors"
                                     >
                                         Ləğv et
                                     </button>
