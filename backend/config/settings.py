@@ -75,15 +75,12 @@ AUTHENTICATION_BACKENDS = [
 
 # Account Settings
 ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional' 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_SIGNUP_FIELDS = {
-    'first_name': {'required': True},
-    'last_name': {'required': True},
-}
-# Note: ACCOUNT_EMAIL_REQUIRED is now managed via ACCOUNT_LOGIN_METHODS including 'email'
+ACCOUNT_SIGNUP_FIELDS = ['first_name', 'last_name']
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if not DEBUG else 'http'
 
