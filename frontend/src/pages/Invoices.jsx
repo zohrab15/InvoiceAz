@@ -297,8 +297,15 @@ const Invoices = () => {
     const calculateTotal = () => calculateSubtotal() + calculateTax();
 
     const handleDownloadPdf = (id) => {
-        const url = `${API_URL}/api/invoices/${id}/pdf/?business_id=${activeBusiness?.id}`;
-        window.open(url, '_blank');
+        const inv = invoices?.find(i => i.id === id);
+        if (inv && inv.share_token) {
+            const url = `${API_URL}/api/invoices/public/${inv.share_token}/pdf/`;
+            window.open(url, '_blank');
+        } else {
+            // Fallback to ID-based if token missing
+            const url = `${API_URL}/api/invoices/${id}/pdf/?business_id=${activeBusiness?.id}`;
+            window.open(url, '_blank');
+        }
     };
 
     const handleWhatsApp = (inv) => {

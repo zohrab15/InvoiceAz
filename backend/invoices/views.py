@@ -265,7 +265,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         except Invoice.DoesNotExist:
             return Response({"error": "Faktura tapılmadı"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='public/(?P<share_token>[^/.]+)/pay')
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], url_path='public/(?P<share_token>[^/.]+)/pay')
     def public_pay(self, request, share_token=None):
         try:
             invoice = Invoice.objects.get(share_token=share_token)
