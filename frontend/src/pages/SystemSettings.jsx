@@ -3,13 +3,14 @@ import { motion } from 'framer-motion';
 import { Palette, Check, Coins, Bell, Moon, Sun, Mail, AppWindow, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import client from '../api/client';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../components/Toast';
 
 const SystemSettings = () => {
     const { theme: currentTheme, setTheme, themes } = useTheme();
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const showToast = useToast();
 
     useEffect(() => {
         fetchSettings();
@@ -21,7 +22,7 @@ const SystemSettings = () => {
             setSettings(response.data);
         } catch (error) {
             console.error('Bildiriş ayarlarını yükləmək mümkün olmadı:', error);
-            toast.error('Bildiriş ayarlarını yükləmək mümkün olmadı');
+            showToast('Bildiriş ayarlarını yükləmək mümkün olmadı', 'error');
         } finally {
             setLoading(false);
         }
@@ -36,10 +37,10 @@ const SystemSettings = () => {
         try {
             const response = await client.patch('/notifications/settings/me/', { [key]: newValue });
             setSettings(response.data);
-            toast.success('Ayarlar yeniləndi');
+            showToast('Ayarlar yeniləndi', 'success');
         } catch (error) {
             console.error('Ayarı yeniləmək mümkün olmadı:', error);
-            toast.error('Ayarı yeniləmək mümkün olmadı');
+            showToast('Ayarı yeniləmək mümkün olmadı', 'error');
         } finally {
             setSaving(false);
         }
