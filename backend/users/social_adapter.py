@@ -66,6 +66,31 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             user.username = None
         return user
 
+    def pre_social_login(self, request, sociallogin):
+        """
+        Automatically link existing accounts with the same email.
+        """
+        # ignore is_authenticated, as sociallogin.user is not yet saved
+        if sociallogin.is_existing:
+            return
+
+        # check if email exists
+        email = sociallogin.account.extra_data.get('email')
+        if not email:
+            return
+
+        try:
+            user = User.objects.get(email=email)
+            sociallogin.connect(request, user)
+        except User.DoesNotExist:
+            pass
+
+    def get_connect_redirect_url(self, request, socialaccount):
+        return '/api/users/google/callback/'
+
+    def get_login_redirect_url(self, request):
+        return '/api/users/google/callback/'
+
     def authentication_error(self, request, provider_id, error=None, exception=None, extra_context=None):
         """
         Log authentication errors for debugging.
