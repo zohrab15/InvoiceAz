@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     BusinessViewSet, google_auth_bridge, PasswordChangeView, 
     DeleteAccountView, SessionListView, RevokeSessionView,
-    Generate2FAView, Enable2FAView, Disable2FAView, UserMeView
+    Generate2FAView, Enable2FAView, Disable2FAView, UserMeView,
+    LogoutAPIView
 )
 from .plan_views import PlanStatusView
 
@@ -13,6 +14,7 @@ router.register(r'business', BusinessViewSet, basename='business')
 urlpatterns = [
     path('', include(router.urls)),
     path('me/', UserMeView.as_view(), name='user_me'),
+    path('logout/', LogoutAPIView.as_view(), name='logout'),
     path('google/callback/', google_auth_bridge, name='google_auth_bridge'),
     path('change-password/', PasswordChangeView.as_view(), name='change_password'),
     path('delete-account/', DeleteAccountView.as_view(), name='delete_account'),

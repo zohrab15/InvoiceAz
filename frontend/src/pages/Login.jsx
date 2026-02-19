@@ -110,8 +110,18 @@ const Login = () => {
 
                     {/* Google Login */}
                     <button
-                        onClick={() => {
+                        onClick={async () => {
+                            // 1. Clear frontend local storage
                             useAuthStore.getState().logout();
+
+                            // 2. Clear backend session (Django) to prevent Allauth linking conflicts
+                            try {
+                                await fetch(`${API_URL}/users/logout/`, { method: 'POST', credentials: 'include' });
+                            } catch (e) {
+                                console.error('Logout failed:', e);
+                            }
+
+                            // 3. Redirect to Google
                             window.location.href = `${API_URL}/accounts/google/login/`;
                         }}
                         className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] mb-6"

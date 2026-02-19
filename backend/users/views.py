@@ -60,8 +60,15 @@ def google_auth_bridge(request):
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, logout as django_logout
 from .serializers import PasswordChangeSerializer, UserSerializer
+
+class LogoutAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        django_logout(request)
+        return Response({"detail": "Sessiya təmizləndi."}, status=status.HTTP_200_OK)
 
 class UserMeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
