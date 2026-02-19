@@ -42,9 +42,9 @@ const DemoLogin = () => {
                 const token = access || access_token || key;
 
                 if (token) {
-                    // Calculate how much time is left to reach 5.5 seconds total
+                    // Calculate how much time is left to reach 10 seconds total
                     const elapsedTime = Date.now() - startTime;
-                    const remainingTime = Math.max(5500 - elapsedTime, 0);
+                    const remainingTime = Math.max(10500 - elapsedTime, 0);
 
                     setTimeout(() => {
                         if (isMounted) {
@@ -66,11 +66,11 @@ const DemoLogin = () => {
         // Increment loading steps and progress bar
         const stepInterval = setInterval(() => {
             setLoadingStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
-        }, 1100);
+        }, 2050);
 
         const progressInterval = setInterval(() => {
             setProgress(prev => (prev < 100 ? prev + 1 : 100));
-        }, 50);
+        }, 100);
 
         return () => {
             isMounted = false;
