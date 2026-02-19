@@ -41,9 +41,11 @@ const Register = () => {
                     const value = data[firstKey];
                     errorMsg = Array.isArray(value) ? value[0] : (typeof value === 'string' ? value : JSON.stringify(value));
                     if (errorMsg === 'A user with that email already exists.' || errorMsg === 'Bu e-poçt ilə artıq hesab mövcuddur.') {
-                        errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur. Zəhmət olmasa giriş edin və ya şifrənizi bərpa edin.';
+                        errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur. Əgər az əvvəl qeydiyyatdan keçməyə çalışmısınızsa, ehtimal ki, hesabınız artıq yaradılıb. Zəhmət olmasa giriş edin.';
                     }
                 }
+            } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+                errorMsg = 'Bağlantı vaxtı bitdi. Lakin hesabınız yaradılmış ola bilər. Zəhmət olmasa 1 dəqiqə sonra giriş etməyi yoxlayın.';
             }
             showToast(errorMsg, 'error');
         } finally {
