@@ -15,6 +15,7 @@ import usePlanLimits from '../hooks/usePlanLimits';
 import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
+    const queryClient = useQueryClient();
     const location = useLocation();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
     const { theme: currentTheme } = useTheme();
@@ -56,11 +57,12 @@ const BusinessSettings = () => {
     const [formData, setFormData] = useState(initialFormState);
 
     const { data: businesses, isLoading } = useQuery({
-        queryKey: ['business'],
+        queryKey: ['business', token],
         queryFn: async () => {
             const res = await client.get('/users/business/');
             return res.data;
         },
+        enabled: !!token,
     });
 
     useEffect(() => {
@@ -288,7 +290,7 @@ const BusinessSettings = () => {
                                         <button
                                             onClick={handleSubmit}
                                             disabled={mutation.isPending}
-                                            className="bg-primary-blue text-white px-6 py-2 rounded-xl flex items-center space-x-2 hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all font-bold text-xs disabled:opacity-50"
+                                            className="bg-[var(--color-brand)] text-white px-6 py-2 rounded-xl flex items-center space-x-2 hover:bg-[var(--color-brand-dark)] shadow-lg shadow-[var(--color-brand-shadow)] transition-all font-bold text-xs disabled:opacity-50"
                                         >
                                             {mutation.isPending ? (
                                                 <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent" />
