@@ -12,10 +12,12 @@ import PhoneInput from '../components/common/PhoneInput';
 import { useLocation } from 'react-router-dom';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
+import useAuthStore from '../store/useAuthStore';
 import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
     const queryClient = useQueryClient();
+    const { token, user } = useAuthStore();
     const location = useLocation();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
     const { theme: currentTheme } = useTheme();
@@ -125,7 +127,8 @@ const BusinessSettings = () => {
             const savedBusiness = response.data;
 
             // 1. Invalidate and refetch immediately to sync everything
-            await queryClient.invalidateQueries(['business']);
+            await queryClient.invalidateQueries(['business', token]);
+            await refetchBusinesses();
 
             showToast('Məlumatlar uğurla yadda saxlanıldı!');
 
@@ -149,7 +152,7 @@ const BusinessSettings = () => {
     const deleteMutation = useMutation({
         mutationFn: (id) => client.delete(`/users/business/${id}/`),
         onSuccess: async () => {
-            await queryClient.invalidateQueries(['business']);
+            await queryClient.invalidateQueries(['business', token]);
             await refetchBusinesses();
             showToast('Biznes uğurla silindi.');
             setShowDeleteConfirm(false);
