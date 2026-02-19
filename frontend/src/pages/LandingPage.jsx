@@ -73,12 +73,9 @@ const LandingPage = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         {!token ? (
-                            <>
-                                <button onClick={goLogin} className="text-sm font-bold text-white/70 hover:text-white transition-colors hidden sm:block">Daxil Ol</button>
-                                <button onClick={goRegister} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/25 transition-all">
-                                    Pulsuz Başla
-                                </button>
-                            </>
+                            <button onClick={goLogin} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/25 transition-all">
+                                Pulsuz Başla
+                            </button>
                         ) : (
                             <button onClick={() => navigate('/dashboard')} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm">Panelə Keç</button>
                         )}
@@ -119,7 +116,7 @@ const LandingPage = () => {
                                     <motion.button
                                         whileHover={{ scale: 1.03, boxShadow: '0 20px 60px rgba(99,102,241,0.4)' }}
                                         whileTap={{ scale: 0.97 }}
-                                        onClick={goRegister}
+                                        onClick={goLogin}
                                         className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-lg flex items-center justify-center gap-3 group shadow-xl shadow-blue-500/20"
                                     >
                                         Pulsuz Başlayın
@@ -436,7 +433,7 @@ const LandingPage = () => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={goRegister} className="w-full py-3.5 bg-white/5 border border-white/10 rounded-2xl font-black text-sm hover:bg-white/10 transition-all">
+                            <button onClick={goLogin} className="w-full py-3.5 bg-white/5 border border-white/10 rounded-2xl font-black text-sm hover:bg-white/10 transition-all">
                                 Pulsuz Başla
                             </button>
                         </motion.div>
@@ -459,7 +456,7 @@ const LandingPage = () => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={goRegister} className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-sm shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 transition-all">
+                            <button onClick={goLogin} className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-sm shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 transition-all">
                                 Pro-ya Keçin
                             </button>
                         </motion.div>
@@ -509,7 +506,7 @@ const LandingPage = () => {
                         <motion.button
                             whileHover={{ scale: 1.05, boxShadow: '0 30px 80px rgba(99,102,241,0.5)' }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={goRegister}
+                            onClick={goLogin}
                             className="px-12 py-5 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/30"
                         >
                             Pulsuz Qeydiyyat
