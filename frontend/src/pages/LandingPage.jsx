@@ -57,16 +57,17 @@ const LandingPage = () => {
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
 
             {/* ══════════ NAVBAR ══════════ */}
-            <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-                <div className="max-w-7xl mx-auto flex justify-between items-center bg-white/5 backdrop-blur-2xl rounded-2xl px-6 py-3 border border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4">
+                <div className="max-w-7xl mx-auto flex justify-between items-center bg-white/5 backdrop-blur-2xl rounded-2xl px-4 md:px-6 py-3 border border-white/10">
                     <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => {
                         if (window.location.pathname === '/') window.location.reload();
                         else navigate('/');
                     }}>
-                        <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
-                            <Zap size={18} className="text-white" />
+                        <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
+                            <Zap size={16} className="text-white md:hidden" />
+                            <Zap size={18} className="text-white hidden md:block" />
                         </div>
-                        <span className="text-xl font-black tracking-tight">InvoiceAZ</span>
+                        <span className="text-lg md:text-xl font-black tracking-tight">InvoiceAZ</span>
                     </div>
                     <div className="hidden md:flex items-center gap-6">
                         <a href="#features" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Özəlliklər</a>
@@ -76,7 +77,7 @@ const LandingPage = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         {!token ? (
-                            <button onClick={goLogin} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/25 transition-all">
+                            <button onClick={goLogin} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-4 md:px-5 py-2.5 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/25 transition-all">
                                 Pulsuz Qeydiyyat
                             </button>
                         ) : (
