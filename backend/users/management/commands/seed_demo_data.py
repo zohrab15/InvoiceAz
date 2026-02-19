@@ -18,43 +18,44 @@ class Command(BaseCommand):
         # 1. Create Demo User
         email = 'demo_user@invoice.az'
         
-        # Delete existing user to ensure no stale state (SocialAccount, etc.)
-        User.objects.filter(email=email).delete()
-        self.stdout.write(f'Existing user {email} deleted (if any).')
-
-        user = User.objects.create_user(
+        user, created = User.objects.get_or_create(
             email=email,
-            password='demopassword123',
-            first_name='Demo',
-            last_name='İstifadəçi'
+            defaults={
+                'first_name': 'Demo',
+                'last_name': 'İstifadəçi',
+                'is_active': True,
+                'is_email_verified': True,
+                'membership': 'pro'
+            }
         )
-        # Assign free plan by default if it exists
+        user.set_password('demopassword123')
+        
+        # Ensure subscription plan if exists
         from users.models import SubscriptionPlan
-        free_plan = SubscriptionPlan.objects.filter(name='free').first()
-        user.subscription_plan = free_plan
-        user.membership = 'pro' # Keep legacy field for now
+        free_plan = SubscriptionPlan.objects.filter(name='pro').first() # Give pro to demo
+        if not free_plan:
+            free_plan = SubscriptionPlan.objects.filter(name='free').first()
+        
+        if free_plan:
+            user.subscription_plan = free_plan
+            
+        user.membership = 'pro'
         user.is_active = True
         user.is_email_verified = True
         user.save()
-        self.stdout.write(f'Created fresh user: {email}')
-
-        # Ensure allauth EmailAddress exists and is verified
-        try:
-            EmailAddress.objects.create(
-                user=user,
-                email=email,
-                verified=True,
-                primary=True
-            )
-        except Exception as e:
-            self.stdout.write(f'Note: Could not create EmailAddress record ({e}).')
         
-        if True: # Always True now since we delete and create
-            self.stdout.write(f'Created user: {email}')
-            self.stdout.write(f'User {email} already exists. Updated and cleaned up demo data.')
-            # Cleanup for idempotency
-            Business.objects.filter(user=user, name='Modern Solutions MMC').delete()
-            self.stdout.write('Existing demo business and related data deleted.')
+        if created:
+            self.stdout.write(f'Created fresh demo user: {email}')
+        else:
+            self.stdout.write(f'Updated existing demo user: {email}')
+
+        # Ensure NotificationSetting exists
+        from notifications.models import NotificationSetting
+        NotificationSetting.objects.get_or_create(user=user)
+
+        # Cleanup ONLY business related data for idempotency
+        Business.objects.filter(user=user, name='Modern Solutions MMC').delete()
+        self.stdout.write('Existing demo business and related data cleaned up.')
 
         # 2. Create Business
         business, created = Business.objects.get_or_create(
