@@ -116,6 +116,7 @@ function App() {
                   <Route path="/demo-login" element={<DemoLogin />} />
                   <Route path="/terms" element={<LegalPage />} />
                   <Route path="/privacy" element={<LegalPage />} />
+                  <Route path="/help" element={<HelpSupport />} />
                   <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
                   <Route
                     path="/*"
@@ -139,7 +140,6 @@ function App() {
                             <Route path="/security" element={<SecurityPage />} />
                             <Route path="/system-settings" element={<SystemSettings />} />
                             <Route path="/notifications" element={<Notifications />} />
-                            <Route path="/help" element={<HelpSupport />} />
                           </Routes>
                         </Layout>
                       </ProtectedRoute>

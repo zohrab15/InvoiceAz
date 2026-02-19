@@ -549,7 +549,7 @@ const LandingPage = () => {
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Şirkət</h5>
                             <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Haqqımızda</a>
                             <a href="#reviews" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Rəylər</a>
-                            <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Əlaqə</a>
+                            <Link to="/help" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Dəstək Mərkəzi</Link>
                         </div>
                         <div className="flex flex-col gap-3">
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Hüquqi</h5>

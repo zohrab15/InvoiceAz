@@ -15,7 +15,8 @@ import {
     ChevronDown,
     Lock,
     Package,
-    BarChart3
+    BarChart3,
+    LifeBuoy
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
@@ -51,6 +52,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/analytics/issues', icon: <AlertTriangle size={20} />, label: 'Problemli Fakturalar' },
         { to: '/analytics/forecast', icon: <Sparkles size={20} />, label: 'Trend və Proqnoz', locked: isFeatureLocked('forecast_analytics') },
         { to: '/analytics/tax', icon: <Calculator size={20} />, label: 'Vergi və Hesabatlar' },
+        { to: '/help', icon: <LifeBuoy size={20} />, label: 'Kömək və Dəstək' },
     ];
 
     return (
