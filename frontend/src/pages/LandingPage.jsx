@@ -74,7 +74,7 @@ const LandingPage = () => {
                     <div className="flex items-center gap-3">
                         {!token ? (
                             <button onClick={goLogin} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/25 transition-all">
-                                Pulsuz Başla
+                                Pulsuz Qeydiyyat
                             </button>
                         ) : (
                             <button onClick={() => navigate('/dashboard')} className="bg-gradient-to-r from-blue-500 to-violet-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm">Panelə Keç</button>
@@ -119,7 +119,7 @@ const LandingPage = () => {
                                         onClick={goLogin}
                                         className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-lg flex items-center justify-center gap-3 group shadow-xl shadow-blue-500/20"
                                     >
-                                        Pulsuz Başlayın
+                                        Pulsuz Qeydiyyat
                                         <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                                     </motion.button>
                                     <motion.button
@@ -434,7 +434,7 @@ const LandingPage = () => {
                                 ))}
                             </ul>
                             <button onClick={goLogin} className="w-full py-3.5 bg-white/5 border border-white/10 rounded-2xl font-black text-sm hover:bg-white/10 transition-all">
-                                Pulsuz Başla
+                                Pulsuz Qeydiyyat
                             </button>
                         </motion.div>
 
