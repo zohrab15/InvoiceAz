@@ -34,6 +34,7 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Products = lazy(() => import('./pages/Products'));
 const ProductAnalytics = lazy(() => import('./pages/ProductAnalytics'));
 const DemoLogin = lazy(() => import('./pages/DemoLogin'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +95,7 @@ function App() {
                   <Route path="/auth/callback" element={<AuthCallback />} />
                   <Route path="/verify-email-sent" element={<EmailVerificationSent />} />
                   <Route path="/verify-email/:key" element={<VerifyEmail />} />
+                  <Route path="/password-reset-confirm/:uid/:token" element={<ResetPassword />} />
                   <Route path="/view/:token" element={<PublicInvoice />} />
                   <Route path="/public/pay/:token" element={<PublicPayment />} />
                   <Route path="/demo-login" element={<DemoLogin />} />

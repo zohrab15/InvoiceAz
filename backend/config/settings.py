@@ -86,16 +86,23 @@ ACCOUNT_SIGNUP_FIELDS = [
 ]
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if not DEBUG else 'http'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-LOGIN_REDIRECT_URL = '/api/users/google/callback/'
-LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', 'http://localhost:5173/login' if DEBUG else 'https://invoiceaz.vercel.app/login')
+# Email Settings
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'InvoiceAZ <noreply@invoiceaz.app>')
 
-# Social Account Settings
-SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
-SOCIALACCOUNT_QUERY_EMAIL = True
-SOCIALACCOUNT_STORE_TOKENS = True
+# Password Reset Settings
+# This is the URL the link in the email will point to
+# dj-rest-auth will append /id/token to it
+PASSWORD_RESET_CONFIRM_URL = 'https://invoiceaz.vercel.app/password-reset-confirm/' if not DEBUG else 'http://localhost:5173/password-reset-confirm/'
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
