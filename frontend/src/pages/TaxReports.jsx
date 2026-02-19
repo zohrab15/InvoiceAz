@@ -35,8 +35,8 @@ const TaxReports = () => {
         enabled: !!activeBusiness
     });
 
-    if (isLoading) return <div className="p-12 text-center text-gray-400">Yüklənir...</div>;
-    if (!taxData) return <div className="p-12 text-center text-gray-400">Məlumat tapılmadı.</div>;
+    if (isLoading) return <div className="p-12 text-center" style={{ color: 'var(--color-text-muted)' }}>Yüklənir...</div>;
+    if (!taxData) return <div className="p-12 text-center" style={{ color: 'var(--color-text-muted)' }}>Məlumat tapılmadı.</div>;
 
     const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -60,7 +60,8 @@ const TaxReports = () => {
                     </select>
                     <button
                         onClick={handlePrint}
-                        className="flex items-center gap-2 bg-slate-800 text-white px-5 py-2 rounded-xl font-bold hover:bg-slate-700 transition-all shadow-md active:scale-95"
+                        className="flex items-center gap-2 px-5 py-2 rounded-xl font-bold transition-all shadow-md active:scale-95"
+                        style={{ backgroundColor: 'var(--color-brand-dark)', color: 'white' }}
                     >
                         <Printer size={18} />
                         <span>Çap et</span>
@@ -85,58 +86,58 @@ const TaxReports = () => {
 
             {/* 1. KPI SECTION */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl w-fit mb-4">
+                        <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                             <TrendingUp size={24} />
                         </div>
-                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Ümumi Gəlir</span>
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gəlir</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.income_tax.revenue.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
+                            <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.revenue.toLocaleString()}</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-red-500/10 text-red-500 rounded-2xl w-fit mb-4">
+                        <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#EF444415', color: '#EF4444' }}>
                             <TrendingDown size={24} />
                         </div>
-                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Ümumi Xərclər</span>
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Xərclər</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.income_tax.expenses.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
+                            <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.expenses.toLocaleString()}</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-green-500/10 text-green-500 rounded-2xl w-fit mb-4">
+                        <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>
                             <Calculator size={24} />
                         </div>
-                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Vergi Bazası</span>
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Vergi Bazası</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.income_tax.tax_base.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
+                            <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.tax_base.toLocaleString()}</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[var(--color-card-bg)] p-6 rounded-3xl border border-[var(--color-card-border)] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
-                        <div className="p-3 bg-amber-500/10 text-amber-500 rounded-2xl w-fit mb-4">
+                        <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#F59E0B15', color: '#F59E0B' }}>
                             <Coins size={24} />
                         </div>
-                        <span className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Toplanmış ƏDV</span>
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Toplanmış ƏDV</span>
                         <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black text-[var(--color-text-primary)]">{taxData.vat.total.toLocaleString()}</span>
-                            <span className="text-sm font-bold text-[var(--color-text-secondary)] opacity-50">AZN</span>
+                            <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.vat.total.toLocaleString()}</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
                         </div>
                     </div>
                 </div>
@@ -280,28 +281,28 @@ const TaxReports = () => {
 
                     <div className="grid grid-cols-1 gap-4">
                         {taxMode === 'simplified' ? (
-                            <div className="bg-blue-50 border border-blue-100 p-6 rounded-2xl space-y-4">
+                            <div className="border p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'var(--color-brand-light)', borderColor: 'var(--color-brand-shadow)' }}>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-bold text-blue-900">Sadələşdirilmiş Vergi (2%)</span>
-                                    <span className="text-2xl font-black text-blue-600">{taxData.income_tax.estimates.simplified_2pct.toLocaleString()} AZN</span>
+                                    <span className="text-sm font-bold" style={{ color: 'var(--color-brand-dark)' }}>Sadələşdirilmiş Vergi (2%)</span>
+                                    <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.simplified_2pct.toLocaleString()} AZN</span>
                                 </div>
-                                <p className="text-xs text-blue-700 opacity-70">Ümumi dövriyyə (Gəlir) əsasında hesablanır.</p>
+                                <p className="text-xs opacity-70" style={{ color: 'var(--color-brand)' }}>Ümumi dövriyyə (Gəlir) əsasında hesablanır.</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl space-y-4">
+                                <div className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'var(--color-badge-bg)', border: '1px solid var(--color-card-border)' }}>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm font-bold text-indigo-900">Mənfəət Vergisi (20%)</span>
-                                        <span className="text-2xl font-black text-indigo-600">{taxData.income_tax.estimates.profit_20pct.toLocaleString()} AZN</span>
+                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Mənfəət Vergisi (20%)</span>
+                                        <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.profit_20pct.toLocaleString()} AZN</span>
                                     </div>
-                                    <p className="text-xs text-indigo-700 opacity-70">Gəlir ilə xərc fərqi əsasında standart dərəcə ilə hesablanır.</p>
+                                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Gəlir ilə xərc fərqi əsasında standart dərəcə ilə hesablanır.</p>
                                 </div>
-                                <div className="bg-green-50 border border-green-100 p-6 rounded-2xl space-y-4">
+                                <div className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm font-bold text-green-900">Mikro Sahibkar (5%)</span>
-                                        <span className="text-2xl font-black text-green-600">{taxData.income_tax.estimates.micro_5pct.toLocaleString()} AZN</span>
+                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Mikro Sahibkar (5%)</span>
+                                        <span className="text-2xl font-black text-emerald-500">{taxData.income_tax.estimates.micro_5pct.toLocaleString()} AZN</span>
                                     </div>
-                                    <p className="text-xs text-green-700 opacity-70">Gəlir və xərc fərqi əsasında 75% güzəştli dərəcə ilə.</p>
+                                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Gəlir və xərc fərqi əsasında 75% güzəştli dərəcə ilə.</p>
                                 </div>
                             </div>
                         )}

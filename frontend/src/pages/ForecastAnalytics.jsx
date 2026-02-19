@@ -38,7 +38,7 @@ const ForecastAnalytics = () => {
     );
 
     if (isLocked) return (
-        <div className="relative min-h-[80vh] flex flex-col items-center justify-center text-center space-y-6 p-8 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+        <div className="relative min-h-[80vh] flex flex-col items-center justify-center text-center space-y-6 p-8 overflow-hidden rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
             <div className="absolute inset-0 bg-grid-slate-50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
             <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -48,8 +48,8 @@ const ForecastAnalytics = () => {
                 <Lock className="text-white" size={48} />
             </motion.div>
             <div className="relative z-10 max-w-lg space-y-4">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Premium Analitika</h2>
-                <p className="text-slate-500 font-medium text-lg leading-relaxed">
+                <h2 className="text-3xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Premium Analitika</h2>
+                <p className="font-medium text-lg leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                     Süni intellekt dəstəkli proqnozlar və trend analizləri yalnız <span className="text-blue-600 font-bold">Pro</span> və <span className="text-purple-600 font-bold">Premium</span> paketlərdə mövcuddur.
                 </p>
                 <button
@@ -97,75 +97,75 @@ const ForecastAnalytics = () => {
         >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
                         <Sparkles className="text-blue-500" size={32} />
                         Trend və Proqnoz
                     </h1>
-                    <p className="text-slate-500 font-medium mt-1">Süni intellekt əsaslı gələcək proqnozlar və inkişaf trendləri</p>
+                    <p className="font-medium mt-1" style={{ color: 'var(--color-text-secondary)' }}>Süni intellekt əsaslı gələcək proqnozlar və inkişaf trendləri</p>
                 </div>
             </div>
 
             {/* Growth Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="p-6 rounded-2xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">MoM Artım</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>MoM Artım</h3>
                         <div className={`p-2 rounded-lg ${growth.mom >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
                             {growth.mom >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                         </div>
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-slate-900">{Math.abs(growth.mom)}%</span>
+                        <span className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{Math.abs(growth.mom)}%</span>
                         <span className={`text-xs font-bold ${growth.mom >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {growth.mom >= 0 ? 'Artım' : 'Azalma'}
                         </span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-2 font-medium">Ötən aya nisbətən</p>
+                    <p className="text-xs mt-2 font-medium" style={{ color: 'var(--color-text-muted)' }}>Ötən aya nisbətən</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="p-6 rounded-2xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">YoY Artım</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>YoY Artım</h3>
                         <div className={`p-2 rounded-lg ${growth.yoy >= 0 ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}>
                             {growth.yoy >= 0 ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
                         </div>
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-slate-900">{Math.abs(growth.yoy)}%</span>
+                        <span className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{Math.abs(growth.yoy)}%</span>
                         <span className={`text-xs font-bold ${growth.yoy >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
                             {growth.yoy >= 0 ? 'Artım' : 'Azalma'}
                         </span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-2 font-medium">Ötən ilin eyni ayına nisbətən</p>
+                    <p className="text-xs mt-2 font-medium" style={{ color: 'var(--color-text-muted)' }}>Ötən ilin eyni ayına nisbətən</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="p-6 rounded-2xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Confidence Index</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Confidence Index</h3>
                         <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
                             <Zap size={16} />
                         </div>
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-slate-900">82%</span>
+                        <span className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>82%</span>
                         <span className="text-xs font-bold text-purple-500">Yüksək</span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-2 font-medium">Data həcminə görə etibarlılıq</p>
+                    <p className="text-xs mt-2 font-medium" style={{ color: 'var(--color-text-muted)' }}>Data həcminə görə etibarlılıq</p>
                 </div>
             </div>
 
             {/* Revenue Scenario Forecast */}
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+            <div className="p-8 rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                 <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <h3 className="text-xl font-black flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
                         <DollarSign size={24} className="text-green-500" />
                         Gəlir Proqnozu (3 ay)
                     </h3>
                     <div className="flex gap-4">
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                        <div className="flex items-center gap-2 text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
                             <div className="w-3 h-3 bg-blue-500 rounded-full"></div> Tarixi
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                        <div className="flex items-center gap-2 text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
                             <div className="w-3 h-3 bg-blue-300 rounded-full"></div> Proqnoz
                         </div>
                     </div>
@@ -179,14 +179,14 @@ const ForecastAnalytics = () => {
                                     <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(value) => `${value}₼`} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
+                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} dy={10} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} tickFormatter={(value) => `${value}₼`} />
                             <Tooltip
-                                contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '16px', border: '1px solid var(--color-dropdown-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                 itemStyle={{ fontWeight: 'bold' }}
                             />
-                            <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
+                            <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--color-text-muted)' }} />
 
                             {/* Worst Case */}
                             <Area type="monotone" dataKey="worst" stroke="#EF4444" strokeDasharray="5 5" fill="transparent" name="Worst Case" />
@@ -206,19 +206,19 @@ const ForecastAnalytics = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Cashflow Forecast */}
-                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                <div className="p-8 rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                    <h3 className="text-xl font-black mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
                         <Activity size={24} className="text-purple-500" />
                         Pul Axını Proqnozu
                     </h3>
                     <div className="h-[250px] sm:h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={cashflow}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                                <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                                <Legend />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} />
+                                <Tooltip cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.4 }} contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '12px', border: '1px solid var(--color-dropdown-border)' }} />
+                                <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--color-text-muted)' }} />
                                 <Bar dataKey="inflow" fill="#3B82F6" name="Gözlənilən Giriş" radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="outflow" fill="#EF4444" name="Gözlənilən Çıxış" radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="net" fill="#10B981" name="Net Pul Axını" radius={[4, 4, 0, 0]} />

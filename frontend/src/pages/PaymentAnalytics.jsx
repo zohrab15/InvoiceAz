@@ -43,10 +43,10 @@ const PaymentAnalytics = () => {
         >
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Ödəniş Analitikası</h1>
-                    <p className="text-slate-500 font-medium mt-1">Gəlir axınlarını və müştəri davranışlarını izləyin</p>
+                    <h1 className="text-3xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Ödəniş Analitikası</h1>
+                    <p className="font-medium mt-1" style={{ color: 'var(--color-text-secondary)' }}>Gəlir axınlarını və müştəri davranışlarını izləyin</p>
                 </div>
-                <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                     <Calendar size={16} />
                     <span>Real-time Data</span>
                 </div>
@@ -54,43 +54,43 @@ const PaymentAnalytics = () => {
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="p-6 rounded-2xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-badge-bg)', color: '#10B981' }}>
                             <CheckCircle2 size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Vaxtında Ödəmə</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Vaxtında Ödəmə</h3>
                     </div>
-                    <div className="text-3xl font-black text-slate-900">{behavior.on_time_pct}%</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{behavior.on_time_pct}%</div>
                     <p className="text-xs text-green-500 font-bold mt-2">Bütün ödənişlərin faizi</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="p-6 rounded-2xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-badge-bg)', color: '#F97316' }}>
                             <AlertCircle size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Gecikmə Faizi</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Gecikmə Faizi</h3>
                     </div>
-                    <div className="text-3xl font-black text-slate-900">{behavior.late_pct}%</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{behavior.late_pct}%</div>
                     <p className="text-xs text-orange-500 font-bold mt-2">Orta gecikmə: {behavior.avg_overdue_days} gün</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="p-6 rounded-2xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-badge-bg)', color: '#8B5CF6' }}>
                             <TrendingUp size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Ödəniş Sürəti</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ödəniş Sürəti</h3>
                     </div>
-                    <div className="text-3xl font-black text-slate-900">{speed[0]?.percentage}%</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{speed[0]?.percentage}%</div>
                     <p className="text-xs text-purple-500 font-bold mt-2">İlk 7 gündə ödəyənlər</p>
                 </div>
             </div>
 
             {/* Payment Heatmap */}
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+            <div className="p-8 rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                <h3 className="text-lg font-black mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
                     <Activity size={20} className="text-green-500" />
                     Ödəniş Sıxlığı (Heatmap)
                 </h3>
@@ -110,8 +110,8 @@ const PaymentAnalytics = () => {
                             />
                             <YAxis hide />
                             <Tooltip
-                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                labelStyle={{ fontWeight: 'bold', color: '#64748b' }}
+                                contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '12px', border: '1px solid var(--color-dropdown-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                labelStyle={{ fontWeight: 'bold', color: 'var(--color-text-muted)' }}
                                 formatter={(value) => [`${value} ödəniş`, 'Sayı']}
                             />
                             <Area
@@ -129,8 +129,8 @@ const PaymentAnalytics = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Payment Methods Chart */}
-                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+                <div className="p-8 rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                    <h3 className="text-lg font-black mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
                         <CreditCard size={20} className="text-blue-500" />
                         Ödəniş Metodları
                     </h3>
@@ -158,18 +158,21 @@ const PaymentAnalytics = () => {
                 </div>
 
                 {/* Payment Speed Bar Chart */}
-                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+                <div className="p-8 rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                    <h3 className="text-lg font-black mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
                         <Activity size={20} className="text-purple-500" />
                         Ödəniş Sürəti (Günlər)
                     </h3>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={speed}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="range" tick={{ fontSize: 12 }} />
-                                <YAxis />
-                                <Tooltip cursor={{ fill: 'transparent' }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
+                                <XAxis dataKey="range" tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} />
+                                <YAxis tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} />
+                                <Tooltip
+                                    cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.4 }}
+                                    contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '12px', border: '1px solid var(--color-dropdown-border)' }}
+                                />
                                 <Bar dataKey="count" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
@@ -178,19 +181,19 @@ const PaymentAnalytics = () => {
             </div>
 
             {/* Customer Ratings Table */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-8 border-b border-gray-50 flex items-center gap-3">
-                    <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg">
+            <div className="rounded-3xl border shadow-sm overflow-hidden" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                <div className="p-8 border-b flex items-center gap-3" style={{ borderColor: 'var(--color-card-border)' }}>
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-badge-bg)', color: '#F59E0B' }}>
                         <Users size={20} />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-slate-900">Müştəri Reytinqi</h3>
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Top 10 Performans</p>
+                        <h3 className="text-lg font-black" style={{ color: 'var(--color-text-primary)' }}>Müştəri Reytinqi</h3>
+                        <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Top 10 Performans</p>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                        <thead style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-muted)' }} className="text-[10px] uppercase font-black tracking-widest">
                             <tr>
                                 <th className="px-8 py-4">Müştəri</th>
                                 <th className="px-8 py-4 text-center">Rekytinq</th>
@@ -198,15 +201,15 @@ const PaymentAnalytics = () => {
                                 <th className="px-8 py-4 text-right">Ortalama Gecikmə</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y" style={{ borderColor: 'var(--color-card-border)' }}>
                             {customer_ratings.length === 0 ? (
                                 <tr><td colSpan="4" className="p-12 text-center text-gray-400 italic">Məlumat yoxdur</td></tr>
                             ) : (
                                 customer_ratings.map((customer) => (
-                                    <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-8 py-4 font-bold text-slate-900">{customer.name}</td>
+                                    <tr key={customer.id} className="transition-colors" onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                        <td className="px-8 py-4 font-bold" style={{ color: 'var(--color-text-primary)' }}>{customer.name}</td>
                                         <td className="px-8 py-4 text-center">
-                                            <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-black mx-auto shadow-lg shadow-gray-200">
+                                            <div className="w-10 h-10 rounded-full flex items-center justify-center font-black mx-auto shadow-lg" style={{ backgroundColor: 'var(--color-brand-dark)', color: 'white' }}>
                                                 {customer.rating}
                                             </div>
                                         </td>
@@ -215,7 +218,7 @@ const PaymentAnalytics = () => {
                                                 {customer.description}
                                             </span>
                                         </td>
-                                        <td className="px-8 py-4 text-right font-mono text-slate-600 font-medium">
+                                        <td className="px-8 py-4 text-right font-mono font-medium" style={{ color: 'var(--color-text-secondary)' }}>
                                             {customer.avg_delay > 0 ? `+${customer.avg_delay}` : customer.avg_delay} gün
                                         </td>
                                     </tr>

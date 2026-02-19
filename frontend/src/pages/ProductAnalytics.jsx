@@ -117,7 +117,7 @@ const ProductAnalytics = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-9 pr-4 py-2 rounded-xl text-sm font-medium outline-none transition-all w-full sm:w-64"
                             style={{
-                                backgroundColor: 'var(--color-bg)',
+                                backgroundColor: 'var(--color-hover-bg)',
                                 border: '1px solid var(--color-card-border)',
                                 color: 'var(--color-text-primary)'
                             }}

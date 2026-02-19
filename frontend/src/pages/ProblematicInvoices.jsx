@@ -85,53 +85,53 @@ const ProblematicInvoices = () => {
         >
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                    <h1 className="text-3xl font-black tracking-tight flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
                         <AlertTriangle className="text-red-500" size={32} />
                         Problemli Fakturalar
                     </h1>
-                    <p className="text-slate-500 font-medium mt-1">Gecikmiş ödənişlər və riskli müştərilərin təhlili</p>
+                    <p className="font-medium mt-1" style={{ color: 'var(--color-text-secondary)' }}>Gecikmiş ödənişlər və riskli müştərilərin təhlili</p>
                 </div>
             </div>
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div className="p-6 rounded-2xl border shadow-sm relative overflow-hidden" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: '#EF444430' }}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
                     <div className="flex items-center gap-3 mb-2 relative z-10">
-                        <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: '#EF444415', color: '#EF4444' }}>
                             <DollarSign size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Ümumi Gecikmə</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gecikmə</h3>
                     </div>
-                    <div className="text-3xl font-black text-slate-900 relative z-10">
+                    <div className="text-3xl font-black relative z-10" style={{ color: 'var(--color-text-primary)' }}>
                         {kpi.total_overdue.toFixed(2)} ₼
                     </div>
                     <p className="text-xs text-red-500 font-bold mt-2 relative z-10">Ödənilməmiş məbləğ</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div className="p-6 rounded-2xl border shadow-sm relative overflow-hidden" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: '#F9731630' }}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
                     <div className="flex items-center gap-3 mb-2 relative z-10">
-                        <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: '#F9731615', color: '#F97316' }}>
                             <AlertOctagon size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Kritik Borc (90+ gün)</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Kritik Borc (90+ gün)</h3>
                     </div>
-                    <div className="text-3xl font-black text-slate-900 relative z-10">
+                    <div className="text-3xl font-black relative z-10" style={{ color: 'var(--color-text-primary)' }}>
                         {kpi.critical_debt.toFixed(2)} ₼
                     </div>
                     <p className="text-xs text-orange-500 font-bold mt-2 relative z-10">Risk altında olan gəlir</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div className="p-6 rounded-2xl border shadow-sm relative overflow-hidden" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: '#3B82F630' }}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
                     <div className="flex items-center gap-3 mb-2 relative z-10">
-                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: '#3B82F615', color: '#3B82F6' }}>
                             <Users size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Borclu Müştərilər</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Borclu Müştərilər</h3>
                     </div>
-                    <div className="text-3xl font-black text-slate-900 relative z-10">
+                    <div className="text-3xl font-black relative z-10" style={{ color: 'var(--color-text-primary)' }}>
                         {kpi.debtors_count}
                     </div>
                     <p className="text-xs text-blue-500 font-bold mt-2 relative z-10">Aktiv gecikməsi olanlar</p>
@@ -140,20 +140,20 @@ const ProblematicInvoices = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Aging Chart */}
-                <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+                <div className="lg:col-span-2 p-8 rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                    <h3 className="text-lg font-black mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
                         <Calendar size={20} className="text-blue-500" />
                         Gecikmə Müddəti (Aging)
                     </h3>
                     <div className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={aging} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="range" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(value) => `${value}₼`} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
+                                <XAxis dataKey="range" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} tickFormatter={(value) => `${value}₼`} />
                                 <Tooltip
-                                    cursor={{ fill: '#f8fafc' }}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.4 }}
+                                    contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '12px', border: '1px solid var(--color-dropdown-border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                 />
                                 <Bar dataKey="amount" radius={[6, 6, 0, 0]} barSize={50}>
                                     {aging.map((entry, index) => (
@@ -185,17 +185,18 @@ const ProblematicInvoices = () => {
             </div>
 
             {/* Debtors Table */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-visible">
-                <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+            <div className="rounded-3xl border shadow-sm overflow-visible" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                <div className="p-8 border-b flex items-center justify-between" style={{ borderColor: 'var(--color-card-border)' }}>
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: '#EF444415', color: '#EF4444' }}>
                             <Users size={20} />
                         </div>
-                        <h3 className="text-lg font-black text-slate-900">Borcluların Siyahısı</h3>
+                        <h3 className="text-lg font-black" style={{ color: 'var(--color-text-primary)' }}>Borcluların Siyahısı</h3>
                     </div>
                     <button
                         onClick={handleDownload}
-                        className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
+                        className="flex items-center gap-2 text-sm font-bold transition-colors"
+                        style={{ color: 'var(--color-text-muted)' }}
                     >
                         <Download size={16} />
                         Siyahını Yüklə
@@ -203,7 +204,7 @@ const ProblematicInvoices = () => {
                 </div>
                 <div className="overflow-x-visible">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                        <thead style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-muted)' }} className="text-[10px] uppercase font-black tracking-widest">
                             <tr>
                                 <th className="px-8 py-4">Müştəri</th>
                                 <th className="px-8 py-4">Əlaqə</th>
@@ -213,20 +214,20 @@ const ProblematicInvoices = () => {
                                 <th className="px-8 py-4 text-center">Əməliyyat</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y" style={{ borderColor: 'var(--color-card-border)' }}>
                             {debtors.length === 0 ? (
                                 <tr><td colSpan="6" className="p-12 text-center text-gray-400 italic">Gecikən borc yoxdur 🎉</td></tr>
                             ) : (
                                 debtors.map((debtor) => (
-                                    <tr key={debtor.id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-8 py-4 font-bold text-slate-900">{debtor.name}</td>
+                                    <tr key={debtor.id} className="transition-colors group" onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                        <td className="px-8 py-4 font-bold" style={{ color: 'var(--color-text-primary)' }}>{debtor.name}</td>
                                         <td className="px-8 py-4">
-                                            <div className="text-xs font-medium text-slate-500">
+                                            <div className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
                                                 <div>{debtor.email}</div>
                                                 <div>{debtor.phone}</div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-4 text-center font-bold text-slate-700">{debtor.invoices_count}</td>
+                                        <td className="px-8 py-4 text-center font-bold" style={{ color: 'var(--color-text-secondary)' }}>{debtor.invoices_count}</td>
                                         <td className="px-8 py-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider 
                                                 ${debtor.max_overdue_days > 90 ? 'bg-red-100 text-red-600' :
@@ -234,7 +235,7 @@ const ProblematicInvoices = () => {
                                                 {debtor.max_overdue_days} gün
                                             </span>
                                         </td>
-                                        <td className="px-8 py-4 text-right font-black text-slate-900">
+                                        <td className="px-8 py-4 text-right font-black" style={{ color: 'var(--color-text-primary)' }}>
                                             {debtor.total_debt.toFixed(2)} ₼
                                         </td>
                                         <td className="px-8 py-4 text-center relative">
@@ -249,26 +250,26 @@ const ProblematicInvoices = () => {
                                             {activeDropdown === debtor.id && (
                                                 <>
                                                     <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)}></div>
-                                                    <div className="absolute right-8 top-12 z-50 bg-white rounded-xl shadow-xl border border-gray-100 p-2 w-48 flex flex-col gap-1 text-left">
+                                                    <div className="absolute right-8 top-12 z-50 rounded-xl shadow-xl border p-2 w-48 flex flex-col gap-1 text-left" style={{ backgroundColor: 'var(--color-dropdown-bg)', borderColor: 'var(--color-dropdown-border)' }}>
                                                         <a
                                                             href={`https://wa.me/${debtor.phone?.replace(/[^0-9]/g, '')}?text=Hörmətli ${debtor.name}, sizin ${debtor.total_debt} AZN gecikmiş borcunuz var. Xahiş edirik ödəniş edəsiniz.`}
                                                             target="_blank"
                                                             rel="noreferrer"
-                                                            className="flex items-center gap-3 px-3 py-2 hover:bg-green-50 text-slate-600 hover:text-green-600 rounded-lg transition-colors text-sm font-medium"
+                                                            className="flex items-center gap-3 px-3 py-2 hover:bg-green-500/10 text-[var(--color-text-secondary)] hover:text-green-500 rounded-lg transition-colors text-sm font-medium"
                                                         >
                                                             <MessageCircle size={16} />
                                                             WhatsApp
                                                         </a>
                                                         <a
                                                             href={`mailto:${debtor.email}?subject=Ödəniş Xatırlatması&body=Hörmətli ${debtor.name},%0D%0A%0D%0ASizin ${debtor.total_debt} AZN məbləğində gecikmiş borcunuz var.`}
-                                                            className="flex items-center gap-3 px-3 py-2 hover:bg-blue-50 text-slate-600 hover:text-blue-600 rounded-lg transition-colors text-sm font-medium"
+                                                            className="flex items-center gap-3 px-3 py-2 hover:bg-blue-500/10 text-[var(--color-text-secondary)] hover:text-blue-500 rounded-lg transition-colors text-sm font-medium"
                                                         >
                                                             <Mail size={16} />
                                                             Email
                                                         </a>
                                                         <a
                                                             href={`tel:${debtor.phone}`}
-                                                            className="flex items-center gap-3 px-3 py-2 hover:bg-orange-50 text-slate-600 hover:text-orange-600 rounded-lg transition-colors text-sm font-medium"
+                                                            className="flex items-center gap-3 px-3 py-2 hover:bg-orange-500/10 text-[var(--color-text-secondary)] hover:text-orange-500 rounded-lg transition-colors text-sm font-medium"
                                                         >
                                                             <Phone size={16} />
                                                             Zəng et
