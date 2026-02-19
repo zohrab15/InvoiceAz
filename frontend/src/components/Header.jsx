@@ -43,8 +43,16 @@ const Header = ({ onMenuClick }) => {
     const unreadCount = notifications.filter(n => !n.is_read).length;
 
     const markAsReadMutation = useMutation({
-        mutationFn: (id) => client.post(`/notifications/${id}/read/`),
+        mutationFn: (id) => client.post(`/notifications/${id}/mark_as_read/`),
         onSuccess: () => queryClient.invalidateQueries(['notifications']),
+    });
+
+    const markAllAsReadMutation = useMutation({
+        mutationFn: () => client.post('/notifications/mark_all_as_read/'),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['notifications']);
+            setIsNotifOpen(false);
+        },
     });
 
     useEffect(() => {
@@ -69,7 +77,7 @@ const Header = ({ onMenuClick }) => {
         { icon: <Shield size={18} />, label: 'Təhlükəsizlik', onClick: () => navigate('/security') },
         { icon: <Settings size={18} />, label: 'Tənzimləmələr', onClick: () => navigate('/system-settings') },
         { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing') },
-        { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => { } },
+        { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => navigate('/system-settings') },
         { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => { } },
         { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => { } },
         { icon: <LogOut size={18} />, label: 'Çıxış', onClick: logout, variant: 'danger' },
@@ -166,9 +174,13 @@ const Header = ({ onMenuClick }) => {
                                         </div>
                                     )}
                                 </div>
-                                {notifications.length > 0 && (
-                                    <button className="w-full p-3 text-center text-xs font-bold transition-colors" style={{ color: 'var(--color-brand)' }}>
-                                        Hamısına bax
+                                {unreadCount > 0 && (
+                                    <button
+                                        onClick={() => markAllAsReadMutation.mutate()}
+                                        className="w-full p-3 text-center text-xs font-bold transition-colors hover:bg-[var(--color-hover-bg)]"
+                                        style={{ color: 'var(--color-brand)', borderTop: '1px solid var(--color-card-border)' }}
+                                    >
+                                        Hamısını oxunmuş kimi qeyd et
                                     </button>
                                 )}
                             </motion.div>

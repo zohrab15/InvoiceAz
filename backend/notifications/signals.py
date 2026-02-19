@@ -34,7 +34,7 @@ def invoice_created(sender, instance, created, **kwargs):
             title="Yeni Faktura",
             message=f"#{instance.invoice_number} nömrəli yeni faktura yaradıldı.",
             type='info',
-            link={ 'path': '/invoices', 'id': instance.id },
+            link='/invoices',
             setting_key='invoice_created'
         )
 
@@ -46,6 +46,6 @@ def payment_received(sender, instance, created, **kwargs):
             title="Yeni Ödəniş",
             message=f"#{instance.invoice.invoice_number} nömrəli faktura üzrə {instance.amount} AZN ödəniş qəbul edildi.",
             type='success',
-            link={ 'path': '/invoices' },
+            link='/invoices',
             setting_key='payment_received'
         )
