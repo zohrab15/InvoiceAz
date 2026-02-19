@@ -25,11 +25,7 @@ const BusinessSettings = () => {
     const { theme: currentTheme } = useTheme();
     const { checkLimit, canUseThemes } = usePlanLimits();
 
-    // Manage tabs
     const [activeTab, setActiveTab] = useState('user'); // 'user', 'business'
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-    const [limitInfo, setLimitInfo] = useState({ resourceName: 'Biznes', limit: 1 });
-
     const [selectedBusiness, setSelectedBusiness] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
     const [logoPreview, setLogoPreview] = useState(null);
@@ -79,8 +75,11 @@ const BusinessSettings = () => {
     const handleNewBusiness = () => {
         const check = checkLimit('businesses');
         if (!check.allowed) {
-            setLimitInfo({ resourceName: 'Biznes Profili', limit: check.limit });
-            setShowUpgradeModal(true);
+            setUpgradeConfig({
+                isOpen: true,
+                title: 'Limitə çatdınız! 🚀',
+                message: `Hazırkı planınızda maksimum ${check.limit} Biznes Profili yarada bilərsiniz. Limitsiz imkanlar üçün Pro plana keçin.`
+            });
             return;
         }
         setIsCreating(true);
