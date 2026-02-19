@@ -113,11 +113,41 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
     def _generate_pdf(self, invoice):
         invoice.calculate_totals()
+        
+        # Generate QR code for payment
+        qr_code_base64 = None
+        try:
+            import qrcode
+            import base64
+            from io import BytesIO
+            
+            # Use public pay URL
+            # Note: In production this should be the real frontend URL
+            pay_url = f"https://invoiceaz.vercel.app/public/pay/{invoice.share_token}"
+            
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(pay_url)
+            qr.make(fit=True)
+            
+            img = qr.make_image(fill_color="black", back_color="white")
+            buffered = BytesIO()
+            img.save(buffered, format="PNG")
+            qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
+        except Exception as e:
+            print(f"QR Code generation error: {e}")
+
         context = {
             'invoice': invoice,
             'business': invoice.business,
             'client': invoice.client,
             'items': invoice.items.all(),
+            'qr_code': qr_code_base64,
+            'theme': invoice.invoice_theme or 'modern',
         }
         
         html_string = render_to_string('invoices/invoice_pdf.html', context)

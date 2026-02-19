@@ -1,166 +1,250 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <style>
+        @page {
+            size: a4 portrait;
+            margin: 1cm;
+        }
         body {
             font-family: Inter, Arial, sans-serif;
-            color: #333;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 10pt;
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid #1e40af;
-            padding-bottom: 20px;
-        }
-
-        .business-info {
-            float: left;
-        }
-
-        .invoice-details {
-            float: right;
-            text-align: right;
-        }
-
-        .clear {
-            clear: both;
-        }
-
-        .section {
-            margin-top: 30px;
-        }
-
-        .client-info {
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th {
-            background-color: #f3f4f6;
-            text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .totals {
-            float: right;
-            width: 300px;
-            margin-top: 20px;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-        }
-
-        .yekun {
-            font-size: 1.2em;
+        .text-blue { color: #2563eb; }
+        .text-slate { color: #64748b; }
+        .text-black { color: #000000; }
+        .font-bold { font-weight: bold; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-widest { letter-spacing: 2pt; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        .w-full { width: 100%; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .valign-top { vertical-align: top; }
+        
+        .badge {
+            padding: 4pt 8pt;
+            border-radius: 10pt;
             font-weight: bold;
-            color: #1e40af;
-            border-top: 1px solid #1e40af;
-            padding-top: 10px;
+            font-size: 8pt;
         }
+        .badge-paid { background-color: #22c55e; color: white; }
+        .badge-pending { background-color: #2563eb; color: white; }
 
-        .footer {
-            margin-top: 100px;
-            font-size: 0.8em;
-            color: #777;
-            text-align: center;
-        }
+        /* --- THEMES --- */
+        
+        /* Modern Theme Styles */
+        .modern-header { background-color: #2563eb; color: white; padding: 10pt; text-align: center; margin-bottom: 20pt; }
+        .modern-card { border: 1pt solid #e2e8f0; padding: 20pt; }
+        
+        /* Classic Theme Styles */
+        .classic-title { border-bottom: 4pt solid #000; padding: 10pt 20pt; display: inline-block; }
+        
+        /* Minimal Theme Styles */
+        .minimal-amount { font-size: 24pt; font-weight: 100; color: #000; }
+
+        /* General Table Styles */
+        .items-table th { border-bottom: 2pt solid #e2e8f0; padding: 10pt 5pt; text-align: left; color: #64748b; font-size: 8pt; text-transform: uppercase; }
+        .items-table td { padding: 12pt 5pt; border-bottom: 1pt solid #f1f5f9; }
+        
+        .qr-section { margin-top: 20pt; padding: 15pt; background-color: #f8fafc; border: 1pt solid #e2e8f0; }
+
+        .clear { clear: both; }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <div class="business-info">
-            {% if business.logo %}
-            <img src="{{ business.logo.url }}" style="height: 60px; width: auto; margin-bottom: 10px;">
-            {% endif %}
-            <h1>{{ business.name }}</h1>
-            <p>{{ business.address }}<br>
-                VOEN: {{ business.voen }}<br>
-                Tel: {{ business.phone }}</p>
-        </div>
-        <div class="invoice-details">
-            <h2 style="color: #1e40af;">HESAB-FAKTURA</h2>
-            <p>No: {{ invoice.invoice_number }}<br>
-                Tarix: {{ invoice.invoice_date }}<br>
-                Son tarix: {{ invoice.due_date }}</p>
-        </div>
+
+{% if theme == 'modern' %}
+    <!-- Modern Theme -->
+    <div style="background-color: #2563eb; color: white; text-align: center; padding: 5pt; margin-bottom: 20pt;">
+        <span class="font-bold uppercase tracking-widest" style="font-size: 8pt;">
+            {% if invoice.status == 'paid' %}BU FAKTURA ÖDƏNİLİB{% else %}ÖDƏNİŞ GÖZLƏNİLİR{% endif %}
+        </span>
     </div>
 
-    <div class="clear"></div>
-
-    <div class="section client-info">
-        <h3>Müştəri:</h3>
-        <p><strong>{{ client.name }}</strong><br>
-            VOEN: {{ client.voen|default:"-" }}<br>
-            Email: {{ client.email }}</p>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Təsvir</th>
-                <th>Say</th>
-                <th>Qiymət</th>
-                <th>Məbləğ</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr>
-                <td>{{ item.description }}</td>
-                <td>{{ item.quantity|floatformat:-2 }} {{ item.unit }}</td>
-                <td>{{ item.unit_price|floatformat:2 }} {{ invoice.currency }}</td>
-                <td>{{ item.amount|floatformat:2 }} {{ invoice.currency }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+    <table class="w-full">
+        <tr>
+            <td class="valign-top">
+                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 50pt; margin-bottom: 10pt;">{% endif %}
+                <h2 class="uppercase font-bold text-black" style="margin: 0; padding: 0;">{{ business.name }}</h2>
+                <div class="text-slate" style="font-size: 9pt;">
+                    {{ business.address }}<br>
+                    VÖEN: {{ business.voen }}<br>
+                    {{ business.email }}
+                </div>
+            </td>
+            <td class="valign-top text-right">
+                <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Müştəri</div>
+                <div class="font-bold text-black" style="font-size: 12pt;">{{ client.name }}</div>
+                <div class="text-slate" style="font-size: 9pt;">{{ client.email }}</div>
+                
+                <table style="margin-top: 15pt; width: 200pt; float: right;">
+                    <tr>
+                        <td class="text-right">
+                            <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Tarix</div>
+                            <div class="font-bold text-black">{{ invoice.invoice_date|date:"d.m.Y" }}</div>
+                        </td>
+                        <td class="text-right">
+                            <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Son Tarix</div>
+                            <div class="font-bold text-black">{{ invoice.due_date|date:"d.m.Y" }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
     </table>
 
-    <div class="totals">
-        <div class="total-row">
-            <span>Cəm: </span>
-            <span style="float: right;">{{ invoice.subtotal|floatformat:2 }} {{ invoice.currency }}</span>
+{% elif theme == 'classic' %}
+    <!-- Classic Theme -->
+    <div class="text-center" style="margin-bottom: 30pt;">
+        <div style="border-bottom: 3pt solid #000; padding: 5pt 30pt; display: inline-block;">
+            <h1 class="uppercase font-bold tracking-widest" style="margin: 0; font-size: 24pt;">HESAB-FAKTURA</h1>
         </div>
-        <div class="total-row">
-            <span>ƏDV: </span>
-            <span style="float: right;">{{ invoice.tax_amount|floatformat:2 }} {{ invoice.currency }}</span>
-        </div>
-        <div class="total-row yekun">
-            <span>YEKUN: </span>
-            <span style="float: right;">{{ invoice.total|floatformat:2 }} {{ invoice.currency }}</span>
-        </div>
+        <div class="text-slate font-bold uppercase tracking-widest" style="margin-top: 5pt; font-size: 9pt;">Faktura №: {{ invoice.invoice_number }}</div>
     </div>
 
-    <div class="clear"></div>
+    <table class="w-full">
+        <tr>
+            <td class="valign-top" style="border-left: 4pt solid #000; padding-left: 15pt; width: 50%;">
+                <div class="text-slate uppercase font-bold" style="font-size: 7pt; margin-bottom: 5pt;">GÖNDƏRƏN</div>
+                <div class="font-bold text-black" style="font-size: 14pt;">{{ business.name }}</div>
+                <div class="text-slate" style="font-size: 9pt; margin-top: 5pt;">
+                    {{ business.address }}<br>
+                    VÖEN: {{ business.voen }}<br>
+                    {{ business.email }}
+                </div>
+            </td>
+            <td class="valign-top" style="border-left: 4pt solid #e2e8f0; padding-left: 15pt; width: 50%;">
+                <div class="text-slate uppercase font-bold" style="font-size: 7pt; margin-bottom: 5pt;">MÜŞTƏRİ</div>
+                <div class="font-bold text-black" style="font-size: 14pt;">{{ client.name }}</div>
+                <div class="text-slate" style="font-size: 9pt; margin-top: 5pt;">
+                    {{ client.address|default:"---" }}<br>
+                    {{ client.email }}
+                </div>
+            </td>
+        </tr>
+    </table>
 
-    <div class="section">
-        <p><strong>Qeydlər:</strong><br>{{ invoice.notes|default:"Təşəkkür edirik!" }}</p>
-        <p><strong>Bank məlumatları:</strong><br>
-            Bank: {{ business.bank_name }}<br>
-            IBAN: {{ business.iban }}<br>
-            SWIFT: {{ business.swift }}</p>
+{% elif theme == 'minimal' %}
+    <!-- Minimal Theme -->
+    <table class="w-full" style="margin-bottom: 40pt;">
+        <tr>
+            <td class="valign-top">
+                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 30pt; opacity: 0.6;">{% endif %}
+                <div class="text-slate uppercase font-bold tracking-widest" style="font-size: 8pt; margin-top: 5pt;">Invoice #{{ invoice.invoice_number }}</div>
+            </td>
+            <td class="valign-top text-right">
+                <div class="minimal-amount">{{ invoice.total|floatformat:2 }} ₼</div>
+                <div class="text-slate uppercase font-bold" style="font-size: 7pt;">{% if invoice.status == 'paid' %}Payment Received{% else %}Balance Due{% endif %}</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="w-full" style="margin-bottom: 30pt;">
+        <tr>
+            <td class="valign-top">
+                <div class="text-slate uppercase font-bold tracking-widest" style="font-size: 7pt;">From</div>
+                <div class="font-bold text-black">{{ business.name }}</div>
+                <div class="text-slate" style="font-size: 8pt;">{{ business.email }}</div>
+            </td>
+            <td class="valign-top">
+                <div class="text-slate uppercase font-bold tracking-widest" style="font-size: 7pt;">To</div>
+                <div class="font-bold text-black">{{ client.name }}</div>
+                <div class="text-slate" style="font-size: 8pt;">{{ client.email }}</div>
+            </td>
+            <td class="valign-top">
+                <div class="text-slate uppercase font-bold tracking-widest" style="font-size: 7pt;">Issued</div>
+                <div class="text-black">{{ invoice.invoice_date|date:"d.m.Y" }}</div>
+            </td>
+            <td class="valign-top">
+                <div class="text-slate uppercase font-bold tracking-widest" style="font-size: 7pt;">Due</div>
+                <div class="text-black">{{ invoice.due_date|date:"d.m.Y" }}</div>
+            </td>
+        </tr>
+    </table>
+{% endif %}
+
+    <!-- Items Table -->
+    <div style="margin-top: 30pt;">
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Məhsul / Xidmət</th>
+                    <th class="text-center">Sayı</th>
+                    <th class="text-right">Qiymət</th>
+                    <th class="text-right">Məbləğ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="font-bold text-black">{{ item.description }}</td>
+                    <td class="text-center text-slate">{{ item.quantity|floatformat:-2 }} {{ item.unit }}</td>
+                    <td class="text-right text-slate">{{ item.unit_price|floatformat:2 }} ₼</td>
+                    <td class="text-right font-bold text-black">{{ item.amount|floatformat:2 }} ₼</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <div class="footer">
-        InvoiceAZ tərəfindən yaradılmışdır - www.invoiceaz.com
+    <!-- Totals and QR -->
+    <div style="margin-top: 20pt;">
+        <table class="w-full">
+            <tr>
+                <td class="valign-top" style="width: 60%;">
+                    <div class="text-slate uppercase font-bold" style="font-size: 8pt; margin-bottom: 5pt;">Qeyd</div>
+                    <div class="text-slate italic" style="font-size: 9pt; width: 80%;">{{ invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</div>
+                    
+                    {% if qr_code %}
+                    <div class="qr-section" style="width: 180pt; margin-top: 20pt;">
+                        <table class="w-full">
+                            <tr>
+                                <td style="width: 60pt;">
+                                    <img src="data:image/png;base64,{{ qr_code }}" style="width: 60pt; height: 60pt;">
+                                </td>
+                                <td style="padding-left: 10pt;">
+                                    <div class="font-bold text-black" style="font-size: 9pt;">Sürətli Ödəniş</div>
+                                    <div class="text-slate" style="font-size: 7pt; line-height: 1.2;">Mobil telefonunuzla skan edərək dərhal ödəniş edin.</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% endif %}
+                </td>
+                <td class="valign-top" style="width: 40%;">
+                    <div style="border-top: 4pt solid #1e293b; padding-top: 10pt;">
+                        <table class="w-full">
+                            <tr>
+                                <td class="text-slate">Cəm:</td>
+                                <td class="text-right font-bold">{{ invoice.subtotal|floatformat:2 }} ₼</td>
+                            </tr>
+                            <tr>
+                                <td class="text-slate" style="padding-top: 5pt;">ƏDV (18%):</td>
+                                <td class="text-right font-bold" style="padding-top: 5pt;">{{ invoice.tax_amount|floatformat:2 }} ₼</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold text-black" style="padding-top: 15pt; font-size: 14pt;">YEKUN:</td>
+                                <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">{{ invoice.total|floatformat:2 }} ₼</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
+
+    <!-- Footer -->
+    <div style="margin-top: 50pt; text-align: center; border-top: 1pt solid #f1f5f9; padding-top: 10pt;">
+        <div style="font-size: 8pt; color: #94a3b8; font-weight: bold;">
+            Powered by <span style="color: #1e293b;">InvoiceAZ</span>
+        </div>
+        <div style="font-size: 7pt; color: #cbd5e1; margin-top: 3pt;">Bütün Hüquqlar Qorunur © 2026</div>
+    </div>
+
 </body>
-
 </html>
