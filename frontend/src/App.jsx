@@ -52,10 +52,20 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const LoadingScreen = () => (
-  <div className="h-screen w-full flex items-center justify-center bg-gray-50/50 backdrop-blur-sm px-8">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin shadow-lg"></div>
-      <p className="text-sm font-bold text-slate-400 animate-pulse tracking-widest uppercase">Yüklənir...</p>
+  <div className="h-screen w-screen flex items-center justify-center bg-[#0a0a0f] px-8 fixed inset-0 z-[9999]">
+    <div className="flex flex-col items-center gap-6">
+      <div className="relative">
+        <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
+        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0 shadow-[0_0_15px_rgba(37,99,235,0.3)]"></div>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-xs font-black text-blue-500 animate-pulse tracking-[0.3em] uppercase">Yüklənir</p>
+        <div className="flex gap-1">
+          <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0 }} className="w-1 h-1 bg-blue-500 rounded-full" />
+          <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }} className="w-1 h-1 bg-blue-500 rounded-full" />
+          <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }} className="w-1 h-1 bg-blue-500 rounded-full" />
+        </div>
+      </div>
     </div>
   </div>
 );
