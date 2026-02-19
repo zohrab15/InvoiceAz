@@ -78,7 +78,7 @@ const Header = ({ onMenuClick }) => {
         { icon: <Settings size={18} />, label: 'Tənzimləmələr', onClick: () => navigate('/system-settings') },
         { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing') },
         { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => navigate('/system-settings') },
-        { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => { } },
+        { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => navigate('/notifications') },
         { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => { } },
         { icon: <LogOut size={18} />, label: 'Çıxış', onClick: logout, variant: 'danger' },
     ];
@@ -183,6 +183,13 @@ const Header = ({ onMenuClick }) => {
                                         Hamısını oxunmuş kimi qeyd et
                                     </button>
                                 )}
+                                <button
+                                    onClick={() => { navigate('/notifications'); setIsNotifOpen(false); }}
+                                    className="w-full p-3 text-center text-xs font-bold transition-colors hover:bg-[var(--color-hover-bg)]"
+                                    style={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-card-border)' }}
+                                >
+                                    Hamısına bax
+                                </button>
                             </motion.div>
                         )}
                     </AnimatePresence>
