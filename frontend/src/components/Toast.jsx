@@ -8,6 +8,7 @@ export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
 
     const showToast = useCallback((message, type = 'success') => {
+        if (!message || message.trim() === '') return;
         const id = Math.random().toString(36).substr(2, 9);
         setToasts((prev) => [...prev, { id, message, type }]);
         setTimeout(() => {
@@ -27,8 +28,8 @@ export const ToastProvider = ({ children }) => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                             className={`flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl border ${toast.type === 'success'
-                                    ? 'bg-white border-green-100 text-green-800'
-                                    : 'bg-white border-red-100 text-red-800'
+                                ? 'bg-white border-green-100 text-green-800'
+                                : 'bg-white border-red-100 text-red-800'
                                 }`}
                         >
                             {toast.type === 'success' ? (
