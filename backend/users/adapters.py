@@ -23,3 +23,15 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         frontend_url = 'https://invoiceaz.vercel.app' if not settings.DEBUG else 'http://localhost:5173'
         url = f"{frontend_url}/verify-email/{emailconfirmation.key}/"
         return url
+
+    def send_mail(self, template_prefix, email, context):
+        """
+        Override send_mail to be non-blocking using a thread.
+        This prevents registration hangs when SMTP is slow or failing.
+        """
+        import threading
+        thread = threading.Thread(
+            target=super().send_mail,
+            args=(template_prefix, email, context)
+        )
+        thread.start()
