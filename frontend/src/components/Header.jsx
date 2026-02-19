@@ -79,7 +79,7 @@ const Header = ({ onMenuClick }) => {
         { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing') },
         { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => navigate('/system-settings') },
         { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => navigate('/notifications') },
-        { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => { } },
+        { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => navigate('/help') },
         { icon: <LogOut size={18} />, label: 'Çıxış', onClick: logout, variant: 'danger' },
     ];
 
