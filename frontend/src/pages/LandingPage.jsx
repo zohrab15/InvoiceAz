@@ -501,7 +501,7 @@ const LandingPage = () => {
                             <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">ən yaxşı vaxtıdır</span>
                         </h2>
                         <p className="text-lg text-white/40 font-medium mb-10 max-w-2xl mx-auto">
-                            Minlərlə azərbaycanlı sahibkar artıq InvoiceAZ ilə zamanına qənaət edir. Pulsuz qeydiyyatdan keçin, 30 saniyədə başlayın.
+                            Minlərlə azərbaycanlı sahibkar artıq InvoiceAZ ilə zamanına qənaət edir. Pulsuz Qeydiyyat ilə cəmi 30 saniyədə başlayın.
                         </p>
                         <motion.button
                             whileHover={{ scale: 1.05, boxShadow: '0 30px 80px rgba(99,102,241,0.5)' }}
