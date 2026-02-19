@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
     FileText,
     TrendingUp,
@@ -547,8 +547,8 @@ const LandingPage = () => {
                         </div>
                         <div className="flex flex-col gap-3">
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Hüquqi</h5>
-                            <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Qaydalar</a>
-                            <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Məxfilik</a>
+                            <Link to="/terms" className="text-sm font-medium text-white/30 hover:text-white transition-colors">İstifadə Qaydaları</Link>
+                            <Link to="/privacy" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Məxfilik Siyasəti</Link>
                         </div>
                     </div>
                 </div>
