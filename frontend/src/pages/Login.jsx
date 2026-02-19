@@ -111,8 +111,8 @@ const Login = () => {
                     {/* Google Login */}
                     <button
                         onClick={async () => {
-                            // 1. Clear frontend local storage
-                            useAuthStore.getState().logout();
+                            // 1. Clear frontend local storage without redirection
+                            useAuthStore.getState().clearAuth();
 
                             // 2. Clear backend session (Django) to prevent Allauth linking conflicts
                             try {

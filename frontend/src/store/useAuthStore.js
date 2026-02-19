@@ -7,6 +7,11 @@ const useAuthStore = create((set) => ({
         localStorage.setItem('invoice_token', token);
         set({ user, token });
     },
+    clearAuth: () => {
+        localStorage.removeItem('invoice_token');
+        localStorage.removeItem('active_business');
+        set({ user: null, token: null });
+    },
     logout: () => {
         localStorage.removeItem('invoice_token');
         localStorage.removeItem('active_business');
