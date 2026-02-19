@@ -40,7 +40,9 @@ const Register = () => {
                 if (firstKey) {
                     const value = data[firstKey];
                     errorMsg = Array.isArray(value) ? value[0] : (typeof value === 'string' ? value : JSON.stringify(value));
-                    if (errorMsg === 'A user with that email already exists.') errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur.';
+                    if (errorMsg === 'A user with that email already exists.' || errorMsg === 'Bu e-poçt ilə artıq hesab mövcuddur.') {
+                        errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur. Zəhmət olmasa giriş edin və ya şifrənizi bərpa edin.';
+                    }
                 }
             }
             showToast(errorMsg, 'error');
