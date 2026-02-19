@@ -29,10 +29,12 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 if 'RENDER' in os.environ:
     DEBUG = False
 
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,invoice-az-backend.onrender.com').split(',')
+if '*' in ALLOWED_HOSTS and not DEBUG:
+    # Explicitly prevent wildcard in production
+    ALLOWED_HOSTS = ['invoice-az-backend.onrender.com']
 # import warnings
 # warnings.filterwarnings('ignore', message='.*allauth.*deprecated.*')
-
-ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -168,6 +170,24 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Security Hardening
+if not DEBUG:
+    # HSTS
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # SSL
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    # Browser Integrity
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+X_FRAME_OPTIONS = 'DENY'
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -263,6 +283,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
 }
 
 REST_AUTH = {
