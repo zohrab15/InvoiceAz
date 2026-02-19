@@ -73,15 +73,23 @@ export const usePlanLimits = () => {
         }
     };
 
+    const isDemo = useAuthStore.getState().user?.email === 'demo_user@invoice.az';
+
     return {
-        plan: planStatus?.plan || 'free',
+        plan: isDemo ? 'pro' : (planStatus?.plan || 'free'),
         limits: planStatus?.limits,
         usage: planStatus?.usage,
         isLoading,
-        checkLimit,
-        isFeatureLocked,
-        isPro: ['pro', 'premium'].includes(planStatus?.plan),
-        canUseThemes: planStatus?.limits?.custom_themes || useAuthStore.getState().user?.email === 'demo_user@invoice.az'
+        checkLimit: (resource) => {
+            if (isDemo) return { allowed: true, limit: null, current: 0 };
+            return checkLimit(resource);
+        },
+        isFeatureLocked: (feature) => {
+            if (isDemo) return false;
+            return isFeatureLocked(feature);
+        },
+        isPro: isDemo || ['pro', 'premium'].includes(planStatus?.plan),
+        canUseThemes: isDemo || planStatus?.limits?.custom_themes
     };
 };
 

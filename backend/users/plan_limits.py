@@ -23,6 +23,9 @@ def get_plan_limits(user):
 
 def check_invoice_limit(user, business):
     """Check if user can create a new invoice this month."""
+    if user.email == 'demo_user@invoice.az':
+        return {'allowed': True, 'current': 0, 'limit': None}
+
     plan = get_plan_limits(user)
     if not plan:
         return {'allowed': True, 'current': 0, 'limit': None} # Should not happen
@@ -49,6 +52,9 @@ def check_invoice_limit(user, business):
 
 def check_client_limit(user):
     """Check if user can create a new client."""
+    if user.email == 'demo_user@invoice.az':
+        return {'allowed': True, 'current': 0, 'limit': None}
+
     plan = get_plan_limits(user)
     if not plan:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -73,6 +79,9 @@ def check_client_limit(user):
 
 def check_expense_limit(user, business):
     """Check if user can create a new expense this month."""
+    if user.email == 'demo_user@invoice.az':
+        return {'allowed': True, 'current': 0, 'limit': None}
+
     plan = get_plan_limits(user)
     if not plan:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -99,6 +108,9 @@ def check_expense_limit(user, business):
 
 def check_business_limit(user):
     """Check if user can create a new business profile."""
+    if user.email == 'demo_user@invoice.az':
+        return {'allowed': True, 'current': 0, 'limit': None}
+
     plan = get_plan_limits(user)
     if not plan:
         return {'allowed': True, 'current': 0, 'limit': None}
@@ -158,20 +170,22 @@ def get_full_plan_status(user):
     total_clients = Client.objects.filter(business__user=user).count()
     total_businesses = active_businesses.count()
     
+    is_demo = user.email == 'demo_user@invoice.az'
+    
     return {
-        'plan': plan.name,
-        'label': plan.label,
+        'plan': 'pro' if is_demo else plan.name,
+        'label': 'Professional (Demo)' if is_demo else plan.label,
         'limits': {
-            'invoices_per_month': plan.invoices_per_month if plan else 0,
-            'clients': plan.clients_limit if plan else 0,
-            'expenses_per_month': plan.expenses_per_month if plan else 0,
-            'businesses': plan.businesses_limit if plan else 1,
-            'forecast_analytics': plan.has_forecast_analytics if plan else False,
-            'csv_export': plan.has_csv_export if plan else False,
-            'premium_pdf': plan.has_premium_pdf if plan else False,
-            'api_access': plan.has_api_access if plan else False,
-            'team_members': plan.team_members_limit if plan else 0,
-            'custom_themes': plan.has_custom_themes if plan else False,
+            'invoices_per_month': None if is_demo else (plan.invoices_per_month if plan else 0),
+            'clients': None if is_demo else (plan.clients_limit if plan else 0),
+            'expenses_per_month': None if is_demo else (plan.expenses_per_month if plan else 0),
+            'businesses': None if is_demo else (plan.businesses_limit if plan else 1),
+            'forecast_analytics': True if is_demo else (plan.has_forecast_analytics if plan else False),
+            'csv_export': True if is_demo else (plan.has_csv_export if plan else False),
+            'premium_pdf': True if is_demo else (plan.has_premium_pdf if plan else False),
+            'api_access': True if is_demo else (plan.has_api_access if plan else False),
+            'team_members': 99 if is_demo else (plan.team_members_limit if plan else 0),
+            'custom_themes': True if is_demo else (plan.has_custom_themes if plan else False),
         },
         'usage': {
             'invoices_this_month': invoices_this_month,
