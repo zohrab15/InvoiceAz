@@ -84,7 +84,7 @@ const HelpSupport = () => {
             title: "WhatsApp Dəstək",
             desc: "7/24 operativ suallar üçün",
             action: "Mesaj yaz",
-            link: "https://wa.me/994500000000",
+            link: "https://wa.me/994517640324",
             color: "#25D366",
             bg: "rgba(37, 211, 102, 0.1)"
         },
