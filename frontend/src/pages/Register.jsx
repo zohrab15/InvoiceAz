@@ -33,20 +33,34 @@ const Register = () => {
             await clientApi.post('/auth/registration/', formData);
             navigate('/verify-email-sent');
         } catch (error) {
+            console.error('Registration Error Details:', error);
             let errorMsg = 'Qeydiyyat zamanı xəta baş verdi';
+
             if (error.response?.data) {
                 const data = error.response.data;
-                const firstKey = Object.keys(data)[0];
-                if (firstKey) {
-                    const value = data[firstKey];
-                    errorMsg = Array.isArray(value) ? value[0] : (typeof value === 'string' ? value : JSON.stringify(value));
-                    if (errorMsg === 'A user with that email already exists.' || errorMsg === 'Bu e-poçt ilə artıq hesab mövcuddur.') {
-                        errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur. Əgər az əvvəl qeydiyyatdan keçməyə çalışmısınızsa, ehtimal ki, hesabınız artıq yaradılıb. Zəhmət olmasa giriş edin.';
+
+                if (typeof data === 'string') {
+                    // Handle HTML error pages or plain text
+                    errorMsg = data.length < 150 ? data : 'Serverdə daxili xəta baş verdi (500)';
+                } else if (typeof data === 'object' && data !== null) {
+                    // Extract first error message from DRF dictionary
+                    const values = Object.values(data).flat();
+                    if (values.length > 0) {
+                        const firstError = values[0];
+                        errorMsg = typeof firstError === 'string' ? firstError : JSON.stringify(firstError);
                     }
+                }
+
+                // Azerbaijani translations & context-specific guidance
+                if (errorMsg.includes('email already exists') || errorMsg.includes('artıq hesab mövcuddur')) {
+                    errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur. Əgər az əvvəl qeydiyyatdan keçməyə çalışmısınızsa, hesabınız artıq yaradılıb. Zəhmət olmasa giriş edin.';
                 }
             } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
                 errorMsg = 'Bağlantı vaxtı bitdi. Lakin hesabınız yaradılmış ola bilər. Zəhmət olmasa 1 dəqiqə sonra giriş etməyi yoxlayın.';
+            } else if (error.message) {
+                errorMsg = error.message;
             }
+
             showToast(errorMsg, 'error');
         } finally {
             setIsLoading(false);
