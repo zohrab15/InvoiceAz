@@ -59,7 +59,10 @@ const LandingPage = () => {
             {/* ══════════ NAVBAR ══════════ */}
             <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
                 <div className="max-w-7xl mx-auto flex justify-between items-center bg-white/5 backdrop-blur-2xl rounded-2xl px-6 py-3 border border-white/10">
-                    <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/')}>
+                    <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => {
+                        if (window.location.pathname === '/') window.location.reload();
+                        else navigate('/');
+                    }}>
                         <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center">
                             <Zap size={18} className="text-white" />
                         </div>

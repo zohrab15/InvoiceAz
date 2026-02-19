@@ -91,7 +91,16 @@ const Header = ({ onMenuClick }) => {
                 >
                     <Menu size={24} />
                 </button>
-                <h1 className="text-xl font-black tracking-tight hidden lg:block" style={{ color: 'var(--color-brand)' }}>InvoiceAZ</h1>
+                <h1
+                    className="text-xl font-black tracking-tight hidden lg:block cursor-pointer hover:opacity-80 transition-opacity"
+                    style={{ color: 'var(--color-brand)' }}
+                    onClick={() => {
+                        if (window.location.pathname === '/dashboard') window.location.reload();
+                        else navigate('/dashboard');
+                    }}
+                >
+                    InvoiceAZ
+                </h1>
             </div>
 
             <div className="flex items-center gap-2 lg:gap-4">
