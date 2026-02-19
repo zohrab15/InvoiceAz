@@ -1,3 +1,4 @@
+// Vercel Rebuild Trigger (Ver 2c4f534): 2026-02-19 15:56
 import React, { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
