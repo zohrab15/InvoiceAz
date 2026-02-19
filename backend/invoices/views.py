@@ -114,30 +114,23 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     def _generate_pdf(self, invoice):
         invoice.calculate_totals()
         
+        import qrcode
+        import tempfile
+        import os
+        from django.conf import settings
+        
         # Generate QR code for payment
-        qr_code_base64 = None
+        qr_code_path = None
         try:
-            import qrcode
-            import base64
-            from io import BytesIO
-            
-            # Use public pay URL
-            # Note: In production this should be the real frontend URL
             pay_url = f"https://invoiceaz.vercel.app/public/pay/{invoice.share_token}"
-            
-            qr = qrcode.QRCode(
-                version=1,
-                error_correction=qrcode.constants.ERROR_CORRECT_L,
-                box_size=10,
-                border=4,
-            )
+            qr = qrcode.QRCode(version=1, box_size=10, border=4)
             qr.add_data(pay_url)
             qr.make(fit=True)
-            
             img = qr.make_image(fill_color="black", back_color="white")
-            buffered = BytesIO()
-            img.save(buffered, format="PNG")
-            qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
+            
+            temp_qr = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            img.save(temp_qr.name)
+            qr_code_path = temp_qr.name
         except Exception as e:
             print(f"QR Code generation error: {e}")
 
@@ -146,64 +139,99 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'business': invoice.business,
             'client': invoice.client,
             'items': invoice.items.all(),
-            'qr_code': qr_code_base64,
+            'qr_code_path': qr_code_path,
             'theme': invoice.invoice_theme or 'modern',
         }
         
         html_string = render_to_string('invoices/invoice_pdf.html', context)
         
-        # Register fonts in ReportLab directly to avoid path issues in xhtml2pdf
+        # Font registration
         try:
             from reportlab.pdfbase import pdfmetrics
             from reportlab.pdfbase.ttfonts import TTFont
-            import os
-            from django.conf import settings
-
-            fonts_dir = os.path.join(settings.BASE_DIR, "static", "fonts")
-            
-            # Register Inter Regular
-            pdfmetrics.registerFont(TTFont('Inter', os.path.join(fonts_dir, "Inter-Regular.ttf")))
-            # Register Inter Bold
-            pdfmetrics.registerFont(TTFont('Inter-Bold', os.path.join(fonts_dir, "Inter-Bold.ttf")))
-            
-            # Map them into a family
             from reportlab.pdfbase.pdfmetrics import registerFontFamily
+            
+            # Use absolute strings for paths
+            static_dir = str(settings.BASE_DIR / "static")
+            fonts_dir = os.path.join(static_dir, "fonts")
+            
+            # Register Inter
+            pdfmetrics.registerFont(TTFont('Inter', os.path.join(fonts_dir, "Inter-Regular.ttf")))
+            pdfmetrics.registerFont(TTFont('Inter-Bold', os.path.join(fonts_dir, "Inter-Bold.ttf")))
             registerFontFamily('Inter', normal='Inter', bold='Inter-Bold')
+            
+            # Register Arial (Good for Az characters)
+            pdfmetrics.registerFont(TTFont('Arial', os.path.join(fonts_dir, "arial.ttf")))
+            pdfmetrics.registerFont(TTFont('Arial-Bold', os.path.join(fonts_dir, "arialbd.ttf")))
+            registerFontFamily('Arial', normal='Arial', bold='Arial-Bold')
             
         except Exception as e:
             print(f"Font registration error: {e}")
 
         def link_callback(uri, rel):
-            from django.conf import settings
             import os
+            import requests
+            import tempfile
+            from django.conf import settings
 
-            if uri.startswith(settings.STATIC_URL):
-                path = os.path.join(settings.STATIC_ROOT, uri.replace(settings.STATIC_URL, ""))
-            elif uri.startswith(settings.MEDIA_URL):
-                path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
-            else:
+            if not uri: return uri
+            
+            # 1. Handle absolute local paths
+            if os.path.isabs(uri) and os.path.isfile(uri):
                 return uri
 
-            if not os.path.isfile(path):
-                if uri.startswith(settings.STATIC_URL):
-                    path = os.path.join(settings.BASE_DIR, "static", uri.replace(settings.STATIC_URL, ""))
-                elif uri.startswith(settings.MEDIA_URL):
-                    path = os.path.join(settings.BASE_DIR, "media", uri.replace(settings.MEDIA_URL, ""))
+            # 2. Handle HTTP/HTTPS URLs (important for Logos in production)
+            if uri.startswith('http://') or uri.startswith('https://'):
+                try:
+                    response = requests.get(uri, timeout=5)
+                    if response.status_code == 200:
+                        temp_img = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+                        temp_img.write(response.content)
+                        temp_img.close()
+                        return temp_img.name
+                except Exception as e:
+                    print(f"Error downloading image {uri}: {e}")
+                return uri
+
+            # 3. Handle local URL paths
+            path = None
+            if uri.startswith(settings.STATIC_URL):
+                path = os.path.join(settings.STATIC_ROOT, uri[len(settings.STATIC_URL):])
                 if not os.path.isfile(path):
-                    return uri
-            return path
+                    path = os.path.join(str(settings.BASE_DIR), "static", uri[len(settings.STATIC_URL):])
+            
+            elif uri.startswith(settings.MEDIA_URL):
+                path = os.path.join(settings.MEDIA_ROOT, uri[len(settings.MEDIA_URL):])
+                if not os.path.isfile(path):
+                    path = os.path.join(str(settings.BASE_DIR), "media", uri[len(settings.MEDIA_URL):])
+
+            if path and os.path.isfile(path):
+                return path
+            
+            return uri
 
         try:
             from xhtml2pdf import pisa
             result = io.BytesIO()
-            pisa.pisaDocument(
+            pisa_status = pisa.pisaDocument(
                 io.BytesIO(html_string.encode("UTF-8")), 
                 result, 
                 encoding='UTF-8',
                 link_callback=link_callback
             )
-            return result.getvalue()
-        except Exception:
+            
+            # Clean up QR code file
+            if qr_code_path and os.path.exists(qr_code_path):
+                try:
+                    os.unlink(qr_code_path)
+                except:
+                    pass
+            
+            if pisa_status.err:
+                print(f"PISA ERROR: {pisa_status.err}")
+            return result.getvalue() if not pisa_status.err else None
+        except Exception as e:
+            print(f"PDF generation error: {e}")
             return None
 
     @action(detail=True, methods=['get'])
