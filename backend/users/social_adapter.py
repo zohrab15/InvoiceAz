@@ -70,6 +70,8 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         """
         Log authentication errors for debugging.
         """
-        # print(f"Social Auth Error ({provider_id}): {error}, Exception: {exception}")
-        # super().authentication_error(request, provider_id, error, exception, extra_context)
-        pass
+        print(f"!!! SOCIAL AUTH ERROR ({provider_id}) !!!")
+        print(f"Error: {error}")
+        print(f"Exception: {exception}")
+        print(f"Extra Context: {extra_context}")
+        super().authentication_error(request, provider_id, error, exception, extra_context)

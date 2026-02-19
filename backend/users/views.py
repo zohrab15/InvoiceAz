@@ -57,13 +57,17 @@ def google_auth_bridge(request):
     response = HttpResponseRedirect(f'{frontend_url}?{query_params}')
     return response
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import update_session_auth_hash, logout as django_logout
 from .serializers import PasswordChangeSerializer, UserSerializer
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LogoutAPIView(APIView):
+    authentication_classes = [] # Don't check session/CSRF for this
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
