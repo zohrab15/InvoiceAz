@@ -240,7 +240,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                            <CountUp to={s.val} decimals={0} />
+                            <CountUp to={s.val} decimals={2} />
                             <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>
                         </p>
                     </motion.div>

@@ -44,7 +44,7 @@ def payment_received(sender, instance, created, **kwargs):
         create_notification(
             user=instance.invoice.business.user,
             title="Yeni Ödəniş",
-            message=f"#{instance.invoice.invoice_number} nömrəli faktura üzrə {instance.amount} AZN ödəniş qəbul edildi.",
+            message=f"#{instance.invoice.invoice_number} nömrəli faktura üzrə {instance.amount:.2f} AZN ödəniş qəbul edildi.",
             type='success',
             link='/invoices',
             setting_key='payment_received'
