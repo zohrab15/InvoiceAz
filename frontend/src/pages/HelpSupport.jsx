@@ -137,25 +137,29 @@ const HelpSupport = () => {
 
                     {/* Quick Resources */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="p-6 rounded-2xl flex items-center gap-4 group cursor-pointer transition-all hover:-translate-y-1"
+                        <div
+                            onClick={() => navigate('/terms')}
+                            className="p-6 rounded-2xl flex items-center gap-4 group cursor-pointer transition-all hover:-translate-y-1"
                             style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                             <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500">
                                 <FileText size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>İstifadəçi Qaydaları</h4>
+                                <h4 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>İstifadə Qaydaları</h4>
                                 <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Sənədlərin tam siyahısı</p>
                             </div>
                             <ArrowRight size={16} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--color-text-muted)' }} />
                         </div>
-                        <div className="p-6 rounded-2xl flex items-center gap-4 group cursor-pointer transition-all hover:-translate-y-1"
+                        <div
+                            onClick={() => navigate('/privacy')}
+                            className="p-6 rounded-2xl flex items-center gap-4 group cursor-pointer transition-all hover:-translate-y-1"
                             style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                             <div className="p-3 rounded-xl bg-rose-500/10 text-rose-500">
-                                <Video size={20} />
+                                <Lock size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>Video Dərsliklər</h4>
-                                <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Addım-addım bələdçi</p>
+                                <h4 className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>Məxfilik Siyasəti</h4>
+                                <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Məlumatların qorunması</p>
                             </div>
                             <ArrowRight size={16} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--color-text-muted)' }} />
                         </div>

@@ -38,6 +38,7 @@ const DemoLogin = lazy(() => import('./pages/DemoLogin'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const HelpSupport = lazy(() => import('./pages/HelpSupport'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -136,6 +137,8 @@ function App() {
                             <Route path="/system-settings" element={<SystemSettings />} />
                             <Route path="/notifications" element={<Notifications />} />
                             <Route path="/help" element={<HelpSupport />} />
+                            <Route path="/terms" element={<LegalPage />} />
+                            <Route path="/privacy" element={<LegalPage />} />
                           </Routes>
                         </Layout>
                       </ProtectedRoute>

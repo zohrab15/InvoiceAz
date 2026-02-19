@@ -276,7 +276,7 @@ const Register = () => {
                     </form>
 
                     <p className="mt-4 text-[11px] text-white/20 text-center font-medium leading-relaxed">
-                        Qeydiyyatdan keçməklə <a href="#" className="text-white/30 underline">İstifadə Qaydaları</a> və <a href="#" className="text-white/30 underline">Məxfilik Siyasəti</a> ilə razılaşırsınız.
+                        Qeydiyyatdan keçməklə <Link to="/terms" className="text-white/30 underline">İstifadə Qaydaları</Link> və <Link to="/privacy" className="text-white/30 underline">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
                     </p>
 
                     <div className="mt-8 pt-8 border-t border-white/[0.06] text-center">
