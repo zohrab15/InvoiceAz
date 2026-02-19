@@ -110,7 +110,10 @@ const Login = () => {
 
                     {/* Google Login */}
                     <button
-                        onClick={() => window.location.href = `${API_URL}/accounts/google/login/`}
+                        onClick={() => {
+                            useAuthStore.getState().logout();
+                            window.location.href = `${API_URL}/accounts/google/login/`;
+                        }}
                         className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] mb-6"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24">

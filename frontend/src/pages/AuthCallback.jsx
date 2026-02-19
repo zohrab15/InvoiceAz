@@ -40,7 +40,7 @@ const AuthCallback = () => {
             localStorage.removeItem('active_business'); // Clear stale business data on login
 
             showToast('Uğurla giriş edildi!');
-            navigate('/', { replace: true });
+            navigate('/dashboard', { replace: true });
         } else {
             showToast('Giriş zamanı xəta baş verdi', 'error');
             navigate('/login', { replace: true });
