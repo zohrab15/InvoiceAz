@@ -114,6 +114,8 @@ function App() {
                   <Route path="/view/:token" element={<PublicInvoice />} />
                   <Route path="/public/pay/:token" element={<PublicPayment />} />
                   <Route path="/demo-login" element={<DemoLogin />} />
+                  <Route path="/terms" element={<LegalPage />} />
+                  <Route path="/privacy" element={<LegalPage />} />
                   <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
                   <Route
                     path="/*"
@@ -138,8 +140,6 @@ function App() {
                             <Route path="/system-settings" element={<SystemSettings />} />
                             <Route path="/notifications" element={<Notifications />} />
                             <Route path="/help" element={<HelpSupport />} />
-                            <Route path="/terms" element={<LegalPage />} />
-                            <Route path="/privacy" element={<LegalPage />} />
                           </Routes>
                         </Layout>
                       </ProtectedRoute>

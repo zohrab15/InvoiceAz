@@ -136,6 +136,9 @@ const LandingPage = () => {
                                         Demoya Bax
                                     </motion.button>
                                 </div>
+                                <p className="mt-4 text-[10px] text-white/30 text-center lg:text-left font-medium leading-relaxed">
+                                    Qeydiyyatdan keçməklə <Link to="/terms" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">İstifadə Qaydaları</Link> və <Link to="/privacy" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
+                                </p>
 
                                 {/* Trust badges */}
                                 <div className="mt-12 flex items-center gap-6 justify-center lg:justify-start">
@@ -515,6 +518,9 @@ const LandingPage = () => {
                         >
                             Pulsuz Qeydiyyat
                         </motion.button>
+                        <p className="mt-6 text-xs text-white/30 font-medium leading-relaxed">
+                            Qeydiyyatdan keçməklə <Link to="/terms" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">İstifadə Qaydaları</Link> və <Link to="/privacy" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
+                        </p>
                     </div>
                 </div>
             </section>
