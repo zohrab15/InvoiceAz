@@ -63,21 +63,30 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            # Simple auto-numbering logic for MVP
-            last_invoice = Invoice.objects.filter(business=self.business).order_by('id').last()
-            if last_invoice:
-                try:
-                    last_num = int(last_invoice.invoice_number.split('-')[1])
-                    self.invoice_number = f"INV-{last_num + 1:04d}"
-                except (IndexError, ValueError):
-                    self.invoice_number = f"INV-{Invoice.objects.count() + 1001:04d}"
-            else:
-                self.invoice_number = "INV-1001"
-        
-        # Calculate totals from items if this is an update or if items exist
-        # Note: For new invoices, items are usually added after save, 
-        # so we might need a separate method to refresh totals.
-        super().save(*args, **kwargs)
+            from django.db import transaction
+            
+            with transaction.atomic():
+                # Lock the last invoice for the business to prevent race conditions
+                last_invoice = Invoice.objects.filter(business=self.business)\
+                    .select_for_update()\
+                    .order_by('id').last()
+                
+                if last_invoice:
+                    try:
+                        # Extract number from format like INV-0001
+                        current_num_str = last_invoice.invoice_number.split('-')[-1]
+                        last_num = int(current_num_str)
+                        self.invoice_number = f"INV-{last_num + 1:04d}"
+                    except (IndexError, ValueError):
+                        # Fallback count if parsing fails
+                        count = Invoice.objects.filter(business=self.business).count()
+                        self.invoice_number = f"INV-{count + 1001:04d}"
+                else:
+                    self.invoice_number = "INV-1001"
+                
+                super().save(*args, **kwargs)
+        else:
+            super().save(*args, **kwargs)
 
     def calculate_totals(self):
         items = self.items.all()

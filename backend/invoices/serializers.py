@@ -40,12 +40,14 @@ class InvoiceSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'business', 'invoice_number', 'share_token', 'pdf_file', 'created_at', 'updated_at', 'paid_amount', 'paid_at')
 
     def create(self, validated_data):
-        items_data = validated_data.pop('items', [])
-        invoice = Invoice.objects.create(**validated_data)
-        for item_data in items_data:
-            InvoiceItem.objects.create(invoice=invoice, **item_data)
-        invoice.calculate_totals()
-        return invoice
+        from django.db import transaction
+        with transaction.atomic():
+            items_data = validated_data.pop('items', [])
+            invoice = Invoice.objects.create(**validated_data)
+            for item_data in items_data:
+                InvoiceItem.objects.create(invoice=invoice, **item_data)
+            invoice.calculate_totals()
+            return invoice
 
     def update(self, instance, validated_data):
         # Prevent editing sent or paid invoices
@@ -53,18 +55,20 @@ class InvoiceSerializer(serializers.ModelSerializer):
         if instance.status in ['viewed', 'paid'] or (instance.status == 'sent' and instance.sent_at):
             raise serializers.ValidationError({"error": "Göndərilmiş və ya ödənilmiş fakturaları redaktə etmək olmaz. Zəhmət olmasa dublikat yaradın."})
 
-        items_data = validated_data.pop('items', [])
+        from django.db import transaction
+        with transaction.atomic():
+            items_data = validated_data.pop('items', [])
 
-        # Update instance fields
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        
-        # Update items
-        if items_data:
-            instance.items.all().delete()
-            for item_data in items_data:
-                InvoiceItem.objects.create(invoice=instance, **item_data)
-        
-        instance.calculate_totals()
-        return instance
+            # Update instance fields
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            
+            # Update items
+            if items_data:
+                instance.items.all().delete()
+                for item_data in items_data:
+                    InvoiceItem.objects.create(invoice=instance, **item_data)
+            
+            instance.calculate_totals()
+            return instance

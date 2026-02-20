@@ -108,6 +108,7 @@ else:
 # This is the URL the link in the email will point to
 # dj-rest-auth will append /id/token to it
 PASSWORD_RESET_CONFIRM_URL = 'https://invoiceaz.vercel.app/password-reset-confirm/' if not DEBUG else 'http://localhost:5173/password-reset-confirm/'
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -306,7 +307,7 @@ REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'invoice-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'invoice-refresh',
-    'JWT_AUTH_HTTPONLY': False, # Set to True for production
+    'JWT_AUTH_HTTPONLY': True, # Now True by default for security
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
 }

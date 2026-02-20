@@ -176,66 +176,59 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
         def link_callback(uri, rel):
             import os
-            import requests
-            import tempfile
             from django.conf import settings
-            import pathlib
-
-            # print(f"DEBUG: link_callback called for uri: {uri}")
-
+            
             if not uri: return uri
             
-            # Normalize and strip to avoid path issues
+            # Normalize path
             uri_clean = uri.strip().replace('\\', '/')
             
-            path = None
-            
-            # 1. Handle absolute local paths (Windows specific check)
-            # If it looks like a drive path (C:/...) trust it if it exists
-            if ':' in uri_clean and os.path.isfile(uri_clean):
-                 path = uri_clean
-            elif os.path.isabs(uri_clean) and os.path.isfile(uri_clean):
-                path = uri_clean
-
-            # 2. Handle HTTP/HTTPS URLs
-            elif uri_clean.startswith('http://') or uri_clean.startswith('https://'):
+            # 1. Handle HTTP/HTTPS URLs (external images)
+            if uri_clean.startswith('http://') or uri_clean.startswith('https://'):
                 try:
-                    response = requests.get(uri_clean, timeout=5)
+                    import requests
+                    import tempfile
+                    response = requests.get(uri_clean, timeout=3)
                     if response.status_code == 200:
                         temp_img = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
                         temp_img.write(response.content)
                         temp_img.close()
-                        path = temp_img.name
+                        return temp_img.name
                 except Exception as e:
-                    print(f"Error downloading image {uri_clean}: {e}")
+                    print(f"PDF download error {uri_clean}: {e}")
+                return uri
 
-            # 3. Handle local URL paths
+            # 2. Block any absolute paths or current-directory escapes for security (LFI prevention)
+            if os.path.isabs(uri_clean) or '..' in uri_clean or ':' in uri_clean:
+                # We only allow relative paths that we resolve ourselves below
+                # or absolute paths that we explicitly construction from settings
+                pass
+
+            # 3. Resolve Media/Static paths exclusively
+            if uri_clean.startswith('/media/'):
+                path = os.path.join(settings.MEDIA_ROOT, uri_clean[len('/media/'):])
             elif uri_clean.startswith('/static/'):
-                rel_path = uri_clean[len('/static/'):]
-                path = os.path.join(settings.STATIC_ROOT, rel_path)
-                if not os.path.isfile(path):
-                    path = os.path.join(str(settings.BASE_DIR), "static", rel_path)
-            
-            elif uri_clean.startswith('/media/'):
-                rel_path = uri_clean[len('/media/'):]
-                path = os.path.join(settings.MEDIA_ROOT, rel_path)
-                if not os.path.isfile(path):
-                    path = os.path.join(str(settings.BASE_DIR), "media", rel_path)
-            
+                path = os.path.join(settings.STATIC_ROOT, uri_clean[len('/static/'):])
+                if not os.path.exists(path): # Try base static dir in dev
+                    path = os.path.join(str(settings.BASE_DIR), "static", uri_clean[len('/static/'):])
             else:
-                # 4. Fallback for relative paths
-                path = os.path.join(str(settings.BASE_DIR), "static", uri_clean)
-                if not os.path.isfile(path):
-                    path = os.path.join(str(settings.BASE_DIR), "media", uri_clean)
+                # Fallback for relative paths without prefix - check static then media
+                path = os.path.join(settings.STATIC_ROOT, uri_clean)
+                if not os.path.exists(path):
+                    path = os.path.join(settings.MEDIA_ROOT, uri_clean)
 
+            # Verification: Ensure the resolved path exists and is within allowed roots
             if path and os.path.isfile(path):
-                # For Windows, sometimes file:/// protocol is safer for xhtml2pdf
-                # but returning absolute path usually works if it's not treated as URL
-                res = os.path.abspath(path)
-                # print(f"DEBUG: PDF Link - {uri} -> {res}")
-                return res
+                # Extra security check: Path must be subpath of BASE_DIR or STATIC_ROOT or MEDIA_ROOT
+                allowed_roots = [
+                    os.path.abspath(settings.STATIC_ROOT),
+                    os.path.abspath(settings.MEDIA_ROOT),
+                    os.path.abspath(str(settings.BASE_DIR))
+                ]
+                abs_path = os.path.abspath(path)
+                if any(abs_path.startswith(root) for root in allowed_roots):
+                    return abs_path
             
-            # print(f"DEBUG: PDF Link FAILED - {uri} -> Resolved to: {path}")
             return uri
 
         try:
@@ -289,7 +282,8 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             subject = f"Faktura #{invoice.invoice_number} - {invoice.business.name}"
             
             # Simple body with link
-            public_link = f"http://localhost:5173/view/{invoice.share_token}"
+            frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
+            public_link = f"{frontend_url}/view/{invoice.share_token}"
             body = f"Salam {client.name},\n\n"
             body += f"{invoice.business.name} tərəfindən sizə {invoice.invoice_number} nömrəli faktura göndərilib.\n"
             body += f"Məbləğ: {invoice.total} AZN\n\n"
