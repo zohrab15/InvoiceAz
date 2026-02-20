@@ -119,8 +119,7 @@
     <table class="w-full">
         <tr>
             <td class="valign-top" style="width: 60%;">
-                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 60pt; margin-bottom: 15pt;">{%
-                endif %}
+                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 60pt; margin-bottom: 15pt;">{% endif %}
                 <h2 class="uppercase font-bold text-black" style="margin: 0; font-size: 16pt;">{{ business.name }}</h2>
                 <div class="text-slate" style="font-size: 10pt; margin-top: 5pt;">
                     {{ business.address|default:"" }}<br>
@@ -153,8 +152,7 @@
         <div style="border-bottom: 3pt solid #000; padding: 5pt 30pt; display: inline-block;">
             <h1 class="uppercase font-bold" style="margin: 0; font-size: 24pt; letter-spacing: 3pt;">HESAB-FAKTURA</h1>
         </div>
-        <div class="text-slate font-bold uppercase" style="margin-top: 5pt; font-size: 9pt;">No: {{
-            invoice.invoice_number }}</div>
+        <div class="text-slate font-bold uppercase" style="margin-top: 5pt; font-size: 9pt;">No: {{ invoice.invoice_number }}</div>
     </div>
     <table class="w-full">
         <tr>
@@ -176,13 +174,11 @@
         <tr>
             <td class="valign-top">
                 {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 30pt;">{% endif %}
-                <div class="text-slate font-bold" style="font-size: 8pt; margin-top: 5pt;">Invoice #{{
-                    invoice.invoice_number }}</div>
+                <div class="text-slate font-bold" style="font-size: 8pt; margin-top: 5pt;">Invoice #{{ invoice.invoice_number }}</div>
             </td>
             <td class="valign-top text-right">
                 <div class="minimal-amount">{{ invoice.total|floatformat:2 }} ₼</div>
-                <div class="text-slate uppercase font-bold" style="font-size: 7pt;">{% if invoice.status == 'paid'
-                    %}ÖDƏNİLİB{% else %}ÖDƏNİŞ GÖZLƏNİLİR{% endif %}</div>
+                <div class="text-slate uppercase font-bold" style="font-size: 7pt;">{% if invoice.status == 'paid' %}ÖDƏNİLİB{% else %}ÖDƏNİŞ GÖZLƏNİLİR{% endif %}</div>
             </td>
         </tr>
     </table>
@@ -217,8 +213,7 @@
         <tr>
             <td class="valign-top" style="width: 60%;">
                 <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Qeyd</div>
-                <div class="text-slate italic" style="font-size: 9pt; width: 80%; line-height: 1.5;">{{
-                    invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</div>
+                <div class="text-slate italic" style="font-size: 9pt; width: 80%; line-height: 1.5;">{{ invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</div>
                 {% if qr_code_base64 %}
                 <div style="margin-top: 30pt; width: 250pt;">
                     <table class="qr-box">
@@ -228,8 +223,7 @@
                             </td>
                             <td class="valign-middle" style="padding-left: 15pt;">
                                 <div class="font-bold text-black" style="font-size: 11pt;">Sürətli Ödəniş</div>
-                                <div class="text-slate" style="font-size: 9pt; line-height: 1.4;">Mobil telefonla skan
-                                    edərək dərhal ödəniş edin.</div>
+                                <div class="text-slate" style="font-size: 9pt; line-height: 1.4;">Mobil telefonla skan edərək dərhal ödəniş edin.</div>
                             </td>
                         </tr>
                     </table>
@@ -249,8 +243,7 @@
                         </tr>
                         <tr>
                             <td class="font-bold text-black" style="padding-top: 15pt; font-size: 14pt;">YEKUN:</td>
-                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">{{
-                                invoice.total|floatformat:2 }} ₼</td>
+                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">{{ invoice.total|floatformat:2 }} ₼</td>
                         </tr>
                     </table>
                 </div>
