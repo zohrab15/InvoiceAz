@@ -9,10 +9,21 @@
             margin: 1cm;
         }
 
+        @font-face {
+            font-family: "Arial";
+            src: url("data:font/ttf;base64,{{ arial_font_base64 }}");
+        }
+
+        @font-face {
+            font-family: "Arial";
+            src: url("data:font/ttf;base64,{{ arial_bold_font_base64 }}");
+            font-weight: bold;
+        }
+
         body {
-            font-family: Arial, 'Arial', sans-serif;
+            font-family: "Arial", sans-serif;
             color: #1e293b;
-            line-height: 1.2;
+            line-height: 1.4;
             font-size: 10pt;
         }
 
@@ -108,13 +119,13 @@
     <table class="w-full">
         <tr>
             <td class="valign-top" style="width: 60%;">
-                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 50pt; margin-bottom: 10pt;">{%
+                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 60pt; margin-bottom: 15pt;">{%
                 endif %}
-                <h2 class="uppercase font-bold text-black" style="margin: 0;">{{ business.name }}</h2>
-                <div class="text-slate" style="font-size: 9pt;">
+                <h2 class="uppercase font-bold text-black" style="margin: 0; font-size: 16pt;">{{ business.name }}</h2>
+                <div class="text-slate" style="font-size: 10pt; margin-top: 5pt;">
                     {{ business.address|default:"" }}<br>
                     VÖEN: {{ business.voen|default:"" }}<br>
-                    {{ business.phone|default:"" }}
+                    Tel: {{ business.phone|default:"" }}
                 </div>
             </td>
             <td class="valign-top text-right" style="width: 40%;">
@@ -206,17 +217,18 @@
         <tr>
             <td class="valign-top" style="width: 60%;">
                 <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Qeyd</div>
-                <div class="text-slate italic" style="font-size: 9pt; width: 80%;">{{ invoice.notes|default:"Zəhmət
-                    olmasa vaxtında ödəniş edin." }}</div>
-                {% if qr_code_path %}
-                <div style="margin-top: 25pt; width: 180pt;">
+                <div class="text-slate italic" style="font-size: 9pt; width: 80%; line-height: 1.5;">{{
+                    invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</div>
+                {% if qr_code_base64 %}
+                <div style="margin-top: 30pt; width: 250pt;">
                     <table class="qr-box">
                         <tr>
-                            <td class="valign-middle" style="width: 55pt;"><img src="{{ qr_code_path }}"
-                                    style="width: 50pt; height: 50pt;"></td>
-                            <td class="valign-middle" style="padding-left: 8pt;">
-                                <div class="font-bold text-black" style="font-size: 9pt;">Sürətli Ödəniş</div>
-                                <div class="text-slate" style="font-size: 7pt; line-height: 1.2;">Mobil telefonla skan
+                            <td class="valign-middle" style="width: 100pt;"><img
+                                    src="data:image/png;base64,{{ qr_code_base64 }}" style="width: 90pt; height: 90pt;">
+                            </td>
+                            <td class="valign-middle" style="padding-left: 15pt;">
+                                <div class="font-bold text-black" style="font-size: 11pt;">Sürətli Ödəniş</div>
+                                <div class="text-slate" style="font-size: 9pt; line-height: 1.4;">Mobil telefonla skan
                                     edərək dərhal ödəniş edin.</div>
                             </td>
                         </tr>

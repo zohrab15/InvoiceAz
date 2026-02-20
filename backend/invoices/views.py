@@ -123,7 +123,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         qr_code_path = None
         try:
             pay_url = f"https://invoiceaz.vercel.app/public/pay/{invoice.share_token}"
-            qr = qrcode.QRCode(version=1, box_size=10, border=4)
+            qr = qrcode.QRCode(version=1, box_size=15, border=4)
             qr.add_data(pay_url)
             qr.make(fit=True)
             img = qr.make_image(fill_color="black", back_color="white")
@@ -134,6 +134,25 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         except Exception as e:
             print(f"QR Code generation error: {e}")
 
+        # Prepare font paths for template
+        static_dir = str(settings.BASE_DIR / "static")
+        fonts_dir = os.path.join(static_dir, "fonts")
+        
+        # Read and encode fonts to base64 to avoid path issues
+        import base64
+        
+        def get_font_base64(font_name):
+            font_path = os.path.join(fonts_dir, font_name)
+            try:
+                with open(font_path, "rb") as f:
+                    return base64.b64encode(f.read()).decode('utf-8')
+            except Exception as e:
+                print(f"Error reading font {font_name}: {e}")
+                return ""
+
+        arial_font_base64 = get_font_base64("arial.ttf")
+        arial_bold_font_base64 = get_font_base64("arialbd.ttf")
+
         context = {
             'invoice': invoice,
             'business': invoice.business,
@@ -141,33 +160,28 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'items': invoice.items.all(),
             'qr_code_path': qr_code_path,
             'theme': invoice.invoice_theme or 'modern',
+            'arial_font_base64': arial_font_base64,
+            'arial_bold_font_base64': arial_bold_font_base64,
         }
         
         html_string = render_to_string('invoices/invoice_pdf.html', context)
         
         # Font registration
-        try:
-            from reportlab.pdfbase import pdfmetrics
-            from reportlab.pdfbase.ttfonts import TTFont
-            from reportlab.pdfbase.pdfmetrics import registerFontFamily
-            
-            # Use absolute strings for paths
-            static_dir = str(settings.BASE_DIR / "static")
-            fonts_dir = os.path.join(static_dir, "fonts")
-            
-            # Register Arial (Good for Az characters)
-            pdfmetrics.registerFont(TTFont('Arial', os.path.join(fonts_dir, "arial.ttf")))
-            pdfmetrics.registerFont(TTFont('Arial-Bold', os.path.join(fonts_dir, "arialbd.ttf")))
-            registerFontFamily('Arial', normal='Arial', bold='Arial-Bold')
-            
-        except Exception as e:
-            print(f"Font registration error: {e}")
+        # Font registration with reportlab is NOT needed for xhtml2pdf when using @font-face in CSS
+        # We perform it only if strictly necessary for other reportlab features, but for xhtml2pdf
+        # the CSS @font-face with base64 should be sufficient.
+        # However, to be safe and avoid "Can't open file" errors from reportlab trying to load
+        # fonts from temp paths if xhtml2pdf falls back, we skip explicit file registration here
+        # and rely 100% on the HTML/CSS embedding.
 
         def link_callback(uri, rel):
             import os
             import requests
             import tempfile
             from django.conf import settings
+            import pathlib
+
+            # print(f"DEBUG: link_callback called for uri: {uri}")
 
             if not uri: return uri
             
@@ -176,8 +190,11 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             
             path = None
             
-            # 1. Handle absolute local paths
-            if os.path.isabs(uri_clean) and os.path.isfile(uri_clean):
+            # 1. Handle absolute local paths (Windows specific check)
+            # If it looks like a drive path (C:/...) trust it if it exists
+            if ':' in uri_clean and os.path.isfile(uri_clean):
+                 path = uri_clean
+            elif os.path.isabs(uri_clean) and os.path.isfile(uri_clean):
                 path = uri_clean
 
             # 2. Handle HTTP/HTTPS URLs
@@ -212,11 +229,13 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     path = os.path.join(str(settings.BASE_DIR), "media", uri_clean)
 
             if path and os.path.isfile(path):
+                # For Windows, sometimes file:/// protocol is safer for xhtml2pdf
+                # but returning absolute path usually works if it's not treated as URL
                 res = os.path.abspath(path)
                 # print(f"DEBUG: PDF Link - {uri} -> {res}")
                 return res
             
-            # print(f"DEBUG: PDF Link FAILED - {uri}")
+            # print(f"DEBUG: PDF Link FAILED - {uri} -> Resolved to: {path}")
             return uri
 
         try:
@@ -229,12 +248,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 link_callback=link_callback
             )
             
-            # Clean up QR code file
-            if qr_code_path and os.path.exists(qr_code_path):
-                try:
-                    os.unlink(qr_code_path)
-                except:
-                    pass
+            # No need to clean up QR code file if using base64
             
             if pisa_status.err:
                 print(f"PISA ERROR: {pisa_status.err}")

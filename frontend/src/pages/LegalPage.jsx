@@ -274,123 +274,125 @@ const LegalPage = () => {
     const content = isPrivacy ? privacyContent : termsContent;
 
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="pb-24 max-w-4xl mx-auto px-4"
-        >
-            {/* Header */}
-            <div className="py-12 flex flex-col items-center text-center">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl transition-colors self-start"
-                    style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}
-                >
-                    <ChevronLeft size={16} />
-                    <span>Geri</span>
-                </button>
+        <div className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
+            <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="pb-24 max-w-4xl mx-auto px-4"
+            >
+                {/* Header */}
+                <div className="py-12 flex flex-col items-center text-center">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl transition-colors self-start"
+                        style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}
+                    >
+                        <ChevronLeft size={16} />
+                        <span>Geri</span>
+                    </button>
 
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl"
-                    style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', color: 'white' }}>
-                    {content.icon}
-                </div>
-                <h1 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                    {content.title}
-                </h1>
-                <p className="max-w-xl text-sm sm:text-base font-medium" style={{ color: 'var(--color-text-muted)' }}>
-                    {content.subtitle}
-                </p>
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl"
+                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', color: 'white' }}>
+                        {content.icon}
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                        {content.title}
+                    </h1>
+                    <p className="max-w-xl text-sm sm:text-base font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                        {content.subtitle}
+                    </p>
 
-                {/* Table of Contents */}
-                <div className="mt-8 w-full max-w-2xl p-6 rounded-2xl text-left"
-                    style={{ backgroundColor: 'var(--color-badge-bg)', border: '1px solid var(--color-card-border)' }}>
-                    <h3 className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>
-                        Mündəricat
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {content.sections.map((section, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => {
-                                    document.getElementById(`section-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }}
-                                className="flex items-center gap-2 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-colors hover:opacity-80 text-left"
-                                style={{ color: 'var(--color-text-secondary)' }}
-                            >
-                                <span style={{ color: 'var(--color-brand)' }}>{section.icon}</span>
-                                <span>{section.title}</span>
-                            </button>
-                        ))}
+                    {/* Table of Contents */}
+                    <div className="mt-8 w-full max-w-2xl p-6 rounded-2xl text-left"
+                        style={{ backgroundColor: 'var(--color-badge-bg)', border: '1px solid var(--color-card-border)' }}>
+                        <h3 className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                            Mündəricat
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {content.sections.map((section, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => {
+                                        document.getElementById(`section-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }}
+                                    className="flex items-center gap-2 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-colors hover:opacity-80 text-left"
+                                    style={{ color: 'var(--color-text-secondary)' }}
+                                >
+                                    <span style={{ color: 'var(--color-brand)' }}>{section.icon}</span>
+                                    <span>{section.title}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Content Sections */}
-            <div className="space-y-4">
-                {content.sections.map((section, idx) => (
-                    <motion.div
-                        key={idx}
-                        id={`section-${idx}`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.03 }}
-                        className="p-6 sm:p-8 rounded-3xl scroll-mt-8"
-                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
-                    >
-                        <h2 className="text-lg font-black mb-4 flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                                style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-brand)' }}>
-                                {section.icon}
-                            </div>
-                            {section.title}
-                        </h2>
-                        <p className="text-sm sm:text-base leading-relaxed text-left mb-4" style={{ color: 'var(--color-text-secondary)' }}>
-                            {section.content}
+                {/* Content Sections */}
+                <div className="space-y-4">
+                    {content.sections.map((section, idx) => (
+                        <motion.div
+                            key={idx}
+                            id={`section-${idx}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.03 }}
+                            className="p-6 sm:p-8 rounded-3xl scroll-mt-8"
+                            style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                        >
+                            <h2 className="text-lg font-black mb-4 flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                    style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-brand)' }}>
+                                    {section.icon}
+                                </div>
+                                {section.title}
+                            </h2>
+                            <p className="text-sm sm:text-base leading-relaxed text-left mb-4" style={{ color: 'var(--color-text-secondary)' }}>
+                                {section.content}
+                            </p>
+                            {section.subsections && section.subsections.length > 0 && (
+                                <div className="space-y-2 pl-4" style={{ borderLeft: '2px solid var(--color-brand)', borderRadius: '0' }}>
+                                    {section.subsections.map((sub, subIdx) => (
+                                        <p key={subIdx} className="text-xs sm:text-sm leading-relaxed pl-4" style={{ color: 'var(--color-text-secondary)' }}>
+                                            {sub}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                        </motion.div>
+                    ))}
+                </div>
+
+                {/* Footer */}
+                <div className="mt-12 p-8 rounded-3xl text-center"
+                    style={{ backgroundColor: 'var(--color-badge-bg)', border: '1px dashed var(--color-card-border)' }}>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                        <Clock size={14} style={{ color: 'var(--color-text-muted)' }} />
+                        <p className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
+                            Son yenilənmə: {content.lastUpdated}
                         </p>
-                        {section.subsections && section.subsections.length > 0 && (
-                            <div className="space-y-2 pl-4" style={{ borderLeft: '2px solid var(--color-brand)', borderRadius: '0' }}>
-                                {section.subsections.map((sub, subIdx) => (
-                                    <p key={subIdx} className="text-xs sm:text-sm leading-relaxed pl-4" style={{ color: 'var(--color-text-secondary)' }}>
-                                        {sub}
-                                    </p>
-                                ))}
-                            </div>
-                        )}
-                    </motion.div>
-                ))}
-            </div>
-
-            {/* Footer */}
-            <div className="mt-12 p-8 rounded-3xl text-center"
-                style={{ backgroundColor: 'var(--color-badge-bg)', border: '1px dashed var(--color-card-border)' }}>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                    <Clock size={14} style={{ color: 'var(--color-text-muted)' }} />
-                    <p className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
-                        Son yenilənmə: {content.lastUpdated}
+                    </div>
+                    <p className="text-xs mt-2 max-w-md mx-auto" style={{ color: 'var(--color-text-muted)' }}>
+                        Bu sənəd hüquqi məsləhət deyil. Hüquqi suallarınız üçün mütəxəssislə məsləhətləşməniz tövsiyə olunur.
                     </p>
+                    <div className="mt-6 flex justify-center gap-4">
+                        <button
+                            onClick={() => navigate(isPrivacy ? '/terms' : '/privacy')}
+                            className="text-xs font-bold hover:underline"
+                            style={{ color: 'var(--color-brand)' }}
+                        >
+                            {isPrivacy ? "İstifadə Qaydalarına bax" : "Məxfilik Siyasətinə bax"}
+                        </button>
+                        <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>•</span>
+                        <button
+                            onClick={() => navigate('/help')}
+                            className="text-xs font-bold hover:underline"
+                            style={{ color: 'var(--color-brand)' }}
+                        >
+                            Dəstək mərkəzi
+                        </button>
+                    </div>
                 </div>
-                <p className="text-xs mt-2 max-w-md mx-auto" style={{ color: 'var(--color-text-muted)' }}>
-                    Bu sənəd hüquqi məsləhət deyil. Hüquqi suallarınız üçün mütəxəssislə məsləhətləşməniz tövsiyə olunur.
-                </p>
-                <div className="mt-6 flex justify-center gap-4">
-                    <button
-                        onClick={() => navigate(isPrivacy ? '/terms' : '/privacy')}
-                        className="text-xs font-bold hover:underline"
-                        style={{ color: 'var(--color-brand)' }}
-                    >
-                        {isPrivacy ? "İstifadə Qaydalarına bax" : "Məxfilik Siyasətinə bax"}
-                    </button>
-                    <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>•</span>
-                    <button
-                        onClick={() => navigate('/help')}
-                        className="text-xs font-bold hover:underline"
-                        style={{ color: 'var(--color-brand)' }}
-                    >
-                        Dəstək mərkəzi
-                    </button>
-                </div>
-            </div>
-        </motion.div>
+            </motion.div>
+        </div>
     );
 };
 

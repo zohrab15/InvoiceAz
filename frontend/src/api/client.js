@@ -3,7 +3,7 @@ import { API_URL } from '../config';
 
 const client = axios.create({
     baseURL: `${API_URL}/api`,
-    timeout: 15000, // 15 seconds timeout
+    timeout: 60000, // 60 seconds timeout - better for Render cold starts
 });
 
 client.interceptors.request.use((config) => {

@@ -93,7 +93,7 @@ const TopProductsChart = ({ hideLink = false }) => {
             </div>
 
             <div className="flex-1 w-full h-full relative" style={{ minHeight: 0 }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
                     <BarChart
                         data={chartData}
                         layout="vertical"

@@ -79,13 +79,26 @@ function App() {
   const { token, user, setAuth } = useAuthStore();
 
   React.useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfile = async (retries = 2) => {
       if (token && !user) {
         try {
+          // Pre-warm ping if it's the first attempt and we suspect service might be down
+          if (retries === 2) {
+            client.get('/').catch(() => { }); // Fire and forget health check
+          }
+
           const res = await client.get('/auth/user/');
           setAuth(res.data, token);
         } catch (err) {
           console.error('Profile fetch failed:', err);
+
+          // Retry on timeout or network error
+          if (retries > 0 && (err.code === 'ECONNABORTED' || !err.response)) {
+            console.log(`Retrying profile fetch... (${retries} attempts left)`);
+            setTimeout(() => fetchProfile(retries - 1), 2000);
+            return;
+          }
+
           // If token is invalid, clear it
           if (err.response?.status === 401) {
             useAuthStore.getState().logout();
