@@ -41,44 +41,22 @@ def get_tokens_for_user(user):
 def google_auth_bridge(request):
     """
     Bridge view to convert session-based social login to JWT for frontend.
-    Returns a small HTML page that securely stores tokens on the client side
-    and then redirects to the dashboard, avoiding token exposure in URL query parameters.
+    Redirects back to frontend with tokens in URL. 
+    Frontend will handle storing these and clearing the URL.
     """
     user = request.user
     tokens = get_tokens_for_user(user)
     
-    # Base frontend URL - Dynamic for production
     default_frontend = 'http://localhost:5173'
     frontend_base = os.environ.get('FRONTEND_URL', default_frontend if settings.DEBUG else 'https://invoiceaz.vercel.app').rstrip('/')
     
-    # Render a small HTML snippet to handle tokens securely
-    from django.http import HttpResponse
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Giriş tamamlanır...</title>
-        <script>
-            // Store tokens securely in localStorage
-            localStorage.setItem('invoice_token', '{tokens['access']}');
-            localStorage.setItem('invoice_refresh', '{tokens['refresh']}');
-            
-            // Redirect to the frontend dashboard
-            window.location.href = "{frontend_base}/dashboard";
-        </script>
-    </head>
-    <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc;">
-        <div style="text-align: center;">
-            <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto 20px;"></div>
-            <p style="color: #64748b;">Giriş uğurludur, yönləndirilirsiniz...</p>
-        </div>
-        <style>
-            @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
-        </style>
-    </body>
-    </html>
-    """
-    return HttpResponse(html_content)
+    # Use URL query parameters as localStorage is not shared across domains
+    params = urlencode({
+        'access': tokens['access'],
+        'refresh': tokens['refresh']
+    })
+    
+    return HttpResponseRedirect(f"{frontend_base}/auth/callback?{params}")
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
