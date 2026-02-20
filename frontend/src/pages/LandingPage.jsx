@@ -137,7 +137,7 @@ const LandingPage = () => {
                                     </motion.button>
                                 </div>
                                 <p className="mt-4 text-[10px] text-white/30 text-center lg:text-left font-medium leading-relaxed">
-                                    Qeydiyyatdan keçməklə <Link to="/terms" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">İstifadə Qaydaları</Link> və <Link to="/privacy" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
+                                    Qeydiyyatdan keçməklə <Link to="/terms" state={{ fromLanding: true }} className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">İstifadə Qaydaları</Link> və <Link to="/privacy" state={{ fromLanding: true }} className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
                                 </p>
 
                                 {/* Trust badges */}
@@ -519,7 +519,7 @@ const LandingPage = () => {
                             Pulsuz Qeydiyyat
                         </motion.button>
                         <p className="mt-6 text-xs text-white/30 font-medium leading-relaxed">
-                            Qeydiyyatdan keçməklə <Link to="/terms" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">İstifadə Qaydaları</Link> və <Link to="/privacy" className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
+                            Qeydiyyatdan keçməklə <Link to="/terms" state={{ fromLanding: true }} className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">İstifadə Qaydaları</Link> və <Link to="/privacy" state={{ fromLanding: true }} className="text-white/40 underline underline-offset-2 hover:text-blue-400 transition-colors">Məxfilik Siyasəti</Link> ilə razılaşırsınız.
                         </p>
                     </div>
                 </div>
@@ -549,12 +549,12 @@ const LandingPage = () => {
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Şirkət</h5>
                             <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Haqqımızda</a>
                             <a href="#reviews" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Rəylər</a>
-                            <Link to="/help" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Dəstək Mərkəzi</Link>
+                            <Link to="/help" state={{ fromLanding: true }} className="text-sm font-medium text-white/30 hover:text-white transition-colors">Dəstək Mərkəzi</Link>
                         </div>
                         <div className="flex flex-col gap-3">
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Hüquqi</h5>
-                            <Link to="/terms" className="text-sm font-medium text-white/30 hover:text-white transition-colors">İstifadə Qaydaları</Link>
-                            <Link to="/privacy" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Məxfilik Siyasəti</Link>
+                            <Link to="/terms" state={{ fromLanding: true }} className="text-sm font-medium text-white/30 hover:text-white transition-colors">İstifadə Qaydaları</Link>
+                            <Link to="/privacy" state={{ fromLanding: true }} className="text-sm font-medium text-white/30 hover:text-white transition-colors">Məxfilik Siyasəti</Link>
                         </div>
                     </div>
                 </div>

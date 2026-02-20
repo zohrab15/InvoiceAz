@@ -2,11 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, FileText, Lock, ChevronLeft, AlertTriangle, Eye, Database, Globe, UserCheck, CreditCard, Scale, Clock, Mail, Server, Trash2, Download, Bell } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
 
 const LegalPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const isPrivacy = location.pathname === '/privacy';
+    const { token } = useAuthStore();
+    const forceDark = !token || location.state?.fromLanding;
 
     const termsContent = {
         title: "İstifadə Qaydaları",
@@ -274,7 +277,7 @@ const LegalPage = () => {
     const content = isPrivacy ? privacyContent : termsContent;
 
     return (
-        <div className="theme-dark min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
+        <div className={`${forceDark ? 'theme-dark' : ''} min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]`}>
             <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}

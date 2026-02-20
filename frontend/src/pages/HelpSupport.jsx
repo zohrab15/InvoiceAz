@@ -20,6 +20,7 @@ import {
     Download
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
 
 const FAQItem = ({ question, answer }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -67,6 +68,8 @@ const HelpSupport = () => {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('all');
+    const { token } = useAuthStore();
+    const forceDark = !token || location.state?.fromLanding;
 
     const categories = [
         { id: 'all', label: 'Hamısı', icon: <LifeBuoy size={18} /> },
@@ -152,7 +155,7 @@ const HelpSupport = () => {
     ];
 
     return (
-        <div className="theme-dark min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
+        <div className={`${forceDark ? 'theme-dark' : ''} min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]`}>
             <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
