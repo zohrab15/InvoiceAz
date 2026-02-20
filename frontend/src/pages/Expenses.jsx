@@ -347,7 +347,7 @@ const Expenses = () => {
                     <div className="bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm">
                         <h3 className="font-black text-[var(--color-text-primary)] text-sm tracking-widest uppercase mb-8 border-b border-[var(--color-card-border)] pb-4">Kateqoriya üzrə</h3>
                         <div className="h-[400px]">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
                                 <BarChart
                                     data={chartData}
                                     layout="vertical"
