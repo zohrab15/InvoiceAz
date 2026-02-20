@@ -151,7 +151,7 @@ const TaxReports = () => {
                         <div className="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Hesablanmış</div>
                     </div>
                     <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
                             <AreaChart data={taxData.vat.monthly}>
                                 <defs>
                                     <linearGradient id="colorVat" x1="0" y1="0" x2="0" y2="1">

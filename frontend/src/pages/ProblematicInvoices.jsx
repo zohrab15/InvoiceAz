@@ -146,7 +146,7 @@ const ProblematicInvoices = () => {
                         Gecikmə Müddəti (Aging)
                     </h3>
                     <div className="h-72">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
                             <BarChart data={aging} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
                                 <XAxis dataKey="range" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} dy={10} />

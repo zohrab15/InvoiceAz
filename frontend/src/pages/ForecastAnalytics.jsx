@@ -171,7 +171,7 @@ const ForecastAnalytics = () => {
                     </div>
                 </div>
                 <div className="h-[300px] sm:h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
                         <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorHistorical" x1="0" y1="0" x2="0" y2="1">
@@ -212,7 +212,7 @@ const ForecastAnalytics = () => {
                         Pul Axını Proqnozu
                     </h3>
                     <div className="h-[250px] sm:h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
                             <BarChart data={cashflow}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
                                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} />
