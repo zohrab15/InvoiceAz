@@ -37,6 +37,15 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         picture_url = sociallogin.account.extra_data.get('picture')
         
         if not user.avatar and picture_url:
+            # Bug 13 SSRF FIX: Only allow trusted domains
+            from urllib.parse import urlparse
+            trusted_domains = ['lh3.googleusercontent.com', 'googleusercontent.com', 'graph.facebook.com']
+            parsed_url = urlparse(picture_url)
+            
+            if parsed_url.netloc not in trusted_domains and not any(parsed_url.netloc.endswith('.' + d) for d in trusted_domains):
+                 print(f"Skipping social avatar for {user.email}: Untrusted domain {parsed_url.netloc}")
+                 return user
+
             try:
                 response = requests.get(picture_url, timeout=10)
                 if response.status_code == 200:

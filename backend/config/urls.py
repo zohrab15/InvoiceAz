@@ -36,7 +36,6 @@ def health_check(request):
 urlpatterns = [
     path('', health_check, name='health_check'),
     path('api/', health_check, name='api_health_check'),
-    path('debug-static/', debug_static, name='debug_static'),
     path('admin/', admin.site.urls),
     # Auth
     path('api/auth/', include('dj_rest_auth.urls')),
@@ -54,4 +53,5 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
+    urlpatterns += [path('debug-static/', debug_static, name='debug_static')]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

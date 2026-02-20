@@ -8,21 +8,27 @@ from datetime import timedelta
 from .models import Invoice, Payment
 from users.models import Business
 
-class PaymentAnalyticsView(APIView):
-    def get(self, request):
+from rest_framework.exceptions import PermissionDenied
+
+class AnalyticsBaseView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_business(self, request):
         business_id = request.query_params.get('business_id')
         if not business_id:
-            # Fallback to user's active business if not provided (though frontend usually sends it)
-            # For now, let's assume the user must provide it or we pick the first one
-            if request.user.businesses.exists():
-                business = request.user.businesses.first()
-            else:
-                return Response({"error": "Business not found"}, status=400)
+            # Fallback to user's first business
+            business = request.user.businesses.first()
         else:
-            business = Business.objects.filter(id=business_id).first()
-
+            # IDOR FIX: Strictly filter by requesting user's businesses
+            business = request.user.businesses.filter(id=business_id).first()
+            
         if not business:
-             return Response({"error": "Business not found"}, status=404)
+             raise PermissionDenied("Biznes profili tapılmadı və ya icazəniz yoxdur.")
+        return business
+
+class PaymentAnalyticsView(AnalyticsBaseView):
+    def get(self, request):
+        business = self.get_business(request)
 
         # Base QS
         payments = Payment.objects.filter(invoice__business=business)
@@ -168,19 +174,9 @@ class PaymentAnalyticsView(APIView):
 
         return Response(response_data)
 
-class ProblematicInvoicesView(APIView):
+class ProblematicInvoicesView(AnalyticsBaseView):
     def get(self, request):
-        business_id = request.query_params.get('business_id')
-        if not business_id:
-            if request.user.businesses.exists():
-                business = request.user.businesses.first()
-            else:
-                return Response({"error": "Business not found"}, status=400)
-        else:
-            business = Business.objects.filter(id=business_id).first()
-
-        if not business:
-             return Response({"error": "Business not found"}, status=404)
+        business = self.get_business(request)
 
         today = timezone.now().date()
         
@@ -262,19 +258,9 @@ class ProblematicInvoicesView(APIView):
 
         return Response(response_data)
 
-class ForecastAnalyticsView(APIView):
+class ForecastAnalyticsView(AnalyticsBaseView):
     def get(self, request):
-        business_id = request.query_params.get('business_id')
-        if not business_id:
-            if request.user.businesses.exists():
-                business = request.user.businesses.first()
-            else:
-                return Response({"error": "Business not found"}, status=400)
-        else:
-            business = Business.objects.filter(id=business_id).first()
-
-        if not business:
-             return Response({"error": "Business not found"}, status=404)
+        business = self.get_business(request)
 
         today = timezone.now().date()
         current_month_start = today.replace(day=1)
@@ -479,21 +465,16 @@ class ForecastAnalyticsView(APIView):
 
         return Response(response_data)
 
-class TaxAnalyticsView(APIView):
+class TaxAnalyticsView(AnalyticsBaseView):
     def get(self, request):
-        business_id = request.query_params.get('business_id')
-        if not business_id:
-            if request.user.businesses.exists():
-                business = request.user.businesses.first()
-            else:
-                return Response({"error": "Business not found"}, status=400)
-        else:
-            business = Business.objects.filter(id=business_id).first()
+        business = self.get_business(request)
 
-        if not business:
-             return Response({"error": "Business not found"}, status=404)
-
-        year = int(request.query_params.get('year', timezone.now().year))
+        # Fix Bug 12: Year validation
+        try:
+            year_str = request.query_params.get('year')
+            year = int(year_str) if year_str else timezone.now().year
+        except (ValueError, TypeError):
+            year = timezone.now().year
         
         # Base Querysets for the specific year
         invoices = Invoice.objects.filter(business=business, invoice_date__year=year)
