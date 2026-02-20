@@ -274,7 +274,7 @@ const LegalPage = () => {
     const content = isPrivacy ? privacyContent : termsContent;
 
     return (
-        <div className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
+        <div className="theme-dark min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
             <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
