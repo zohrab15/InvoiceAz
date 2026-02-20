@@ -19,8 +19,11 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         serializer = ExcelUploadSerializer(data=request.data)
         if serializer.is_valid():
             file = serializer.validated_data['file']
-            business_id = request.data.get('business')
-            business = get_object_or_404(Business, id=business_id, user=request.user)
+            
+            # Use mixin helper for business to ensure consistency and isolation
+            business = self.get_active_business()
+            if not business:
+                return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
                 wb = openpyxl.load_workbook(file)
@@ -49,7 +52,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     )
                     products_created += 1
                 
-                return Response({"detail": f"{products_created} məhsul uğurla yükləndi."}, status=status.STATUS_201_CREATED)
+                return Response({"detail": f"{products_created} məhsul uğurla yükləndi."}, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"detail": f"Excel oxunarkən xəta baş verdi: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
