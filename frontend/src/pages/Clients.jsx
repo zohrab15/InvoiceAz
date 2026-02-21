@@ -221,14 +221,16 @@ const Clients = () => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-xs uppercase font-semibold">
                             <tr>
-                                <th className="px-6 py-4 w-10">
-                                    <input
-                                        type="checkbox"
-                                        className="rounded border-[var(--color-card-border)] bg-[var(--color-card-bg)] checked:bg-blue-600 transition-all cursor-pointer"
-                                        checked={filteredClients?.length > 0 && selectedIds.length === filteredClients?.length}
-                                        onChange={toggleSelectAll}
-                                    />
-                                </th>
+                                {isOwnerOrManager && (
+                                    <th className="px-6 py-4 w-10">
+                                        <input
+                                            type="checkbox"
+                                            className="rounded border-[var(--color-card-border)] bg-[var(--color-card-bg)] checked:bg-blue-600 transition-all cursor-pointer"
+                                            checked={filteredClients?.length > 0 && selectedIds.length === filteredClients?.length}
+                                            onChange={toggleSelectAll}
+                                        />
+                                    </th>
+                                )}
                                 <th className="px-6 py-4">Müştəri</th>
                                 <th className="px-6 py-4">Əlaqə</th>
                                 <th className="px-6 py-4">Status</th>
@@ -248,14 +250,16 @@ const Clients = () => {
                                     key={client.id}
                                     className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(client.id) ? 'bg-blue-50/50' : ''}`}
                                 >
-                                    <td className="px-6 py-4">
-                                        <input
-                                            type="checkbox"
-                                            className="rounded border-[var(--color-card-border)] bg-[var(--color-card-bg)] checked:bg-blue-600 transition-all cursor-pointer"
-                                            checked={selectedIds.includes(client.id)}
-                                            onChange={() => toggleSelect(client.id)}
-                                        />
-                                    </td>
+                                    {isOwnerOrManager && (
+                                        <td className="px-6 py-4">
+                                            <input
+                                                type="checkbox"
+                                                className="rounded border-[var(--color-card-border)] bg-[var(--color-card-bg)] checked:bg-blue-600 transition-all cursor-pointer"
+                                                checked={selectedIds.includes(client.id)}
+                                                onChange={() => toggleSelect(client.id)}
+                                            />
+                                        </td>
+                                    )}
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-3">
                                             <div className="w-10 h-10 bg-blue-500/10 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
@@ -266,7 +270,7 @@ const Clients = () => {
                                                 <div className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
                                                     <Building size={10} className="text-[var(--color-text-muted)]" /> {client.voen ? `VÖEN: ${client.voen}` : 'VÖEN yoxdur'}
                                                 </div>
-                                                {client.assigned_to && (
+                                                {client.assigned_to && isOwnerOrManager && (
                                                     <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded max-w-max mt-1 border border-blue-100 uppercase tracking-tight">
                                                         Təhkim: {teamMembers?.find(m => m.user === client.assigned_to)?.user_name || 'Satış Təmsilçisi'}
                                                     </div>
