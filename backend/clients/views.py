@@ -39,6 +39,10 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         if not client_ids:
             return Response({"detail": "Müştəri seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
             
+        # Prepare assigned_to_id (handle empty string as None for unassignment)
+        if not assigned_to_id:
+            assigned_to_id = None
+            
         # Ensure we only update clients belonging to the active business
         business = self.get_active_business()
         clients = Client.objects.filter(id__in=client_ids, business=business)
