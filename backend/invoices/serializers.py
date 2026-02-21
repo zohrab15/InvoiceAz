@@ -24,6 +24,19 @@ class PaymentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id',)
 
+    def validate(self, data):
+        request = self.context.get('request')
+        if request and 'invoice' in data:
+            invoice = data['invoice']
+            business = getattr(request, '_active_business', None)
+            
+            # Security: Prevent adding payments to invoices from other businesses (IDOR)
+            if business and invoice.business_id != business.id:
+                from rest_framework import serializers
+                raise serializers.ValidationError({"invoice": "Bu faktura seçilmiş biznesə aid deyil."})
+                
+        return data
+
 class InvoiceSerializer(serializers.ModelSerializer):
     items = InvoiceItemSerializer(many=True, required=False)
     payments = PaymentSerializer(many=True, read_only=True)

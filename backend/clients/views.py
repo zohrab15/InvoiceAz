@@ -57,6 +57,15 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         # Prepare assigned_to_id (handle empty string as None for unassignment)
         if not assigned_to_id:
             assigned_to_id = None
+        else:
+            # Security: Ensure the ID belongs to someone in this business's team
+            from users.models import TeamMember
+            business = self.get_active_business()
+            if business:
+                is_valid_member = TeamMember.objects.filter(owner=business.user, user_id=assigned_to_id).exists()
+                # Also allow assigning to the business owner themselves
+                if not is_valid_member and str(business.user_id) != str(assigned_to_id):
+                    return Response({"detail": "Təhkim edilən istifadəçi komandanıza aid deyil."}, status=status.HTTP_400_BAD_REQUEST)
             
         # Ensure we only update clients belonging to the active business
         business = self.get_active_business()
