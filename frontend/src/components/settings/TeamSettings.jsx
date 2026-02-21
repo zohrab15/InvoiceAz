@@ -97,33 +97,6 @@ const TeamSettings = () => {
         );
     };
 
-    if (user?.membership?.toLowerCase() !== 'premium') {
-        return (
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="p-8 rounded-3xl space-y-6 text-center"
-                style={{
-                    backgroundColor: 'var(--color-card-bg)',
-                    border: '1px solid var(--color-card-border)',
-                }}
-            >
-                <div className="mx-auto w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mb-4">
-                    <AlertCircle size={32} />
-                </div>
-                <h3 className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>Premium Xüsusiyyət</h3>
-                <p style={{ color: 'var(--color-text-secondary)' }} className="max-w-md mx-auto">
-                    Komanda idarəetməsi və Satış Təmsilçilərinin GPS izlənməsi yalnız Premium planda mövcuddur.
-                </p>
-                <button
-                    className="px-6 py-3 rounded-xl bg-[var(--color-brand)] text-white font-bold disabled:opacity-50 mt-4 cursor-not-allowed"
-                    disabled
-                >
-                    Planı Yüksəlt (Tezliklə)
-                </button>
-            </motion.div>
-        );
-    }
 
     return (
         <motion.div
