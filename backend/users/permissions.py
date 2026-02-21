@@ -52,8 +52,11 @@ class IsRoleAuthorized(permissions.BasePermission):
             return True
             
         if role == 'SALES_REP':
-            allowed_models = ['Client', 'Invoice']
+            allowed_models = ['Client', 'Invoice', 'Product']
             if model_name not in allowed_models:
+                return False
+            # Read-only for Products
+            if model_name == 'Product' and request.method not in permissions.SAFE_METHODS:
                 return False
             return True
             
