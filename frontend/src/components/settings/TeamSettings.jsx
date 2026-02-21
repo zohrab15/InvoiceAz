@@ -85,7 +85,7 @@ const TeamSettings = () => {
         );
     };
 
-    if (user?.membership !== 'Premium') {
+    if (user?.membership?.toLowerCase() !== 'premium') {
         return (
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
