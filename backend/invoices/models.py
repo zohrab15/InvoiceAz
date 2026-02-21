@@ -111,10 +111,33 @@ class Invoice(models.Model):
         self.paid_amount = sum(p.amount for p in payments)
         
         if self.paid_amount >= self.total and self.total > 0:
+            previous_status = self.status
             self.status = 'paid'
             if not self.paid_at:
                 from django.utils import timezone
                 self.paid_at = timezone.now()
+            
+            if previous_status != 'paid':
+                # Tam ödəniş bildirişi
+                # Notify business owner
+                create_notification(
+                    user=self.business.user,
+                    title="Faktura Tam Ödənildi",
+                    message=f"#{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} AZN ödəniş tamamlandı.",
+                    type='success',
+                    link='/invoices',
+                    setting_key='payment_received'
+                )
+                # Notify assigned user (Sales Rep) if applicable
+                if self.client and self.client.assigned_to:
+                    create_notification(
+                        user=self.client.assigned_to,
+                        title="Faktura Tam Ödənildi",
+                        message=f"Müştəriniz {self.client.name} üçün #{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} AZN ödəniş tamamlandı.",
+                        type='success',
+                        link='/invoices',
+                        setting_key='payment_received'
+                    )
         elif self.status == 'paid' and self.paid_amount < self.total:
             self.status = 'sent' # Revert to sent if payment removed
             self.paid_at = None

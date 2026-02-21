@@ -25,6 +25,14 @@ def client_created(sender, instance, created, **kwargs):
             type='info',
             setting_key='client_created'
         )
+        if instance.assigned_to:
+            create_notification(
+                user=instance.assigned_to,
+                title="Sizə Müştəri Təyin Edildi",
+                message=f"'{instance.name}' adlı yeni müştəri sizə təyin edildi.",
+                type='info',
+                setting_key='client_created'
+            )
 
 @receiver(post_save, sender=Invoice)
 def invoice_created(sender, instance, created, **kwargs):
@@ -37,6 +45,15 @@ def invoice_created(sender, instance, created, **kwargs):
             link='/invoices',
             setting_key='invoice_created'
         )
+        if instance.client and instance.client.assigned_to:
+            create_notification(
+                user=instance.client.assigned_to,
+                title="Yeni Faktura Yaradıldı",
+                message=f"Müştəriniz {instance.client.name} üçün #{instance.invoice_number} nömrəli yeni faktura yaradıldı.",
+                type='info',
+                link='/invoices',
+                setting_key='invoice_created'
+            )
 
 @receiver(post_save, sender=Payment)
 def payment_received(sender, instance, created, **kwargs):
@@ -49,3 +66,12 @@ def payment_received(sender, instance, created, **kwargs):
             link='/invoices',
             setting_key='payment_received'
         )
+        if instance.invoice.client and instance.invoice.client.assigned_to:
+            create_notification(
+                user=instance.invoice.client.assigned_to,
+                title="Yeni Ödəniş",
+                message=f"Müştəriniz {instance.invoice.client.name} tərəfindən #{instance.invoice.invoice_number} nömrəli faktura üzrə {instance.amount:.2f} AZN ödəniş qəbul edildi.",
+                type='success',
+                link='/invoices',
+                setting_key='payment_received'
+            )

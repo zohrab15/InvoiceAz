@@ -26,6 +26,14 @@ class Command(BaseCommand):
                 type='warning',
                 link=f"/invoices"
             )
+            if invoice.client and invoice.client.assigned_to:
+                create_notification(
+                    user=invoice.client.assigned_to,
+                    title="Ödəniş xatırlatması",
+                    message=f"Müştəriniz {invoice.client.name} üçün #{invoice.invoice_number} nömrəli fakturanın ödənişinə 3 gün qalıb.",
+                    type='warning',
+                    link=f"/invoices"
+                )
             count_upcoming += 1
 
         # 2. Alerts for invoices that became overdue today
@@ -47,6 +55,14 @@ class Command(BaseCommand):
                 type='error',
                 link=f"/invoices"
             )
+            if invoice.client and invoice.client.assigned_to:
+                create_notification(
+                    user=invoice.client.assigned_to,
+                    title="Vaxtı keçmiş ödəniş",
+                    message=f"Müştəriniz {invoice.client.name} üçün #{invoice.invoice_number} nömrəli fakturanın vaxtı bitdi. Status 'Vaxtı keçib' olaraq yeniləndi.",
+                    type='error',
+                    link=f"/invoices"
+                )
             count_overdue += 1
 
         self.stdout.write(self.style.SUCCESS(
