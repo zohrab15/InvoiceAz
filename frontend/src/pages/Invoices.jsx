@@ -809,7 +809,7 @@ const Invoices = () => {
                                                     </div>
                                                     <div className="w-full sm:w-20">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Miqdar</label>
-                                                        <input type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 text-sm text-center font-bold text-[var(--color-text-primary)]" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)} />
+                                                        <input min="1" type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 text-sm text-center font-bold text-[var(--color-text-primary)]" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 1)} />
                                                     </div>
                                                     <div className="w-full sm:w-28">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Vahid</label>
