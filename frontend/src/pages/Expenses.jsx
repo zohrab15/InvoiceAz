@@ -180,7 +180,7 @@ const Expenses = () => {
 
     const chartData = categories.map(cat => ({
         name: cat.name,
-        value: expenses?.filter(e => e.category === cat.id).reduce((sum, e) => sum + parseFloat(e.amount), 0) || 0
+        value: (expenses || []).filter(e => e.category === cat.id).reduce((sum, e) => sum + parseFloat(e.amount), 0) || 0
     })).filter(d => d.value > 0);
 
     const handleSubmit = (e) => {
@@ -391,7 +391,7 @@ const Expenses = () => {
                                 <div className="flex justify-between text-xs font-bold mb-2">
                                     <span className="text-[var(--color-text-muted)] uppercase tracking-wider">Aylıq Xərclər</span>
                                     <span className="text-[var(--color-text-primary)]">
-                                        {expenses?.filter(e => {
+                                        {(expenses || []).filter(e => {
                                             const d = new Date(e.date);
                                             const now = new Date();
                                             return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
@@ -400,14 +400,14 @@ const Expenses = () => {
                                 </div>
                                 <div className="w-full bg-[var(--color-hover-bg)] h-2 rounded-full overflow-hidden">
                                     <div
-                                        className={`${(expenses?.filter(e => {
+                                        className={`${((expenses || []).filter(e => {
                                             const d = new Date(e.date);
                                             const now = new Date();
                                             return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
                                         }).reduce((sum, e) => sum + parseFloat(e.amount), 0) / monthlyBudget) > 0.9 ? 'bg-red-500' : 'bg-blue-500'
                                             } h-full rounded-full transition-all duration-1000`}
                                         style={{
-                                            width: `${Math.min(100, (expenses?.filter(e => {
+                                            width: `${Math.min(100, ((expenses || []).filter(e => {
                                                 const d = new Date(e.date);
                                                 const now = new Date();
                                                 return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();

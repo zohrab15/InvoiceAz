@@ -191,7 +191,7 @@ const Products = () => {
                         return stock <= min && stock > 0;
                     }) ? 'text-rose-500' : products?.some(p => Number(p.stock_quantity || 0) <= 0) ? 'text-rose-500' : 'text-emerald-500'}`}>
                         {(() => {
-                            const lowStockCount = products?.filter(p => {
+                            const lowStockCount = (products || []).filter(p => {
                                 const stock = Number(p.stock_quantity || 0);
                                 const min = Number(p.min_stock_level || 0);
                                 return stock <= min;
