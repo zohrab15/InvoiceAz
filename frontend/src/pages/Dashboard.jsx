@@ -71,9 +71,9 @@ const Dashboard = () => {
     }, []);
 
     const stats = {
-        totalRevenue: (invoices || []).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
+        totalRevenue: (invoices || []).filter(i => !['draft', 'cancelled'].includes(i.status)).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
         paidRevenue: (invoices || []).filter(i => i.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
-        pendingRevenue: (invoices || []).filter(i => i.status === 'sent').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
+        pendingRevenue: (invoices || []).filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
         totalExpenses: (expenses || []).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0,
         invoiceCount: (invoices || []).length || 0,
         paidCount: (invoices || []).filter(i => i.status === 'paid').length || 0,
