@@ -13,13 +13,18 @@ import { ToastProvider } from './components/Toast';
 
 // Role Gate for granular access control
 const RoleGate = ({ roles, children }) => {
-  const { activeBusiness, isLoading } = useBusiness();
+  const { activeBusiness, isLoading, businesses } = useBusiness();
 
-  if (isLoading) return null; // Wait for business context
+  // Wait for business query to complete
+  if (isLoading) return null;
 
-  const rawRole = activeBusiness?.user_role;
-  const role = (rawRole || 'SALES_REP').toUpperCase();
+  // Wait for auto-selection to complete (useEffect runs after render)
+  if (!activeBusiness && businesses?.length > 0) return null;
 
+  // No businesses at all — go to dashboard
+  if (!activeBusiness) return <Navigate to="/dashboard" replace />;
+
+  const role = (activeBusiness.user_role || 'SALES_REP').toUpperCase();
   if (roles.includes(role)) return children;
 
   return <Navigate to="/dashboard" replace />;
