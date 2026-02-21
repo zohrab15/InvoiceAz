@@ -79,7 +79,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
 
     const filteredNavItems = getFilteredNavItems();
-    const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(activeBusiness?.user_role);
+    const roleForFlags = (activeBusiness?.user_role || 'SALES_REP').toUpperCase();
+    const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(roleForFlags);
 
     return (
         <>

@@ -12,9 +12,16 @@ class BusinessViewSet(viewsets.ModelViewSet):
         user = self.request.user
         # Direct owner
         owned = Business.objects.filter(user=user)
-        # Invited as team member
-        team_owners = TeamMember.objects.filter(user=user).values_list('owner', flat=True)
-        team_businesses = Business.objects.filter(user__in=team_owners)
+        
+        # Team memberships
+        direct_team_owners = TeamMember.objects.filter(user=user).values_list('owner_id', flat=True)
+        
+        # Support legacy hierarchical teams: 
+        # If my owner is also a member, get the ID of the person who owns THEM.
+        grand_owners = TeamMember.objects.filter(user_id__in=direct_team_owners).values_list('owner_id', flat=True)
+        
+        all_relevant_owner_ids = set(direct_team_owners) | set(grand_owners)
+        team_businesses = Business.objects.filter(user_id__in=all_relevant_owner_ids)
         
         return (owned | team_businesses).distinct()
 
@@ -44,6 +51,8 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email')
+        role_code = request.data.get('role', 'SALES_REP')
+        
         if not email:
             raise PermissionDenied("İstifadəçi e-poçtu tələb olunur.")
         
@@ -55,14 +64,26 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
         if target_user == request.user:
             raise PermissionDenied("Özünüzü komandaya əlavə edə bilməzsiniz.")
             
-        if TeamMember.objects.filter(owner=request.user, user=target_user).exists():
-           raise PermissionDenied("Bu istifadəçi artıq komandanızdadır.") 
+        # Determine the corporate owner (the root user who owns the businesses)
+        try:
+            # If the inviter is already a team member, use their owner as the boss
+            inviter_membership = TeamMember.objects.get(user=request.user)
+            corporate_owner = inviter_membership.owner
+        except TeamMember.DoesNotExist:
+            # Inviter is a root owner
+            corporate_owner = request.user
+
+        if target_user == corporate_owner:
+            raise PermissionDenied("Biznes sahibini komandaya əlavə edə bilməzsiniz.")
+
+        if TeamMember.objects.filter(owner=corporate_owner, user=target_user).exists():
+           raise PermissionDenied("Bu istifadəçi artıq komandadadır.") 
             
-        # Create directly without standard serializer validation to avoid 'user required' error
+        # Create record linked to the root corporate owner
         member = TeamMember.objects.create(
-            owner=request.user, 
+            owner=corporate_owner, 
             user=target_user,
-            role=request.data.get('role', 'SALES_REP')
+            role=role_code
         )
         serializer = self.get_serializer(member)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

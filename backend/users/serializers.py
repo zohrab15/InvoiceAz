@@ -30,12 +30,19 @@ class BusinessSerializer(serializers.ModelSerializer):
         if obj.user_id == request.user.id:
             return 'OWNER'
             
-        try:
-            # owner_id matches the business owner, user_id matches the requester
-            member = TeamMember.objects.get(owner_id=obj.user_id, user_id=request.user.id)
+        # 1. Direct check: Is this user in the team of the business owner?
+        member = TeamMember.objects.filter(owner_id=obj.user_id, user_id=request.user.id).first()
+        if member:
             return member.role
-        except TeamMember.DoesNotExist:
-            return None
+            
+        # 2. Hierarchical check: Was this user invited by someone who is in the team of the business owner?
+        # (Supports legacy data before we flattened the structure)
+        team_member_ids = TeamMember.objects.filter(owner_id=obj.user_id).values_list('user_id', flat=True)
+        member = TeamMember.objects.filter(owner_id__in=team_member_ids, user_id=request.user.id).first()
+        if member:
+            return member.role
+            
+        return None
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
