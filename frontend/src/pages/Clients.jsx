@@ -72,7 +72,7 @@ const Clients = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri əlavə edildi');
-            setIsAddModalOpen(false);
+            setIsModalOpen(false);
             resetForm();
         },
         onError: (error) => {
@@ -177,7 +177,7 @@ const Clients = () => {
                                 'Ad': c.name,
                                 'Email': c.email || '',
                                 'Telefon': c.phone || '',
-                                'VÖEN': c.tax_number || '',
+                                'VÖEN': c.voen || '',
                                 'Ünvan': c.address || '',
                                 'Bank': c.bank_name || '',
                                 'Hesab (IBAN)': c.bank_account || '',
@@ -504,7 +504,7 @@ const Clients = () => {
                 isOpen={showUpgradeModal}
                 onClose={() => setShowUpgradeModal(false)}
                 resourceName="Müştəri"
-                limit={checkLimit('clients').limit}
+                limit={checkLimit('clients')?.limit}
             />
         </div>
     );

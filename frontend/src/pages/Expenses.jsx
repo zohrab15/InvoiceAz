@@ -579,7 +579,7 @@ const Expenses = () => {
                 isOpen={showUpgradeModal}
                 onClose={() => setShowUpgradeModal(false)}
                 resourceName="Xərc"
-                limit={checkLimit('expenses').limit}
+                limit={checkLimit('expenses')?.limit}
             />
         </motion.div>
     );

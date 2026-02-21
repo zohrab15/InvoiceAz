@@ -149,7 +149,7 @@ const Invoices = () => {
                 setUpgradeConfig({
                     isOpen: true,
                     title: 'Faktura limitinə çatdınız! 🚀',
-                    message: `Hazırkı planınızda maksimum ${checkLimit('invoices').limit} faktura yarada bilərsiniz.`
+                    message: `Hazırkı planınızda maksimum ${checkLimit('invoices')?.limit} faktura yarada bilərsiniz.`
                 });
             } else {
                 const detail = data ? JSON.stringify(data) : error.message;

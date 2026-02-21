@@ -1,23 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import {
-    HelpCircle,
-    MessageCircle,
-    Mail,
-    ChevronDown,
-    FileText,
-    Lock,
-    LifeBuoy,
-    ExternalLink,
-    ArrowRight,
-    ChevronLeft,
-    Search,
-    Zap,
-    Users,
-    CreditCard,
-    ShieldCheck,
-    Smartphone,
-    Download
+    Search, Mail, MessageSquare, Phone,
+    FileText, HelpCircle, ChevronRight,
+    ArrowLeft, Globe, LifeBuoy, Zap,
+    Plus, Minus, ExternalLink
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
