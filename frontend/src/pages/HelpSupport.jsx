@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
     Search, Mail, MessageSquare, Phone,
-    FileText, HelpCircle, ChevronRight,
+    FileText, HelpCircle, ChevronRight, ChevronDown,
     ArrowLeft, Globe, LifeBuoy, Zap,
     Plus, Minus, ExternalLink
 } from 'lucide-react';
@@ -54,6 +54,7 @@ const FAQItem = ({ question, answer }) => {
 
 const HelpSupport = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('all');
     const { token } = useAuthStore();
