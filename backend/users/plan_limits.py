@@ -152,7 +152,15 @@ def get_full_plan_status(user):
     from users.models import SubscriptionPlan
     
     now = timezone.now()
-    plan = get_plan_limits(user)
+    
+    # Detect organization owner if user is a team member
+    organization_owner = user
+    from users.models import TeamMember
+    membership = TeamMember.objects.filter(user=user).first()
+    if membership:
+        organization_owner = membership.owner
+        
+    plan = get_plan_limits(organization_owner)
     if not plan:
         # Fallback to avoid crash
         return {
@@ -162,7 +170,7 @@ def get_full_plan_status(user):
         }
     
     # Get first active business for context
-    active_businesses = Business.objects.filter(user=user)
+    active_businesses = Business.objects.filter(user=organization_owner)
     first_business = active_businesses.first()
     
     # Current usage
@@ -171,17 +179,17 @@ def get_full_plan_status(user):
     # Usage should probably be aggregated across all businesses or specific to active one
     # Currently use all businesses for total usage check if applicable
     invoices_this_month = Invoice.objects.filter(
-        business__user=user,
+        business__user=organization_owner,
         created_at__year=now.year,
         created_at__month=now.month
     ).count()
     expenses_this_month = Expense.objects.filter(
-        business__user=user,
+        business__user=organization_owner,
         date__year=now.year,
         date__month=now.month
     ).count()
     
-    total_clients = Client.objects.filter(business__user=user).count()
+    total_clients = Client.objects.filter(business__user=organization_owner).count()
     total_businesses = active_businesses.count()
     
     is_demo = user.email == 'demo_user@invoice.az'
