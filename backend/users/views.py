@@ -28,7 +28,6 @@ class BusinessViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         business = self.get_object()
         if request.user != business.user:
-            from .models import TeamMember
             is_manager = TeamMember.objects.filter(owner=business.user, user=request.user, role='MANAGER').exists()
             if not is_manager:
                 raise PermissionDenied("Bu biznes məlumatlarını yalnız sahib və ya menecer redaktə edə bilər.")
