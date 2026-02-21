@@ -16,7 +16,27 @@ const useLocationTracker = () => {
         // Check if user is a team member (not OWNER)
         // Usually, the dashboard fetches activeBusiness, but at the App context, 
         // we might not have it loaded if it's the first render.
-        // As a safeguard, we check if the browser supports geolocation.
+        // Let's rely on the activeBusiness from localStorage for an immediate check
+        const activeBusinessRaw = localStorage.getItem('active_business');
+        let isOwner = false;
+
+        if (activeBusinessRaw) {
+            try {
+                const activeBusiness = JSON.parse(activeBusinessRaw);
+                // If it's an owner, or user_role is empty (which defaults to owner for direct businesses)
+                if (!activeBusiness.user_role || activeBusiness.user_role === 'OWNER') {
+                    isOwner = true;
+                }
+            } catch (e) {
+                // Parse error, ignore
+            }
+        }
+
+        if (isOwner) {
+            // Do not track owners
+            return;
+        }
+
         if (!navigator.geolocation) {
             console.warn('Geolocation is not supported by your browser');
             return;

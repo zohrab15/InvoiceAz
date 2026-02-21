@@ -62,15 +62,33 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         # Owners see everyone in their organization
-        # First, find who is the root owner for this user
-        try:
-            membership = TeamMember.objects.get(user=user)
-            root_owner = membership.owner
-        except TeamMember.DoesNotExist:
-            root_owner = user
+        
+        # Determine root owner based on the active business header if provided
+        business_id = self.request.headers.get('X-Business-ID')
+        root_owner = None
+        
+        if business_id:
+            try:
+                business = Business.objects.get(id=business_id)
+                root_owner = business.user
+            except Business.DoesNotExist:
+                pass
+                
+        if not root_owner:
+            # Fallback if no business header:
+            # First, check if they own any business directly
+            if Business.objects.filter(user=user).exists():
+                root_owner = user
+            else:
+                # Find who is the root owner for this user by getting their first membership
+                membership = TeamMember.objects.filter(user=user).first()
+                if membership:
+                    root_owner = membership.owner
+                else:
+                    root_owner = user
             
         # Return all members belonging to this organization
-        return TeamMember.objects.filter(owner=root_owner)
+        return TeamMember.objects.filter(owner=root_owner).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email')
