@@ -40,11 +40,25 @@ const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }
                     <div className="grid grid-cols-2 gap-8 text-right">
                         <div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Tarix</h3>
-                            <p className="text-sm font-bold text-slate-800">{new Date(invoice.invoice_date).toLocaleDateString('az-AZ')}</p>
+                            <p className="text-sm font-bold text-slate-800">
+                                {(() => {
+                                    const d = new Date(invoice.invoice_date);
+                                    if (isNaN(d.getTime())) return '---';
+                                    const m = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+                                    return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                                })()}
+                            </p>
                         </div>
                         <div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Son Tarix</h3>
-                            <p className="text-sm font-bold text-slate-800">{new Date(invoice.due_date).toLocaleDateString('az-AZ')}</p>
+                            <p className="text-sm font-bold text-slate-800">
+                                {(() => {
+                                    const d = new Date(invoice.due_date);
+                                    if (isNaN(d.getTime())) return '---';
+                                    const m = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+                                    return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                                })()}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -140,8 +154,22 @@ const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token 
             </div>
 
             <div className="mb-16 border-y-2 border-slate-900 py-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center bg-slate-50/50">
-                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Tarix</h4><p className="font-bold">{new Date(invoice.invoice_date).toLocaleDateString('az-AZ')}</p></div>
-                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ödəniş Müddəti</h4><p className="font-bold">{new Date(invoice.due_date).toLocaleDateString('az-AZ')}</p></div>
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Tarix</h4><p className="font-bold">
+                    {(() => {
+                        const d = new Date(invoice.invoice_date);
+                        if (isNaN(d.getTime())) return '---';
+                        const m = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+                        return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                    })()}
+                </p></div>
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ödəniş Müddəti</h4><p className="font-bold">
+                    {(() => {
+                        const d = new Date(invoice.due_date);
+                        if (isNaN(d.getTime())) return '---';
+                        const m = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+                        return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                    })()}
+                </p></div>
                 <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</h4><p className="font-bold uppercase text-blue-700">{invoice.status}</p></div>
                 <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ümumi</h4><p className="font-bold text-xl">{total.toFixed(2)} ₼</p></div>
             </div>

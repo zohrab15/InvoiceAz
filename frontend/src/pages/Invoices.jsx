@@ -393,9 +393,17 @@ const Invoices = () => {
                     <p className="text-xs text-gray-500">{selectedClient?.address}</p>
                 </div>
                 <div className="text-right">
-                    <div className="mb-2">
-                        <p className="text-xs font-bold uppercase text-gray-400">Tarix</p>
-                        <p className="text-sm">{invoiceDate ? new Date(invoiceDate).toLocaleDateString('az-AZ') : '---'}</p>
+                    <div className="flex justify-between items-center py-3" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
+                        <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Müddət</p>
+                        <p className="text-sm">
+                            {(() => {
+                                if (!invoiceDate) return '---';
+                                const d = new Date(invoiceDate);
+                                if (isNaN(d.getTime())) return '---';
+                                const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                            })()}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -456,8 +464,16 @@ const Invoices = () => {
                                                 'Faktura №': inv.invoice_number,
                                                 'Müştəri': clientName,
                                                 'Sahibi': inv.created_by_name || 'Owner',
-                                                'Tarix': new Date(inv.invoice_date).toLocaleDateString('az-AZ'),
-                                                'Son Tarix': new Date(inv.due_date).toLocaleDateString('az-AZ'),
+                                                'Tarix': (() => {
+                                                    const d = new Date(inv.invoice_date);
+                                                    const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                                    return !isNaN(d) ? `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}` : '';
+                                                })(),
+                                                'Son Tarix': (() => {
+                                                    const d = new Date(inv.due_date);
+                                                    const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                                    return !isNaN(d) ? `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}` : '';
+                                                })(),
                                                 'Məbləğ': parseFloat(inv.total_amount),
                                                 'Valyuta': inv.currency || '₼',
                                                 'Status': inv.status === 'paid' ? 'Ödənilib' :
@@ -565,7 +581,14 @@ const Invoices = () => {
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 text-[var(--color-text-secondary)]">{new Date(inv.invoice_date).toLocaleDateString('az-AZ')}</td>
+                                                <td className="px-6 py-4 text-[var(--color-text-secondary)]">
+                                                    {(() => {
+                                                        const d = new Date(inv.invoice_date);
+                                                        if (isNaN(d.getTime())) return '---';
+                                                        const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                                        return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                                                    })()}
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-bold text-[var(--color-text-primary)]">{parseFloat(inv.total).toFixed(2)} ₼</span>

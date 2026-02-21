@@ -63,9 +63,12 @@ const Dashboard = () => {
         return 'Axşamınız xeyir';
     }, []);
 
-    const todayStr = new Date().toLocaleDateString('az-AZ', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
+    const todayStr = useMemo(() => {
+        const d = new Date();
+        const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+        const days = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${days[d.getDay()]}`;
+    }, []);
 
     const stats = {
         totalRevenue: (invoices || []).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
@@ -424,7 +427,11 @@ const Dashboard = () => {
                                         {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
                                     </div>
                                     <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>
-                                        {t.date && !isNaN(t.date.getTime()) ? t.date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'short' }) : '---'}
+                                        {(() => {
+                                            if (!t.date || isNaN(t.date.getTime())) return '---';
+                                            const shortMonths = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                            return `${t.date.getDate()} ${shortMonths[t.date.getMonth()]}`;
+                                        })()}
                                     </div>
                                 </div>
                             </div>

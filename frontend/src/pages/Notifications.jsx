@@ -55,7 +55,8 @@ const Notifications = () => {
         if (diffMins < 60) return `${diffMins} dəq əvvəl`;
         if (diffHours < 24) return `${diffHours} saat əvvəl`;
         if (diffDays < 7) return `${diffDays} gün əvvəl`;
-        return date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'long', year: 'numeric' });
+        const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+        return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
     };
 
     const groupByDate = (notifs) => {

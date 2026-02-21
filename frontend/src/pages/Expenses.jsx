@@ -291,7 +291,12 @@ const Expenses = () => {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className="text-xs font-semibold text-[var(--color-text-muted)]">
-                                                    {new Date(exp.date).toLocaleDateString('az-AZ')}
+                                                    {(() => {
+                                                        const d = new Date(exp.date);
+                                                        if (isNaN(d.getTime())) return '---';
+                                                        const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                                        return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+                                                    })()}
                                                 </div>
                                                 <div className={`text-[9px] font-black uppercase mt-1 px-1.5 py-0.5 rounded-md inline-block ${exp.status === 'paid' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
                                                     {exp.status === 'paid' ? 'Ödənilib' : 'Gözləmədə'}
