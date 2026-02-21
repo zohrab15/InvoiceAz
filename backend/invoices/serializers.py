@@ -35,6 +35,11 @@ class PaymentSerializer(serializers.ModelSerializer):
                 from rest_framework import serializers
                 raise serializers.ValidationError({"invoice": "Bu faktura seçilmiş biznesə aid deyil."})
                 
+            payment_date = data.get('payment_date')
+            if payment_date and payment_date < invoice.issue_date:
+                from rest_framework import serializers
+                raise serializers.ValidationError({"payment_date": "Ödəniş tarixi fakturanın kəsildiyi tarixdən əvvəl ola bilməz."})
+                
         return data
 
 class InvoiceSerializer(serializers.ModelSerializer):
