@@ -113,17 +113,19 @@ const Dashboard = () => {
 
     const recentTransactions = useMemo(() => {
         const trans = [
-            ...(invoices || []).map(inv => ({
-                id: `inv-${inv.id}`,
-                type: 'invoice',
-                title: `#${inv.invoice_number}`,
-                subtitle: inv.client_name,
-                amount: parseFloat(inv.total),
-                date: new Date(inv.invoice_date),
-                rawDate: inv.invoice_date,
-                positive: true,
-                status: inv.status
-            })),
+            ...(invoices || [])
+                .filter(inv => !['draft', 'cancelled'].includes(inv.status))
+                .map(inv => ({
+                    id: `inv-${inv.id}`,
+                    type: 'invoice',
+                    title: `#${inv.invoice_number}`,
+                    subtitle: inv.client_name,
+                    amount: parseFloat(inv.total),
+                    date: new Date(inv.invoice_date),
+                    rawDate: inv.invoice_date,
+                    positive: true,
+                    status: inv.status
+                })),
             ...(expenses || []).map(exp => ({
                 id: `exp-${exp.id}`,
                 type: 'expense',
@@ -147,7 +149,7 @@ const Dashboard = () => {
         ];
         // Filter out items with missing or invalid dates to prevent crashes
         const validTrans = trans.filter(t => t.rawDate && !isNaN(t.date.getTime()));
-        return validTrans.sort((a, b) => b.date - a.date).slice(0, 7);
+        return validTrans.sort((a, b) => b.date - a.date).slice(0, 15);
     }, [invoices, expenses, payments]);
 
     if (isLoading) return (
