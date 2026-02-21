@@ -47,7 +47,7 @@ const Clients = () => {
     const { data: clients, isLoading } = useQuery({
         queryKey: ['clients', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/clients/');
+            const res = await clientApi.get('/clients/all/');
             return res.data;
         },
         enabled: !!activeBusiness,
@@ -68,10 +68,11 @@ const Clients = () => {
     const salesReps = teamMembers?.filter(m => m.role === 'SALES_REP') || [];
 
     const createMutation = useMutation({
-        mutationFn: (data) => clientApi.post('/clients/', data),
+        mutationFn: (data) => clientApi.post('/clients/all/', data),
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri əlavə edildi');
+            setIsAddModalOpen(false);
             resetForm();
         },
         onError: (error) => {
@@ -86,17 +87,18 @@ const Clients = () => {
     });
 
     const updateMutation = useMutation({
-        mutationFn: (data) => clientApi.put(`/clients/${data.id}/`, data),
+        mutationFn: (data) => clientApi.put(`/clients/all/${data.id}/`, data),
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri yeniləndi');
+            setEditingClient(null);
             resetForm();
         },
         onError: (error) => showToast(error.response?.data?.detail || 'Xəta baş verdi', 'error')
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => clientApi.delete(`/clients/${id}/`),
+        mutationFn: (id) => clientApi.delete(`/clients/all/${id}/`),
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri silindi');
@@ -104,7 +106,7 @@ const Clients = () => {
     });
 
     const bulkAssignMutation = useMutation({
-        mutationFn: (data) => clientApi.post('/clients/bulk-assign/', data),
+        mutationFn: (data) => clientApi.post('/clients/all/bulk-assign/', data),
         onSuccess: (res) => {
             queryClient.invalidateQueries(['clients']);
             showToast(res.data.detail);
