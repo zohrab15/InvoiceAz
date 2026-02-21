@@ -19,9 +19,19 @@ class MyUserAdmin(UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'subscription_plan')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
-    fieldsets = UserAdmin.fieldsets + (
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'avatar', 'timezone', 'language')}),
         ('Plan Information', {'fields': ('subscription_plan', 'membership')}),
+        ('Security', {'fields': ('is_email_verified', 'is_2fa_enabled', 'totp_secret')}),
+        ('Permissions', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Plan Information', {'fields': ('subscription_plan', 'membership')}),
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password', 'subscription_plan', 'membership'),
+        }),
     )
