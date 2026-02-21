@@ -17,7 +17,9 @@ const RoleGate = ({ roles, children }) => {
 
   if (isLoading) return null; // Wait for business context
 
-  const role = activeBusiness?.user_role || 'SALES_REP';
+  const rawRole = activeBusiness?.user_role;
+  const role = (rawRole || 'SALES_REP').toUpperCase();
+
   if (roles.includes(role)) return children;
 
   return <Navigate to="/dashboard" replace />;

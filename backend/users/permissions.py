@@ -7,16 +7,23 @@ class IsRoleAuthorized(permissions.BasePermission):
     If they are not set, it assumes the user is the owner and allows access.
     """
     def has_permission(self, request, view):
+        # Determine role from active business or fallback
+        is_team_member = getattr(request, '_is_team_member', None)
+        role = getattr(request, '_team_role', None)
+        
+        # If mixin hasn't run yet, try to run its helper logic if possible
+        if is_team_member is None and hasattr(view, 'get_active_business'):
+            view.get_active_business()
+            is_team_member = getattr(request, '_is_team_member', False)
+            role = getattr(request, '_team_role', 'SALES_REP')
+
         # Allow owners to do whatever
-        if hasattr(request, '_active_business') and not getattr(request, '_is_team_member', False):
+        if is_team_member is False:
             return True
             
-        # If they haven't passed BusinessContextMixin yet, or it's not applicable, allow it
-        # (The mixin itself will filter querysets)
-        if not hasattr(request, '_is_team_member'):
-            return True
-            
-        role = getattr(request, '_team_role', 'SALES_REP')
+        # Default role for team members is SALES_REP if not specified
+        if role is None:
+            role = 'SALES_REP'
         
         # Determine model name from serializer
         model = getattr(getattr(view, 'serializer_class', None), 'Meta', None)

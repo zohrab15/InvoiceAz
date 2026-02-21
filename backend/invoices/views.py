@@ -32,7 +32,7 @@ class ExpenseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 "upgrade_required": True
             })
             
-        serializer.save(business=business)
+        super().perform_create(serializer)
 
 class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     from .models import Payment
@@ -63,13 +63,10 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 
     def get_queryset(self):
-        # We override mixin's get_queryset to add select_related/prefetch_related
-        # But we still use get_active_business helper
-        business = self.get_active_business()
-        if business:
-            return Invoice.objects.filter(
-                business=business
-            ).select_related('client', 'business').prefetch_related('items', 'payments')
+        # Still use mixin's filtered queryset but add performance optimizations
+        queryset = super().get_queryset()
+        if queryset is not None:
+             return queryset.select_related('client', 'business').prefetch_related('items', 'payments')
         return Invoice.objects.none()
 
     def perform_create(self, serializer):
@@ -87,7 +84,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 "upgrade_required": True
             })
             
-        serializer.save(business=business)
+        super().perform_create(serializer)
 
     @action(detail=True, methods=['post'])
     def duplicate(self, request, pk=None):

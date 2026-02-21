@@ -150,7 +150,9 @@ const Dashboard = () => {
         </div>
     );
 
-    const role = activeBusiness?.user_role || 'SALES_REP';
+    const rawRole = activeBusiness?.user_role;
+    const role = (rawRole || 'SALES_REP').toUpperCase();
+
     const isInventoryManager = role === 'INVENTORY_MANAGER';
     const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);
     const isAccountant = role === 'ACCOUNTANT';

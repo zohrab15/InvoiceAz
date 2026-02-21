@@ -11,7 +11,6 @@ from users.mixins import BusinessContextMixin
 from users.permissions import IsRoleAuthorized
 
 class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 

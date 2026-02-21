@@ -8,9 +8,11 @@ from users.plan_limits import check_client_limit
 from users.permissions import IsRoleAuthorized
 
 class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
-    queryset = Client.objects.all() 
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    
+    # Mixin handles get_queryset (filtering by business and role)
+    # Mixin handles perform_create (auto-attaching business and assigned_to)
     
     def perform_create(self, serializer):
         limit_check = check_client_limit(self.request.user)
@@ -22,10 +24,6 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 "current": limit_check['current'],
                 "upgrade_required": True
             })
-            
-        # Mixin's perform_create logic
-        business = self.get_active_business()
-        if business:
-            serializer.save(business=business)
-        else:
-            raise PermissionDenied("Active business required")
+        
+        # Call Mixin's perform_create to handle business and role-based assignment
+        super().perform_create(serializer)

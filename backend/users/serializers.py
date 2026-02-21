@@ -23,12 +23,16 @@ class BusinessSerializer(serializers.ModelSerializer):
 
     def get_user_role(self, obj):
         request = self.context.get('request')
-        if not request or not request.user:
+        if not request or not request.user or request.user.is_anonymous:
             return None
-        if obj.user == request.user:
+            
+        # Hardened check: compare IDs to avoid issues with proxy user objects
+        if obj.user_id == request.user.id:
             return 'OWNER'
+            
         try:
-            member = TeamMember.objects.get(owner=obj.user, user=request.user)
+            # owner_id matches the business owner, user_id matches the requester
+            member = TeamMember.objects.get(owner_id=obj.user_id, user_id=request.user.id)
             return member.role
         except TeamMember.DoesNotExist:
             return None
