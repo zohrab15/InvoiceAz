@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import SubscriptionPlan, User, Business
+from .models import SubscriptionPlan, User, Business, TeamMember
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -35,3 +35,10 @@ class MyUserAdmin(UserAdmin):
             'fields': ('email', 'password', 'subscription_plan', 'membership'),
         }),
     )
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ('user', 'owner', 'role', 'created_at')
+    list_filter = ('role',)
+    search_fields = ('user__email', 'owner__email')
+    raw_id_fields = ('user', 'owner')

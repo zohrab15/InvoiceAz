@@ -296,3 +296,68 @@ class Disable2FAView(APIView):
         user.totp_secret = None
         user.save()
         return Response({"detail": "İki mərhələli doğrulama söndürüldü."})
+
+class RBACDebugView(APIView):
+    """Temporary debug endpoint to inspect RBAC state for the current user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        
+        # All TeamMember records where this user IS the member
+        memberships = TeamMember.objects.filter(user=user)
+        membership_data = [
+            {
+                'id': m.id,
+                'owner_email': m.owner.email,
+                'owner_id': m.owner.id,
+                'role': m.role,
+            }
+            for m in memberships
+        ]
+        
+        # All TeamMember records where this user IS the owner (they invited someone)
+        owned_members = TeamMember.objects.filter(owner=user)
+        owned_data = [
+            {
+                'id': m.id,
+                'member_email': m.user.email,
+                'member_id': m.user.id,
+                'role': m.role,
+            }
+            for m in owned_members
+        ]
+        
+        # All businesses this user should see
+        owned_businesses = Business.objects.filter(user=user)
+        direct_team_owners = TeamMember.objects.filter(user=user).values_list('owner_id', flat=True)
+        grand_owners = TeamMember.objects.filter(user_id__in=direct_team_owners).values_list('owner_id', flat=True)
+        all_owner_ids = set(direct_team_owners) | set(grand_owners)
+        team_businesses = Business.objects.filter(user_id__in=all_owner_ids)
+        all_businesses = (owned_businesses | team_businesses).distinct()
+        
+        biz_data = []
+        for b in all_businesses:
+            role = 'OWNER' if b.user_id == user.id else None
+            if not role:
+                tm = TeamMember.objects.filter(owner_id=b.user_id, user_id=user.id).first()
+                if not tm:
+                    sub_ids = TeamMember.objects.filter(owner_id=b.user_id).values_list('user_id', flat=True)
+                    tm = TeamMember.objects.filter(owner_id__in=sub_ids, user_id=user.id).first()
+                role = tm.role if tm else 'UNKNOWN'
+            biz_data.append({
+                'id': b.id,
+                'name': b.name,
+                'owner_email': b.user.email,
+                'your_role': role,
+            })
+        
+        return Response({
+            'user_email': user.email,
+            'user_id': user.id,
+            'memberships_as_member': membership_data,
+            'memberships_as_owner': owned_data,
+            'direct_team_owner_ids': list(direct_team_owners),
+            'grand_owner_ids': list(grand_owners),
+            'visible_businesses': biz_data,
+        })

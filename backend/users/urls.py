@@ -4,7 +4,8 @@ from .views import (
     BusinessViewSet, google_auth_bridge, PasswordChangeView, 
     DeleteAccountView, SessionListView, RevokeSessionView,
     Generate2FAView, Enable2FAView, Disable2FAView, UserMeView,
-    LogoutAPIView, TeamMemberViewSet, TeamMemberLocationUpdateView
+    LogoutAPIView, TeamMemberViewSet, TeamMemberLocationUpdateView,
+    RBACDebugView
 )
 from .plan_views import PlanStatusView
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path('2fa/enable/', Enable2FAView.as_view(), name='2fa_enable'),
     path('2fa/disable/', Disable2FAView.as_view(), name='2fa_disable'),
     path('plan/status/', PlanStatusView.as_view(), name='plan_status'),
+    path('debug/rbac/', RBACDebugView.as_view(), name='rbac_debug'),
 ]
