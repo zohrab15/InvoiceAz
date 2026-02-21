@@ -208,8 +208,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 path = os.path.join(settings.MEDIA_ROOT, uri_clean[len('/media/'):])
             elif uri_clean.startswith('/static/'):
                 path = os.path.join(settings.STATIC_ROOT, uri_clean[len('/static/'):])
-                if not os.path.exists(path): # Try base static dir in dev
-                    path = os.path.join(str(settings.BASE_DIR), "static", uri_clean[len('/static/'):])
             else:
                 # Fallback for relative paths without prefix - check static then media
                 path = os.path.join(settings.STATIC_ROOT, uri_clean)
@@ -218,11 +216,10 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
             # Verification: Ensure the resolved path exists and is within allowed roots
             if path and os.path.isfile(path):
-                # Extra security check: Path must be subpath of BASE_DIR or STATIC_ROOT or MEDIA_ROOT
+                # Extra security check: Path must be subpath of STATIC_ROOT or MEDIA_ROOT
                 allowed_roots = [
                     os.path.abspath(settings.STATIC_ROOT),
                     os.path.abspath(settings.MEDIA_ROOT),
-                    os.path.abspath(str(settings.BASE_DIR))
                 ]
                 abs_path = os.path.abspath(path)
                 if any(abs_path.startswith(root) for root in allowed_roots):

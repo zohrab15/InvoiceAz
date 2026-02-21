@@ -18,7 +18,12 @@ class BusinessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Business
-        fields = '__all__'
+        fields = [
+            'id', 'name', 'voen', 'logo', 'address', 'city', 'phone', 
+            'email', 'website', 'bank_name', 'iban', 'swift', 
+            'budget_limit', 'default_invoice_theme', 'is_active', 
+            'created_at', 'updated_at', 'user_role'
+        ]
         read_only_fields = ('id', 'user')
 
     def get_user_role(self, obj):
@@ -48,6 +53,14 @@ class BusinessSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         if instance.logo and str(instance.logo).startswith('http'):
             data['logo'] = str(instance.logo)
+            
+        # Role-based sensitive data hiding (Data Leak prevention)
+        role = data.get('user_role')
+        if role not in ['OWNER', 'MANAGER', 'ACCOUNTANT']:
+            sensitive_fields = ['bank_name', 'iban', 'swift', 'budget_limit']
+            for field in sensitive_fields:
+                data.pop(field, None)
+                
         return data
 
 class TeamMemberSerializer(serializers.ModelSerializer):
