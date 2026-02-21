@@ -33,7 +33,9 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         # Prevent Sales Reps from changing or clearing the assigned_to field
-        role = getattr(self.request.user, 'active_role', None)
+        is_team_member = getattr(self.request, '_is_team_member', False)
+        # If not a team member, they are the owner
+        role = getattr(self.request, '_team_role', 'OWNER' if not is_team_member else None)
 
         if role not in ['OWNER', 'MANAGER']:
             # If they try to update, force it to remain whatever it currently is in the DB

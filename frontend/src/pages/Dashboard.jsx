@@ -86,12 +86,12 @@ const Dashboard = () => {
             const m = date.getMonth();
             const y = date.getFullYear();
 
-            const monthIncome = invoices?.filter(inv => {
+            const monthIncome = (invoices || []).filter(inv => {
                 const d = new Date(inv.invoice_date);
                 return d.getMonth() === m && d.getFullYear() === y;
             }).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
 
-            const monthExpense = expenses?.filter(exp => {
+            const monthExpense = (expenses || []).filter(exp => {
                 const d = new Date(exp.date);
                 return d.getMonth() === m && d.getFullYear() === y;
             }).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0;

@@ -94,8 +94,8 @@ const Invoices = () => {
         if (!invoices) return [];
         return invoices.filter(inv => {
             const matchesSearch =
-                inv.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                inv.client_name.toLowerCase().includes(searchTerm.toLowerCase());
+                (inv.invoice_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (inv.client_name || '').toLowerCase().includes(searchTerm.toLowerCase());
 
             const matchesStatus = statusFilter === 'all' || inv.status === statusFilter;
 
@@ -197,6 +197,7 @@ const Invoices = () => {
     const deleteMutation = useMutation({
         mutationFn: (id) => clientApi.delete(`/invoices/${id}/`),
         onSuccess: () => queryClient.invalidateQueries(['invoices']),
+        onError: (err) => showToast(err.response?.data?.detail || 'Faktura silinərkən xəta', 'error')
     });
 
     const handleAddPayment = async (paymentData) => {

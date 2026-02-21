@@ -102,7 +102,8 @@ const Clients = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri silindi');
-        }
+        },
+        onError: (err) => showToast(err.response?.data?.detail || 'Müştəri silinərkən xəta', 'error')
     });
 
     const bulkAssignMutation = useMutation({
@@ -157,9 +158,9 @@ const Clients = () => {
     };
 
     const filteredClients = clients?.filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.phone?.includes(searchTerm)
+        (client.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (client.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (client.phone || '').includes(searchTerm)
     );
 
     const toggleSelectAll = () => {
@@ -271,7 +272,7 @@ const Clients = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-3">
                                             <div className="w-10 h-10 bg-blue-500/10 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
-                                                {client.name.charAt(0).toUpperCase()}
+                                                {(client.name || '?').charAt(0).toUpperCase()}
                                             </div>
                                             <div>
                                                 <div className="font-bold text-[var(--color-text-primary)]">{client.name}</div>
