@@ -11,6 +11,7 @@ from users.mixins import BusinessContextMixin
 from users.permissions import IsRoleAuthorized
 
 class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 
@@ -60,11 +61,10 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='lookup')
     def lookup(self, request):
         sku = request.query_params.get('sku')
-        business_id = request.query_params.get('business')
-        
-        if not sku or not business_id:
-            return Response({"detail": "SKU və Business ID mütləqdir."}, status=status.HTTP_400_BAD_REQUEST)
+        business = self.get_active_business()
+        if not business:
+             return Response({"detail": "SKU və Business ID mütləqdir."}, status=status.HTTP_400_BAD_REQUEST)
             
-        product = get_object_or_404(Product, business__id=business_id, business__user=request.user, sku=sku)
+        product = get_object_or_404(Product, business=business, sku=sku)
         serializer = self.get_serializer(product)
         return Response(serializer.data)

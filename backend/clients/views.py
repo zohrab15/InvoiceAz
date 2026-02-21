@@ -8,6 +8,7 @@ from users.plan_limits import check_client_limit
 from users.permissions import IsRoleAuthorized
 
 class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
     
