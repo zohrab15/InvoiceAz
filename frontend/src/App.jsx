@@ -11,6 +11,7 @@ import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import { ToastProvider } from './components/Toast';
+import useLocationTracker from './hooks/useLocationTracker';
 
 // Role Gate for granular access control
 const RoleGate = ({ roles, children }) => {
@@ -95,76 +96,80 @@ const LoadingScreen = () => (
   </div>
 );
 
-const AuthenticatedRoutes = () => (
-  <Layout>
-    <Routes>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/invoices" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'SALES_REP']}>
-          <Invoices />
-        </RoleGate>
-      } />
-      <Route path="/products" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
-          <Products />
-        </RoleGate>
-      } />
-      <Route path="/problematic-invoices" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
-          <ProblematicInvoices />
-        </RoleGate>
-      } />
-      <Route path="/analytics/payments" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
-          <PaymentAnalytics />
-        </RoleGate>
-      } />
-      <Route path="/analytics/issues" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
-          <ProblematicInvoices />
-        </RoleGate>
-      } />
-      <Route path="/analytics/forecast" element={
-        <RoleGate roles={['OWNER', 'MANAGER']}>
-          <ForecastAnalytics />
-        </RoleGate>
-      } />
-      <Route path="/analytics/products" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
-          <ProductAnalytics />
-        </RoleGate>
-      } />
-      <Route path="/analytics/tax" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
-          <TaxReports />
-        </RoleGate>
-      } />
-      <Route path="/expenses" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
-          <Expenses />
-        </RoleGate>
-      } />
-      <Route path="/clients" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'SALES_REP']}>
-          <Clients />
-        </RoleGate>
-      } />
-      <Route path="/settings" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'INVENTORY_MANAGER', 'SALES_REP']}>
-          <BusinessSettings />
-        </RoleGate>
-      } />
-      <Route path="/pricing" element={<PricingPage />} />
-      <Route path="/security" element={<SecurityPage />} />
-      <Route path="/system-settings" element={
-        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'INVENTORY_MANAGER', 'SALES_REP']}>
-          <SystemSettings />
-        </RoleGate>
-      } />
-      <Route path="/notifications" element={<Notifications />} />
-    </Routes>
-  </Layout>
-);
+const AuthenticatedRoutes = () => {
+  useLocationTracker();
+
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/invoices" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'SALES_REP']}>
+            <Invoices />
+          </RoleGate>
+        } />
+        <Route path="/products" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+            <Products />
+          </RoleGate>
+        } />
+        <Route path="/problematic-invoices" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+            <ProblematicInvoices />
+          </RoleGate>
+        } />
+        <Route path="/analytics/payments" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+            <PaymentAnalytics />
+          </RoleGate>
+        } />
+        <Route path="/analytics/issues" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+            <ProblematicInvoices />
+          </RoleGate>
+        } />
+        <Route path="/analytics/forecast" element={
+          <RoleGate roles={['OWNER', 'MANAGER']}>
+            <ForecastAnalytics />
+          </RoleGate>
+        } />
+        <Route path="/analytics/products" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+            <ProductAnalytics />
+          </RoleGate>
+        } />
+        <Route path="/analytics/tax" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+            <TaxReports />
+          </RoleGate>
+        } />
+        <Route path="/expenses" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+            <Expenses />
+          </RoleGate>
+        } />
+        <Route path="/clients" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'SALES_REP']}>
+            <Clients />
+          </RoleGate>
+        } />
+        <Route path="/settings" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'INVENTORY_MANAGER', 'SALES_REP']}>
+            <BusinessSettings />
+          </RoleGate>
+        } />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/security" element={<SecurityPage />} />
+        <Route path="/system-settings" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'INVENTORY_MANAGER', 'SALES_REP']}>
+            <SystemSettings />
+          </RoleGate>
+        } />
+        <Route path="/notifications" element={<Notifications />} />
+      </Routes>
+    </Layout>
+  );
+};
 
 function App() {
   const { token, user, setAuth } = useAuthStore();

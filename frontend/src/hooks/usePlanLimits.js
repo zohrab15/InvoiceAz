@@ -1,14 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import clientApi from '../api/client';
 import useAuthStore from '../store/useAuthStore';
+import { useBusiness } from '../context/BusinessContext';
 
 export const usePlanLimits = () => {
-    const { token } = useAuthStore();
+    const { token, user } = useAuthStore();
+    const { activeBusiness } = useBusiness();
 
     const { data: planStatus, isLoading } = useQuery({
-        queryKey: ['planStatus'],
+        queryKey: ['planStatus', user?.id, activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/users/plan/status/');
+            const params = activeBusiness?.id ? { business_id: activeBusiness.id } : {};
+            const res = await clientApi.get('/users/plan/status/', { params });
             return res.data;
         },
         enabled: !!token,
