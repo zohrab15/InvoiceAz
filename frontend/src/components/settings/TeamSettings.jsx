@@ -83,7 +83,10 @@ const TeamSettings = () => {
     };
 
 
-    const renderLocation = (lat, lng, updated) => {
+    const renderLocation = (role, lat, lng, updated) => {
+        if (role !== 'SALES_REP') {
+            return <span className="text-gray-400 italic text-xs">İzlənmir</span>;
+        }
         if (!lat || !lng) return <span className="text-gray-400 italic text-xs">Aktiv deyil</span>;
 
         const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
@@ -217,16 +220,18 @@ const TeamSettings = () => {
                                                 </span>
                                             </td>
                                             <td className="py-4">
-                                                {renderLocation(member.last_latitude, member.last_longitude, member.last_location_update)}
+                                                {renderLocation(member.role, member.last_latitude, member.last_longitude, member.last_location_update)}
                                             </td>
                                             <td className="py-4 text-right">
-                                                <button
-                                                    onClick={() => handleRemove(member.id)}
-                                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-block"
-                                                    title="İşçini sil"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                {member.user_email !== user?.email && (
+                                                    <button
+                                                        onClick={() => handleRemove(member.id)}
+                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-block"
+                                                        title="İşçini sil"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                )}
                                             </td>
                                         </motion.tr>
                                     ))}

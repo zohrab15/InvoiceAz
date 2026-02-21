@@ -18,22 +18,22 @@ const useLocationTracker = () => {
         // we might not have it loaded if it's the first render.
         // Let's rely on the activeBusiness from localStorage for an immediate check
         const activeBusinessRaw = localStorage.getItem('active_business');
-        let isOwner = false;
+        let isTrackable = false;
 
         if (activeBusinessRaw) {
             try {
                 const activeBusiness = JSON.parse(activeBusinessRaw);
-                // If it's an owner, or user_role is empty (which defaults to owner for direct businesses)
-                if (!activeBusiness.user_role || activeBusiness.user_role === 'OWNER') {
-                    isOwner = true;
+                // Only tracking specific roles (Sales Reps)
+                if (activeBusiness.user_role === 'SALES_REP') {
+                    isTrackable = true;
                 }
             } catch (e) {
                 // Parse error, ignore
             }
         }
 
-        if (isOwner) {
-            // Do not track owners
+        if (!isTrackable) {
+            // Do not track owners, managers, or accountants
             return;
         }
 
