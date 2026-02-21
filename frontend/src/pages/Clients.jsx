@@ -51,13 +51,15 @@ const Clients = () => {
         enabled: !!activeBusiness,
     });
 
+    const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
+
     const { data: teamMembers } = useQuery({
         queryKey: ['team', token],
         queryFn: async () => {
             const res = await clientApi.get('/users/team/');
             return res.data;
         },
-        enabled: !!token && user?.membership === 'Premium',
+        enabled: !!token && (user?.membership === 'Premium' || isOwnerOrManager),
     });
 
     const createMutation = useMutation({
@@ -364,7 +366,7 @@ const Clients = () => {
                                     </div>
                                 </div>
 
-                                {user?.membership === 'Premium' && (
+                                {(user?.membership === 'Premium' || isOwnerOrManager) && teamMembers?.length > 0 && (
                                     <div>
                                         <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Satış Təmsilçisinə Təhkim Et (Könüllü)</label>
                                         <select
@@ -375,7 +377,7 @@ const Clients = () => {
                                             <option value="">Heç kimə (Yalnız mən)</option>
                                             {teamMembers?.map(member => (
                                                 <option key={member.user} value={member.user}>
-                                                    {member.user_name} ({member.user_email})
+                                                    {member.user_name} ({member.user_role})
                                                 </option>
                                             ))}
                                         </select>
