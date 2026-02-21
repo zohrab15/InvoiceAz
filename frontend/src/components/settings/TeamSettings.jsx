@@ -24,12 +24,22 @@ const TeamSettings = () => {
         enabled: !!token,
     });
 
+    const getRoleName = (roleCode) => {
+        const roles = {
+            'MANAGER': 'Menecer',
+            'ACCOUNTANT': 'Mühasib',
+            'INVENTORY_MANAGER': 'Anbar Meneceri',
+            'SALES_REP': 'Satış Təmsilçisi'
+        };
+        return roles[roleCode] || roleCode;
+    };
+
     // Add team member mutation
     const addMutation = useMutation({
         mutationFn: (data) => client.post('/users/team/', data),
-        onSuccess: () => {
+        onSuccess: (data, variables) => {
             queryClient.invalidateQueries(['team', token]);
-            showToast('İşçi uğurla komandaya əlavə edildi!');
+            showToast(`${getRoleName(variables.role)} uğurla komandaya əlavə edildi!`);
             setEmail('');
             setRole('SALES_REP');
             setIsSubmitting(false);
@@ -73,15 +83,6 @@ const TeamSettings = () => {
         });
     };
 
-    const getRoleName = (roleCode) => {
-        const roles = {
-            'MANAGER': 'Menecer',
-            'ACCOUNTANT': 'Mühasib',
-            'INVENTORY_MANAGER': 'Anbar Meneceri',
-            'SALES_REP': 'Satış Təmsilçisi'
-        };
-        return roles[roleCode] || roleCode;
-    };
 
     const renderLocation = (lat, lng, updated) => {
         if (!lat || !lng) return <span className="text-gray-400 italic text-xs">Aktiv deyil</span>;
