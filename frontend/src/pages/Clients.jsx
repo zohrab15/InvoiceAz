@@ -30,6 +30,8 @@ const Clients = () => {
         voen: '',
         assigned_to: ''
     });
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [isBulkAssignLoading, setIsBulkAssignLoading] = useState(false);
 
     const resetForm = () => {
         setFormData({ name: '', email: '', phone: '', address: '', voen: '', assigned_to: '' });
@@ -61,6 +63,9 @@ const Clients = () => {
         },
         enabled: !!token && (user?.membership === 'Premium' || isOwnerOrManager),
     });
+
+    // Only show Sales Reps for assignment per user request
+    const salesReps = teamMembers?.filter(m => m.role === 'SALES_REP') || [];
 
     const createMutation = useMutation({
         mutationFn: (data) => clientApi.post('/clients/', data),
@@ -96,6 +101,16 @@ const Clients = () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri silindi');
         }
+    });
+
+    const bulkAssignMutation = useMutation({
+        mutationFn: (data) => clientApi.post('/clients/bulk-assign/', data),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['clients']);
+            showToast(res.data.detail);
+            setSelectedIds([]);
+        },
+        onError: (err) => showToast(err.response?.data?.detail || 'Toplu təhkim zamanı xəta', 'error')
     });
 
     const handleSubmit = (e) => {
@@ -136,6 +151,18 @@ const Clients = () => {
         client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.phone?.includes(searchTerm)
     );
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === filteredClients?.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(filteredClients?.map(c => c.id) || []);
+        }
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    };
 
     return (
         <div className="space-y-6">
@@ -192,6 +219,14 @@ const Clients = () => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-xs uppercase font-semibold">
                             <tr>
+                                <th className="px-6 py-4 w-10">
+                                    <input
+                                        type="checkbox"
+                                        className="rounded border-[var(--color-card-border)] bg-[var(--color-card-bg)] checked:bg-blue-600 transition-all cursor-pointer"
+                                        checked={filteredClients?.length > 0 && selectedIds.length === filteredClients?.length}
+                                        onChange={toggleSelectAll}
+                                    />
+                                </th>
                                 <th className="px-6 py-4">Müştəri</th>
                                 <th className="px-6 py-4">Əlaqə</th>
                                 <th className="px-6 py-4">Status</th>
@@ -209,8 +244,16 @@ const Clients = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     key={client.id}
-                                    className="hover:bg-blue-50/30 transition-colors group"
+                                    className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(client.id) ? 'bg-blue-50/50' : ''}`}
                                 >
+                                    <td className="px-6 py-4">
+                                        <input
+                                            type="checkbox"
+                                            className="rounded border-[var(--color-card-border)] bg-[var(--color-card-bg)] checked:bg-blue-600 transition-all cursor-pointer"
+                                            checked={selectedIds.includes(client.id)}
+                                            onChange={() => toggleSelect(client.id)}
+                                        />
+                                    </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-3">
                                             <div className="w-10 h-10 bg-blue-500/10 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
@@ -366,7 +409,7 @@ const Clients = () => {
                                     </div>
                                 </div>
 
-                                {(user?.membership === 'Premium' || isOwnerOrManager) && teamMembers?.length > 0 && (
+                                {(user?.membership === 'Premium' || isOwnerOrManager) && salesReps.length > 0 && (
                                     <div>
                                         <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Satış Təmsilçisinə Təhkim Et (Könüllü)</label>
                                         <select
@@ -375,9 +418,9 @@ const Clients = () => {
                                             onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
                                         >
                                             <option value="">Heç kimə (Yalnız mən)</option>
-                                            {teamMembers?.map(member => (
+                                            {salesReps.map(member => (
                                                 <option key={member.user} value={member.user}>
-                                                    {member.user_name} ({member.user_role})
+                                                    {member.user_name}
                                                 </option>
                                             ))}
                                         </select>
@@ -402,6 +445,52 @@ const Clients = () => {
                             </form>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {selectedIds.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-white/10 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-10 min-w-[500px]"
+                    >
+                        <div className="flex flex-col">
+                            <span className="text-xl font-black text-white">{selectedIds.length}</span>
+                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Seçilib</span>
+                        </div>
+
+                        <div className="h-10 w-px bg-white/10"></div>
+
+                        <div className="flex-1 flex items-center gap-4">
+                            <select
+                                className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl text-white text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/50 transition-all appearance-none cursor-pointer hover:bg-white/10"
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        bulkAssignMutation.mutate({
+                                            client_ids: selectedIds,
+                                            assigned_to: e.target.value
+                                        });
+                                    }
+                                }}
+                            >
+                                <option value="" className="bg-slate-900 text-white">Təhkim et...</option>
+                                {salesReps.map(member => (
+                                    <option key={member.user} value={member.user} className="bg-slate-900 text-white">
+                                        {member.user_name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <button
+                                onClick={() => setSelectedIds([])}
+                                className="p-3 text-white/40 hover:text-white transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 
