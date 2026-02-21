@@ -33,34 +33,23 @@ class IsRoleAuthorized(permissions.BasePermission):
         if not model_name:
             return True
 
-        if role == 'MANAGER':
+        from .rbac import ROLE_PERMISSIONS
+        
+        rules = ROLE_PERMISSIONS.get(role, {})
+        
+        if rules.get('can_access_all', False):
             return True
             
-        if role == 'ACCOUNTANT':
-            allowed_models = ['Invoice', 'Expense', 'Payment', 'Client']
-            if model_name not in allowed_models:
-                return False
-            # Read-only for Clients
-            if model_name == 'Client' and request.method not in permissions.SAFE_METHODS:
-                return False
-            return True
+        models_config = rules.get('models', {})
+        
+        if model_name not in models_config:
+            return False
             
-        if role == 'INVENTORY_MANAGER':
-            allowed_models = ['Product', 'InventoryTransaction', 'Category']
-            if model_name not in allowed_models:
-                return False
-            return True
+        allowed_methods = models_config[model_name].get('methods', [])
+        
+        if request.method not in allowed_methods:
+            return False
             
-        if role == 'SALES_REP':
-            allowed_models = ['Client', 'Invoice', 'Product']
-            if model_name not in allowed_models:
-                return False
-            # Read-only for Products
-            if model_name == 'Product' and request.method not in permissions.SAFE_METHODS:
-                return False
-            # Prevent deleting clients and invoices
-            if request.method == 'DELETE' and model_name in ['Client', 'Invoice']:
-                return False
-            return True
+        return True
             
         return False

@@ -76,36 +76,29 @@ class BusinessContextMixin:
                 role = getattr(self.request, '_team_role', 'SALES_REP')
                 model_name = queryset.model.__name__
                 
-                if role == 'MANAGER':
-                    # Manager sees everything the owner sees
-                    pass 
+                from .rbac import ROLE_PERMISSIONS
                 
-                elif role == 'ACCOUNTANT':
-                    # Accountant sees financial stuff and clients
-                    if model_name not in ['Invoice', 'Expense', 'Payment', 'Client']:
+                rules = ROLE_PERMISSIONS.get(role, {})
+                
+                if rules.get('can_access_all', False):
+                    pass # Sees all business-filtered records
+                else:
+                    models_config = rules.get('models', {})
+                    if model_name not in models_config:
                         queryset = queryset.none()
-                        
-                elif role == 'INVENTORY_MANAGER':
-                    # Inventory Manager sees only products/inventory
-                    if model_name not in ['Product', 'InventoryTransaction', 'Category']:
-                        queryset = queryset.none()
-                        
-                elif role == 'SALES_REP':
-                    if model_name == 'Client':
-                        # Only show clients assigned to this rep
-                        queryset = queryset.filter(assigned_to=self.request.user)
-                    elif model_name == 'Invoice':
-                        # Show invoices created by this rep, or attached to a client assigned to this rep
-                        # Also protect against returning invoices for which they have NO client access
-                        queryset = queryset.filter(
-                            Q(created_by=self.request.user) | Q(client__assigned_to=self.request.user)
-                        ).distinct()
-                    elif model_name == 'Product':
-                        # Products are globally readable per the permissions fix, so don't filter them out here.
-                        # (Business filter already applied at top of method)
-                        pass
                     else:
-                        queryset = queryset.none() # Default hide for Sales Rep
+                        filter_type = models_config[model_name].get('filter_type', 'none')
+                        
+                        if filter_type == 'all':
+                            pass # Keep global business filter
+                        elif filter_type == 'assigned_only':
+                            queryset = queryset.filter(assigned_to=self.request.user)
+                        elif filter_type == 'own_or_assigned':
+                            queryset = queryset.filter(
+                                Q(created_by=self.request.user) | Q(client__assigned_to=self.request.user)
+                            ).distinct()
+                        else:
+                            queryset = queryset.none()
             
             return queryset
             
