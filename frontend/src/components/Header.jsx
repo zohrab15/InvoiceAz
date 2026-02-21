@@ -16,11 +16,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { useBusiness } from '../context/BusinessContext';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client';
 
 const Header = ({ onMenuClick }) => {
+    const { activeBusiness } = useBusiness();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
     const profileRef = useRef(null);
@@ -72,16 +74,28 @@ const Header = ({ onMenuClick }) => {
         ? (user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`)
         : null;
 
-    const menuItems = [
-        { icon: <User size={18} />, label: 'Profilim', onClick: () => navigate('/settings?tab=user') },
-        { icon: <Shield size={18} />, label: 'Təhlükəsizlik', onClick: () => navigate('/security') },
-        { icon: <Settings size={18} />, label: 'Tənzimləmələr', onClick: () => navigate('/system-settings') },
-        { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing') },
-        { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => navigate('/system-settings') },
-        { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => navigate('/notifications') },
-        { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => navigate('/help') },
-        { icon: <LogOut size={18} />, label: 'Çıxış', onClick: logout, variant: 'danger' },
-    ];
+    // Filter menu items by role
+    const getFilteredMenuItems = () => {
+        const rawRole = activeBusiness?.user_role;
+        const role = (rawRole || 'SALES_REP').toUpperCase();
+
+        const items = [
+            { icon: <User size={18} />, label: 'Profilim', onClick: () => navigate('/settings?tab=user') },
+            { icon: <Shield size={18} />, label: 'Təhlükəsizlik', onClick: () => navigate('/security') },
+            { icon: <Settings size={18} />, label: 'Tənzimləmələr', onClick: () => navigate('/system-settings') },
+            { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing'), privileged: true },
+            { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => navigate('/system-settings') },
+            { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => navigate('/notifications') },
+            { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => navigate('/help') },
+            { icon: <LogOut size={18} />, label: 'Çıxış', onClick: logout, variant: 'danger' },
+        ];
+
+        if (role === 'OWNER' || role === 'MANAGER') return items;
+
+        return items.filter(item => !item.privileged);
+    };
+
+    const menuItems = getFilteredMenuItems();
 
     return (
         <header
