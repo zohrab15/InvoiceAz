@@ -127,6 +127,9 @@ class TeamMember(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='team_member', on_delete=models.CASCADE)
     
     ROLE_CHOICES = (
+        ('MANAGER', 'Menecer'),
+        ('ACCOUNTANT', 'Mühasib'),
+        ('INVENTORY_MANAGER', 'Anbar Meneceri'),
         ('SALES_REP', 'Satış Təmsilçisi'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='SALES_REP')

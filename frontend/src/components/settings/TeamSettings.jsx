@@ -11,6 +11,7 @@ const TeamSettings = () => {
     const { token, user } = useAuthStore();
     const showToast = useToast();
     const [email, setEmail] = useState('');
+    const [role, setRole] = useState('SALES_REP');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Fetch team members
@@ -25,11 +26,12 @@ const TeamSettings = () => {
 
     // Add team member mutation
     const addMutation = useMutation({
-        mutationFn: (newMemberEmail) => client.post('/users/team/', { email: newMemberEmail }),
+        mutationFn: (data) => client.post('/users/team/', data),
         onSuccess: () => {
             queryClient.invalidateQueries(['team', token]);
             showToast('İşçi uğurla komandaya əlavə edildi!');
             setEmail('');
+            setRole('SALES_REP');
             setIsSubmitting(false);
         },
         onError: (error) => {
@@ -55,7 +57,7 @@ const TeamSettings = () => {
         e.preventDefault();
         if (!email.trim()) return;
         setIsSubmitting(true);
-        addMutation.mutate(email);
+        addMutation.mutate({ email, role });
     };
 
     const handleRemove = (id) => {
@@ -69,6 +71,16 @@ const TeamSettings = () => {
         return new Date(dateString).toLocaleString('az-AZ', {
             day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
         });
+    };
+
+    const getRoleName = (roleCode) => {
+        const roles = {
+            'MANAGER': 'Menecer',
+            'ACCOUNTANT': 'Mühasib',
+            'INVENTORY_MANAGER': 'Anbar Meneceri',
+            'SALES_REP': 'Satış Təmsilçisi'
+        };
+        return roles[roleCode] || roleCode;
     };
 
     const renderLocation = (lat, lng, updated) => {
@@ -148,6 +160,19 @@ const TeamSettings = () => {
                             style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                         />
                     </div>
+                    <div className="w-full sm:w-48">
+                        <select
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-3 outline-none transition-all font-bold cursor-pointer"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
+                        >
+                            <option value="MANAGER">Menecer</option>
+                            <option value="ACCOUNTANT">Mühasib</option>
+                            <option value="INVENTORY_MANAGER">Anbar Meneceri</option>
+                            <option value="SALES_REP">Satış Təmsilçisi</option>
+                        </select>
+                    </div>
                     <button
                         type="submit"
                         disabled={isSubmitting || addMutation.isPending}
@@ -215,7 +240,7 @@ const TeamSettings = () => {
                                             </td>
                                             <td className="py-4">
                                                 <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-blue-100 text-blue-700">
-                                                    {member.role === 'SALES_REP' ? 'Satış Təmsilçisi' : member.role}
+                                                    {getRoleName(member.role)}
                                                 </span>
                                             </td>
                                             <td className="py-4">

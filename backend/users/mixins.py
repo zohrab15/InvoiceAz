@@ -34,6 +34,7 @@ class BusinessContextMixin:
             team_member = TeamMember.objects.get(owner=business.user, user=self.request.user)
             self.request._active_business = business
             self.request._is_team_member = True
+            self.request._team_role = team_member.role
             return business
         except (Business.DoesNotExist, TeamMember.DoesNotExist):
             return None
@@ -52,17 +53,34 @@ class BusinessContextMixin:
             
             # If the user is a team member, filter their visibility
             if getattr(self.request, '_is_team_member', False):
+                role = getattr(self.request, '_team_role', 'SALES_REP')
                 model_name = queryset.model.__name__
-                if model_name == 'Client':
-                    # Only show clients assigned to this rep
-                    queryset = queryset.filter(assigned_to=self.request.user)
-                elif model_name == 'Invoice':
-                    # Show invoices created by this rep, or attached to a client assigned to this rep
-                    queryset = queryset.filter(
-                        Q(created_by=self.request.user) | Q(client__assigned_to=self.request.user)
-                    )
-                # Other models (like generic Expenses or Inventory) might be entirely hidden
-                # or require their own rules. Default: no further filtering if not Client/Invoice
+                
+                if role == 'MANAGER':
+                    # Manager sees everything the owner sees
+                    pass 
+                
+                elif role == 'ACCOUNTANT':
+                    # Accountant sees financial stuff and clients
+                    if model_name not in ['Invoice', 'Expense', 'Payment', 'Client']:
+                        queryset = queryset.none()
+                        
+                elif role == 'INVENTORY_MANAGER':
+                    # Inventory Manager sees only products/inventory
+                    if model_name not in ['Product', 'InventoryTransaction', 'Category']:
+                        queryset = queryset.none()
+                        
+                elif role == 'SALES_REP':
+                    if model_name == 'Client':
+                        # Only show clients assigned to this rep
+                        queryset = queryset.filter(assigned_to=self.request.user)
+                    elif model_name == 'Invoice':
+                        # Show invoices created by this rep, or attached to a client assigned to this rep
+                        queryset = queryset.filter(
+                            Q(created_by=self.request.user) | Q(client__assigned_to=self.request.user)
+                        )
+                    else:
+                        queryset = queryset.none() # Default hide for Sales Rep
             
             return queryset
             

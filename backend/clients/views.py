@@ -5,11 +5,12 @@ from .serializers import ClientSerializer
 from users.models import Business
 from users.mixins import BusinessContextMixin
 from users.plan_limits import check_client_limit
+from users.permissions import IsRoleAuthorized
 
 class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Client.objects.all() 
     serializer_class = ClientSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
     
     def perform_create(self, serializer):
         limit_check = check_client_limit(self.request.user)

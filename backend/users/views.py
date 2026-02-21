@@ -9,7 +9,14 @@ class BusinessViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Business.objects.filter(user=self.request.user)
+        user = self.request.user
+        # Direct owner
+        owned = Business.objects.filter(user=user)
+        # Invited as team member
+        team_owners = TeamMember.objects.filter(user=user).values_list('owner', flat=True)
+        team_businesses = Business.objects.filter(user__in=team_owners)
+        
+        return (owned | team_businesses).distinct()
 
     def perform_create(self, serializer):
         limit_check = check_business_limit(self.request.user)

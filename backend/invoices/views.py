@@ -7,6 +7,7 @@ from .serializers import InvoiceSerializer, ExpenseSerializer
 from users.models import Business
 from users.mixins import BusinessContextMixin
 from users.plan_limits import check_invoice_limit, check_expense_limit
+from users.permissions import IsRoleAuthorized
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import io
@@ -14,7 +15,7 @@ import io
 class ExpenseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 
     def perform_create(self, serializer):
         business = self.get_active_business()
@@ -38,7 +39,7 @@ class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     from .serializers import PaymentSerializer
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 
     def get_queryset(self):
         business = self.get_active_business()
@@ -59,7 +60,7 @@ class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 
     def get_queryset(self):
         # We override mixin's get_queryset to add select_related/prefetch_related

@@ -8,11 +8,12 @@ from .serializers import ProductSerializer, ExcelUploadSerializer
 from users.models import Business
 
 from users.mixins import BusinessContextMixin
+from users.permissions import IsRoleAuthorized
 
 class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
     def upload_excel(self, request):

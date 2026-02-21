@@ -55,6 +55,27 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/help', icon: <LifeBuoy size={20} />, label: 'Kömək və Dəstək' },
     ];
 
+    const getFilteredNavItems = () => {
+        const role = activeBusiness?.user_role || 'SALES_REP';
+        if (role === 'OWNER' || role === 'MANAGER') return navItems;
+
+        return navItems.filter(item => {
+            if (role === 'ACCOUNTANT') {
+                return ['Ana səhifə', 'Fakturalar', 'Xərclər', 'Müştərilər', 'Vergi və Hesabatlar', 'Kömək və Dəstək'].includes(item.label);
+            }
+            if (role === 'INVENTORY_MANAGER') {
+                return ['Ana səhifə', 'Məhsullar', 'Məhsul Analitikası', 'Kömək və Dəstək'].includes(item.label);
+            }
+            if (role === 'SALES_REP') {
+                return ['Ana səhifə', 'Fakturalar', 'Müştərilər', 'Kömək və Dəstək'].includes(item.label);
+            }
+            return true;
+        });
+    };
+
+    const filteredNavItems = getFilteredNavItems();
+    const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(activeBusiness?.user_role);
+
     return (
         <>
             {/* Mobile Backdrop */}
@@ -104,7 +125,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     {activeBusiness ? activeBusiness.name : 'Biznes Seçin'}
                                 </div>
                                 <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                                    {activeBusiness ? 'Aktiv Profil' : '---'}
+                                    {activeBusiness ? (activeBusiness.user_role === 'OWNER' ? 'Aktiv Profil' : activeBusiness.user_role) : '---'}
                                 </div>
                             </div>
                         </div>
@@ -137,26 +158,30 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     </button>
                                 ))}
 
-                                <div style={{ height: '1px', backgroundColor: 'var(--color-card-border)', margin: '4px 0' }} />
+                                {isOwnerOrManager && (
+                                    <>
+                                        <div style={{ height: '1px', backgroundColor: 'var(--color-card-border)', margin: '4px 0' }} />
 
-                                <NavLink
-                                    to="/settings"
-                                    onClick={() => {
-                                        setIsBusinessMenuOpen(false);
-                                        if (window.innerWidth < 1024) onClose();
-                                    }}
-                                    className="w-full flex items-center justify-center p-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
-                                    style={{ color: 'var(--color-text-muted)' }}
-                                >
-                                    + Yeni Biznes
-                                </NavLink>
+                                        <NavLink
+                                            to="/settings"
+                                            onClick={() => {
+                                                setIsBusinessMenuOpen(false);
+                                                if (window.innerWidth < 1024) onClose();
+                                            }}
+                                            className="w-full flex items-center justify-center p-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+                                            style={{ color: 'var(--color-text-muted)' }}
+                                        >
+                                            + Yeni Biznes
+                                        </NavLink>
+                                    </>
+                                )}
                             </div>
                         </div>
                     )}
                 </div>
 
                 <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-                    {navItems.map((item) => (
+                    {filteredNavItems.map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}

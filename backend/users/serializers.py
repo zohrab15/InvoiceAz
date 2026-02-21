@@ -14,10 +14,24 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
 class BusinessSerializer(serializers.ModelSerializer):
+    user_role = serializers.SerializerMethodField()
+
     class Meta:
         model = Business
         fields = '__all__'
         read_only_fields = ('id', 'user')
+
+    def get_user_role(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user:
+            return None
+        if obj.user == request.user:
+            return 'OWNER'
+        try:
+            member = TeamMember.objects.get(owner=obj.user, user=request.user)
+            return member.role
+        except TeamMember.DoesNotExist:
+            return None
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

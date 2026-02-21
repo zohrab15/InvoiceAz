@@ -5,11 +5,23 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import useAuthStore from './store/useAuthStore';
 import client from './api/client';
-import { BusinessProvider } from './context/BusinessContext';
+import { BusinessProvider, useBusiness } from './context/BusinessContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 
 import { ToastProvider } from './components/Toast';
+
+// Role Gate for granular access control
+const RoleGate = ({ roles, children }) => {
+  const { activeBusiness, isLoading } = useBusiness();
+
+  if (isLoading) return null; // Wait for business context
+
+  const role = activeBusiness?.user_role || 'SALES_REP';
+  if (roles.includes(role)) return children;
+
+  return <Navigate to="/dashboard" replace />;
+};
 
 // Lazy loading components for better performance
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -75,6 +87,77 @@ const LoadingScreen = () => (
   </div>
 );
 
+const AuthenticatedRoutes = () => (
+  <Layout>
+    <Routes>
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/invoices" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'SALES_REP']}>
+          <Invoices />
+        </RoleGate>
+      } />
+      <Route path="/products" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+          <Products />
+        </RoleGate>
+      } />
+      <Route path="/problematic-invoices" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+          <ProblematicInvoices />
+        </RoleGate>
+      } />
+      <Route path="/analytics/payments" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+          <PaymentAnalytics />
+        </RoleGate>
+      } />
+      <Route path="/analytics/issues" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+          <ProblematicInvoices />
+        </RoleGate>
+      } />
+      <Route path="/analytics/forecast" element={
+        <RoleGate roles={['OWNER', 'MANAGER']}>
+          <ForecastAnalytics />
+        </RoleGate>
+      } />
+      <Route path="/analytics/products" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+          <ProductAnalytics />
+        </RoleGate>
+      } />
+      <Route path="/analytics/tax" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+          <TaxReports />
+        </RoleGate>
+      } />
+      <Route path="/expenses" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT']}>
+          <Expenses />
+        </RoleGate>
+      } />
+      <Route path="/clients" element={
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'SALES_REP']}>
+          <Clients />
+        </RoleGate>
+      } />
+      <Route path="/settings" element={
+        <RoleGate roles={['OWNER', 'MANAGER']}>
+          <BusinessSettings />
+        </RoleGate>
+      } />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/security" element={<SecurityPage />} />
+      <Route path="/system-settings" element={
+        <RoleGate roles={['OWNER', 'MANAGER']}>
+          <SystemSettings />
+        </RoleGate>
+      } />
+      <Route path="/notifications" element={<Notifications />} />
+    </Routes>
+  </Layout>
+);
+
 function App() {
   const { token, user, setAuth } = useAuthStore();
 
@@ -135,26 +218,7 @@ function App() {
                     path="/*"
                     element={
                       <ProtectedRoute>
-                        <Layout>
-                          <Routes>
-                            <Route path="/dashboard" element={<Dashboard />} />
-                            <Route path="/invoices" element={<Invoices />} />
-                            <Route path="/products" element={<Products />} />
-                            <Route path="/problematic-invoices" element={<ProblematicInvoices />} />
-                            <Route path="/analytics/payments" element={<PaymentAnalytics />} />
-                            <Route path="/analytics/issues" element={<ProblematicInvoices />} />
-                            <Route path="/analytics/forecast" element={<ForecastAnalytics />} />
-                            <Route path="/analytics/products" element={<ProductAnalytics />} />
-                            <Route path="/analytics/tax" element={<TaxReports />} />
-                            <Route path="/expenses" element={<Expenses />} />
-                            <Route path="/clients" element={<Clients />} />
-                            <Route path="/settings" element={<BusinessSettings />} />
-                            <Route path="/pricing" element={<PricingPage />} />
-                            <Route path="/security" element={<SecurityPage />} />
-                            <Route path="/system-settings" element={<SystemSettings />} />
-                            <Route path="/notifications" element={<Notifications />} />
-                          </Routes>
-                        </Layout>
+                        <AuthenticatedRoutes />
                       </ProtectedRoute>
                     }
                   />

@@ -150,6 +150,11 @@ const Dashboard = () => {
         </div>
     );
 
+    const role = activeBusiness?.user_role || 'SALES_REP';
+    const isInventoryManager = role === 'INVENTORY_MANAGER';
+    const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);
+    const isAccountant = role === 'ACCOUNTANT';
+
     const statCards = [
         {
             label: 'Ümumi Gəlir',
@@ -157,7 +162,8 @@ const Dashboard = () => {
             icon: <TrendingUp size={20} />,
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
-            border: '#3b82f6'
+            border: '#3b82f6',
+            visible: !isInventoryManager
         },
         {
             label: 'Gözləyən',
@@ -165,7 +171,8 @@ const Dashboard = () => {
             icon: <Clock size={20} />,
             color: '#f59e0b',
             bg: 'rgba(245,158,11,0.08)',
-            border: '#f59e0b'
+            border: '#f59e0b',
+            visible: !isInventoryManager
         },
         {
             label: 'Ümumi Xərclər',
@@ -173,7 +180,8 @@ const Dashboard = () => {
             icon: <Wallet size={20} />,
             color: '#ef4444',
             bg: 'rgba(239,68,68,0.08)',
-            border: '#ef4444'
+            border: '#ef4444',
+            visible: isOwnerOrManager || isAccountant
         },
         {
             label: 'Xalis Mənfəət',
@@ -181,9 +189,10 @@ const Dashboard = () => {
             icon: profit >= 0 ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />,
             color: profit >= 0 ? '#10b981' : '#ef4444',
             bg: profit >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
-            border: profit >= 0 ? '#10b981' : '#ef4444'
+            border: profit >= 0 ? '#10b981' : '#ef4444',
+            visible: isOwnerOrManager || isAccountant
         },
-    ];
+    ].filter(card => card.visible);
 
     return (
         <motion.div
@@ -203,23 +212,25 @@ const Dashboard = () => {
                         <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
                     </div>
                 </div>
-                <motion.button
-                    whileHover={{ y: -1 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate('/invoices')}
-                    className="text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm shadow-lg transition-all"
-                    style={{
-                        background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
-                        boxShadow: '0 4px 14px var(--color-brand-shadow)'
-                    }}
-                >
-                    <Plus size={16} strokeWidth={3} />
-                    <span>Yeni Faktura</span>
-                </motion.button>
+                {isOwnerOrManager && (
+                    <motion.button
+                        whileHover={{ y: -1 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => navigate('/invoices')}
+                        className="text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm shadow-lg transition-all"
+                        style={{
+                            background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
+                            boxShadow: '0 4px 14px var(--color-brand-shadow)'
+                        }}
+                    >
+                        <Plus size={16} strokeWidth={3} />
+                        <span>Yeni Faktura</span>
+                    </motion.button>
+                )}
             </div>
 
             {/* ── STAT CARDS ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className={`grid grid-cols-2 lg:grid-cols-${statCards.length} gap-4`}>
                 {statCards.map((s, i) => (
                     <motion.div
                         initial={{ opacity: 0, y: 16 }}
@@ -250,119 +261,121 @@ const Dashboard = () => {
             {/* ── CHART + TRANSACTIONS ── */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 {/* Chart — 3 cols */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="lg:col-span-3 p-6 rounded-2xl"
-                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
-                >
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-                        <div>
-                            <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Maliyyə İcmalı</h3>
-                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Son 6 aylıq gəlir və xərc</p>
-                        </div>
-                        <div className="flex gap-5">
-                            <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                                <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                                Gəlir
+                {(isOwnerOrManager || isAccountant) && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="lg:col-span-3 p-6 rounded-2xl"
+                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                    >
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+                            <div>
+                                <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Maliyyə İcmalı</h3>
+                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Son 6 aylıq gəlir və xərc</p>
                             </div>
-                            <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                                <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
-                                Xərc
+                            <div className="flex gap-5">
+                                <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                                    Gəlir
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                                    Xərc
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="h-72 w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
-                            <ComposedChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <defs>
-                                    <linearGradient id="gəlirGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
-                                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="var(--color-card-border)"
-                                    vertical={false}
-                                />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }}
-                                    dy={8}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: 'var(--color-text-muted)', fontSize: 10, fontWeight: 600 }}
-                                    tickFormatter={v => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.5 }}
-                                    content={({ active, payload, label }) => {
-                                        if (active && payload?.length) {
-                                            return (
-                                                <div
-                                                    className="p-4 rounded-xl shadow-xl backdrop-blur-md min-w-[180px]"
-                                                    style={{
-                                                        backgroundColor: 'var(--color-dropdown-bg)',
-                                                        border: '1px solid var(--color-dropdown-border)'
-                                                    }}
-                                                >
-                                                    <p className="text-[10px] font-bold uppercase tracking-wider mb-3 pb-2"
-                                                        style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-card-border)' }}>
-                                                        {label}
-                                                    </p>
-                                                    <div className="space-y-2">
-                                                        {payload.map((entry, idx) => (
-                                                            <div key={idx} className="flex justify-between items-center gap-6">
-                                                                <div className="flex items-center gap-2">
-                                                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                                                                    <span className="text-xs font-medium capitalize" style={{ color: 'var(--color-text-secondary)' }}>{entry.name}</span>
+                        <div className="h-72 w-full">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
+                                <ComposedChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="gəlirGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+                                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        stroke="var(--color-card-border)"
+                                        vertical={false}
+                                    />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }}
+                                        dy={8}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: 'var(--color-text-muted)', fontSize: 10, fontWeight: 600 }}
+                                        tickFormatter={v => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.5 }}
+                                        content={({ active, payload, label }) => {
+                                            if (active && payload?.length) {
+                                                return (
+                                                    <div
+                                                        className="p-4 rounded-xl shadow-xl backdrop-blur-md min-w-[180px]"
+                                                        style={{
+                                                            backgroundColor: 'var(--color-dropdown-bg)',
+                                                            border: '1px solid var(--color-dropdown-border)'
+                                                        }}
+                                                    >
+                                                        <p className="text-[10px] font-bold uppercase tracking-wider mb-3 pb-2"
+                                                            style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-card-border)' }}>
+                                                            {label}
+                                                        </p>
+                                                        <div className="space-y-2">
+                                                            {payload.map((entry, idx) => (
+                                                                <div key={idx} className="flex justify-between items-center gap-6">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                                        <span className="text-xs font-medium capitalize" style={{ color: 'var(--color-text-secondary)' }}>{entry.name}</span>
+                                                                    </div>
+                                                                    <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                                                                        {entry.value?.toLocaleString()} ₼
+                                                                    </span>
                                                                 </div>
-                                                                <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                                                                    {entry.value?.toLocaleString()} ₼
-                                                                </span>
-                                                            </div>
-                                                        ))}
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        }
-                                        return null;
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="gəlir"
-                                    name="gəlir"
-                                    fill="url(#gəlirGrad)"
-                                    stroke="#3b82f6"
-                                    strokeWidth={2.5}
-                                    animationDuration={1200}
-                                />
-                                <Bar
-                                    dataKey="xərc"
-                                    name="xərc"
-                                    fill="#fb7185"
-                                    radius={[4, 4, 0, 0]}
-                                    barSize={16}
-                                    animationDuration={1200}
-                                    opacity={0.85}
-                                />
-                            </ComposedChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
+                                                );
+                                            }
+                                            return null;
+                                        }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="gəlir"
+                                        name="gəlir"
+                                        fill="url(#gəlirGrad)"
+                                        stroke="#3b82f6"
+                                        strokeWidth={2.5}
+                                        animationDuration={1200}
+                                    />
+                                    <Bar
+                                        dataKey="xərc"
+                                        name="xərc"
+                                        fill="#fb7185"
+                                        radius={[4, 4, 0, 0]}
+                                        barSize={16}
+                                        animationDuration={1200}
+                                        opacity={0.85}
+                                    />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </motion.div>
+                )}
 
                 {/* Transactions — 2 cols */}
                 <motion.div
                     initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="lg:col-span-2 p-6 rounded-2xl flex flex-col"
+                    className={`${(isOwnerOrManager || isAccountant) ? 'lg:col-span-2' : 'lg:col-span-5'} p-6 rounded-2xl flex flex-col`}
                     style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                 >
                     <div className="flex justify-between items-center mb-5">
