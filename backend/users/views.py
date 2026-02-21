@@ -35,9 +35,8 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
         # Owners see their team
         return TeamMember.objects.filter(owner=self.request.user)
 
-    def perform_create(self, serializer):
-        # We need to find the user by email
-        email = self.request.data.get('email')
+    def create(self, request, *args, **kwargs):
+        email = request.data.get('email')
         if not email:
             raise PermissionDenied("İstifadəçi e-poçtu tələb olunur.")
         
@@ -46,14 +45,20 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
         except User.DoesNotExist:
             raise PermissionDenied("Bu e-poçt ilə istifadəçi tapılmadı. İşçi əvvəlcə saytdan qeydiyyatdan keçməlidir.")
             
-        if target_user == self.request.user:
+        if target_user == request.user:
             raise PermissionDenied("Özünüzü komandaya əlavə edə bilməzsiniz.")
             
-        if TeamMember.objects.filter(owner=self.request.user, user=target_user).exists():
+        if TeamMember.objects.filter(owner=request.user, user=target_user).exists():
            raise PermissionDenied("Bu istifadəçi artıq komandanızdadır.") 
             
-        # Note: We are not enforcing strict limits here yet, but you could add a checks
-        serializer.save(owner=self.request.user, user=target_user)
+        # Create directly without standard serializer validation to avoid 'user required' error
+        member = TeamMember.objects.create(
+            owner=request.user, 
+            user=target_user,
+            role=request.data.get('role', 'SALES_REP')
+        )
+        serializer = self.get_serializer(member)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class TeamMemberLocationUpdateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
