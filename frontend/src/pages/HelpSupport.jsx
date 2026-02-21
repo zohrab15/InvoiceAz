@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
     Search, Mail, MessageSquare, Phone,
-    FileText, HelpCircle, ChevronRight, ChevronDown,
-    ArrowLeft, Globe, LifeBuoy, Zap,
+    FileText, HelpCircle, ChevronRight, ChevronDown, ChevronLeft,
+    ArrowLeft, ArrowRight, Globe, LifeBuoy, Zap, Lock,
     Plus, Minus, ExternalLink,
     CreditCard, Users, ShieldCheck, MessageCircle
 } from 'lucide-react';
