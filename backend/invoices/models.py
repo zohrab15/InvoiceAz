@@ -226,6 +226,19 @@ def update_invoice_on_payment(sender, instance, **kwargs):
     instance.invoice.update_payment_status()
 
 @receiver(post_save, sender=Expense)
+def expense_created_notification(sender, instance, created, **kwargs):
+    if created:
+        # Notify business owner
+        create_notification(
+            user=instance.business.user,
+            title="Yeni Xərc",
+            message=f"'{instance.description}' adlı yeni xərc əlavə edildi ({instance.amount} {instance.currency}).",
+            type='info',
+            link='/expenses',
+            setting_key='expense_created'
+        )
+
+@receiver(post_save, sender=Expense)
 def check_budget_limit(sender, instance, created, **kwargs):
     if created:
         business = instance.business

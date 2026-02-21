@@ -8,6 +8,7 @@ from users.models import Business
 from users.mixins import BusinessContextMixin
 from users.plan_limits import check_invoice_limit, check_expense_limit
 from users.permissions import IsRoleAuthorized
+from notifications.utils import create_notification
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import io
@@ -326,13 +327,37 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             invoice = Invoice.objects.get(share_token=share_token)
             
             # Tracking logic
+            should_notify = False
             if invoice.status in ['sent', 'finalized']:
                 invoice.status = 'viewed'
+                should_notify = True
             
             if not invoice.viewed_at:
                 invoice.viewed_at = timezone.now()
+                should_notify = True
             
             invoice.save()
+
+            if should_notify:
+                # Notify business owner
+                create_notification(
+                    user=invoice.business.user,
+                    title="Faktura Baxıldı",
+                    message=f"#{invoice.invoice_number} nömrəli fakturaya müştəri tərəfindən baxıldı.",
+                    type='info',
+                    link='/invoices',
+                    setting_key='invoice_viewed'
+                )
+                # Notify assigned Sales Rep if applicable
+                if invoice.client and invoice.client.assigned_to:
+                    create_notification(
+                        user=invoice.client.assigned_to,
+                        title="Faktura Baxıldı",
+                        message=f"Müştəriniz {invoice.client.name} #{invoice.invoice_number} nömrəli fakturaya baxdı.",
+                        type='info',
+                        link='/invoices',
+                        setting_key='invoice_viewed'
+                    )
             
             return Response(InvoiceSerializer(invoice).data)
         except Invoice.DoesNotExist:
