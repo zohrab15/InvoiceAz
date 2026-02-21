@@ -63,8 +63,10 @@ export const BusinessProvider = ({ children }) => {
                 // If businesses.length === 0, we don't clear activeBusiness immediately to prevent race condition
                 // where invalidateQueries clears the list before fetching the new one.
             } else if (businesses.length > 0) {
-                // No active business, but we have some, pick first
-                switchBusiness(businesses[0]);
+                // No active business, but we have some
+                // Prefer a team business (where user is NOT the owner) over a personal one
+                const teamBusiness = businesses.find(b => b.user_role && b.user_role !== 'OWNER');
+                switchBusiness(teamBusiness || businesses[0]);
             }
         }
     }, [businesses, isLoading, token]); // Re-run if businesses or token change
