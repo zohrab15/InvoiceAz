@@ -25,6 +25,21 @@ class BusinessViewSet(viewsets.ModelViewSet):
         
         return (owned | team_businesses).distinct()
 
+    def update(self, request, *args, **kwargs):
+        business = self.get_object()
+        if request.user != business.user:
+            from .models import TeamMember
+            is_manager = TeamMember.objects.filter(owner=business.user, user=request.user, role='MANAGER').exists()
+            if not is_manager:
+                raise PermissionDenied("Bu biznes məlumatlarını yalnız sahib və ya menecer redaktə edə bilər.")
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        business = self.get_object()
+        if request.user != business.user:
+            raise PermissionDenied("Yalnız biznes sahibi biznesi silə bilər.")
+        return super().destroy(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         limit_check = check_business_limit(self.request.user)
         if not limit_check['allowed']:
@@ -78,9 +93,17 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
             # If the inviter is already a team member, use their owner as the boss
             inviter_membership = TeamMember.objects.get(user=request.user)
             corporate_owner = inviter_membership.owner
+            inviter_role = inviter_membership.role
         except TeamMember.DoesNotExist:
             # Inviter is a root owner
             corporate_owner = request.user
+            inviter_role = 'OWNER'
+
+        if inviter_role not in ['OWNER', 'MANAGER']:
+            raise PermissionDenied("Komandaya işçi əlavə etmək üçün səlahiyyətiniz yoxdur.")
+            
+        if inviter_role == 'MANAGER' and role_code == 'MANAGER':
+            raise PermissionDenied("Menecerlər yeni menecer təyin edə bilməz.")
 
         if target_user == corporate_owner:
             raise PermissionDenied("Biznes sahibini komandaya əlavə edə bilməzsiniz.")
@@ -96,6 +119,18 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(member)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_destroy(self, instance):
+        if self.request.user != instance.owner:
+            try:
+                inviter_membership = TeamMember.objects.get(owner=instance.owner, user=self.request.user)
+                if inviter_membership.role != 'MANAGER':
+                    raise PermissionDenied("Yalnız sahib və ya menecerlər işçiləri silə bilər.")
+                if instance.role == 'MANAGER':
+                    raise PermissionDenied("Menecerlər digər menecerləri silə bilməz.")
+            except TeamMember.DoesNotExist:
+                raise PermissionDenied("Təşkilatda deyilsiniz.")
+        instance.delete()
 
 class TeamMemberLocationUpdateView(APIView):
     permission_classes = [permissions.IsAuthenticated]

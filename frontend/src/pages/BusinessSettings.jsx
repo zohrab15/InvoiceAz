@@ -191,10 +191,15 @@ const BusinessSettings = () => {
 
     const isBusinessLoading = isLoading;
 
+    const rawRole = selectedBusiness?.user_role || 'SALES_REP';
+    const isRestricted = rawRole === 'SALES_REP' || rawRole === 'INVENTORY_MANAGER';
+
     const tabs = [
         { id: 'user', name: 'Şəxsi Hesab', icon: <User size={18} /> },
-        { id: 'business', name: 'Biznes Profilləri', icon: <Building2 size={18} /> },
-        { id: 'team', name: 'Komanda', icon: <Users size={18} /> },
+        ...(!isRestricted ? [
+            { id: 'business', name: 'Biznes Profilləri', icon: <Building2 size={18} /> },
+            { id: 'team', name: 'Komanda', icon: <Users size={18} /> },
+        ] : []),
     ];
 
     return (
