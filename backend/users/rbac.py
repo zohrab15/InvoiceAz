@@ -20,6 +20,7 @@ ROLE_PERMISSIONS = {
             'Expense': {'methods': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 'filter_type': 'all'},
             'Payment': {'methods': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 'filter_type': 'all'},
             'Client': {'methods': ['GET', 'OPTIONS', 'HEAD'], 'filter_type': 'all'}, # Read-only
+            'Product': {'methods': ['GET', 'OPTIONS', 'HEAD'], 'filter_type': 'all'}, # Read-only
         }
     },
     'INVENTORY_MANAGER': {

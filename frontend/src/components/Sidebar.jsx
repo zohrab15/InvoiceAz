@@ -67,7 +67,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         // Default: filter strictly for known roles
         return navItems.filter(item => {
             if (role === 'ACCOUNTANT') {
-                return ['Ana səhifə', 'Fakturalar', 'Xərclər', 'Müştərilər', 'Vergi və Hesabatlar', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
+                return ['Ana səhifə', 'Fakturalar', 'Məhsullar', 'Xərclər', 'Müştərilər', 'Ödəniş Analitikası', 'Məhsul Analitikası', 'Problemli Fakturalar', 'Vergi və Hesabatlar', 'Kömək və Dəstək'].includes(item.label);
             }
             if (role === 'INVENTORY_MANAGER') {
                 return ['Ana səhifə', 'Məhsullar', 'Məhsul Analitikası', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);

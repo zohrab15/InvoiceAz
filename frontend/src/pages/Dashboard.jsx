@@ -224,7 +224,7 @@ const Dashboard = () => {
                         <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
                     </div>
                 </div>
-                {isOwnerOrManager && (
+                {(isOwnerOrManager || isAccountant) && (
                     <motion.button
                         whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
