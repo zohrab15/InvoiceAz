@@ -24,32 +24,32 @@ const Dashboard = () => {
     const user = useAuthStore(state => state.user);
 
     const { data: invoices, isLoading: isLoadingInvoices } = useQuery({
-        queryKey: ['invoices', activeBusiness?.id],
+        queryKey: ['invoices', activeBusiness?.id, user?.id],
         queryFn: async () => {
             const res = await clientApi.get('/invoices/');
             return res.data;
         },
-        enabled: !!activeBusiness,
+        enabled: !!activeBusiness && !!user,
         retry: false,
     });
 
     const { data: expenses, isLoading: isLoadingExpenses } = useQuery({
-        queryKey: ['expenses', activeBusiness?.id],
+        queryKey: ['expenses', activeBusiness?.id, user?.id],
         queryFn: async () => {
             const res = await clientApi.get('/invoices/expenses/');
             return res.data;
         },
-        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
+        enabled: !!activeBusiness && !!user && activeBusiness?.user_role !== 'SALES_REP',
         retry: false,
     });
 
     const { data: payments, isLoading: isLoadingPayments } = useQuery({
-        queryKey: ['payments', activeBusiness?.id],
+        queryKey: ['payments', activeBusiness?.id, user?.id],
         queryFn: async () => {
             const res = await clientApi.get('/invoices/payments/');
             return res.data;
         },
-        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
+        enabled: !!activeBusiness && !!user && activeBusiness?.user_role !== 'SALES_REP',
         retry: false,
     });
 
