@@ -15,8 +15,17 @@ def get_plan_limits(user):
     if user.subscription_plan:
         return user.subscription_plan
     
-    # Fallback to free plan from DB if not set
+    # Handle legacy users who have string membership but no linked plan
     from users.models import SubscriptionPlan
+    if hasattr(user, 'membership') and user.membership and user.membership != 'free':
+        legacy_plan = SubscriptionPlan.objects.filter(name=user.membership.lower()).first()
+        if legacy_plan:
+            # Optionally sync it for future
+            user.subscription_plan = legacy_plan
+            user.save(update_fields=['subscription_plan'])
+            return legacy_plan
+            
+    # Fallback to free plan from DB if not set
     free_plan = SubscriptionPlan.objects.filter(name='free').first()
     return free_plan
 
