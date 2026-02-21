@@ -16,7 +16,8 @@ import {
     Lock,
     Package,
     BarChart3,
-    LifeBuoy
+    LifeBuoy,
+    Settings
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';

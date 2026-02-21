@@ -142,7 +142,9 @@ const Dashboard = () => {
                 positive: true
             }))
         ];
-        return trans.sort((a, b) => b.date - a.date).slice(0, 7);
+        // Filter out items with missing or invalid dates to prevent crashes
+        const validTrans = trans.filter(t => t.rawDate && !isNaN(t.date.getTime()));
+        return validTrans.sort((a, b) => b.date - a.date).slice(0, 7);
     }, [invoices, expenses, payments]);
 
     if (isLoading) return (
@@ -422,7 +424,7 @@ const Dashboard = () => {
                                         {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
                                     </div>
                                     <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>
-                                        {t.date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'short' })}
+                                        {t.date && !isNaN(t.date.getTime()) ? t.date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'short' }) : '---'}
                                     </div>
                                 </div>
                             </div>
