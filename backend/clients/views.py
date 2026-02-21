@@ -31,6 +31,18 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         # Call Mixin's perform_create to handle business and role-based assignment
         super().perform_create(serializer)
 
+    def perform_update(self, serializer):
+        # Prevent Sales Reps from changing or clearing the assigned_to field
+        role = getattr(self.request.user, 'active_role', None)
+
+        if role not in ['OWNER', 'MANAGER']:
+            # If they try to update, force it to remain whatever it currently is in the DB
+            # We do this by dropping assigned_to from validated_data before saving
+            if 'assigned_to' in serializer.validated_data:
+                serializer.validated_data.pop('assigned_to')
+
+        super().perform_update(serializer)
+
     @action(detail=False, methods=['post'], url_path='bulk-assign')
     def bulk_assign(self, request):
         client_ids = request.data.get('client_ids', [])

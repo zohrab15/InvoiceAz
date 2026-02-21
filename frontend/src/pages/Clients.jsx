@@ -118,8 +118,16 @@ const Clients = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const submitData = { ...formData };
-        if (!submitData.assigned_to) {
-            submitData.assigned_to = null;
+
+        // If user is Owner/Manager, handle empty assignment
+        if (isOwnerOrManager) {
+            if (!submitData.assigned_to) {
+                submitData.assigned_to = null;
+            }
+        } else {
+            // If user is a Sales Rep (or other role without assignment rights),
+            // remove assigned_to from payload so they don't accidentally override/nullify it
+            delete submitData.assigned_to;
         }
 
         if (editingClient) {
