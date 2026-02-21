@@ -161,7 +161,15 @@ const Header = ({ onMenuClick }) => {
                                                         {n.title}
                                                     </h4>
                                                     <span className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>
-                                                        {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        {(() => {
+                                                            try {
+                                                                const d = new Date(n.created_at);
+                                                                if (isNaN(d.getTime())) return '---';
+                                                                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                            } catch (e) {
+                                                                return '---';
+                                                            }
+                                                        })()}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{n.message}</p>

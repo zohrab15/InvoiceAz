@@ -8,6 +8,7 @@ import client from './api/client';
 import { BusinessProvider, useBusiness } from './context/BusinessContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import { ToastProvider } from './components/Toast';
 
@@ -201,40 +202,42 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BusinessProvider>
-        <ThemeProvider>
-          <ToastProvider>
-            <Router>
-              <Suspense fallback={<LoadingScreen />}>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/verify-email-sent" element={<EmailVerificationSent />} />
-                  <Route path="/verify-email/:key" element={<VerifyEmail />} />
-                  <Route path="/password-reset-confirm/:uid/:token" element={<ResetPassword />} />
-                  <Route path="/view/:token" element={<PublicInvoice />} />
-                  <Route path="/public/pay/:token" element={<PublicPayment />} />
-                  <Route path="/demo-login" element={<DemoLogin />} />
-                  <Route path="/terms" element={<LegalPage />} />
-                  <Route path="/privacy" element={<LegalPage />} />
-                  <Route path="/help" element={<HelpSupport />} />
-                  <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
-                  <Route
-                    path="/*"
-                    element={
-                      <ProtectedRoute>
-                        <AuthenticatedRoutes />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </Suspense>
-            </Router>
-          </ToastProvider>
-        </ThemeProvider>
-      </BusinessProvider>
+      <ErrorBoundary>
+        <BusinessProvider>
+          <ThemeProvider>
+            <ToastProvider>
+              <Router>
+                <Suspense fallback={<LoadingScreen />}>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/verify-email-sent" element={<EmailVerificationSent />} />
+                    <Route path="/verify-email/:key" element={<VerifyEmail />} />
+                    <Route path="/password-reset-confirm/:uid/:token" element={<ResetPassword />} />
+                    <Route path="/view/:token" element={<PublicInvoice />} />
+                    <Route path="/public/pay/:token" element={<PublicPayment />} />
+                    <Route path="/demo-login" element={<DemoLogin />} />
+                    <Route path="/terms" element={<LegalPage />} />
+                    <Route path="/privacy" element={<LegalPage />} />
+                    <Route path="/help" element={<HelpSupport />} />
+                    <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+                    <Route
+                      path="/*"
+                      element={
+                        <ProtectedRoute>
+                          <AuthenticatedRoutes />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Routes>
+                </Suspense>
+              </Router>
+            </ToastProvider>
+          </ThemeProvider>
+        </BusinessProvider>
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 }
