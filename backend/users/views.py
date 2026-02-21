@@ -46,8 +46,17 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Owners see their team
-        return TeamMember.objects.filter(owner=self.request.user)
+        user = self.request.user
+        # Owners see everyone in their organization
+        # First, find who is the root owner for this user
+        try:
+            membership = TeamMember.objects.get(user=user)
+            root_owner = membership.owner
+        except TeamMember.DoesNotExist:
+            root_owner = user
+            
+        # Return all members belonging to this organization
+        return TeamMember.objects.filter(owner=root_owner)
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email')

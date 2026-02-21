@@ -51,14 +51,17 @@ export const BusinessProvider = ({ children }) => {
                         setActiveBusiness(found);
                         localStorage.setItem('active_business', JSON.stringify(found));
                     }
-                } else if (businesses.length > 0) {
-                    // Only switch if the list is NOT empty but our business is missing.
-                    // If list is empty, it might be a stale cache state where we haven't loaded the new business yet.
-                    // However, if we really have 0 businesses, we should clear.
-                    // But 'businesses' is the result of useQuery.
-
-                    // Let's assume if the user has businesses, but the active one isn't in it, switch to first.
-                    switchBusiness(businesses[0]);
+                } else {
+                    // Current active business is NOT in the new list. 
+                    // This happens when access is revoked (e.g. removed from team).
+                    if (businesses.length > 0) {
+                        // Switch to the first available one (with team priority)
+                        const teamBusiness = businesses.find(b => b.user_role && b.user_role !== 'OWNER');
+                        switchBusiness(teamBusiness || businesses[0]);
+                    } else {
+                        // No businesses left at all
+                        switchBusiness(null);
+                    }
                 }
                 // If businesses.length === 0, we don't clear activeBusiness immediately to prevent race condition
                 // where invalidateQueries clears the list before fetching the new one.
