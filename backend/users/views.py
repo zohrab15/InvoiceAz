@@ -55,7 +55,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-class TeamMemberViewSet(viewsets.ModelViewSet):
+from .mixins import BusinessContextMixin
+
+class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     serializer_class = TeamMemberSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -64,15 +66,11 @@ class TeamMemberViewSet(viewsets.ModelViewSet):
         # Owners see everyone in their organization
         
         # Determine root owner based on the active business header if provided
-        business_id = self.request.headers.get('X-Business-ID')
+        business = self.get_active_business()
         root_owner = None
         
-        if business_id:
-            try:
-                business = Business.objects.get(id=business_id)
-                root_owner = business.user
-            except Business.DoesNotExist:
-                pass
+        if business:
+            root_owner = business.user
                 
         if not root_owner:
             # Fallback if no business header:

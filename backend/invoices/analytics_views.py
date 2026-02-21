@@ -10,17 +10,13 @@ from users.models import Business
 
 from rest_framework.exceptions import PermissionDenied
 
-class AnalyticsBaseView(APIView):
+from users.mixins import BusinessContextMixin
+
+class AnalyticsBaseView(BusinessContextMixin, APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_business(self, request):
-        business_id = request.query_params.get('business_id')
-        if not business_id:
-            # Fallback to user's first business
-            business = request.user.businesses.first()
-        else:
-            # IDOR FIX: Strictly filter by requesting user's businesses
-            business = request.user.businesses.filter(id=business_id).first()
+        business = self.get_active_business()
             
         if not business:
              raise PermissionDenied("Biznes profili tapılmadı və ya icazəniz yoxdur.")
