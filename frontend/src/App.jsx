@@ -156,7 +156,7 @@ const AuthenticatedRoutes = () => (
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/security" element={<SecurityPage />} />
       <Route path="/system-settings" element={
-        <RoleGate roles={['OWNER', 'MANAGER']}>
+        <RoleGate roles={['OWNER', 'MANAGER', 'ACCOUNTANT', 'INVENTORY_MANAGER', 'SALES_REP']}>
           <SystemSettings />
         </RoleGate>
       } />

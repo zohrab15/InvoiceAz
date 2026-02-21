@@ -52,6 +52,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/analytics/issues', icon: <AlertTriangle size={20} />, label: 'Problemli Fakturalar' },
         { to: '/analytics/forecast', icon: <Sparkles size={20} />, label: 'Trend və Proqnoz', locked: isFeatureLocked('forecast_analytics') },
         { to: '/analytics/tax', icon: <Calculator size={20} />, label: 'Vergi və Hesabatlar' },
+        { to: '/system-settings', icon: <Settings size={20} />, label: 'Tənzimləmələr' },
         { to: '/help', icon: <LifeBuoy size={20} />, label: 'Kömək və Dəstək' },
     ];
 
@@ -65,14 +66,14 @@ const Sidebar = ({ isOpen, onClose }) => {
         // Default: filter strictly for known roles
         return navItems.filter(item => {
             if (role === 'ACCOUNTANT') {
-                return ['Ana səhifə', 'Fakturalar', 'Xərclər', 'Müştərilər', 'Vergi və Hesabatlar', 'Kömək və Dəstək'].includes(item.label);
+                return ['Ana səhifə', 'Fakturalar', 'Xərclər', 'Müştərilər', 'Vergi və Hesabatlar', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             if (role === 'INVENTORY_MANAGER') {
-                return ['Ana səhifə', 'Məhsullar', 'Məhsul Analitikası', 'Kömək və Dəstək'].includes(item.label);
+                return ['Ana səhifə', 'Məhsullar', 'Məhsul Analitikası', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             // SALES_REP or any other unrecognized role gets minimum access
             if (role === 'SALES_REP' || true) {
-                return ['Ana səhifə', 'Fakturalar', 'Müştərilər', 'Kömək və Dəstək'].includes(item.label);
+                return ['Ana səhifə', 'Fakturalar', 'Müştərilər', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             return false;
         });
