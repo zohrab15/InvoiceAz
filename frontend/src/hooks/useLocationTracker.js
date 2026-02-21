@@ -80,7 +80,7 @@ const useLocationTracker = () => {
             },
             {
                 enableHighAccuracy: true,
-                timeout: 5000,
+                timeout: 30000, // Give GPS hardware 30 seconds to get a precise lock
                 maximumAge: 0
             }
         );
