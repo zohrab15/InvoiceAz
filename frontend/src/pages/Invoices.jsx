@@ -88,6 +88,7 @@ const Invoices = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        retry: false,
     });
 
     const filteredInvoices = useMemo(() => {
@@ -110,6 +111,7 @@ const Invoices = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        retry: false,
     });
 
     const { data: products } = useQuery({
@@ -119,6 +121,7 @@ const Invoices = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        retry: false,
     });
 
     const { data: teamMembers } = useQuery({
@@ -128,6 +131,7 @@ const Invoices = () => {
             return res.data;
         },
         enabled: !!token && user?.membership === 'Premium',
+        retry: false,
     });
 
     const createMutation = useMutation({

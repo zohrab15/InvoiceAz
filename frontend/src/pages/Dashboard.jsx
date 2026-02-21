@@ -30,6 +30,7 @@ const Dashboard = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        retry: false,
     });
 
     const { data: expenses, isLoading: isLoadingExpenses } = useQuery({
@@ -38,7 +39,8 @@ const Dashboard = () => {
             const res = await clientApi.get('/invoices/expenses/');
             return res.data;
         },
-        enabled: !!activeBusiness,
+        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
+        retry: false,
     });
 
     const { data: payments, isLoading: isLoadingPayments } = useQuery({
@@ -47,7 +49,8 @@ const Dashboard = () => {
             const res = await clientApi.get('/invoices/payments/');
             return res.data;
         },
-        enabled: !!activeBusiness,
+        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
+        retry: false,
     });
 
     const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments;

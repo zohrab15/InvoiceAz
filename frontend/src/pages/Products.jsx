@@ -29,7 +29,8 @@ const Products = () => {
             const res = await clientApi.get('/inventory/');
             return res.data;
         },
-        enabled: !!activeBusiness
+        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
+        retry: false
     });
 
     // Mutations

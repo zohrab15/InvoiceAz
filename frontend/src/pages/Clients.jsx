@@ -51,6 +51,7 @@ const Clients = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        retry: false,
     });
 
     const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
@@ -62,6 +63,7 @@ const Clients = () => {
             return res.data;
         },
         enabled: !!token && (user?.membership === 'Premium' || isOwnerOrManager),
+        retry: false,
     });
 
     // Only show Sales Reps for assignment per user request
