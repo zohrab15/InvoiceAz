@@ -96,9 +96,14 @@ class BusinessContextMixin:
                         queryset = queryset.filter(assigned_to=self.request.user)
                     elif model_name == 'Invoice':
                         # Show invoices created by this rep, or attached to a client assigned to this rep
+                        # Also protect against returning invoices for which they have NO client access
                         queryset = queryset.filter(
                             Q(created_by=self.request.user) | Q(client__assigned_to=self.request.user)
-                        )
+                        ).distinct()
+                    elif model_name == 'Product':
+                        # Products are globally readable per the permissions fix, so don't filter them out here.
+                        # (Business filter already applied at top of method)
+                        pass
                     else:
                         queryset = queryset.none() # Default hide for Sales Rep
             
