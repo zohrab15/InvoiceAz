@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../../api/client';
 import useAuthStore from '../../store/useAuthStore';
 import { useToast } from '../Toast';
-import { Trash2, UserPlus, Mail, Users, MapPin, AlertCircle } from 'lucide-react';
+import { Trash2, UserPlus, Mail, Users, MapPin, AlertCircle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TeamSettings = () => {
@@ -13,6 +13,7 @@ const TeamSettings = () => {
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('SALES_REP');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Fetch team members
     const { data: teamMembers, isLoading } = useQuery({
@@ -101,6 +102,14 @@ const TeamSettings = () => {
     };
 
 
+    const filteredMembers = teamMembers?.filter(member => {
+        const search = searchTerm.toLowerCase();
+        return (
+            member.user_name?.toLowerCase().includes(search) ||
+            member.user_email?.toLowerCase().includes(search)
+        );
+    }) || [];
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -169,10 +178,26 @@ const TeamSettings = () => {
                     boxShadow: 'var(--color-card-shadow)'
                 }}
             >
-                <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                    <div className="p-2 bg-green-500/10 rounded-lg text-green-500"><Users size={20} /></div>
-                    Komandam ({teamMembers?.length || 0})
-                </h3>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                        <div className="p-2 bg-green-500/10 rounded-lg text-green-500"><Users size={20} /></div>
+                        Komandam ({filteredMembers?.length || 0})
+                    </h3>
+
+                    <div className="relative w-full md:w-64">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <Search size={16} />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Ad və ya email axtar..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 border-2 border-transparent focus:border-primary-blue rounded-xl py-2 px-3 outline-none transition-all text-sm font-bold"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
+                        />
+                    </div>
+                </div>
 
                 {isLoading ? (
                     <div className="animate-pulse flex space-x-4">
@@ -183,61 +208,63 @@ const TeamSettings = () => {
                             </div>
                         </div>
                     </div>
-                ) : teamMembers?.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                        <Users size={48} className="mx-auto mb-3 opacity-20" />
-                        <p className="font-medium">Komandanızda hələ işçi yoxdur.</p>
-                    </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b-2" style={{ borderColor: 'var(--color-border)' }}>
-                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">İşçi</th>
-                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Rol</th>
-                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Son Məkan (GPS)</th>
-                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider text-right">Əməliyyat</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <AnimatePresence>
-                                    {teamMembers.map((member) => (
-                                        <motion.tr
-                                            key={member.id}
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="border-b last:border-0 hover:bg-gray-50/50 transition-colors"
-                                            style={{ borderColor: 'var(--color-border)' }}
-                                        >
-                                            <td className="py-4">
-                                                <div className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{member.user_name || 'Adsız İstifadəçi'}</div>
-                                                <div className="text-xs text-gray-500">{member.user_email}</div>
-                                            </td>
-                                            <td className="py-4">
-                                                <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-blue-100 text-blue-700">
-                                                    {getRoleName(member.role)}
-                                                </span>
-                                            </td>
-                                            <td className="py-4">
-                                                {renderLocation(member.role, member.last_latitude, member.last_longitude, member.last_location_update)}
-                                            </td>
-                                            <td className="py-4 text-right">
-                                                {member.user_email !== user?.email && (
-                                                    <button
-                                                        onClick={() => handleRemove(member.id)}
-                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-block"
-                                                        title="İşçini sil"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                )}
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </AnimatePresence>
-                            </tbody>
-                        </table>
+                        {searchTerm && filteredMembers.length === 0 ? (
+                            <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                <Search size={48} className="mx-auto mb-3 opacity-20" />
+                                <p className="font-medium">"{searchTerm}" üçün nəticə tapılmadı.</p>
+                            </div>
+                        ) : (
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b-2" style={{ borderColor: 'var(--color-border)' }}>
+                                        <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">İşçi</th>
+                                        <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Rol</th>
+                                        <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Son Məkan (GPS)</th>
+                                        <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider text-right">Əməliyyat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <AnimatePresence>
+                                        {filteredMembers.map((member) => (
+                                            <motion.tr
+                                                key={member.id}
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="border-b last:border-0 hover:bg-gray-50/50 transition-colors"
+                                                style={{ borderColor: 'var(--color-border)' }}
+                                            >
+                                                <td className="py-4">
+                                                    <div className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{member.user_name || 'Adsız İstifadəçi'}</div>
+                                                    <div className="text-xs text-gray-500">{member.user_email}</div>
+                                                </td>
+                                                <td className="py-4">
+                                                    <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-blue-100 text-blue-700">
+                                                        {getRoleName(member.role)}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4">
+                                                    {renderLocation(member.role, member.last_latitude, member.last_longitude, member.last_location_update)}
+                                                </td>
+                                                <td className="py-4 text-right">
+                                                    {member.user_email !== user?.email && (
+                                                        <button
+                                                            onClick={() => handleRemove(member.id)}
+                                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-block"
+                                                            title="İşçini sil"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </motion.tr>
+                                        ))}
+                                    </AnimatePresence>
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 )}
             </div>
