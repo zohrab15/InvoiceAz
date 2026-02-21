@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions
-from .models import Business
-from .serializers import BusinessSerializer
+from .models import Business, TeamMember, User
+from .serializers import BusinessSerializer, TeamMemberSerializer
 from .plan_limits import check_business_limit
 from rest_framework.exceptions import PermissionDenied
 
@@ -20,6 +20,63 @@ class BusinessViewSet(viewsets.ModelViewSet):
                 "limit": limit_check['limit']
             })
         serializer.save(user=self.request.user, is_active=True)
+
+from django.utils import timezone
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class TeamMemberViewSet(viewsets.ModelViewSet):
+    serializer_class = TeamMemberSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Owners see their team
+        return TeamMember.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        # We need to find the user by email
+        email = self.request.data.get('email')
+        if not email:
+            raise PermissionDenied("İstifadəçi e-poçtu tələb olunur.")
+        
+        try:
+            target_user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise PermissionDenied("Bu e-poçt ilə istifadəçi tapılmadı. İşçi əvvəlcə saytdan qeydiyyatdan keçməlidir.")
+            
+        if target_user == self.request.user:
+            raise PermissionDenied("Özünüzü komandaya əlavə edə bilməzsiniz.")
+            
+        if TeamMember.objects.filter(owner=self.request.user, user=target_user).exists():
+           raise PermissionDenied("Bu istifadəçi artıq komandanızdadır.") 
+            
+        # Note: We are not enforcing strict limits here yet, but you could add a checks
+        serializer.save(owner=self.request.user, user=target_user)
+
+class TeamMemberLocationUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        lat = request.data.get('latitude')
+        lng = request.data.get('longitude')
+        
+        if lat is None or lng is None:
+            return Response({"error": "Latitude and longitude required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Update all memberships for this user (they might belong to multiple teams, though usually 1)
+        memberships = TeamMember.objects.filter(user=request.user)
+        if not memberships.exists():
+            return Response({"error": "You are not a team member"}, status=status.HTTP_403_FORBIDDEN)
+            
+        memberships.update(
+            last_latitude=lat,
+            last_longitude=lng,
+            last_location_update=timezone.now()
+        )
+        
+        return Response({"status": "Location updated successfully"})
 
 
 import os

@@ -5,9 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import client from '../api/client';
 import { useToast } from '../components/Toast';
-import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle } from 'lucide-react';
+import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle, Users } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import UserSettings from '../components/settings/UserSettings';
+import TeamSettings from '../components/settings/TeamSettings';
 import PhoneInput from '../components/common/PhoneInput';
 import { useLocation } from 'react-router-dom';
 import UpgradeModal from '../components/UpgradeModal';
@@ -193,6 +194,7 @@ const BusinessSettings = () => {
     const tabs = [
         { id: 'user', name: 'Şəxsi Hesab', icon: <User size={18} /> },
         { id: 'business', name: 'Biznes Profilləri', icon: <Building2 size={18} /> },
+        { id: 'team', name: 'Komanda', icon: <Users size={18} /> },
     ];
 
     return (
@@ -248,6 +250,17 @@ const BusinessSettings = () => {
                         exit={{ opacity: 0, x: 10 }}
                     >
                         <UserSettings />
+                    </motion.div>
+                )}
+
+                {activeTab === 'team' && (
+                    <motion.div
+                        key="team-tab"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                    >
+                        <TeamSettings />
                     </motion.div>
                 )}
 

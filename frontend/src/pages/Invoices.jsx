@@ -10,6 +10,7 @@ import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
 import * as XLSX from 'xlsx';
 import usePlanLimits from '../hooks/usePlanLimits';
+import useAuthStore from '../store/useAuthStore';
 
 const UNIT_CHOICES = [
     { value: 'ədəd', label: 'Ədəd' },
@@ -36,6 +37,7 @@ const Invoices = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
+    const { token, user } = useAuthStore();
     const { checkLimit, isPro, canUseThemes } = usePlanLimits();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
 
@@ -115,6 +117,15 @@ const Invoices = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+    });
+
+    const { data: teamMembers } = useQuery({
+        queryKey: ['team', token],
+        queryFn: async () => {
+            const res = await clientApi.get('/users/team/');
+            return res.data;
+        },
+        enabled: !!token && user?.membership === 'Premium',
     });
 
     const createMutation = useMutation({
@@ -437,6 +448,7 @@ const Invoices = () => {
                                             return {
                                                 'Faktura №': inv.invoice_number,
                                                 'Müştəri': clientName,
+                                                'Sahibi': inv.created_by_name || 'Owner',
                                                 'Tarix': new Date(inv.invoice_date).toLocaleDateString('az-AZ'),
                                                 'Son Tarix': new Date(inv.due_date).toLocaleDateString('az-AZ'),
                                                 'Məbləğ': parseFloat(inv.total_amount),
@@ -519,7 +531,7 @@ const Invoices = () => {
                                     <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-xs uppercase font-semibold">
                                         <tr>
                                             <th className="px-6 py-4">Faktura #</th>
-                                            <th className="px-6 py-4">Müştəri</th>
+                                            <th className="px-6 py-4">Müştəri / Dəstə</th>
                                             <th className="px-6 py-4">Tarix</th>
                                             <th className="px-6 py-4">Məbləğ</th>
                                             <th className="px-6 py-4">Status</th>
@@ -538,7 +550,14 @@ const Invoices = () => {
                                                 className="hover:bg-[var(--color-hover-bg)] transition-colors group"
                                             >
                                                 <td className="px-6 py-4 font-medium text-primary-blue">{inv.invoice_number}</td>
-                                                <td className="px-6 py-4 font-medium text-[var(--color-text-primary)]">{inv.client_name}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="font-medium text-[var(--color-text-primary)]">{inv.client_name}</div>
+                                                    {user?.membership === 'Premium' && inv.created_by_name && (
+                                                        <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5 uppercase font-bold tracking-tight bg-[var(--color-hover-bg)] px-2 py-0.5 rounded max-w-max">
+                                                            🧑‍💼 {inv.created_by_name}
+                                                        </div>
+                                                    )}
+                                                </td>
                                                 <td className="px-6 py-4 text-[var(--color-text-secondary)]">{new Date(inv.invoice_date).toLocaleDateString('az-AZ')}</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
@@ -675,9 +694,14 @@ const Invoices = () => {
                                                 onChange={(e) => setSelectedClientId(e.target.value)}
                                             >
                                                 <option value="">Axtarış...</option>
-                                                {clients?.map(c => (
-                                                    <option key={c.id} value={c.id}>{c.name}</option>
-                                                ))}
+                                                {clients?.map(c => {
+                                                    const assignedRep = teamMembers?.find(m => m.user === c.assigned_to);
+                                                    return (
+                                                        <option key={c.id} value={c.id}>
+                                                            {c.name} {assignedRep ? `(${assignedRep.user_name})` : ''}
+                                                        </option>
+                                                    );
+                                                })}
                                             </select>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4 text-[var(--color-text-primary)]">

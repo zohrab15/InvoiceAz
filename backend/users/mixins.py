@@ -1,5 +1,6 @@
-from .models import Business
+from .models import Business, TeamMember
 from rest_framework.exceptions import ValidationError
+from django.db.models import Q
 
 class BusinessContextMixin:
     """
@@ -19,10 +20,22 @@ class BusinessContextMixin:
             return None
 
         try:
+            # First, try to find if the user owns this business directly
             business = Business.objects.get(id=business_id, user=self.request.user, is_active=True)
-            self.request._active_business = business # Cache it
+            self.request._active_business = business
+            self.request._is_team_member = False
             return business
         except Business.DoesNotExist:
+            pass
+            
+        # If not the owner, check if they are a team member under the owner of this business
+        try:
+            business = Business.objects.get(id=business_id, is_active=True)
+            team_member = TeamMember.objects.get(owner=business.user, user=self.request.user)
+            self.request._active_business = business
+            self.request._is_team_member = True
+            return business
+        except (Business.DoesNotExist, TeamMember.DoesNotExist):
             return None
 
     def get_queryset(self):
@@ -35,8 +48,24 @@ class BusinessContextMixin:
 
         business = self.get_active_business()
         if business:
-            # Assumes the model has a 'business' field
-            return super().get_queryset().filter(business=business)
+            queryset = super().get_queryset().filter(business=business)
+            
+            # If the user is a team member, filter their visibility
+            if getattr(self.request, '_is_team_member', False):
+                model_name = queryset.model.__name__
+                if model_name == 'Client':
+                    # Only show clients assigned to this rep
+                    queryset = queryset.filter(assigned_to=self.request.user)
+                elif model_name == 'Invoice':
+                    # Show invoices created by this rep, or attached to a client assigned to this rep
+                    queryset = queryset.filter(
+                        Q(created_by=self.request.user) | Q(client__assigned_to=self.request.user)
+                    )
+                # Other models (like generic Expenses or Inventory) might be entirely hidden
+                # or require their own rules. Default: no further filtering if not Client/Invoice
+            
+            return queryset
+            
         return super().get_queryset().none()
 
     def perform_create(self, serializer):
@@ -47,4 +76,13 @@ class BusinessContextMixin:
         if not business:
             raise ValidationError({"detail": "Əməliyyat üçün Biznes Profili seçilməyib."})
         
-        serializer.save(business=business)
+        kwargs = {'business': business}
+        
+        # If they are a Team Member, auto-assign records they create to themselves
+        if getattr(self.request, '_is_team_member', False):
+            if hasattr(serializer.Meta.model, 'assigned_to'):
+                kwargs['assigned_to'] = self.request.user
+            elif hasattr(serializer.Meta.model, 'created_by'):
+                kwargs['created_by'] = self.request.user
+                
+        serializer.save(**kwargs)

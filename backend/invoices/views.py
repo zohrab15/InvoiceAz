@@ -386,7 +386,10 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         if not business:
             return Response({"error": "Biznes seçilməyib."}, status=status.HTTP_404_NOT_FOUND)
             
-        items = InvoiceItem.objects.filter(invoice__business=business)\
+        # Use get_queryset() to respect role-based visibility
+        invoices = self.get_queryset()
+        
+        items = InvoiceItem.objects.filter(invoice__in=invoices)\
             .values(product_name=F('description'))\
             .annotate(
                 total_quantity=Sum('quantity'),

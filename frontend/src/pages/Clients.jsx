@@ -9,12 +9,14 @@ import PhoneInput from '../components/common/PhoneInput';
 import * as XLSX from 'xlsx';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
+import useAuthStore from '../store/useAuthStore';
 
 const Clients = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
     const { checkLimit, isPro } = usePlanLimits();
+    const { token, user } = useAuthStore();
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,11 +27,12 @@ const Clients = () => {
         email: '',
         phone: '',
         address: '',
-        voen: ''
+        voen: '',
+        assigned_to: ''
     });
 
     const resetForm = () => {
-        setFormData({ name: '', email: '', phone: '', address: '', voen: '' });
+        setFormData({ name: '', email: '', phone: '', address: '', voen: '', assigned_to: '' });
         setEditingClient(null);
         setIsModalOpen(false);
     };
@@ -46,6 +49,15 @@ const Clients = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+    });
+
+    const { data: teamMembers } = useQuery({
+        queryKey: ['team', token],
+        queryFn: async () => {
+            const res = await clientApi.get('/users/team/');
+            return res.data;
+        },
+        enabled: !!token && user?.membership === 'Premium',
     });
 
     const createMutation = useMutation({
@@ -86,10 +98,15 @@ const Clients = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const submitData = { ...formData };
+        if (!submitData.assigned_to) {
+            submitData.assigned_to = null;
+        }
+
         if (editingClient) {
-            updateMutation.mutate({ ...formData, id: editingClient.id });
+            updateMutation.mutate({ ...submitData, id: editingClient.id });
         } else {
-            createMutation.mutate(formData);
+            createMutation.mutate(submitData);
         }
     };
 
@@ -100,7 +117,8 @@ const Clients = () => {
             email: client.email || '',
             phone: client.phone || '',
             address: client.address || '',
-            voen: client.voen || ''
+            voen: client.voen || '',
+            assigned_to: client.assigned_to || ''
         });
         setIsModalOpen(true);
     };
@@ -131,7 +149,8 @@ const Clients = () => {
                                 'VÖEN': c.tax_number || '',
                                 'Ünvan': c.address || '',
                                 'Bank': c.bank_name || '',
-                                'Hesab (IBAN)': c.bank_account || ''
+                                'Hesab (IBAN)': c.bank_account || '',
+                                'Təhkim edilib': c.assigned_to || 'Heç kimə'
                             }));
 
                             const ws = XLSX.utils.json_to_sheet(data);
@@ -200,6 +219,11 @@ const Clients = () => {
                                                 <div className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
                                                     <Building size={10} className="text-[var(--color-text-muted)]" /> {client.voen ? `VÖEN: ${client.voen}` : 'VÖEN yoxdur'}
                                                 </div>
+                                                {client.assigned_to && (
+                                                    <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded max-w-max mt-1 border border-blue-100 uppercase tracking-tight">
+                                                        Təhkim: {teamMembers?.find(m => m.user === client.assigned_to)?.user_name || 'Satış Təmsilçisi'}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </td>
@@ -339,6 +363,24 @@ const Clients = () => {
                                         </div>
                                     </div>
                                 </div>
+
+                                {user?.membership === 'Premium' && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Satış Təmsilçisinə Təhkim Et (Könüllü)</label>
+                                        <select
+                                            className="w-full px-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] outline-none transition-all font-medium appearance-none"
+                                            value={formData.assigned_to || ''}
+                                            onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
+                                        >
+                                            <option value="">Heç kimə (Yalnız mən)</option>
+                                            {teamMembers?.map(member => (
+                                                <option key={member.user} value={member.user}>
+                                                    {member.user_name} ({member.user_email})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
 
                                 <div className="pt-4 flex gap-3">
                                     <button

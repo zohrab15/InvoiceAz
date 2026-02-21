@@ -4,14 +4,16 @@ from .views import (
     BusinessViewSet, google_auth_bridge, PasswordChangeView, 
     DeleteAccountView, SessionListView, RevokeSessionView,
     Generate2FAView, Enable2FAView, Disable2FAView, UserMeView,
-    LogoutAPIView
+    LogoutAPIView, TeamMemberViewSet, TeamMemberLocationUpdateView
 )
 from .plan_views import PlanStatusView
 
 router = DefaultRouter()
 router.register(r'business', BusinessViewSet, basename='business')
+router.register(r'team', TeamMemberViewSet, basename='team')
 
 urlpatterns = [
+    path('team/location/', TeamMemberLocationUpdateView.as_view(), name='team_location'),
     path('', include(router.urls)),
     path('me/', UserMeView.as_view(), name='user_me'),
     path('logout/', LogoutAPIView.as_view(), name='logout'),

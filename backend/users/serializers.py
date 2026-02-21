@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import User, Business
+from users.models import User, Business, TeamMember
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,6 +24,16 @@ class BusinessSerializer(serializers.ModelSerializer):
         if instance.logo and str(instance.logo).startswith('http'):
             data['logo'] = str(instance.logo)
         return data
+
+class TeamMemberSerializer(serializers.ModelSerializer):
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.CharField(source='user.first_name', read_only=True)
+
+    class Meta:
+        model = TeamMember
+        fields = ('id', 'user', 'user_email', 'user_name', 'role', 'last_latitude', 'last_longitude', 'last_location_update', 'created_at')
+        read_only_fields = ('id', 'created_at', 'last_latitude', 'last_longitude', 'last_location_update')
+
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
 class CustomRegisterSerializer(RegisterSerializer):
