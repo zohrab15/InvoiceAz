@@ -15,17 +15,8 @@ def get_plan_limits(user):
     if user.subscription_plan:
         return user.subscription_plan
     
-    # Handle legacy users who have string membership but no linked plan
-    from users.models import SubscriptionPlan
-    if hasattr(user, 'membership') and user.membership and user.membership != 'free':
-        legacy_plan = SubscriptionPlan.objects.filter(name=user.membership.lower()).first()
-        if legacy_plan:
-            # Optionally sync it for future
-            user.subscription_plan = legacy_plan
-            user.save(update_fields=['subscription_plan'])
-            return legacy_plan
-            
     # Fallback to free plan from DB if not set
+    from users.models import SubscriptionPlan
     free_plan = SubscriptionPlan.objects.filter(name='free').first()
     return free_plan
 
@@ -153,30 +144,21 @@ def check_business_limit(user):
     }
 
 
-def get_full_plan_status(user, business_id=None):
+def get_full_plan_status(user):
     """Get complete plan status with all limits and current usage."""
     from invoices.models import Invoice, Expense
     from clients.models import Client
-    from users.models import Business, TeamMember
+    from users.models import Business
     from users.models import SubscriptionPlan
     
     now = timezone.now()
     
-    # Detect organization owner
+    # Detect organization owner if user is a team member
     organization_owner = user
-    
-    if business_id:
-        try:
-            business = Business.objects.filter(id=business_id).first()
-            if business:
-                organization_owner = business.user
-        except (ValueError, TypeError):
-            pass
-    else:
-        # Fallback for when business_id is not provided
-        membership = TeamMember.objects.filter(user=user).first()
-        if membership:
-            organization_owner = membership.owner
+    from users.models import TeamMember
+    membership = TeamMember.objects.filter(user=user).first()
+    if membership:
+        organization_owner = membership.owner
         
     plan = get_plan_limits(organization_owner)
     if not plan:
