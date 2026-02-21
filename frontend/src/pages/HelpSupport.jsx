@@ -5,7 +5,8 @@ import {
     Search, Mail, MessageSquare, Phone,
     FileText, HelpCircle, ChevronRight, ChevronDown,
     ArrowLeft, Globe, LifeBuoy, Zap,
-    Plus, Minus, ExternalLink
+    Plus, Minus, ExternalLink,
+    CreditCard, Users, ShieldCheck, MessageCircle
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
