@@ -23,12 +23,15 @@ def get_plan_limits(user):
 
 def check_invoice_limit(user, business):
     """Check if user can create a new invoice this month."""
-    if user.email == 'demo_user@invoice.az':
+    # Always check the plan of the business owner
+    owner = business.user
+    
+    if owner.email == 'demo_user@invoice.az':
         return {'allowed': True, 'current': 0, 'limit': None}
 
-    plan = get_plan_limits(user)
+    plan = get_plan_limits(owner)
     if not plan:
-        return {'allowed': True, 'current': 0, 'limit': None} # Should not happen
+        return {'allowed': True, 'current': 0, 'limit': None}
 
     max_invoices = plan.invoices_per_month
     
@@ -50,12 +53,19 @@ def check_invoice_limit(user, business):
     }
 
 
-def check_client_limit(user):
-    """Check if user can create a new client."""
-    if user.email == 'demo_user@invoice.az':
+def check_client_limit(user, business=None):
+    """
+    Check if user can create a new client.
+    If business is provided, check the plan of that business owner.
+    """
+    owner = user
+    if business:
+        owner = business.user
+
+    if owner.email == 'demo_user@invoice.az':
         return {'allowed': True, 'current': 0, 'limit': None}
 
-    plan = get_plan_limits(user)
+    plan = get_plan_limits(owner)
     if not plan:
         return {'allowed': True, 'current': 0, 'limit': None}
 
@@ -65,10 +75,11 @@ def check_client_limit(user):
         return {'allowed': True, 'current': 0, 'limit': None}
     
     from clients.models import Client
-    # Count clients across all user's businesses
-    current_count = Client.objects.filter(
-        business__user=user
-    ).count()
+    # Count clients belonging to this owner's businesses
+    if business:
+        current_count = Client.objects.filter(business=business).count()
+    else:
+        current_count = Client.objects.filter(business__user=owner).count()
     
     return {
         'allowed': current_count < max_clients,
@@ -79,10 +90,13 @@ def check_client_limit(user):
 
 def check_expense_limit(user, business):
     """Check if user can create a new expense this month."""
-    if user.email == 'demo_user@invoice.az':
+    # Always check the plan of the business owner
+    owner = business.user
+    
+    if owner.email == 'demo_user@invoice.az':
         return {'allowed': True, 'current': 0, 'limit': None}
 
-    plan = get_plan_limits(user)
+    plan = get_plan_limits(owner)
     if not plan:
         return {'allowed': True, 'current': 0, 'limit': None}
 

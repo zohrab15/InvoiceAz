@@ -18,7 +18,8 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     # Mixin handles perform_create (auto-attaching business and assigned_to)
     
     def perform_create(self, serializer):
-        limit_check = check_client_limit(self.request.user)
+        business = self.get_active_business()
+        limit_check = check_client_limit(self.request.user, business=business)
         if not limit_check['allowed']:
             raise PermissionDenied({
                 "code": "plan_limit", 
