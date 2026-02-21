@@ -205,7 +205,7 @@ const Expenses = () => {
                 <div className="flex gap-2">
                     <button
                         onClick={() => {
-                            const data = (expenses || []).map(e => ({
+                            const data = (filteredExpenses || []).map(e => ({
                                 'Təsvir': e.description,
                                 'Təchizatçı': e.vendor || '',
                                 'Kateqoriya': categories.find(c => c.id === e.category)?.name || e.category,
@@ -222,7 +222,7 @@ const Expenses = () => {
                             XLSX.writeFile(wb, `xercler_hesabati_${new Date().toISOString().split('T')[0]}.xlsx`);
                         }}
                         className="p-2.5 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] rounded-xl hover:bg-[var(--color-hover-bg)] transition-all font-bold text-sm flex items-center gap-2"
-                        title="CSV kimi yüklə"
+                        title="Excel kimi yüklə"
                     >
                         <Download size={18} />
                         <span className="hidden sm:inline">Eksport</span>

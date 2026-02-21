@@ -185,7 +185,7 @@ const Clients = () => {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => {
-                            const data = (clients || []).map(c => ({
+                            const data = (filteredClients || []).map(c => ({
                                 'Ad': c.name,
                                 'Email': c.email || '',
                                 'Telefon': c.phone || '',

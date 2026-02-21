@@ -460,7 +460,7 @@ const Invoices = () => {
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => {
-                                        const data = (invoices || []).map(inv => {
+                                        const data = (filteredInvoices || []).map(inv => {
                                             const clientName = clients?.find(c => c.id === inv.client)?.name || 'Naməlum';
                                             return {
                                                 'Faktura №': inv.invoice_number,
