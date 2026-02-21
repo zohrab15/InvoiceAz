@@ -78,9 +78,8 @@ const TeamSettings = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return 'Məlumat yoxdur';
-        return new Date(dateString).toLocaleString('az-AZ', {
-            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+        const d = new Date(dateString);
+        return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     };
 
 
