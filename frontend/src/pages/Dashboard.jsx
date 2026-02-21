@@ -440,16 +440,18 @@ const Dashboard = () => {
                         ))}
                     </div>
 
-                    <button
-                        onClick={() => navigate('/analytics/tax')}
-                        className="w-full py-3 mt-4 text-white font-bold rounded-xl transition-all text-xs uppercase tracking-wider"
-                        style={{
-                            background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
-                            boxShadow: '0 4px 12px var(--color-brand-shadow)'
-                        }}
-                    >
-                        Bütün Hesabata Bax
-                    </button>
+                    {(isOwnerOrManager || isAccountant) && (
+                        <button
+                            onClick={() => navigate('/analytics/tax')}
+                            className="w-full py-3 mt-4 text-white font-bold rounded-xl transition-all text-xs uppercase tracking-wider"
+                            style={{
+                                background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
+                                boxShadow: '0 4px 12px var(--color-brand-shadow)'
+                            }}
+                        >
+                            Bütün Hesabata Bax
+                        </button>
+                    )}
                 </motion.div>
             </div>
 

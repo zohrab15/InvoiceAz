@@ -39,6 +39,26 @@ class InvoiceSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'business', 'invoice_number', 'share_token', 'pdf_file', 'created_at', 'updated_at', 'paid_amount', 'paid_at')
 
+    def validate(self, data):
+        request = self.context.get('request')
+        if request and 'client' in data:
+            client = data['client']
+            business = getattr(request, '_active_business', None)
+            
+            # Ensure client belongs to the active business context
+            if business and client.business_id != business.id:
+                raise serializers.ValidationError({"client": "Seçilmiş müştəri bu biznesə aid deyil."})
+                
+            is_team_member = getattr(request, '_is_team_member', False)
+            role = getattr(request, '_team_role', 'SALES_REP') if is_team_member else 'OWNER'
+            
+            # Ensure Sales Reps can only use clients explicitly assigned to them
+            if role == 'SALES_REP':
+                if client.assigned_to != request.user:
+                    raise serializers.ValidationError({"client": "Bu müştəri sizə təhkim olunmayıb."})
+                    
+        return data
+
     def create(self, validated_data):
         from django.db import transaction
         with transaction.atomic():
