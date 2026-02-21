@@ -41,6 +41,8 @@ const Invoices = () => {
     const { checkLimit, isPro, canUseThemes } = usePlanLimits();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
 
+    const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
+
     const [view, setView] = useState('list'); // 'list' or 'create'
     const [editInvoice, setEditInvoice] = useState(null);
     const [showPreview, setShowPreview] = useState(false);
@@ -622,7 +624,9 @@ const Invoices = () => {
 
                                                         <button onClick={() => handleDownloadPdf(inv.id)} title="Yüklə" className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"><Download size={18} /></button>
                                                         <button onClick={() => duplicateMutation.mutate(inv.id)} title="Kopyala" className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"><List size={18} /></button>
-                                                        <button onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(inv.id); }} title="Sil" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
+                                                        {isOwnerOrManager && (
+                                                            <button onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(inv.id); }} title="Sil" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </motion.tr>

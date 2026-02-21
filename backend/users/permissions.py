@@ -58,6 +58,9 @@ class IsRoleAuthorized(permissions.BasePermission):
             # Read-only for Products
             if model_name == 'Product' and request.method not in permissions.SAFE_METHODS:
                 return False
+            # Prevent deleting clients and invoices
+            if request.method == 'DELETE' and model_name in ['Client', 'Invoice']:
+                return False
             return True
             
         return False

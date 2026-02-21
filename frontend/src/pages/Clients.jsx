@@ -321,12 +321,14 @@ const Clients = () => {
                                             >
                                                 <Edit size={18} />
                                             </button>
-                                            <button
-                                                onClick={() => handleDelete(client.id)}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            {isOwnerOrManager && (
+                                                <button
+                                                    onClick={() => handleDelete(client.id)}
+                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </motion.tr>
