@@ -53,11 +53,9 @@ class Command(BaseCommand):
         from notifications.models import NotificationSetting
         NotificationSetting.objects.get_or_create(user=user)
 
-        # Cleanup ONLY business related data for idempotency
-        Business.objects.filter(user=user, name='Modern Solutions MMC').delete()
-        self.stdout.write('Existing demo business and related data cleaned up.')
+        # Safely find or create the business without deleting it to preserve user testing state
+        # (like manually assigned clients, new invoices, etc.)
 
-        # 2. Create Business
         business, created = Business.objects.get_or_create(
             user=user,
             name='Modern Solutions MMC',
@@ -75,6 +73,10 @@ class Command(BaseCommand):
             }
         )
         self.stdout.write(f'Using business: {business.name}')
+
+        if not created:
+            self.stdout.write(self.style.SUCCESS(f'Demo business "{business.name}" already exists. Skipping duplicate data seeding to preserve user state.'))
+            return
 
         # 3. Create Clients
         client_data = [
