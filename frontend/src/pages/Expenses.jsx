@@ -14,6 +14,9 @@ import { useBusiness } from '../context/BusinessContext';
 
 const Expenses = () => {
     const { activeBusiness } = useBusiness();
+    const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
+    const isAccountant = activeBusiness?.user_role === 'ACCOUNTANT';
+    const canManageExpenses = isOwnerOrManager || isAccountant;
     const queryClient = useQueryClient();
     const showToast = useToast();
     const { checkLimit, isPro } = usePlanLimits();
@@ -224,18 +227,20 @@ const Expenses = () => {
                         <Download size={18} />
                         <span className="hidden sm:inline">Eksport</span>
                     </button>
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                            resetForm();
-                            setShowAddModal(true);
-                        }}
-                        className="bg-red-500 text-white px-6 py-2.5 rounded-xl flex items-center space-x-2 hover:bg-red-600 shadow-lg shadow-red-100 transition-all font-bold text-sm"
-                    >
-                        <Plus size={20} />
-                        <span>Yeni Xərc</span>
-                    </motion.button>
+                    {canManageExpenses && (
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                                resetForm();
+                                setShowAddModal(true);
+                            }}
+                            className="bg-red-500 text-white px-6 py-2.5 rounded-xl flex items-center space-x-2 hover:bg-red-600 shadow-lg shadow-red-100 transition-all font-bold text-sm"
+                        >
+                            <Plus size={20} />
+                            <span>Yeni Xərc</span>
+                        </motion.button>
+                    )}
                 </div>
             </div>
 
@@ -307,34 +312,38 @@ const Expenses = () => {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-1 flex-wrap lg:opacity-0 lg:group-hover:opacity-100 transition-all">
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditingExpense(exp);
-                                                            setFormData({
-                                                                description: exp.description,
-                                                                vendor: exp.vendor || '',
-                                                                amount: exp.amount,
-                                                                currency: exp.currency,
-                                                                date: exp.date,
-                                                                category: exp.category,
-                                                                status: exp.status,
-                                                                payment_method: exp.payment_method || '',
-                                                                client: exp.client || '',
-                                                                notes: exp.notes || ''
-                                                            });
-                                                            setAttachment(exp.attachment);
-                                                            setShowAddModal(true);
-                                                        }}
-                                                        className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-400 hover:text-blue-500 transition-colors"
-                                                    >
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(exp.id); }}
-                                                        className="p-2 hover:bg-red-500/10 rounded-lg text-red-300 hover:text-red-500 transition-colors"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    {canManageExpenses && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingExpense(exp);
+                                                                    setFormData({
+                                                                        description: exp.description,
+                                                                        vendor: exp.vendor || '',
+                                                                        amount: exp.amount,
+                                                                        currency: exp.currency,
+                                                                        date: exp.date,
+                                                                        category: exp.category,
+                                                                        status: exp.status,
+                                                                        payment_method: exp.payment_method || '',
+                                                                        client: exp.client || '',
+                                                                        notes: exp.notes || ''
+                                                                    });
+                                                                    setAttachment(exp.attachment);
+                                                                    setShowAddModal(true);
+                                                                }}
+                                                                className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-400 hover:text-blue-500 transition-colors"
+                                                            >
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(exp.id); }}
+                                                                className="p-2 hover:bg-red-500/10 rounded-lg text-red-300 hover:text-red-500 transition-colors"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -424,12 +433,14 @@ const Expenses = () => {
                                     <div className="text-[10px] text-[var(--color-text-muted)] font-medium italic">
                                         Limit: {monthlyBudget} ₼
                                     </div>
-                                    <button
-                                        onClick={() => setIsEditingBudget(true)}
-                                        className="text-[10px] text-blue-500 font-bold hover:underline"
-                                    >
-                                        Dəyiş
-                                    </button>
+                                    {isOwnerOrManager && (
+                                        <button
+                                            onClick={() => setIsEditingBudget(true)}
+                                            className="text-[10px] text-blue-500 font-bold hover:underline"
+                                        >
+                                            Dəyiş
+                                        </button>
+                                    )}
                                 </div>
 
                                 {isEditingBudget && (

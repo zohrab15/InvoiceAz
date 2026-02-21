@@ -55,6 +55,7 @@ const Clients = () => {
     });
 
     const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
+    const isAccountant = activeBusiness?.user_role === 'ACCOUNTANT';
 
     const { data: teamMembers } = useQuery({
         queryKey: ['team', token],
@@ -206,13 +207,15 @@ const Clients = () => {
                         <Download size={18} />
                         <span className="hidden sm:inline">Eksport</span>
                     </button>
-                    <button
-                        onClick={handleAddNew}
-                        className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
-                    >
-                        <Plus size={20} />
-                        <span>Yeni Müştəri</span>
-                    </button>
+                    {!isAccountant && (
+                        <button
+                            onClick={handleAddNew}
+                            className="bg-primary-blue text-white px-6 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
+                        >
+                            <Plus size={20} />
+                            <span>Yeni Müştəri</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -318,12 +321,14 @@ const Clients = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end space-x-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => handleEdit(client)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                            >
-                                                <Edit size={18} />
-                                            </button>
+                                            {!isAccountant && (
+                                                <button
+                                                    onClick={() => handleEdit(client)}
+                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                >
+                                                    <Edit size={18} />
+                                                </button>
+                                            )}
                                             {isOwnerOrManager && (
                                                 <button
                                                     onClick={() => handleDelete(client.id)}
