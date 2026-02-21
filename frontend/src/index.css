@@ -33,6 +33,10 @@
   --color-badge-bg: #f1f5f9;
   --color-scrollbar: #cbd5e1;
   --color-scrollbar-hover: #94a3b8;
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
 }
 
 .theme-money {
@@ -61,6 +65,10 @@
   --color-badge-bg: #f1f5f9;
   --color-scrollbar: #cbd5e1;
   --color-scrollbar-hover: #94a3b8;
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
 }
 
 .theme-indigo {
@@ -115,8 +123,12 @@
   --color-dropdown-bg: #12121a;
   --color-dropdown-border: rgba(255, 255, 255, 0.08);
   --color-badge-bg: rgba(255, 255, 255, 0.06);
-  --color-scrollbar: rgba(255, 255, 255, 0.1);
-  --color-scrollbar-hover: rgba(255, 255, 255, 0.2);
+  --color-scrollbar: #cbd5e1;
+  --color-scrollbar-hover: #94a3b8;
+  --color-success: #34d399;
+  --color-success-bg: rgba(52, 211, 153, 0.1);
+  --color-error: #f87171;
+  --color-error-bg: rgba(248, 113, 113, 0.1);
 }
 
 @layer utilities {
@@ -152,9 +164,15 @@
 }
 
 @import url('https://rsms.me/inter/inter.css');
-:root { font-family: 'Inter', sans-serif; }
+
+:root {
+  font-family: 'Inter', sans-serif;
+}
+
 @supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
+  :root {
+    font-family: 'Inter var', sans-serif;
+  }
 }
 
 body {
