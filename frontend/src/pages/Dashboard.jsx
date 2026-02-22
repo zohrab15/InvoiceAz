@@ -6,7 +6,7 @@ import clientApi from '../api/client';
 import {
     TrendingUp, Clock, AlertCircle, Plus, Wallet,
     ArrowUpRight, ArrowDownRight, BarChart3,
-    FileText, Calendar, Activity
+    FileText, Calendar, Activity, Building2
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, Tooltip,
@@ -213,6 +213,45 @@ const Dashboard = () => {
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="space-y-8 pb-16"
         >
+            {/* ── NO BUSINESS ALERT ── */}
+            {!activeBusiness && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden group"
+                    style={{
+                        background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
+                        boxShadow: '0 20px 40px var(--color-brand-shadow)'
+                    }}
+                >
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full -ml-16 -mb-16 blur-2xl" />
+
+                    <div className="flex items-center gap-6 relative z-10">
+                        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner">
+                            <Building2 size={32} strokeWidth={2.5} />
+                        </div>
+                        <div className="text-white">
+                            <h3 className="text-xl font-black tracking-tight mb-1">Xoş Gəlmisiniz! 🚀</h3>
+                            <p className="text-sm font-medium opacity-90 max-w-md leading-relaxed">
+                                Faktura yaratmaq və maliyyənizi idarə etmək üçün əvvəlcə bir <b>Biznes Profili</b> yaratmalısınız. Bu çox qısa vaxt aparacaq.
+                            </p>
+                        </div>
+                    </div>
+
+                    <motion.button
+                        whileHover={{ scale: 1.05, x: 5 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/settings?tab=business')}
+                        className="bg-white text-[var(--color-brand)] px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider shadow-xl flex items-center gap-3 relative z-10 whitespace-nowrap"
+                    >
+                        <span>Biznes Profili Yarat</span>
+                        <ArrowUpRight size={18} strokeWidth={3} />
+                    </motion.button>
+                </motion.div>
+            )}
+
             {/* ── HEADER ── */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>

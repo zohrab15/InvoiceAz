@@ -10,7 +10,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 
-import { ToastProvider } from './components/Toast';
+import { ToastProvider, useToast } from './components/Toast';
 import useLocationTracker from './hooks/useLocationTracker';
 
 const PAGE_TITLES = {
@@ -54,6 +54,8 @@ const PageTitleUpdater = () => {
 const RoleGate = ({ roles, children }) => {
   const { activeBusiness, isLoading, businesses } = useBusiness();
   const user = useAuthStore(state => state.user);
+  const showToast = useToast();
+  const location = useLocation();
 
   // Wait for business query to complete
   if (isLoading || !user) return null;
@@ -62,7 +64,12 @@ const RoleGate = ({ roles, children }) => {
   if (!activeBusiness && businesses?.length > 0) return null;
 
   // No businesses at all — go to dashboard
-  if (!activeBusiness) return <Navigate to="/dashboard" replace />;
+  if (!activeBusiness) {
+    if (location.pathname !== '/dashboard') {
+      showToast('Xidmətlərdən istifadə etmək üçün əvvəlcə Biznes Profili yaratmalısınız.', 'warning');
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // Determine role: explicitly check if current user is the business owner
   let role = (activeBusiness.user_role || '').toUpperCase();
