@@ -29,6 +29,8 @@ ROLE_PERMISSIONS = {
             'Product': {'methods': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 'filter_type': 'all'},
             'InventoryTransaction': {'methods': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 'filter_type': 'all'},
             'Category': {'methods': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 'filter_type': 'all'},
+            'Invoice': {'methods': ['GET', 'OPTIONS', 'HEAD'], 'filter_type': 'all'},  # Read-only (məhsul analitikası üçün)
+            'InvoiceItem': {'methods': ['GET', 'OPTIONS', 'HEAD'], 'filter_type': 'all'},  # Read-only (top-products üçün)
         }
     },
     'SALES_REP': {
