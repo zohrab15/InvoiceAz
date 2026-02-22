@@ -560,7 +560,12 @@ const LandingPage = () => {
                             <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Haqqımızda</a>
                             <a href="#reviews" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Rəylər</a>
                             <Link to="/akademiya" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Akademiya</Link>
-                            <Link to="/settings?tab=referral" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Referral Proqramı</Link>
+                            <button
+                                onClick={() => navigate(token ? '/settings?tab=referral' : '/register')}
+                                className="text-sm font-medium text-white/30 hover:text-white transition-colors text-left"
+                            >
+                                Referral Proqramı
+                            </button>
                             <Link to="/help" state={{ fromLanding: true }} className="text-sm font-medium text-white/30 hover:text-white transition-colors">Dəstək Mərkəzi</Link>
                         </div>
                         <div className="flex flex-col gap-3">
