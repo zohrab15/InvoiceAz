@@ -1,4 +1,5 @@
 import openpyxl
+from django.db import transaction
 from django.db.models import Sum, F
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
@@ -28,33 +29,51 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
-                wb = openpyxl.load_workbook(file)
+                wb = openpyxl.load_workbook(file, read_only=True)
                 sheet = wb.active
                 
-                products_created = 0
-                # Assuming Header: Name, Description, SKU, Price, Unit
+                products_to_process = []
+                # Assuming Header: Name, Description, SKU, Price, Unit, Stock, Min Stock
                 # Skip header row
                 for row in sheet.iter_rows(min_row=2, values_only=True):
-                    name, desc, sku, price, unit, stock, min_stock = (row + (None, None, None, None, None, None, None))[0:7]
+                    if not row or not any(row):
+                        continue
+                        
+                    # Extract values with defaults
+                    # row could have varying lengths, so we pad it
+                    vals = list(row) + [None] * 7
+                    name, desc, sku, price, unit, stock, min_stock = vals[0:7]
                     
                     if not name: # Skip rows without a name
                         continue
                     
-                    Product.objects.update_or_create(
+                    # Create product instance for bulk processing
+                    product = Product(
                         business=business,
                         sku=sku,
-                        defaults={
-                            'name': name,
-                            'description': desc,
-                            'base_price': price or 0.00,
-                            'unit': unit or 'pcs',
-                            'stock_quantity': stock or 0.00,
-                            'min_stock_level': min_stock or 0.00
-                        }
+                        name=name,
+                        description=desc,
+                        base_price=price or 0.00,
+                        unit=unit or 'pcs',
+                        stock_quantity=stock or 0.00,
+                        min_stock_level=min_stock or 0.00
                     )
-                    products_created += 1
+                    products_to_process.append(product)
                 
-                return Response({"detail": f"{products_created} məhsul uğurla yükləndi."}, status=status.HTTP_201_CREATED)
+                if not products_to_process:
+                    return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Execute bulk operation
+                with transaction.atomic():
+                    # Django 4.1+ supports update_conflicts
+                    Product.objects.bulk_create(
+                        products_to_process,
+                        update_conflicts=True,
+                        unique_fields=['business', 'sku'],
+                        update_fields=['name', 'description', 'base_price', 'unit', 'stock_quantity', 'min_stock_level']
+                    )
+                
+                return Response({"detail": f"{len(products_to_process)} məhsul uğurla yükləndi."}, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"detail": f"Excel oxunarkən xəta baş verdi: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
