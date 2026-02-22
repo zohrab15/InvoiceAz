@@ -43,6 +43,16 @@ const Dashboard = () => {
         retry: false,
     });
 
+    const { data: payments, isLoading: isLoadingPayments } = useQuery({
+        queryKey: ['payments', activeBusiness?.id, user?.id],
+        queryFn: async () => {
+            const res = await clientApi.get('/invoices/payments/');
+            return res.data;
+        },
+        enabled: !!activeBusiness && !!user && !['SALES_REP', 'INVENTORY_MANAGER'].includes(activeBusiness?.user_role),
+        retry: false,
+    });
+
     const { data: inventoryProducts, isLoading: isLoadingInventory } = useQuery({
         queryKey: ['inventory-products', activeBusiness?.id],
         queryFn: async () => {
