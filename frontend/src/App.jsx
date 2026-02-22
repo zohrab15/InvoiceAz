@@ -82,7 +82,8 @@ const RoleGate = ({ roles, children }) => {
   // Defaulting to SALES_REP was the cause of normal users seeing restricted UI
   if (!role) role = 'OWNER';
 
-  if (roles.includes(role)) return children;
+  const normalizedRoles = roles.map(r => String(r).trim().toUpperCase());
+  if (normalizedRoles.includes(role)) return children;
 
   return <Navigate to="/dashboard" replace />;
 };

@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     const getFilteredNavItems = () => {
         const rawRole = activeBusiness?.user_role;
-        const role = (rawRole || 'OWNER').toUpperCase();
+        const role = String(rawRole || 'OWNER').trim().toUpperCase();
 
         // Only Owners and Managers get full access
         if (role === 'OWNER' || role === 'MANAGER') return navItems;

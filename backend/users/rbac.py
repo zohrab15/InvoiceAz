@@ -31,6 +31,8 @@ ROLE_PERMISSIONS = {
             'Category': {'methods': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 'filter_type': 'all'},
             'Invoice': {'methods': ['GET', 'OPTIONS', 'HEAD'], 'filter_type': 'all'},  # Read-only (məhsul analitikası üçün)
             'InvoiceItem': {'methods': ['GET', 'OPTIONS', 'HEAD'], 'filter_type': 'all'},  # Read-only (top-products üçün)
+            'NotificationSetting': {'methods': ['GET', 'PATCH'], 'filter_type': 'all'}, # Bildiriş tənzimləmələri üçün
+            'Notification': {'methods': ['GET', 'POST'], 'filter_type': 'all'}, # Bildirişlər üçün
         }
     },
     'SALES_REP': {
