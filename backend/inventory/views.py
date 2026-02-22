@@ -71,19 +71,11 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 if not excel_data_map:
                     return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
 
-                # 2. Fetch existing products for this business to apply Hybrid Model
-                excel_skus = [s for s in excel_data_map.keys() if not s.startswith('NO-SKU-')]
-                existing_products = {
-                    p.sku: p for p in Product.objects.filter(business=business, sku__in=excel_skus)
-                }
-
+                # 2. Prepare products to process (Overwrite Mode: Database stock is ignored)
                 products_to_process = []
                 for sku_key, data in excel_data_map.items():
-                    # Calculate final stock: (Database Stock) + (Sum of all rows in Excel)
-                    db_stock = Decimal('0.00')
-                    if sku_key in existing_products:
-                        db_stock = existing_products[sku_key].stock_quantity
-                    
+                    # Overwrite Mode: We don't fetch or add existing DB stock. 
+                    # Excel is the Source of Truth.
                     product = Product(
                         business=business,
                         sku=data['sku'],
@@ -91,7 +83,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         description=data['description'],
                         base_price=data['base_price'],
                         unit=data['unit'],
-                        stock_quantity=db_stock + data['stock_quantity'],
+                        stock_quantity=data['stock_quantity'],
                         min_stock_level=data['min_stock_level']
                     )
                     products_to_process.append(product)
@@ -106,7 +98,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     )
                 
                 return Response({
-                    "detail": f"{len(products_to_process)} məhsul uğurla işlənildi (Hibrid Model: Stoklar artırıldı)."
+                    "detail": f"{len(products_to_process)} məhsul uğurla işlənildi (Sinxronizasiya: Mövcud stoklar əvəzləndi)."
                 }, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"detail": f"Excel oxunarkən xəta baş verdi: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
