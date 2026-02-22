@@ -74,6 +74,7 @@ const LandingPage = () => {
                         <a href="#how" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Necə işləyir</a>
                         <a href="#pricing" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Qiymət</a>
                         <a href="#reviews" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Rəylər</a>
+                        <Link to="/akademiya" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Akademiya</Link>
                     </div>
                     <div className="flex items-center gap-3">
                         {!token ? (
@@ -549,6 +550,7 @@ const LandingPage = () => {
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Şirkət</h5>
                             <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Haqqımızda</a>
                             <a href="#reviews" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Rəylər</a>
+                            <Link to="/akademiya" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Akademiya</Link>
                             <Link to="/help" state={{ fromLanding: true }} className="text-sm font-medium text-white/30 hover:text-white transition-colors">Dəstək Mərkəzi</Link>
                         </div>
                         <div className="flex flex-col gap-3">
