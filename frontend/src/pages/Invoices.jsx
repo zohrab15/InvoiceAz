@@ -119,7 +119,7 @@ const Invoices = () => {
     const { data: products } = useQuery({
         queryKey: ['products', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/');
+            const res = await clientApi.get('/inventory/all/');
             return res.data;
         },
         enabled: !!activeBusiness,

@@ -22,16 +22,25 @@ const Products = () => {
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [excelFile, setExcelFile] = useState(null);
     const [stockFilter, setStockFilter] = useState('all'); // 'all', 'out_of_stock', 'low_stock', 'sufficient'
+    const [page, setPage] = useState(1);
 
     // Fetch Products
     const { data: products, isLoading } = useQuery({
-        queryKey: ['products', activeBusiness?.id],
+        queryKey: ['products', activeBusiness?.id, page, search, stockFilter],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/');
+            const params = new URLSearchParams({
+                page: page,
+                search: search,
+            });
+            // Map stockFilter to backend logic if needed, 
+            // but but for now we do local filtering of results for simplicity 
+            // unless we add backend filtering filters later.
+            const res = await clientApi.get(`/inventory/?${params.toString()}`);
             return res.data;
         },
         enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
-        retry: false
+        retry: false,
+        keepPreviousData: true
     });
 
     // Mutations
@@ -124,20 +133,19 @@ const Products = () => {
         uploadMutation.mutate(formData);
     };
 
-    const filteredProducts = products?.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
-            p.sku?.toLowerCase().includes(search.toLowerCase());
+    const filteredProducts = products?.results || [];
+    const totalCount = products?.count || 0;
+    const totalPages = Math.ceil(totalCount / 50);
 
-        const stock = Number(p.stock_quantity || 0);
-        const min = Number(p.min_stock_level || 0);
+    const handleSearchChange = (val) => {
+        setSearch(val);
+        setPage(1); // Reset to first page on search
+    };
 
-        let matchesStock = true;
-        if (stockFilter === 'out_of_stock') matchesStock = stock <= 0;
-        else if (stockFilter === 'low_stock') matchesStock = stock > 0 && stock <= min;
-        else if (stockFilter === 'sufficient') matchesStock = stock > min;
-
-        return matchesSearch && matchesStock;
-    }) || [];
+    const handleFilterChange = (val) => {
+        setStockFilter(val);
+        setPage(1); // Reset to first page on filter
+    };
 
     if (!activeBusiness) return (
         <div className="p-8 text-center text-slate-500">Zəhmət olmasa davam etmək üçün biznes seçin.</div>
@@ -225,7 +233,7 @@ const Products = () => {
                             className="w-full rounded-2xl p-4 pl-12 outline-none transition-all font-medium"
                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => handleSearchChange(e.target.value)}
                         />
                     </div>
                 </div>
@@ -239,7 +247,7 @@ const Products = () => {
                     ].map(f => (
                         <button
                             key={f.id}
-                            onClick={() => setStockFilter(f.id)}
+                            onClick={() => handleFilterChange(f.id)}
                             className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${stockFilter === f.id
                                 ? 'shadow-sm ring-1 ring-black/[0.05]'
                                 : ''
@@ -353,6 +361,52 @@ const Products = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="p-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderColor: 'var(--color-card-border)', backgroundColor: 'var(--color-hover-bg)' }}>
+                        <div className="text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>
+                            Toplam <span className="text-blue-600">{totalCount}</span> məhsuldan {((page - 1) * 50) + 1} - {Math.min(page * 50, totalCount)} arası göstərilir
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-4 py-2 rounded-xl font-bold text-sm bg-white border border-slate-200 disabled:opacity-50 transition-all hover:border-blue-500"
+                                style={{ color: 'var(--color-text-primary)' }}
+                            >
+                                Əvvəlki
+                            </button>
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) pageNum = i + 1;
+                                    else if (page <= 3) pageNum = i + 1;
+                                    else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                    else pageNum = page - 2 + i;
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => setPage(pageNum)}
+                                            className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-lg' : 'bg-white border border-slate-200 text-slate-600 hover:border-blue-500'}`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="px-4 py-2 rounded-xl font-bold text-sm bg-white border border-slate-200 disabled:opacity-50 transition-all hover:border-blue-500"
+                                style={{ color: 'var(--color-text-primary)' }}
+                            >
+                                Növbəti
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Modals */}

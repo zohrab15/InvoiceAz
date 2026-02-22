@@ -2,7 +2,7 @@ import openpyxl
 from decimal import Decimal
 from django.db import transaction
 from django.db.models import Sum, F
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets, status, permissions, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -13,10 +13,16 @@ from users.models import Business
 from users.mixins import BusinessContextMixin
 from users.permissions import IsRoleAuthorized
 
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
 class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    pagination_class = StandardResultsSetPagination
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
     def upload_excel(self, request):
@@ -140,3 +146,16 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             "out_of_stock": out_of_stock,
             "low_stock": low_stock
         })
+
+    @action(detail=False, methods=['get'], url_path='all')
+    def all_products(self, request):
+        """
+        Dropdownlar üçün bütün məhsulları səhifələmə olmadan qaytarır.
+        """
+        business = self.get_active_business()
+        if not business:
+            return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        products = Product.objects.filter(business=business)
+        serializer = self.get_serializer(products, many=True)
+        return Response(serializer.data)
