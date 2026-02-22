@@ -133,7 +133,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     {activeBusiness ? activeBusiness.name : 'Biznes Seçin'}
                                 </div>
                                 <div className="text-[10px] uppercase font-black tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                                    {activeBusiness ? (activeBusiness.user_role === 'OWNER' ? 'Aktiv Profil' : activeBusiness.user_role) : '---'}
+                                    {activeBusiness ? (activeBusiness.user_role === 'OWNER' ? 'Aktiv Profil' : ({
+                                        'MANAGER': 'Menecer',
+                                        'ACCOUNTANT': 'Mühasib',
+                                        'INVENTORY_MANAGER': 'Anbar Meneceri',
+                                        'SALES_REP': 'Satış Təmsilçisi',
+                                    }[activeBusiness.user_role] || activeBusiness.user_role)) : '---'}
                                 </div>
                             </div>
                         </div>
