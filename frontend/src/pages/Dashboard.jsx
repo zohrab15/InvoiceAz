@@ -185,7 +185,8 @@ const Dashboard = () => {
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
-            visible: isInventoryManager
+            visible: isInventoryManager,
+            isCurrency: false
         },
         {
             label: 'Kritik Stok',
@@ -194,7 +195,8 @@ const Dashboard = () => {
             color: '#ef4444',
             bg: 'rgba(239,68,68,0.08)',
             border: '#ef4444',
-            visible: isInventoryManager
+            visible: isInventoryManager,
+            isCurrency: false
         },
         {
             label: 'Ümumi Gəlir',
@@ -203,7 +205,8 @@ const Dashboard = () => {
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
-            visible: !isInventoryManager
+            visible: !isInventoryManager,
+            isCurrency: true
         },
         {
             label: 'Gözləyən',
@@ -212,7 +215,8 @@ const Dashboard = () => {
             color: '#f59e0b',
             bg: 'rgba(245,158,11,0.08)',
             border: '#f59e0b',
-            visible: !isInventoryManager
+            visible: !isInventoryManager,
+            isCurrency: true
         },
         {
             label: 'Ümumi Xərclər',
@@ -221,7 +225,8 @@ const Dashboard = () => {
             color: '#ef4444',
             bg: 'rgba(239,68,68,0.08)',
             border: '#ef4444',
-            visible: isOwnerOrManager || isAccountant
+            visible: isOwnerOrManager || isAccountant,
+            isCurrency: true
         },
         {
             label: 'Xalis Mənfəət',
@@ -230,7 +235,8 @@ const Dashboard = () => {
             color: profit >= 0 ? '#10b981' : '#ef4444',
             bg: profit >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
             border: profit >= 0 ? '#10b981' : '#ef4444',
-            visible: isOwnerOrManager || isAccountant
+            visible: isOwnerOrManager || isAccountant,
+            isCurrency: true
         },
     ].filter(card => card.visible);
 
@@ -344,8 +350,8 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                            <CountUp to={s.val} decimals={2} />
-                            <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>
+                            <CountUp to={s.val} decimals={s.isCurrency ? 2 : 0} />
+                            {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>}
                         </p>
                     </motion.div>
                 ))}
