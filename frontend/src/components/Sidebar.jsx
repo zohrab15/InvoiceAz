@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     const getFilteredNavItems = () => {
         const rawRole = activeBusiness?.user_role;
-        const role = (rawRole || 'SALES_REP').toUpperCase();
+        const role = (rawRole || 'OWNER').toUpperCase();
 
         // Only Owners and Managers get full access
         if (role === 'OWNER' || role === 'MANAGER') return navItems;
@@ -73,7 +73,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 return ['Ana səhifə', 'Məhsullar', 'Məhsul Analitikası', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             // SALES_REP or any other unrecognized role gets minimum access
-            if (role === 'SALES_REP' || true) {
+            if (role === 'SALES_REP') {
                 return ['Ana səhifə', 'Fakturalar', 'Müştərilər', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             return false;
@@ -81,7 +81,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
 
     const filteredNavItems = getFilteredNavItems();
-    const roleForFlags = (activeBusiness?.user_role || 'SALES_REP').toUpperCase();
+    const roleForFlags = (activeBusiness?.user_role || 'OWNER').toUpperCase();
     const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(roleForFlags);
 
     return (

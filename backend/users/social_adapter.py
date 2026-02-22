@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from users.models import User
+from users.models import User, TeamMember, TeamMemberInvitation
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
@@ -24,6 +24,17 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             )
             # If it existed but wasn't verified, verify it now
             EmailAddress.objects.filter(user=user, email=user.email).update(verified=True)
+
+        # Process pending team invitations (same logic as CustomRegisterSerializer.save)
+        invites = TeamMemberInvitation.objects.filter(email__iexact=user.email, is_used=False)
+        for invite in invites:
+            TeamMember.objects.get_or_create(
+                owner=invite.inviter,
+                user=user,
+                defaults={'role': invite.role}
+            )
+            invite.is_used = True
+            invite.save(update_fields=['is_used'])
             
         return user
 

@@ -53,9 +53,10 @@ const PageTitleUpdater = () => {
 // Role Gate for granular access control
 const RoleGate = ({ roles, children }) => {
   const { activeBusiness, isLoading, businesses } = useBusiness();
+  const user = useAuthStore(state => state.user);
 
   // Wait for business query to complete
-  if (isLoading) return null;
+  if (isLoading || !user) return null;
 
   // Wait for auto-selection to complete (useEffect runs after render)
   if (!activeBusiness && businesses?.length > 0) return null;
@@ -63,7 +64,17 @@ const RoleGate = ({ roles, children }) => {
   // No businesses at all — go to dashboard
   if (!activeBusiness) return <Navigate to="/dashboard" replace />;
 
-  const role = (activeBusiness.user_role || 'SALES_REP').toUpperCase();
+  // Determine role: explicitly check if current user is the business owner
+  let role = (activeBusiness.user_role || '').toUpperCase();
+
+  if (!role && activeBusiness.user === user.id) {
+    role = 'OWNER';
+  }
+
+  // If still no role, default to OWNER safely — the backend controls actual data access
+  // Defaulting to SALES_REP was the cause of normal users seeing restricted UI
+  if (!role) role = 'OWNER';
+
   if (roles.includes(role)) return children;
 
   return <Navigate to="/dashboard" replace />;

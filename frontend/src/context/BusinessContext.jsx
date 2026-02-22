@@ -55,9 +55,9 @@ export const BusinessProvider = ({ children }) => {
                     // Current active business is NOT in the new list. 
                     // This happens when access is revoked (e.g. removed from team).
                     if (businesses.length > 0) {
-                        // Switch to the first available one (with team priority)
-                        const teamBusiness = businesses.find(b => b.user_role && b.user_role !== 'OWNER');
-                        switchBusiness(teamBusiness || businesses[0]);
+                        // Prefer owned business over team membership to avoid showing restricted UI
+                        const ownedBusiness = businesses.find(b => b.user_role === 'OWNER');
+                        switchBusiness(ownedBusiness || businesses[0]);
                     } else {
                         // No businesses left at all
                         switchBusiness(null);
@@ -67,9 +67,9 @@ export const BusinessProvider = ({ children }) => {
                 // where invalidateQueries clears the list before fetching the new one.
             } else if (businesses.length > 0) {
                 // No active business, but we have some
-                // Prefer a team business (where user is NOT the owner) over a personal one
-                const teamBusiness = businesses.find(b => b.user_role && b.user_role !== 'OWNER');
-                switchBusiness(teamBusiness || businesses[0]);
+                // Prefer owned business over team membership to avoid showing restricted UI
+                const ownedBusiness = businesses.find(b => b.user_role === 'OWNER');
+                switchBusiness(ownedBusiness || businesses[0]);
             }
         }
     }, [businesses, isLoading, token]); // Re-run if businesses or token change

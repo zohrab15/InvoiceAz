@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../../api/client';
 import useAuthStore from '../../store/useAuthStore';
 import { useToast } from '../Toast';
-import { Trash2, UserPlus, Mail, Users, MapPin, AlertCircle, Search } from 'lucide-react';
+import { Trash2, UserPlus, Mail, Users, MapPin, AlertCircle, Search, Clock, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TeamSettings = () => {
@@ -25,6 +25,26 @@ const TeamSettings = () => {
         enabled: !!token,
     });
 
+    // Fetch pending invitations
+    const { data: invitations, isLoading: isInvitesLoading } = useQuery({
+        queryKey: ['invitations', token],
+        queryFn: async () => {
+            const res = await client.get('/users/invitations/');
+            return res.data;
+        },
+        enabled: !!token,
+    });
+
+    // Fetch plan status
+    const { data: planStatus } = useQuery({
+        queryKey: ['plan_status', token],
+        queryFn: async () => {
+            const res = await client.get('/users/plan/status/');
+            return res.data;
+        },
+        enabled: !!token,
+    });
+
     const getRoleName = (roleCode) => {
         const roles = {
             'MANAGER': 'Menecer',
@@ -38,9 +58,16 @@ const TeamSettings = () => {
     // Add team member mutation
     const addMutation = useMutation({
         mutationFn: (data) => client.post('/users/team/', data),
-        onSuccess: (data, variables) => {
+        onSuccess: (res, variables) => {
             queryClient.invalidateQueries(['team', token]);
-            showToast(`${getRoleName(variables.role)} uğurla komandaya əlavə edildi!`);
+            queryClient.invalidateQueries(['invitations', token]);
+
+            if (res.status === 202) {
+                showToast(`İstifadəçi tapılmadı, lakin ${variables.email} ünvanına dəvət göndərildi!`);
+            } else {
+                showToast(`${getRoleName(variables.role)} uğurla komandaya əlavə edildi!`);
+            }
+
             setEmail('');
             setRole('SALES_REP');
             setIsSubmitting(false);
@@ -49,6 +76,18 @@ const TeamSettings = () => {
             setIsSubmitting(false);
             const msg = error.response?.data?.detail || 'İşçini əlavə etmək mümkün olmadı.';
             showToast(msg, 'error');
+        }
+    });
+
+    // Cancel invitation mutation
+    const cancelInviteMutation = useMutation({
+        mutationFn: (id) => client.delete(`/users/invitations/${id}/`),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['invitations', token]);
+            showToast('Dəvət ləğv edildi.');
+        },
+        onError: () => {
+            showToast('Dəvəti ləğv etmək mümkün olmadı.', 'error');
         }
     });
 
@@ -166,8 +205,73 @@ const TeamSettings = () => {
                         {isSubmitting ? 'Əlavə edilir...' : 'Dəvət Göndər'}
                     </button>
                 </form>
-                <p className="text-xs text-gray-500">Qeyd: İşçi əvvəlcə InvoiceAZ platformasında qeydiyyatdan keçmiş olmalıdır.</p>
+
+                {planStatus?.limits?.team_members !== null && (
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
+                        <ShieldAlert size={18} className="text-blue-500" />
+                        <p className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                            Limit: {planStatus?.usage?.team_members_total || (filteredMembers.length + (invitations?.length || 0))} / {planStatus?.limits?.team_members} komanda üzvü
+                            {planStatus?.limits?.team_members > 0 ?
+                                ` (${planStatus.label} planı)` :
+                                ' (Pulsuz planda limit 0-dır. Lütfən Premium-a keçin.)'}
+                        </p>
+                    </div>
+                )}
+
+                <p className="text-xs text-gray-500">Qeyd: İşçi qeydiyyatdan keçməyibsə, qeydiyyatdan keçdikdən sonra avtomatik komandaya əlavə olunacaq.</p>
             </div>
+
+            {/* Pending Invitations */}
+            {invitations?.length > 0 && (
+                <div
+                    className="p-8 rounded-3xl space-y-6"
+                    style={{
+                        backgroundColor: 'var(--color-card-bg)',
+                        border: '1px solid var(--color-card-border)',
+                        boxShadow: 'var(--color-card-shadow)'
+                    }}
+                >
+                    <h3 className="font-black flex items-center gap-3 text-lg tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                        <div className="p-2 bg-orange-500/10 rounded-lg text-orange-500"><Clock size={20} /></div>
+                        Gözləyən Dəvətlər ({invitations.length})
+                    </h3>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b-2" style={{ borderColor: 'var(--color-border)' }}>
+                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">E-poçt</th>
+                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Rol</th>
+                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Tarix</th>
+                                    <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider text-right">Əməliyyat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {invitations.map((invite) => (
+                                    <tr key={invite.id} className="border-b last:border-0" style={{ borderColor: 'var(--color-border)' }}>
+                                        <td className="py-4 text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{invite.email}</td>
+                                        <td className="py-4">
+                                            <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-orange-100 text-orange-700">
+                                                {getRoleName(invite.role)}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 text-xs text-gray-500">{formatDate(invite.created_at)}</td>
+                                        <td className="py-4 text-right">
+                                            <button
+                                                onClick={() => cancelInviteMutation.mutate(invite.id)}
+                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-block"
+                                                title="Dəvəti ləğv et"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
 
             {/* Team List */}
             <div
