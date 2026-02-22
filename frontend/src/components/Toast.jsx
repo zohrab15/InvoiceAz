@@ -9,11 +9,21 @@ export const ToastProvider = ({ children }) => {
 
     const showToast = useCallback((message, type = 'success') => {
         if (!message || message.trim() === '') return;
-        const id = Math.random().toString(36).substring(2, 11);
-        setToasts((prev) => [...prev, { id, message, type }]);
-        setTimeout(() => {
-            setToasts((prev) => prev.filter((t) => t.id !== id));
-        }, 3500);
+
+        // Prevent duplicate messages from stacking up
+        setToasts((prev) => {
+            const isDuplicate = prev.some(t => t.message === message && t.type === type);
+            if (isDuplicate) return prev;
+
+            const id = Math.random().toString(36).substring(2, 11);
+            const newToast = { id, message, type };
+
+            setTimeout(() => {
+                setToasts((current) => current.filter((t) => t.id !== id));
+            }, 3500);
+
+            return [...prev, newToast];
+        });
     }, []);
 
     return (
