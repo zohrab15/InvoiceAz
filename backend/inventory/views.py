@@ -1,4 +1,5 @@
 import openpyxl
+from decimal import Decimal
 from django.db import transaction
 from django.db.models import Sum, F
 from rest_framework import viewsets, status, permissions
@@ -29,43 +30,68 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
+                # Use read_only=True and values_only=True for performance
                 wb = openpyxl.load_workbook(file, read_only=True)
                 sheet = wb.active
                 
-                products_to_process = []
-                # Assuming Header: Name, Description, SKU, Price, Unit, Stock, Min Stock
-                # Skip header row
+                # 1. First, collect all SKUs from Excel and prepare row data
+                excel_rows = []
+                excel_skus = set()
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     if not row or not any(row):
                         continue
-                        
-                    # Extract values with defaults
-                    # row could have varying lengths, so we pad it
+                    
                     vals = list(row) + [None] * 7
                     name, desc, sku, price, unit, stock, min_stock = vals[0:7]
                     
-                    if not name: # Skip rows without a name
+                    if not name:
                         continue
                     
-                    # Create product instance for bulk processing
+                    excel_rows.append({
+                        'name': name,
+                        'description': desc,
+                        'sku': sku,
+                        'price': price or 0.00,
+                        'unit': unit or 'pcs',
+                        'stock': stock or 0.00,
+                        'min_stock': min_stock or 0.00
+                    })
+                    if sku:
+                        excel_skus.add(sku)
+
+                if not excel_rows:
+                    return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # 2. Fetch existing products for this business that match the SKUs
+                existing_products = {
+                    p.sku: p for p in Product.objects.filter(business=business, sku__in=excel_skus)
+                    if p.sku
+                }
+
+                products_to_process = []
+                for data in excel_rows:
+                    sku = data['sku']
+                    # Hybrid Logic: 
+                    # If exists: New Stock = Current + Excel
+                    # If new: New Stock = Excel
+                    current_stock = Decimal('0.00')
+                    if sku in existing_products:
+                        current_stock = existing_products[sku].stock_quantity
+                    
                     product = Product(
                         business=business,
                         sku=sku,
-                        name=name,
-                        description=desc,
-                        base_price=price or 0.00,
-                        unit=unit or 'pcs',
-                        stock_quantity=stock or 0.00,
-                        min_stock_level=min_stock or 0.00
+                        name=data['name'],
+                        description=data['description'],
+                        base_price=Decimal(str(data['price'] or 0)),
+                        unit=data['unit'],
+                        stock_quantity=current_stock + Decimal(str(data['stock'] or 0)),
+                        min_stock_level=Decimal(str(data['min_stock'] or 0))
                     )
                     products_to_process.append(product)
-                
-                if not products_to_process:
-                    return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
 
-                # Execute bulk operation
+                # 3. Execute bulk operation with conflict resolution
                 with transaction.atomic():
-                    # Django 4.1+ supports update_conflicts
                     Product.objects.bulk_create(
                         products_to_process,
                         update_conflicts=True,
@@ -73,7 +99,9 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         update_fields=['name', 'description', 'base_price', 'unit', 'stock_quantity', 'min_stock_level']
                     )
                 
-                return Response({"detail": f"{len(products_to_process)} məhsul uğurla yükləndi."}, status=status.HTTP_201_CREATED)
+                return Response({
+                    "detail": f"{len(products_to_process)} məhsul uğurla işlənildi (Hibrid Model: Stoklar artırıldı)."
+                }, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"detail": f"Excel oxunarkən xəta baş verdi: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
