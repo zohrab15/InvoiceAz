@@ -107,7 +107,32 @@ const TeamSettings = () => {
 
     const handleAddMember = (e) => {
         e.preventDefault();
-        if (!email.trim()) return;
+
+        // Basic presence validation
+        if (!email.trim()) {
+            showToast('Lütfən e-poçt ünvanını daxil edin.', 'error');
+            return;
+        }
+
+        // Email format validation (Regex)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showToast('Lütfən düzgün bir e-poçt ünvanı daxil edin.', 'error');
+            return;
+        }
+
+        // Plan limit check
+        if (planStatus?.limits?.team_members !== null && planStatus?.limits?.team_members === 0) {
+            showToast('Sizin planınız komanda üzvü əlavə etməyə imkan vermir. Lütfən Premium-a keçin.', 'warning');
+            return;
+        }
+
+        const currentUsage = planStatus?.usage?.team_members_total || (filteredMembers.length + (invitations?.length || 0));
+        if (planStatus?.limits?.team_members !== null && currentUsage >= planStatus?.limits?.team_members) {
+            showToast(`Komanda limiti (${planStatus.limits.team_members}) dolub. Yeni işçi əlavə etmək üçün planı yüksəltməlisiniz.`, 'warning');
+            return;
+        }
+
         setIsSubmitting(true);
         addMutation.mutate({ email, role });
     };
@@ -171,14 +196,13 @@ const TeamSettings = () => {
                     Yeni İşçi Əlavə Et
                 </h3>
 
-                <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row gap-4">
+                <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row gap-4" noValidate>
                     <div className="flex-1 relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <Mail size={18} />
                         </div>
                         <input
                             type="email"
-                            required
                             placeholder="işçinin.emaili@domain.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
