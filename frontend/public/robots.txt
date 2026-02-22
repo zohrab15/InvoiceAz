@@ -6,6 +6,7 @@ Allow: /forgot-password
 Allow: /terms
 Allow: /privacy
 Allow: /help
+Allow: /akademiya
 
 # Block authenticated/private routes
 Disallow: /dashboard
