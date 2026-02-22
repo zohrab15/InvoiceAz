@@ -4,9 +4,11 @@ import { Palette, Check, Coins, Bell, Moon, Sun, Mail, AppWindow, Loader2 } from
 import { useTheme } from '../context/ThemeContext';
 import client from '../api/client';
 import { useToast } from '../components/Toast';
+import { useBusiness } from '../context/BusinessContext';
 
 const SystemSettings = () => {
     const { theme: currentTheme, setTheme, themes } = useTheme();
+    const { activeBusiness } = useBusiness();
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -177,34 +179,51 @@ const SystemSettings = () => {
                         <div className="flex justify-center p-8">
                             <Loader2 size={32} className="animate-spin text-[var(--color-brand)] opacity-50" />
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* In-App Notifications */}
-                            <div className="space-y-4">
-                                <h4 className="text-xs font-black uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
-                                    <AppWindow size={14} /> Sistem Daxili Bildirişlər
-                                </h4>
-                                <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
-                                    <NotificationToggle id="invoice_created" label="Yeni Faktura" description="Yeni faktura yaradıldıqda bildir" icon={Bell} />
-                                    <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
-                                    <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə bildir" icon={Bell} />
-                                    <NotificationToggle id="client_created" label="Yeni Müştəri" description="Yeni müştəri əlavə edildikdə bildir" icon={Bell} />
-                                    <NotificationToggle id="expense_created" label="Yeni Xərc" description="Yeni xərc əlavə edildikdə bildir" icon={Bell} />
-                                </div>
-                            </div>
+                    ) : (() => {
+                        const role = (activeBusiness?.user_role || 'OWNER').toUpperCase();
+                        const isInventoryManager = role === 'INVENTORY_MANAGER';
+                        const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);
+                        const isAccountant = role === 'ACCOUNTANT';
 
-                            {/* Email Notifications */}
-                            <div className="space-y-4">
-                                <h4 className="text-xs font-black uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
-                                    <Mail size={14} /> E-poçt Bildirişləri
-                                </h4>
-                                <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
-                                    <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
-                                    <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
+                        return (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* In-App Notifications */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-black uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                        <AppWindow size={14} /> Sistem Daxili Bildirişlər
+                                    </h4>
+                                    <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
+                                        {!isInventoryManager && (
+                                            <>
+                                                <NotificationToggle id="invoice_created" label="Yeni Faktura" description="Yeni faktura yaradıldıqda bildir" icon={Bell} />
+                                                <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
+                                                <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə bildir" icon={Bell} />
+                                                <NotificationToggle id="client_created" label="Yeni Müştəri" description="Yeni müştəri əlavə edildikdə bildir" icon={Bell} />
+                                                <NotificationToggle id="expense_created" label="Yeni Xərc" description="Yeni xərc əlavə edildikdə bildir" icon={Bell} />
+                                            </>
+                                        )}
+                                        <NotificationToggle id="low_stock" label="Kritik Stok" description="Məhsul sayı limitdən aşağı düşdükdə bildir" icon={Bell} />
+                                    </div>
+                                </div>
+
+                                {/* Email Notifications */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-black uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                        <Mail size={14} /> E-poçt Bildirişləri
+                                    </h4>
+                                    <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
+                                        {!isInventoryManager && (
+                                            <>
+                                                <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
+                                                <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
+                                            </>
+                                        )}
+                                        <NotificationToggle id="low_stock" label="Kritik Stok" description="Məhsul sayı limitdən aşağı düşdükdə email göndər" icon={Mail} isEmail />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        );
+                    })()}
                 </div>
             </div>
         </motion.div>
