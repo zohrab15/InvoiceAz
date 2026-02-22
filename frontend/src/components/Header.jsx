@@ -77,7 +77,7 @@ const Header = ({ onMenuClick }) => {
     // Filter menu items by role
     const getFilteredMenuItems = () => {
         const rawRole = activeBusiness?.user_role;
-        const role = (rawRole || 'SALES_REP').toUpperCase();
+        const role = (rawRole || 'OWNER').toUpperCase();
 
         const items = [
             { icon: <User size={18} />, label: 'Profilim', onClick: () => navigate('/settings?tab=user') },

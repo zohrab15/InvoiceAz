@@ -192,7 +192,7 @@ const BusinessSettings = () => {
 
     const isBusinessLoading = isLoading;
 
-    const rawRole = selectedBusiness?.user_role || 'SALES_REP';
+    const rawRole = selectedBusiness?.user_role || 'OWNER';
     const isRestricted = rawRole === 'SALES_REP' || rawRole === 'INVENTORY_MANAGER' || rawRole === 'ACCOUNTANT';
 
     const tabs = [
