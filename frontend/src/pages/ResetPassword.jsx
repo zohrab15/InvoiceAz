@@ -109,8 +109,6 @@ const ResetPassword = () => {
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                                         <input
                                             type={showPassword ? "text" : "password"}
-                                            required
-                                            minLength={8}
                                             placeholder="••••••••"
                                             className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 pl-12 pr-12 outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                             value={password}
@@ -132,8 +130,6 @@ const ResetPassword = () => {
                                         <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                                         <input
                                             type={showPassword ? "text" : "password"}
-                                            required
-                                            minLength={8}
                                             placeholder="••••••••"
                                             className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 pl-12 pr-12 outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/15 text-sm font-medium"
                                             value={confirmPassword}
