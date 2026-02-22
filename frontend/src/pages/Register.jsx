@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
@@ -17,6 +17,15 @@ const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const showToast = useToast();
+    const [searchParams] = useSearchParams();
+
+    // Capture referral code from URL and persist to localStorage
+    useEffect(() => {
+        const ref = searchParams.get('ref');
+        if (ref) {
+            localStorage.setItem('referral_code', ref.trim().toUpperCase());
+        }
+    }, [searchParams]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,7 +43,12 @@ const Register = () => {
 
         setIsLoading(true);
         try {
-            await clientApi.post('/auth/registration/', formData);
+            const payload = { ...formData };
+            const savedRef = localStorage.getItem('referral_code');
+            if (savedRef) payload.referral_code = savedRef;
+
+            await clientApi.post('/auth/registration/', payload);
+            localStorage.removeItem('referral_code');
             navigate('/verify-email-sent');
         } catch (error) {
             console.error('Registration Error Details:', error);

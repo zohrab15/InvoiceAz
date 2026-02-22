@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
     FileText,
     TrendingUp,
@@ -49,6 +49,15 @@ const Counter = ({ end, suffix = '', duration = 2000 }) => {
 const LandingPage = () => {
     const navigate = useNavigate();
     const token = useAuthStore(state => state.token);
+    const [searchParams] = useSearchParams();
+
+    // Persist referral code from URL so Register page can pick it up
+    useEffect(() => {
+        const ref = searchParams.get('ref');
+        if (ref) {
+            localStorage.setItem('referral_code', ref.trim().toUpperCase());
+        }
+    }, [searchParams]);
 
     const goRegister = () => navigate(token ? '/dashboard' : '/register');
     const goLogin = () => navigate('/login');

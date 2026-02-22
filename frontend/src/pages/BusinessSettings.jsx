@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import client from '../api/client';
 import { useToast } from '../components/Toast';
-import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle, Users } from 'lucide-react';
+import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle, Users, Gift } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import UserSettings from '../components/settings/UserSettings';
 import TeamSettings from '../components/settings/TeamSettings';
@@ -14,6 +14,7 @@ import { useLocation } from 'react-router-dom';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 import useAuthStore from '../store/useAuthStore';
+import ReferralTab from '../components/ReferralTab';
 import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
@@ -37,7 +38,7 @@ const BusinessSettings = () => {
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tab = searchParams.get('tab');
-        if (tab && ['user', 'business'].includes(tab)) {
+        if (tab && ['user', 'business', 'referral'].includes(tab)) {
             setActiveTab(tab);
         }
     }, [location]);
@@ -200,6 +201,7 @@ const BusinessSettings = () => {
             { id: 'business', name: 'Biznes Profilləri', icon: <Building2 size={18} /> },
             { id: 'team', name: 'Komanda', icon: <Users size={18} /> },
         ] : []),
+        { id: 'referral', name: 'Referral', icon: <Gift size={18} /> },
     ];
 
     return (
@@ -269,6 +271,21 @@ const BusinessSettings = () => {
                     </motion.div>
                 )}
 
+                {activeTab === 'referral' && (
+                    <motion.div
+                        key="referral-tab"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        className="p-6 rounded-3xl"
+                        style={{
+                            backgroundColor: 'var(--color-card-bg)',
+                            border: '1px solid var(--color-card-border)',
+                        }}
+                    >
+                        <ReferralTab />
+                    </motion.div>
+                )}
 
                 {activeTab === 'business' && (
                     <motion.div

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import SubscriptionPlan, User, Business, TeamMember
+from .models import SubscriptionPlan, User, Business, TeamMember, DiscountCoupon
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -23,6 +23,7 @@ class MyUserAdmin(UserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'avatar', 'timezone', 'language')}),
         ('Plan Information', {'fields': ('subscription_plan', 'membership')}),
+        ('Referral', {'fields': ('referral_code', 'referred_by', 'referral_count', 'referral_rewarded')}),
         ('Security', {'fields': ('is_email_verified', 'is_2fa_enabled', 'totp_secret')}),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
@@ -42,3 +43,11 @@ class TeamMemberAdmin(admin.ModelAdmin):
     list_filter = ('role',)
     search_fields = ('user__email', 'owner__email')
     raw_id_fields = ('user', 'owner')
+
+@admin.register(DiscountCoupon)
+class DiscountCouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'user', 'discount_percent', 'reason', 'is_used', 'created_at', 'used_at')
+    list_filter = ('is_used', 'reason')
+    search_fields = ('code', 'user__email')
+    raw_id_fields = ('user',)
+    readonly_fields = ('code', 'discount_percent', 'reason', 'created_at')

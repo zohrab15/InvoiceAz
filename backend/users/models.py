@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.conf import settings
@@ -78,7 +79,16 @@ class User(AbstractUser):
     # Security fields
     totp_secret = models.CharField(max_length=32, blank=True, null=True)
     is_2fa_enabled = models.BooleanField(default=False)
-    
+
+    # Referral / Affiliate fields
+    referral_code = models.CharField(max_length=12, unique=True, blank=True)
+    referred_by = models.ForeignKey(
+        'self', null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='referrals'
+    )
+    referral_count = models.PositiveIntegerField(default=0)
+    referral_rewarded = models.BooleanField(default=False)
+
     # Timestamps (AbstractUser has date_joined, but docs asked for created_at/updated_at)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -87,6 +97,11 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = uuid.uuid4().hex[:8].upper()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
@@ -147,3 +162,27 @@ class TeamMember(models.Model):
 
     class Meta:
         unique_together = ('owner', 'user') # A user can only be added once per owner
+
+
+class DiscountCoupon(models.Model):
+    REASON_CHOICES = [
+        ('referrer_bonus', 'Referrer Bonus'),
+        ('new_user_bonus', 'New User Bonus'),
+    ]
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='coupons'
+    )
+    code = models.CharField(max_length=20, unique=True)
+    discount_percent = models.PositiveSmallIntegerField()
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.code} - {self.user.email}"
+
+    class Meta:
+        ordering = ['-created_at']

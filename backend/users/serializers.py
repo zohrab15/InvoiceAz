@@ -1,10 +1,21 @@
 from rest_framework import serializers
-from users.models import User, Business, TeamMember
+from users.models import User, Business, TeamMember, DiscountCoupon
+
+
+class DiscountCouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DiscountCoupon
+        fields = ['code', 'discount_percent', 'reason', 'is_used', 'created_at', 'used_at']
+
 
 class UserSerializer(serializers.ModelSerializer):
+    referral_code = serializers.CharField(read_only=True)
+    referral_count = serializers.IntegerField(read_only=True)
+    coupons = DiscountCouponSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'avatar', 'timezone', 'language', 'membership', 'is_2fa_enabled')
+        fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'avatar', 'timezone', 'language', 'membership', 'is_2fa_enabled', 'referral_code', 'referral_count', 'coupons')
         read_only_fields = ('id', 'email')
 
     def to_representation(self, instance):
@@ -78,6 +89,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     username = None
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
+    referral_code = serializers.CharField(required=False, allow_blank=True, write_only=True)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
@@ -92,6 +104,16 @@ class CustomRegisterSerializer(RegisterSerializer):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("Bu e-poçt ilə artıq hesab mövcuddur.")
         return email
+
+    def save(self, request):
+        user = super().save(request)
+        code = self.validated_data.get('referral_code', '').strip().upper()
+        if code:
+            referrer = User.objects.filter(referral_code=code).first()
+            if referrer and referrer.pk != user.pk:
+                user.referred_by = referrer
+                user.save(update_fields=['referred_by'])
+        return user
 
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)

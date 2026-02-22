@@ -356,6 +356,24 @@ class Disable2FAView(APIView):
         user.save()
         return Response({"detail": "İki mərhələli doğrulama söndürüldü."})
 
+from .serializers import DiscountCouponSerializer
+
+class ReferralStatsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        coupons = DiscountCouponSerializer(
+            user.coupons.order_by('-created_at'), many=True
+        )
+        return Response({
+            'referral_code': user.referral_code,
+            'referral_link': f"https://invoiceaz.az/register?ref={user.referral_code}",
+            'referral_count': user.referral_count,
+            'coupons': coupons.data,
+        })
+
+
 class RBACDebugView(APIView):
     """Temporary debug endpoint to inspect RBAC state for the current user."""
     permission_classes = [permissions.IsAuthenticated]
