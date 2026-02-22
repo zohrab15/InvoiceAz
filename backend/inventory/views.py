@@ -76,12 +76,11 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         if not business:
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
         
-        products = self.get_queryset()
+        products = Product.objects.filter(business=business)
         
         total_products = products.count()
         
         # Calculate total value: Sum of (base_price * stock_quantity)
-        # We use F expressions to perform the calculation at the database level
         total_value_data = products.aggregate(
             total_value=Sum(F('base_price') * F('stock_quantity'))
         )

@@ -53,14 +53,14 @@ const Dashboard = () => {
         retry: false,
     });
 
-    const { data: inventoryStats, isLoading: isLoadingInventory } = useQuery({
+    const { data: inventoryStats, isLoading: isLoadingInventory, isError: isErrorInventory } = useQuery({
         queryKey: ['inventory-stats', activeBusiness?.id],
         queryFn: async () => {
             const res = await clientApi.get('/inventory/stats/');
             return res.data;
         },
         enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
-        retry: false,
+        retry: 1, // Only retry once for stats
     });
 
     const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments || isLoadingInventory;
@@ -370,8 +370,12 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                            <CountUp to={s.val} decimals={s.isCurrency ? 2 : 0} />
-                            {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>}
+                            {isLoadingInventory ? '...' : isErrorInventory ? 'Xəta' : (
+                                <>
+                                    <CountUp to={s.val} decimals={s.isCurrency ? 2 : 0} />
+                                    {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>}
+                                </>
+                            )}
                         </p>
                     </motion.div>
                 ))}
