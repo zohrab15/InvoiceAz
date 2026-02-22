@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import client from '../../api/client';
 import useAuthStore from '../../store/useAuthStore';
 import { useToast } from '../Toast';
@@ -8,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const TeamSettings = () => {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const { token, user } = useAuthStore();
     const showToast = useToast();
     const [email, setEmail] = useState('');
@@ -207,14 +209,43 @@ const TeamSettings = () => {
                 </form>
 
                 {planStatus?.limits?.team_members !== null && (
-                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
-                        <ShieldAlert size={18} className="text-blue-500" />
-                        <p className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                            Limit: {planStatus?.usage?.team_members_total || (filteredMembers.length + (invitations?.length || 0))} / {planStatus?.limits?.team_members} komanda üzvü
-                            {planStatus?.limits?.team_members > 0 ?
-                                ` (${planStatus.label} planı)` :
-                                ' (Pulsuz planda limit 0-dır. Lütfən Premium-a keçin.)'}
-                        </p>
+                    <div className="relative overflow-hidden p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 transition-all"
+                        style={{
+                            background: planStatus?.limits?.team_members > 0
+                                ? 'rgba(59, 130, 246, 0.05)'
+                                : 'rgba(245, 158, 11, 0.05)',
+                            border: planStatus?.limits?.team_members > 0
+                                ? '1px solid rgba(59, 130, 246, 0.1)'
+                                : '1px solid rgba(245, 158, 11, 0.2)',
+                        }}
+                    >
+                        <div className="flex items-center gap-4 relative z-10">
+                            <div className={`p-3 rounded-xl flex items-center justify-center shrink-0 ${planStatus?.limits?.team_members > 0 ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                <ShieldAlert size={20} />
+                            </div>
+                            <div>
+                                <h4 className="font-black text-sm mb-0.5" style={{ color: 'var(--color-text-primary)' }}>
+                                    Plan Limitləri
+                                </h4>
+                                <p className="text-xs font-bold leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                                    Cari istifadə: <span style={{ color: 'var(--color-text-primary)' }}>{planStatus?.usage?.team_members_total || (filteredMembers.length + (invitations?.length || 0))}</span> / <span style={{ color: 'var(--color-text-primary)' }}>{planStatus?.limits?.team_members}</span> komanda üzvü
+                                    {planStatus?.limits?.team_members === 0 && (
+                                        <span className="ml-1 text-amber-600 block sm:inline">
+                                            (Yalnız <b>Premium</b> paketdə komanda üzvü əlavə edilə bilər)
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+
+                        {planStatus?.limits?.team_members === 0 && (
+                            <button
+                                onClick={() => navigate('/pricing')}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 active:scale-95 whitespace-nowrap"
+                            >
+                                Planı Yüksəlt
+                            </button>
+                        )}
                     </div>
                 )}
 
