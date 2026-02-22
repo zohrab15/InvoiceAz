@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /forgot-password
+Allow: /terms
+Allow: /privacy
+Allow: /help
+
+# Block authenticated/private routes
+Disallow: /dashboard
+Disallow: /invoices
+Disallow: /clients
+Disallow: /expenses
+Disallow: /products
+Disallow: /analytics/
+Disallow: /settings
+Disallow: /security
+Disallow: /system-settings
+Disallow: /notifications
+Disallow: /pricing
+Disallow: /auth/
+Disallow: /verify-email-sent
+Disallow: /demo-login
+
+# Block public invoice/payment views from indexing
+Disallow: /view/
+Disallow: /public/
+
+Sitemap: /sitemap.xml

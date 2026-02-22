@@ -1,7 +1,7 @@
 // Vercel Rebuild Trigger (Ver RBAC-Deploy): 2026-02-21 06:51
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import useAuthStore from './store/useAuthStore';
 import client from './api/client';
@@ -12,6 +12,42 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 import { ToastProvider } from './components/Toast';
 import useLocationTracker from './hooks/useLocationTracker';
+
+const PAGE_TITLES = {
+  '/': 'InvoiceAZ - Peşəkar Faktura və Maliyyə İdarəetməsi',
+  '/login': 'Giriş | InvoiceAZ',
+  '/register': 'Qeydiyyat | InvoiceAZ',
+  '/forgot-password': 'Şifrəni Unutmusunuz? | InvoiceAZ',
+  '/dashboard': 'İdarə Paneli | InvoiceAZ',
+  '/invoices': 'Fakturalar | InvoiceAZ',
+  '/clients': 'Müştərilər | InvoiceAZ',
+  '/expenses': 'Xərclər | InvoiceAZ',
+  '/products': 'Məhsullar | InvoiceAZ',
+  '/analytics/payments': 'Ödəniş Analitikası | InvoiceAZ',
+  '/analytics/forecast': 'Proqnoz Analitikası | InvoiceAZ',
+  '/analytics/tax': 'Vergi Hesabatları | InvoiceAZ',
+  '/analytics/issues': 'Problem Fakturalar | InvoiceAZ',
+  '/analytics/products': 'Məhsul Analitikası | InvoiceAZ',
+  '/problematic-invoices': 'Problem Fakturalar | InvoiceAZ',
+  '/settings': 'Tənzimləmələr | InvoiceAZ',
+  '/security': 'Təhlükəsizlik | InvoiceAZ',
+  '/system-settings': 'Sistem Tənzimləmələri | InvoiceAZ',
+  '/notifications': 'Bildirişlər | InvoiceAZ',
+  '/pricing': 'Qiymət Planları | InvoiceAZ',
+  '/help': 'Yardım | InvoiceAZ',
+  '/terms': 'İstifadə Qaydaları | InvoiceAZ',
+  '/privacy': 'Məxfilik Siyasəti | InvoiceAZ',
+  '/verify-email-sent': 'E-poçtu Yoxlayın | InvoiceAZ',
+};
+
+const PageTitleUpdater = () => {
+  const location = useLocation();
+  useEffect(() => {
+    const title = PAGE_TITLES[location.pathname] || 'InvoiceAZ - Peşəkar Faktura və Maliyyə İdarəetməsi';
+    document.title = title;
+  }, [location.pathname]);
+  return null;
+};
 
 // Role Gate for granular access control
 const RoleGate = ({ roles, children }) => {
@@ -212,6 +248,7 @@ function App() {
           <ThemeProvider>
             <ToastProvider>
               <Router>
+                <PageTitleUpdater />
                 <Suspense fallback={<LoadingScreen />}>
                   <Routes>
                     <Route path="/login" element={<Login />} />
