@@ -186,3 +186,20 @@ class DiscountCoupon(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+class TeamMemberInvitation(models.Model):
+    email = models.EmailField()
+    inviter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_invitations', on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=TeamMember.ROLE_CHOICES, default='SALES_REP')
+    
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Invite for {self.email} by {self.inviter.email} ({self.role})"
+
+    class Meta:
+        unique_together = ('email', 'inviter')
+        ordering = ['-created_at']

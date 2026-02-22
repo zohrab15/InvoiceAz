@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import User, Business, TeamMember, DiscountCoupon
+from users.models import User, Business, TeamMember, DiscountCoupon, TeamMemberInvitation
 
 
 class DiscountCouponSerializer(serializers.ModelSerializer):
@@ -83,6 +83,14 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'user_email', 'user_name', 'role', 'last_latitude', 'last_longitude', 'last_location_update', 'created_at')
         read_only_fields = ('id', 'user', 'created_at', 'last_latitude', 'last_longitude', 'last_location_update')
 
+class TeamMemberInvitationSerializer(serializers.ModelSerializer):
+    inviter_email = serializers.EmailField(source='inviter.email', read_only=True)
+
+    class Meta:
+        model = TeamMemberInvitation
+        fields = ('id', 'email', 'inviter', 'inviter_email', 'role', 'is_used', 'created_at')
+        read_only_fields = ('id', 'inviter', 'is_used', 'created_at')
+
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -107,12 +115,27 @@ class CustomRegisterSerializer(RegisterSerializer):
 
     def save(self, request):
         user = super().save(request)
+        
+        # 1. Process Referral Code
         code = self.validated_data.get('referral_code', '').strip().upper()
         if code:
             referrer = User.objects.filter(referral_code=code).first()
             if referrer and referrer.pk != user.pk:
                 user.referred_by = referrer
                 user.save(update_fields=['referred_by'])
+        
+        # 2. Process Team Invitations
+        invites = TeamMemberInvitation.objects.filter(email__iexact=user.email, is_used=False)
+        for invite in invites:
+            # Create TeamMember record
+            TeamMember.objects.get_or_create(
+                owner=invite.inviter,
+                user=user,
+                defaults={'role': invite.role}
+            )
+            invite.is_used = True
+            invite.save(update_fields=['is_used'])
+            
         return user
 
 class PasswordChangeSerializer(serializers.Serializer):

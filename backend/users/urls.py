@@ -5,13 +5,14 @@ from .views import (
     DeleteAccountView, SessionListView, RevokeSessionView,
     Generate2FAView, Enable2FAView, Disable2FAView, UserMeView,
     LogoutAPIView, TeamMemberViewSet, TeamMemberLocationUpdateView,
-    RBACDebugView, ReferralStatsView
+    RBACDebugView, ReferralStatsView, TeamMemberInvitationViewSet
 )
 from .plan_views import PlanStatusView
 
 router = DefaultRouter()
 router.register(r'business', BusinessViewSet, basename='business')
 router.register(r'team', TeamMemberViewSet, basename='team')
+router.register(r'invitations', TeamMemberInvitationViewSet, basename='invitations')
 
 urlpatterns = [
     path('team/location/', TeamMemberLocationUpdateView.as_view(), name='team_location'),

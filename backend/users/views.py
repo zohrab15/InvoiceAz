@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
-from .models import Business, TeamMember, User
-from .serializers import BusinessSerializer, TeamMemberSerializer
-from .plan_limits import check_business_limit
+from .models import Business, TeamMember, User, TeamMemberInvitation
+from .serializers import BusinessSerializer, TeamMemberSerializer, TeamMemberInvitationSerializer
+from .plan_limits import check_business_limit, get_plan_limits
 from rest_framework.exceptions import PermissionDenied
 
 class BusinessViewSet(viewsets.ModelViewSet):
@@ -89,51 +89,69 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         return TeamMember.objects.filter(owner=root_owner).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
-        email = request.data.get('email')
+        email = request.data.get('email', '').strip().lower()
         role_code = request.data.get('role', 'SALES_REP')
         
         if not email:
             raise PermissionDenied("İstifadəçi e-poçtu tələb olunur.")
         
-        try:
-            target_user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise PermissionDenied("Bu e-poçt ilə istifadəçi tapılmadı. İşçi əvvəlcə saytdan qeydiyyatdan keçməlidir.")
-            
-        if target_user == request.user:
-            raise PermissionDenied("Özünüzü komandaya əlavə edə bilməzsiniz.")
-            
         # Determine the corporate owner (the root user who owns the businesses)
         try:
-            # If the inviter is already a team member, use their owner as the boss
             inviter_membership = TeamMember.objects.get(user=request.user)
             corporate_owner = inviter_membership.owner
             inviter_role = inviter_membership.role
         except TeamMember.DoesNotExist:
-            # Inviter is a root owner
             corporate_owner = request.user
             inviter_role = 'OWNER'
 
         if inviter_role not in ['OWNER', 'MANAGER']:
             raise PermissionDenied("Komandaya işçi əlavə etmək üçün səlahiyyətiniz yoxdur.")
-            
-        if inviter_role == 'MANAGER' and role_code == 'MANAGER':
-            raise PermissionDenied("Menecerlər yeni menecer təyin edə bilməz.")
 
-        if target_user == corporate_owner:
-            raise PermissionDenied("Biznes sahibini komandaya əlavə edə bilməzsiniz.")
+        # Plan check
+        plan = get_plan_limits(corporate_owner)
+        limit = getattr(plan, 'team_members_limit', 0) or 0
+        current_count = TeamMember.objects.filter(owner=corporate_owner).count()
+        current_pending = TeamMemberInvitation.objects.filter(inviter=corporate_owner, is_used=False).count()
+        
+        if (current_count + current_pending) >= limit and corporate_owner.email != 'demo_user@invoice.az':
+            raise PermissionDenied({
+                "code": "plan_limit",
+                "detail": f"Hazırkı planınızda maksimum {limit} komanda üzvü ola bilər. Lütfən planınızı yeniləyin.",
+                "limit": limit
+            })
 
-        if TeamMember.objects.filter(owner=corporate_owner, user=target_user).exists():
-           raise PermissionDenied("Bu istifadəçi artıq komandadadır.") 
+        try:
+            target_user = User.objects.get(email__iexact=email)
+            if target_user == request.user:
+                raise PermissionDenied("Özünüzü komandaya əlavə edə bilməzsiniz.")
+            if target_user == corporate_owner:
+                raise PermissionDenied("Biznes sahibini komandaya əlavə edə bilməzsiniz.")
+            if TeamMember.objects.filter(owner=corporate_owner, user=target_user).exists():
+                raise PermissionDenied("Bu istifadəçi artıq komandadadır.")
             
-        # Create record linked to the root corporate owner
-        member = TeamMember.objects.create(
-            owner=corporate_owner, 
-            user=target_user,
-            role=role_code
-        )
-        serializer = self.get_serializer(member)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # Create record directly
+            member = TeamMember.objects.create(
+                owner=corporate_owner, 
+                user=target_user,
+                role=role_code
+            )
+            serializer = self.get_serializer(member)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        except User.DoesNotExist:
+            # Create invitation instead
+            if TeamMemberInvitation.objects.filter(inviter=corporate_owner, email__iexact=email, is_used=False).exists():
+                raise PermissionDenied("Bu e-poçta artıq dəvət göndərilib.")
+            
+            invitation = TeamMemberInvitation.objects.create(
+                inviter=corporate_owner,
+                email=email,
+                role=role_code
+            )
+            return Response({
+                "detail": "İstifadəçi tapılmadı, lakin dəvət qeydə alındı. İstifadəçi qeydiyyatdan keçdikdə avtomatik komandaya əlavə olunacaq.",
+                "invitation_id": invitation.id
+            }, status=status.HTTP_202_ACCEPTED)
 
     def perform_destroy(self, instance):
         if self.request.user != instance.owner:
@@ -145,6 +163,34 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     raise PermissionDenied("Menecerlər digər menecerləri silə bilməz.")
             except TeamMember.DoesNotExist:
                 raise PermissionDenied("Təşkilatda deyilsiniz.")
+        instance.delete()
+
+class TeamMemberInvitationViewSet(viewsets.ModelViewSet):
+    serializer_class = TeamMemberInvitationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Only owners/managers see invitations for their org
+        try:
+            membership = TeamMember.objects.get(user=self.request.user)
+            owner = membership.owner
+            if membership.role != 'MANAGER':
+                 return TeamMemberInvitation.objects.none()
+        except TeamMember.DoesNotExist:
+            owner = self.request.user
+            
+        return TeamMemberInvitation.objects.filter(inviter=owner, is_used=False)
+
+    def perform_destroy(self, instance):
+        # Verify permission
+        try:
+            membership = TeamMember.objects.get(user=self.request.user)
+            if membership.owner != instance.inviter or membership.role != 'MANAGER':
+                raise PermissionDenied("İcazə yoxdur.")
+        except TeamMember.DoesNotExist:
+            if instance.inviter != self.request.user:
+                raise PermissionDenied("İcazə yoxdur.")
+        
         instance.delete()
 
 class TeamMemberLocationUpdateView(APIView):
