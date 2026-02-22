@@ -34,9 +34,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 wb = openpyxl.load_workbook(file, read_only=True)
                 sheet = wb.active
                 
-                # 1. First, collect all SKUs from Excel and prepare row data
-                excel_rows = []
-                excel_skus = set()
+                # 1. Collect and aggregate data from Excel (Handle duplicates within the file)
+                excel_data_map = {} # SKU -> combined data
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     if not row or not any(row):
                         continue
@@ -46,47 +45,54 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     
                     if not name:
                         continue
-                    
-                    excel_rows.append({
-                        'name': name,
-                        'description': desc,
-                        'sku': sku,
-                        'price': price or 0.00,
-                        'unit': unit or 'pcs',
-                        'stock': stock or 0.00,
-                        'min_stock': min_stock or 0.00
-                    })
-                    if sku:
-                        excel_skus.add(sku)
 
-                if not excel_rows:
+                    # Fallback for SKU if missing (though SKU is unique_together with business)
+                    sku_key = sku or f"NO-SKU-{name}"
+                    
+                    if sku_key not in excel_data_map:
+                        excel_data_map[sku_key] = {
+                            'name': name,
+                            'description': desc,
+                            'sku': sku,
+                            'base_price': Decimal(str(price or 0)),
+                            'unit': unit or 'pcs',
+                            'stock_quantity': Decimal(str(stock or 0)),
+                            'min_stock_level': Decimal(str(min_stock or 0))
+                        }
+                    else:
+                        # Aggregate: Sum stock, update other fields from latest row
+                        excel_data_map[sku_key]['stock_quantity'] += Decimal(str(stock or 0))
+                        excel_data_map[sku_key]['name'] = name
+                        excel_data_map[sku_key]['description'] = desc
+                        excel_data_map[sku_key]['base_price'] = Decimal(str(price or 0))
+                        excel_data_map[sku_key]['unit'] = unit or 'pcs'
+                        excel_data_map[sku_key]['min_stock_level'] = Decimal(str(min_stock or 0))
+
+                if not excel_data_map:
                     return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
 
-                # 2. Fetch existing products for this business that match the SKUs
+                # 2. Fetch existing products for this business to apply Hybrid Model
+                excel_skus = [s for s in excel_data_map.keys() if not s.startswith('NO-SKU-')]
                 existing_products = {
                     p.sku: p for p in Product.objects.filter(business=business, sku__in=excel_skus)
-                    if p.sku
                 }
 
                 products_to_process = []
-                for data in excel_rows:
-                    sku = data['sku']
-                    # Hybrid Logic: 
-                    # If exists: New Stock = Current + Excel
-                    # If new: New Stock = Excel
-                    current_stock = Decimal('0.00')
-                    if sku in existing_products:
-                        current_stock = existing_products[sku].stock_quantity
+                for sku_key, data in excel_data_map.items():
+                    # Calculate final stock: (Database Stock) + (Sum of all rows in Excel)
+                    db_stock = Decimal('0.00')
+                    if sku_key in existing_products:
+                        db_stock = existing_products[sku_key].stock_quantity
                     
                     product = Product(
                         business=business,
-                        sku=sku,
+                        sku=data['sku'],
                         name=data['name'],
                         description=data['description'],
-                        base_price=Decimal(str(data['price'] or 0)),
+                        base_price=data['base_price'],
                         unit=data['unit'],
-                        stock_quantity=current_stock + Decimal(str(data['stock'] or 0)),
-                        min_stock_level=Decimal(str(data['min_stock'] or 0))
+                        stock_quantity=db_stock + data['stock_quantity'],
+                        min_stock_level=data['min_stock_level']
                     )
                     products_to_process.append(product)
 
