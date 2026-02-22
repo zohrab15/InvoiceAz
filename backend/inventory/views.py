@@ -1,4 +1,5 @@
 import openpyxl
+from django.db.models import Sum, F
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -68,3 +69,30 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         product = get_object_or_404(Product, business=business, sku=sku)
         serializer = self.get_serializer(product)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='stats')
+    def stats(self, request):
+        business = self.get_active_business()
+        if not business:
+            return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        products = self.get_queryset()
+        
+        total_products = products.count()
+        
+        # Calculate total value: Sum of (base_price * stock_quantity)
+        # We use F expressions to perform the calculation at the database level
+        total_value_data = products.aggregate(
+            total_value=Sum(F('base_price') * F('stock_quantity'))
+        )
+        total_value = total_value_data['total_value'] or 0.00
+        
+        out_of_stock = products.filter(stock_quantity__lte=0).count()
+        low_stock = products.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
+        
+        return Response({
+            "total_products": total_products,
+            "total_value": float(total_value),
+            "out_of_stock": out_of_stock,
+            "low_stock": low_stock
+        })

@@ -53,13 +53,13 @@ const Dashboard = () => {
         retry: false,
     });
 
-    const { data: inventoryProducts, isLoading: isLoadingInventory } = useQuery({
-        queryKey: ['inventory-products', activeBusiness?.id],
+    const { data: inventoryStats, isLoading: isLoadingInventory } = useQuery({
+        queryKey: ['inventory-stats', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/');
+            const res = await clientApi.get('/inventory/stats/');
             return res.data;
         },
-        enabled: !!activeBusiness && activeBusiness?.user_role === 'INVENTORY_MANAGER',
+        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
         retry: false,
     });
 
@@ -180,22 +180,42 @@ const Dashboard = () => {
     const statCards = [
         {
             label: 'Cəmi Məhsul',
-            val: (inventoryProducts || []).length,
+            val: inventoryStats?.total_products || 0,
             icon: <Package size={20} />,
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
-            visible: isInventoryManager,
+            visible: true,
             isCurrency: false
         },
         {
+            label: 'Anbar Dəyəri',
+            val: inventoryStats?.total_value || 0,
+            icon: <Wallet size={20} />,
+            color: '#8b5cf6',
+            bg: 'rgba(139,92,246,0.08)',
+            border: '#8b5cf6',
+            visible: isOwnerOrManager || isAccountant || isInventoryManager,
+            isCurrency: true
+        },
+        {
             label: 'Kritik Stok',
-            val: (inventoryProducts || []).filter(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)).length,
+            val: inventoryStats?.low_stock || 0,
             icon: <AlertCircle size={20} />,
+            color: '#f59e0b',
+            bg: 'rgba(245,158,11,0.08)',
+            border: '#f59e0b',
+            visible: true,
+            isCurrency: false
+        },
+        {
+            label: 'Bitmiş Stok',
+            val: inventoryStats?.out_of_stock || 0,
+            icon: <Activity size={20} />,
             color: '#ef4444',
             bg: 'rgba(239,68,68,0.08)',
             border: '#ef4444',
-            visible: isInventoryManager,
+            visible: true,
             isCurrency: false
         },
         {
