@@ -21,6 +21,7 @@ const Products = () => {
     const [editingProduct, setEditingProduct] = useState(null);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [excelFile, setExcelFile] = useState(null);
+    const [stockFilter, setStockFilter] = useState('all'); // 'all', 'out_of_stock', 'low_stock', 'sufficient'
 
     // Fetch Products
     const { data: products, isLoading } = useQuery({
@@ -123,10 +124,20 @@ const Products = () => {
         uploadMutation.mutate(formData);
     };
 
-    const filteredProducts = products?.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.sku?.toLowerCase().includes(search.toLowerCase())
-    ) || [];
+    const filteredProducts = products?.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+            p.sku?.toLowerCase().includes(search.toLowerCase());
+
+        const stock = Number(p.stock_quantity || 0);
+        const min = Number(p.min_stock_level || 0);
+
+        let matchesStock = true;
+        if (stockFilter === 'out_of_stock') matchesStock = stock <= 0;
+        else if (stockFilter === 'low_stock') matchesStock = stock > 0 && stock <= min;
+        else if (stockFilter === 'sufficient') matchesStock = stock > min;
+
+        return matchesSearch && matchesStock;
+    }) || [];
 
     if (!activeBusiness) return (
         <div className="p-8 text-center text-slate-500">Zəhmət olmasa davam etmək üçün biznes seçin.</div>
@@ -204,25 +215,44 @@ const Products = () => {
             </div>
 
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Məhsul adı və ya SKU ilə axtarış..."
-                        className="w-full rounded-2xl p-4 pl-12 outline-none transition-all font-medium"
-                        style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+            <div className="flex flex-col space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Məhsul adı və ya SKU ilə axtarış..."
+                            className="w-full rounded-2xl p-4 pl-12 outline-none transition-all font-medium"
+                            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
                 </div>
-                <button
-                    className="px-6 py-4 rounded-2xl font-bold flex items-center gap-2 transition-all"
-                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
-                >
-                    <Filter size={18} />
-                    Filtr
-                </button>
+
+                <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl w-fit" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
+                    {[
+                        { id: 'all', label: 'Bütün' },
+                        { id: 'out_of_stock', label: 'Bitib' },
+                        { id: 'low_stock', label: 'Azalır' },
+                        { id: 'sufficient', label: 'Kifayət qədər' }
+                    ].map(f => (
+                        <button
+                            key={f.id}
+                            onClick={() => setStockFilter(f.id)}
+                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${stockFilter === f.id
+                                ? 'shadow-sm ring-1 ring-black/[0.05]'
+                                : ''
+                                }`}
+                            style={{
+                                backgroundColor: stockFilter === f.id ? 'var(--color-card-bg)' : 'transparent',
+                                color: stockFilter === f.id ? 'var(--color-brand)' : 'var(--color-text-muted)'
+                            }}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Product List */}
