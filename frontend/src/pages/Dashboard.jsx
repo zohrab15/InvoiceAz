@@ -464,76 +464,78 @@ const Dashboard = () => {
                     </motion.div>
                 )}
 
-                {/* Transactions — 2 cols */}
-                <motion.div
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={`${(isOwnerOrManager || isAccountant) ? 'lg:col-span-2' : 'lg:col-span-5'} p-6 rounded-2xl flex flex-col`}
-                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
-                >
-                    <div className="flex justify-between items-center mb-5">
-                        <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
-                        <Activity size={16} style={{ color: 'var(--color-text-muted)' }} />
-                    </div>
+                {/* Transactions — 2 cols (Hidden for Inventory Manager) */}
+                {!isInventoryManager && (
+                    <motion.div
+                        initial={{ opacity: 0, x: 16 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`${(isOwnerOrManager || isAccountant) ? 'lg:col-span-2' : 'lg:col-span-5'} p-6 rounded-2xl flex flex-col`}
+                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                    >
+                        <div className="flex justify-between items-center mb-5">
+                            <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
+                            <Activity size={16} style={{ color: 'var(--color-text-muted)' }} />
+                        </div>
 
-                    <div className="space-y-1 flex-1 overflow-y-auto">
-                        {recentTransactions.map((t) => (
-                            <div
-                                key={t.id}
-                                onClick={() => navigate(t.type === 'expense' ? '/expenses' : '/invoices')}
-                                className="flex justify-between items-center py-3 px-3 rounded-xl cursor-pointer transition-colors"
-                                style={{ '--hover-bg': 'var(--color-hover-bg)' }}
-                                onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'}
-                                onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                                        style={{
-                                            backgroundColor: t.type === 'payment' ? 'rgba(16,185,129,0.1)' :
-                                                t.type === 'expense' ? 'rgba(239,68,68,0.1)' : 'var(--color-badge-bg)',
-                                            color: t.type === 'payment' ? '#10b981' :
-                                                t.type === 'expense' ? '#ef4444' : 'var(--color-text-secondary)'
-                                        }}
-                                    >
-                                        {t.type === 'expense' ? <ArrowDownRight size={16} /> : <ArrowUpRight size={16} />}
+                        <div className="space-y-1 flex-1 overflow-y-auto">
+                            {recentTransactions.map((t) => (
+                                <div
+                                    key={t.id}
+                                    onClick={() => navigate(t.type === 'expense' ? '/expenses' : '/invoices')}
+                                    className="flex justify-between items-center py-3 px-3 rounded-xl cursor-pointer transition-colors"
+                                    style={{ '--hover-bg': 'var(--color-hover-bg)' }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                                            style={{
+                                                backgroundColor: t.type === 'payment' ? 'rgba(16,185,129,0.1)' :
+                                                    t.type === 'expense' ? 'rgba(239,68,68,0.1)' : 'var(--color-badge-bg)',
+                                                color: t.type === 'payment' ? '#10b981' :
+                                                    t.type === 'expense' ? '#ef4444' : 'var(--color-text-secondary)'
+                                            }}
+                                        >
+                                            {t.type === 'expense' ? <ArrowDownRight size={16} /> : <ArrowUpRight size={16} />}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="font-bold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{t.title}</div>
+                                            <div className="text-[10px] font-medium truncate" style={{ color: 'var(--color-text-muted)' }}>
+                                                {t.subtitle}
+                                                {t.type === 'payment' && <span className="text-emerald-500 ml-1">• ödəniş</span>}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="min-w-0">
-                                        <div className="font-bold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{t.title}</div>
-                                        <div className="text-[10px] font-medium truncate" style={{ color: 'var(--color-text-muted)' }}>
-                                            {t.subtitle}
-                                            {t.type === 'payment' && <span className="text-emerald-500 ml-1">• ödəniş</span>}
+                                    <div className="text-right flex-shrink-0 ml-2">
+                                        <div className={`text-sm font-bold ${t.positive ? 'text-emerald-500' : 'text-red-500'}`}>
+                                            {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
+                                        </div>
+                                        <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                                            {(() => {
+                                                if (!t.date || isNaN(t.date.getTime())) return '---';
+                                                const shortMonths = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+                                                return `${t.date.getDate()} ${shortMonths[t.date.getMonth()]}`;
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-right flex-shrink-0 ml-2">
-                                    <div className={`text-sm font-bold ${t.positive ? 'text-emerald-500' : 'text-red-500'}`}>
-                                        {t.positive ? '+' : '-'}<CountUp to={t.amount} decimals={2} />
-                                    </div>
-                                    <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>
-                                        {(() => {
-                                            if (!t.date || isNaN(t.date.getTime())) return '---';
-                                            const shortMonths = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
-                                            return `${t.date.getDate()} ${shortMonths[t.date.getMonth()]}`;
-                                        })()}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
 
-                    {(isOwnerOrManager || isAccountant) && (
-                        <button
-                            onClick={() => navigate('/analytics/tax')}
-                            className="w-full py-3 mt-4 text-white font-bold rounded-xl transition-all text-xs uppercase tracking-wider"
-                            style={{
-                                background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
-                                boxShadow: '0 4px 12px var(--color-brand-shadow)'
-                            }}
-                        >
-                            Bütün Hesabata Bax
-                        </button>
-                    )}
-                </motion.div>
+                        {(isOwnerOrManager || isAccountant) && (
+                            <button
+                                onClick={() => navigate('/analytics/tax')}
+                                className="w-full py-3 mt-4 text-white font-bold rounded-xl transition-all text-xs uppercase tracking-wider"
+                                style={{
+                                    background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))',
+                                    boxShadow: '0 4px 12px var(--color-brand-shadow)'
+                                }}
+                            >
+                                Bütün Hesabata Bax
+                            </button>
+                        )}
+                    </motion.div>
+                )}
             </div>
 
             {/* ── TOP PRODUCTS — Full Width ── */}
