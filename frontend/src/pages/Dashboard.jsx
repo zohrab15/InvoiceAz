@@ -6,7 +6,7 @@ import clientApi from '../api/client';
 import {
     TrendingUp, Clock, AlertCircle, Plus, Wallet,
     ArrowUpRight, ArrowDownRight, BarChart3,
-    FileText, Calendar, Activity, Building2
+    FileText, Calendar, Activity, Building2, Package
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, Tooltip,
