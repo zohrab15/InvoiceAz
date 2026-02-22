@@ -161,7 +161,7 @@ const Dashboard = () => {
     );
 
     const rawRole = activeBusiness?.user_role;
-    const role = (rawRole || 'SALES_REP').toUpperCase();
+    const role = (rawRole || 'OWNER').toUpperCase();
 
     const isInventoryManager = role === 'INVENTORY_MANAGER';
     const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);

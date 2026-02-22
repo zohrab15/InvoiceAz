@@ -5,6 +5,24 @@ from django.dispatch import receiver
 
 
 @receiver(post_save, sender='users.User')
+def auto_create_business_for_new_user(sender, instance, created, **kwargs):
+    """
+    Auto-create a default business when a new user registers,
+    so they immediately have OWNER access and all pages work.
+    """
+    if not created:
+        return
+    from users.models import Business
+    # Only create if user has no businesses yet
+    if not Business.objects.filter(user=instance).exists():
+        Business.objects.create(
+            user=instance,
+            name=f"{instance.first_name or instance.email.split('@')[0]}'s Business",
+            is_active=True,
+        )
+
+
+@receiver(post_save, sender='users.User')
 def handle_pro_upgrade(sender, instance, **kwargs):
     """
     When a referred user upgrades to Pro or Premium for the first time,
