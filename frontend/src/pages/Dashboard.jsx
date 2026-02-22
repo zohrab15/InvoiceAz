@@ -43,17 +43,17 @@ const Dashboard = () => {
         retry: false,
     });
 
-    const { data: payments, isLoading: isLoadingPayments } = useQuery({
-        queryKey: ['payments', activeBusiness?.id, user?.id],
+    const { data: inventoryProducts, isLoading: isLoadingInventory } = useQuery({
+        queryKey: ['inventory-products', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/invoices/payments/');
+            const res = await clientApi.get('/inventory/');
             return res.data;
         },
-        enabled: !!activeBusiness && !!user && activeBusiness?.user_role !== 'SALES_REP',
+        enabled: !!activeBusiness && activeBusiness?.user_role === 'INVENTORY_MANAGER',
         retry: false,
     });
 
-    const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments;
+    const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments || isLoadingInventory;
 
     // Time-aware greeting
     const greeting = useMemo(() => {
@@ -169,6 +169,24 @@ const Dashboard = () => {
 
     const statCards = [
         {
+            label: 'Cəmi Məhsul',
+            val: (inventoryProducts || []).length,
+            icon: <Package size={20} />,
+            color: '#3b82f6',
+            bg: 'rgba(59,130,246,0.08)',
+            border: '#3b82f6',
+            visible: isInventoryManager
+        },
+        {
+            label: 'Kritik Stok',
+            val: (inventoryProducts || []).filter(p => parseFloat(p.stock_quantity) <= parseFloat(p.min_stock_level)).length,
+            icon: <AlertCircle size={20} />,
+            color: '#ef4444',
+            bg: 'rgba(239,68,68,0.08)',
+            border: '#ef4444',
+            visible: isInventoryManager
+        },
+        {
             label: 'Ümumi Gəlir',
             val: stats.totalRevenue,
             icon: <TrendingUp size={20} />,
@@ -263,7 +281,21 @@ const Dashboard = () => {
                         <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
                     </div>
                 </div>
-                {(isOwnerOrManager || isAccountant) && (
+                {isInventoryManager ? (
+                    <motion.button
+                        whileHover={{ y: -1 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => navigate('/products')}
+                        className="text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm shadow-lg transition-all"
+                        style={{
+                            background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                            boxShadow: '0 4px 14px rgba(59,130,246,0.3)'
+                        }}
+                    >
+                        <Package size={16} strokeWidth={3} />
+                        <span>Anbarı İdarə Et</span>
+                    </motion.button>
+                ) : (isOwnerOrManager || isAccountant) && (
                     <motion.button
                         whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
