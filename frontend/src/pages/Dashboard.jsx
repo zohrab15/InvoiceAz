@@ -89,7 +89,7 @@ const Dashboard = () => {
     }, []);
 
     const stats = useMemo(() => {
-        const invList = invoices || [];
+        const invList = invoices?.results || [];
         const activeInvoices = invList.filter(i => !['draft', 'cancelled'].includes(i.status));
 
         const revenue = activeInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
@@ -110,7 +110,7 @@ const Dashboard = () => {
             paidRevenue: paid,
             pendingRevenue: pending,
             overdueRevenue: overdue,
-            totalExpenses: (expenses || []).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0,
+            totalExpenses: (expenses?.results || []).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0,
             invoiceCount: invList.length,
             paidCount: invList.filter(i => i.status === 'paid').length,
             pipeline
@@ -128,18 +128,21 @@ const Dashboard = () => {
         const currentMonth = new Date().getMonth();
         const data = [];
 
+        const invList = invoices?.results || [];
+        const expList = expenses?.results || [];
+
         for (let i = 5; i >= 0; i--) {
             const date = new Date();
             date.setMonth(currentMonth - i);
             const m = date.getMonth();
             const y = date.getFullYear();
 
-            const monthIncome = (invoices || []).filter(inv => {
+            const monthIncome = invList.filter(inv => {
                 const d = new Date(inv.invoice_date);
                 return d.getMonth() === m && d.getFullYear() === y;
             }).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
 
-            const monthExpense = (expenses || []).filter(exp => {
+            const monthExpense = expList.filter(exp => {
                 const d = new Date(exp.date);
                 return d.getMonth() === m && d.getFullYear() === y;
             }).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0;
@@ -154,18 +157,12 @@ const Dashboard = () => {
     }, [invoices, expenses]);
 
     const recentTransactions = useMemo(() => {
-        const overdueInvoices = (invoices || [])
-            .filter(inv => inv.status === 'overdue')
-            .map(inv => ({
-                id: inv.id,
-                number: inv.invoice_number,
-                client: inv.client_name,
-                total: parseFloat(inv.total),
-                due_date: inv.due_date
-            }));
+        const invList = invoices?.results || [];
+        const expList = expenses?.results || [];
+        const payList = payments || []; // Payments is not paginated yet
 
         const trans = [
-            ...(invoices || [])
+            ...invList
                 .filter(inv => !['draft', 'cancelled'].includes(inv.status))
                 .map(inv => ({
                     id: `inv-${inv.id}`,
@@ -178,7 +175,7 @@ const Dashboard = () => {
                     positive: true,
                     status: inv.status
                 })),
-            ...(expenses || []).map(exp => ({
+            ...expList.map(exp => ({
                 id: `exp-${exp.id}`,
                 type: 'expense',
                 title: exp.description,
@@ -188,7 +185,7 @@ const Dashboard = () => {
                 rawDate: exp.created_at,
                 positive: false
             })),
-            ...(payments || []).map(pay => ({
+            ...payList.map(pay => ({
                 id: `pay-${pay.id}`,
                 type: 'payment',
                 title: `Ödəniş: #${pay.invoice_number}`,
@@ -576,7 +573,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {(invoices || []).filter(inv => inv.status === 'overdue').slice(0, 3).map(inv => (
+                            {(invoices?.results || []).filter(inv => inv.status === 'overdue').slice(0, 3).map(inv => (
                                 <div
                                     key={inv.id}
                                     onClick={() => navigate(`/invoices`)}
