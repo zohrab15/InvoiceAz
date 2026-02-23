@@ -208,8 +208,8 @@ const SystemSettings = () => {
                                         )}
                                         {isSalesRep && (
                                             <>
-                                                <NotificationToggle id="in_app_overdue_invoice" label="Gecikən Ödəniş Xatırlatması" description="Təhkim olunduğunuz müştərinin faktura ödənişi gecikdikdə bildir" icon={Bell} />
-                                                <NotificationToggle id="in_app_target_reached" label="Aylıq Hədəf Statusu" description="Aylıq hədəfinizə yaxınlaşdıqda və ya tamamladıqda bildir" icon={Bell} />
+                                                <NotificationToggle id="overdue_invoice" label="Gecikən Ödəniş Xatırlatması" description="Təhkim olunduğunuz müştərinin faktura ödənişi gecikdikdə bildir" icon={Bell} />
+                                                <NotificationToggle id="target_reached" label="Aylıq Hədəf Statusu" description="Aylıq hədəfinizə yaxınlaşdıqda və ya tamamladıqda bildir" icon={Bell} />
                                                 <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Müştəriniz ödəniş etdikdə bildir" icon={Bell} />
                                             </>
