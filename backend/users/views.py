@@ -168,6 +168,30 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 "invitation_id": invitation.id
             }, status=status.HTTP_202_ACCEPTED)
 
+    def perform_update(self, serializer):
+        # Determine current user's role in this organization
+        instance = serializer.instance
+        if self.request.user == instance.owner:
+            serializer.save()
+            return
+
+        try:
+            inviter_membership = TeamMember.objects.get(owner=instance.owner, user=self.request.user)
+            if inviter_membership.role != 'MANAGER':
+                raise PermissionDenied("Yalnız sahib və ya menecerlər işçi məlumatlarını yeniləyə bilər.")
+            
+            # Managers cannot promote/demote other managers or update their own role/target via this view
+            if instance.user == self.request.user:
+                # Allow them to update their own location maybe? 
+                # But for target/role, we should be careful.
+                # Actually, TeamMemberLocationUpdateView handles location.
+                # So we restrict all updates to self via this viewset for safety.
+                raise PermissionDenied("Öz məlumatlarınızı (rol, hədəf) özünüz dəyişə bilməzsiniz.")
+                
+            serializer.save()
+        except TeamMember.DoesNotExist:
+            raise PermissionDenied("Təşkilatda deyilsiniz.")
+
     def perform_destroy(self, instance):
         if self.request.user != instance.owner:
             try:

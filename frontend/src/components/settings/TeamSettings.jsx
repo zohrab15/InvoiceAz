@@ -105,6 +105,23 @@ const TeamSettings = () => {
         }
     });
 
+    // Update team member mutation (e.g. for target)
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }) => client.patch(`/users/team/${id}/`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['team', token]);
+            showToast('Məlumatlar yeniləndi.');
+            setEditingId(null);
+        },
+        onError: (error) => {
+            const msg = error.response?.data?.detail || 'Yeniləmək mümkün olmadı.';
+            showToast(msg, 'error');
+        }
+    });
+
+    const [editingId, setEditingId] = useState(null);
+    const [editTarget, setEditTarget] = useState('');
+
     const handleAddMember = (e) => {
         e.preventDefault();
 
@@ -141,6 +158,15 @@ const TeamSettings = () => {
         if (window.confirm("Bu işçini komandadan silmək istədiyinizə əminsiniz?")) {
             removeMutation.mutate(id);
         }
+    };
+
+    const handleUpdateTarget = (id) => {
+        const targetValue = parseFloat(editTarget);
+        if (isNaN(targetValue)) {
+            showToast('Lütfən düzgün rəqəm daxil edin.', 'error');
+            return;
+        }
+        updateMutation.mutate({ id, data: { monthly_target: targetValue } });
     };
 
     const formatDate = (dateString) => {
@@ -380,6 +406,7 @@ const TeamSettings = () => {
                                     <tr className="border-b-2" style={{ borderColor: 'var(--color-border)' }}>
                                         <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">İşçi</th>
                                         <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Rol</th>
+                                        <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Aylıq Hədəf</th>
                                         <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider">Son Məkan (GPS)</th>
                                         <th className="pb-3 text-xs font-black uppercase text-gray-500 tracking-wider text-right">Əməliyyat</th>
                                     </tr>
@@ -403,6 +430,42 @@ const TeamSettings = () => {
                                                     <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-blue-100 text-blue-700">
                                                         {getRoleName(member.role)}
                                                     </span>
+                                                </td>
+                                                <td className="py-4">
+                                                    {member.role === 'SALES_REP' ? (
+                                                        editingId === member.id ? (
+                                                            <div className="flex items-center gap-2">
+                                                                <input
+                                                                    type="number"
+                                                                    value={editTarget}
+                                                                    onChange={(e) => setEditTarget(e.target.value)}
+                                                                    className="w-24 p-1 text-sm border-2 rounded-lg bg-[var(--color-hover-bg)] text-[var(--color-text-primary)] border-[var(--color-brand)]"
+                                                                    autoFocus
+                                                                />
+                                                                <button
+                                                                    onClick={() => handleUpdateTarget(member.id)}
+                                                                    className="text-[10px] bg-[var(--color-brand)] text-white px-2 py-1 rounded-md font-bold"
+                                                                >
+                                                                    OK
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <div
+                                                                className="flex items-center gap-2 cursor-pointer group"
+                                                                onClick={() => {
+                                                                    setEditingId(member.id);
+                                                                    setEditTarget(member.monthly_target || '0');
+                                                                }}
+                                                            >
+                                                                <span className="font-bold text-sm text-[var(--color-text-primary)]">
+                                                                    {(member.monthly_target || 0).toLocaleString()} ₼
+                                                                </span>
+                                                                <span className="text-[10px] text-[var(--color-brand)] opacity-0 group-hover:opacity-100 transition-opacity">Redaktə</span>
+                                                            </div>
+                                                        )
+                                                    ) : (
+                                                        <span className="text-gray-400 italic text-xs">-</span>
+                                                    )}
                                                 </td>
                                                 <td className="py-4">
                                                     {renderLocation(member.role, member.last_latitude, member.last_longitude, member.last_location_update)}

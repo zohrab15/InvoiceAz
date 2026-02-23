@@ -39,9 +39,10 @@ class MyUserAdmin(UserAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'owner', 'role', 'created_at')
-    list_filter = ('role',)
-    search_fields = ('user__email', 'owner__email')
+    list_display = ('user', 'owner', 'role', 'monthly_target', 'created_at')
+    list_editable = ('role', 'monthly_target')
+    list_filter = ('role', 'owner')
+    search_fields = ('user__email', 'user__first_name', 'user__last_name', 'owner__email')
     raw_id_fields = ('user', 'owner')
 
 @admin.register(DiscountCoupon)
