@@ -4,6 +4,7 @@ import { Bell, BellRing, Check, CheckCheck, Trash2, Filter, Clock, AlertTriangle
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client';
 import { useNavigate } from 'react-router-dom';
+import { useBusiness } from '../context/BusinessContext';
 
 const typeConfig = {
     info: { icon: Info, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', label: 'Məlumat' },
@@ -35,13 +36,24 @@ const Notifications = () => {
         onSuccess: () => queryClient.invalidateQueries(['notifications']),
     });
 
-    const filteredNotifications = notifications.filter(n => {
+    const { activeBusiness } = useBusiness();
+    const rawRole = activeBusiness?.user_role;
+    const role = (rawRole || 'OWNER').toUpperCase();
+
+    const roleFiltered = notifications.filter(n => {
+        if (role === 'SALES_REP' || role === 'ACCOUNTANT') {
+            if (n.category === 'inventory') return false;
+        }
+        return true;
+    });
+
+    const filteredNotifications = roleFiltered.filter(n => {
         if (filter === 'unread') return !n.is_read;
         if (filter === 'read') return n.is_read;
         return true;
     });
 
-    const unreadCount = notifications.filter(n => !n.is_read).length;
+    const unreadCount = roleFiltered.filter(n => !n.is_read).length;
 
     const formatDate = (dateStr) => {
         const date = new Date(dateStr);
@@ -119,9 +131,9 @@ const Notifications = () => {
             {/* Filter Tabs */}
             <div className="flex gap-2 px-1">
                 {[
-                    { id: 'all', label: 'Hamısı', count: notifications.length },
+                    { id: 'all', label: 'Hamısı', count: roleFiltered.length },
                     { id: 'unread', label: 'Oxunmamış', count: unreadCount },
-                    { id: 'read', label: 'Oxunmuş', count: notifications.length - unreadCount },
+                    { id: 'read', label: 'Oxunmuş', count: roleFiltered.length - unreadCount },
                 ].map(tab => (
                     <button
                         key={tab.id}

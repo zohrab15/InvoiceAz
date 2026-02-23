@@ -176,6 +176,7 @@ const Dashboard = () => {
     const isInventoryManager = role === 'INVENTORY_MANAGER';
     const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);
     const isAccountant = role === 'ACCOUNTANT';
+    const isSalesRep = role === 'SALES_REP';
 
     const statCards = [
         {
@@ -185,7 +186,7 @@ const Dashboard = () => {
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
-            visible: true,
+            visible: !isSalesRep,
             isCurrency: false
         },
         {
@@ -205,7 +206,7 @@ const Dashboard = () => {
             color: '#f59e0b',
             bg: 'rgba(245,158,11,0.08)',
             border: '#f59e0b',
-            visible: true,
+            visible: isOwnerOrManager || isInventoryManager,
             isCurrency: false
         },
         {
@@ -215,7 +216,7 @@ const Dashboard = () => {
             color: '#ef4444',
             bg: 'rgba(239,68,68,0.08)',
             border: '#ef4444',
-            visible: true,
+            visible: isOwnerOrManager || isInventoryManager,
             isCurrency: false
         },
         {
@@ -331,7 +332,7 @@ const Dashboard = () => {
                         <Package size={16} strokeWidth={3} />
                         <span>Anbarı İdarə Et</span>
                     </motion.button>
-                ) : (isOwnerOrManager || isAccountant) && (
+                ) : (isOwnerOrManager || isAccountant || isSalesRep) && (
                     <motion.button
                         whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
