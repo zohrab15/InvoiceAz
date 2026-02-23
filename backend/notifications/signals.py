@@ -98,28 +98,42 @@ def payment_received(sender, instance, created, **kwargs):
 # ============================================================
 
 def _log(business, action, module, description):
-    user = get_current_user()
-    if not user or user.is_anonymous:
-        return
-        
-    user_role = None
-    if business and user:
-        from users.models import TeamMember
-        try:
-            member = TeamMember.objects.get(owner=business.user, user=user)
-            user_role = member.role
-        except TeamMember.DoesNotExist:
-            if user == business.user:
-                user_role = 'OWNER'
+    try:
+        user = get_current_user()
+        if not user or getattr(user, 'is_anonymous', True):
+            return
+            
+        # Unwrap SimpleLazyObject just to be 100% safe
+        if hasattr(user, '_wrapped') and hasattr(user, '_setup'):
+            import django
+            if user._wrapped is django.utils.functional.empty:
+                user._setup()
+            if hasattr(user, '_wrapped') and user._wrapped is not django.utils.functional.empty:
+                user = user._wrapped
+            
+        user_role = None
+        if business and user:
+            from users.models import TeamMember
+            try:
+                member = TeamMember.objects.filter(owner=business.user, user=user).first()
+                if member:
+                    user_role = member.role
+            except Exception:
+                pass
                 
-    ActivityLog.objects.create(
-        business=business,
-        user=user,
-        user_role=user_role,
-        action=action,
-        module=module,
-        description=description
-    )
+            if not user_role and hasattr(business, 'user') and user == business.user:
+                user_role = 'OWNER'
+                    
+        ActivityLog.objects.create(
+            business=business,
+            user=user,
+            user_role=user_role,
+            action=action,
+            module=module,
+            description=description
+        )
+    except Exception as e:
+        print(f"Silent Activity Log exception: {e}")
 
 # --------- INVOICE ---------
 @receiver(post_save, sender=Invoice)
