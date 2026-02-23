@@ -205,9 +205,13 @@ const SystemSettings = () => {
                                         {!isInventoryManager && !isSalesRep && (
                                             <>
                                                 <NotificationToggle id="invoice_created" label="Yeni Faktura" description="Yeni faktura yaradıldıqda bildir" icon={Bell} />
-                                                <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
+                                                {!isAccountant && (
+                                                    <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
+                                                )}
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə bildir" icon={Bell} />
-                                                <NotificationToggle id="client_created" label="Yeni Müştəri" description="Yeni müştəri əlavə edildikdə bildir" icon={Bell} />
+                                                {!isAccountant && (
+                                                    <NotificationToggle id="client_created" label="Yeni Müştəri" description="Yeni müştəri əlavə edildikdə bildir" icon={Bell} />
+                                                )}
                                                 <NotificationToggle id="expense_created" label="Yeni Xərc" description="Yeni xərc əlavə edildikdə bildir" icon={Bell} />
                                                 <NotificationToggle id="overdue_invoice" label="Gecikən Ödəniş xatırlatması" description="Fakturanın ödəniş müddəti bitdikdə bildir" icon={Bell} />
                                             </>
@@ -234,7 +238,9 @@ const SystemSettings = () => {
                                     <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
                                         {!isInventoryManager && !isSalesRep && (
                                             <>
-                                                <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
+                                                {!isAccountant && (
+                                                    <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
+                                                )}
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
                                                 <NotificationToggle id="overdue_invoice" label="Gecikən Ödəniş xatırlatması" description="Fakturanın ödəniş müddəti bitdikdə email göndər" icon={Mail} isEmail />
                                             </>
