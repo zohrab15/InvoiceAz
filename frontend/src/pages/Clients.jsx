@@ -9,6 +9,7 @@ import PhoneInput from '../components/common/PhoneInput';
 import * as XLSX from 'xlsx';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
+import { translateError } from '../api/translateErrors';
 import useAuthStore from '../store/useAuthStore';
 
 const Clients = () => {
@@ -83,8 +84,7 @@ const Clients = () => {
             if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
                 setShowUpgradeModal(true);
             } else {
-                const detail = data?.detail || 'Xəta baş verdi';
-                showToast(detail, 'error');
+                showToast(translateError(error), 'error');
             }
         }
     });
@@ -97,7 +97,7 @@ const Clients = () => {
             setEditingClient(null);
             resetForm();
         },
-        onError: (error) => showToast(error.response?.data?.detail || 'Xəta baş verdi', 'error')
+        onError: (error) => showToast(translateError(error), 'error')
     });
 
     const deleteMutation = useMutation({
@@ -106,7 +106,7 @@ const Clients = () => {
             queryClient.invalidateQueries(['clients']);
             showToast('Müştəri silindi');
         },
-        onError: (err) => showToast(err.response?.data?.detail || 'Müştəri silinərkən xəta', 'error')
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const bulkAssignMutation = useMutation({
@@ -116,7 +116,7 @@ const Clients = () => {
             showToast(res.data.detail);
             setSelectedIds([]);
         },
-        onError: (err) => showToast(err.response?.data?.detail || 'Toplu təhkim zamanı xəta', 'error')
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const handleSubmit = (e) => {

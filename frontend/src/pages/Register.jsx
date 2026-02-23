@@ -3,6 +3,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
+import { translateError } from '../api/translateErrors';
 import { Mail, Lock, User, ArrowRight, Zap, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 
 const Register = () => {
@@ -52,39 +53,7 @@ const Register = () => {
             navigate('/verify-email-sent');
         } catch (error) {
             console.error('Registration Error Details:', error);
-            let errorMsg = 'Qeydiyyat zamanı xəta baş verdi';
-
-            if (error.response?.data) {
-                const data = error.response.data;
-
-                if (typeof data === 'string') {
-                    // Handle HTML error pages or plain text
-                    errorMsg = data.length < 150 ? data : 'Serverdə daxili xəta baş verdi (500)';
-                } else if (typeof data === 'object' && data !== null) {
-                    // Extract first error message from DRF dictionary
-                    const values = Object.values(data).flat();
-                    if (values.length > 0) {
-                        const firstError = values[0];
-                        errorMsg = typeof firstError === 'string' ? firstError : JSON.stringify(firstError);
-                    }
-                }
-
-                // Azerbaijani translations & context-specific guidance
-                if (errorMsg.includes('email already exists') || errorMsg.includes('artıq hesab mövcuddur')) {
-                    errorMsg = 'Bu e-poçt ilə artıq hesab mövcuddur. Əgər az əvvəl qeydiyyatdan keçməyə çalışmısınızsa, hesabınız artıq yaradılıb. Zəhmət olmasa giriş edin.';
-                }
-            } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
-                errorMsg = 'Bağlantı vaxtı bitdi. Lakin hesabınız yaradılmış ola bilər. Zəhmət olmasa 1 dəqiqə sonra giriş etməyi yoxlayın.';
-            } else if (error.message) {
-                errorMsg = error.message;
-            }
-
-            // Final fallback to ensure no blank toasts
-            if (!errorMsg || errorMsg.trim() === '') {
-                errorMsg = 'Gözlənilməz bir xəta baş verdi. Zəhmət olmasa internet bağlantınızı yoxlayın.';
-            }
-
-            showToast(errorMsg, 'error');
+            showToast(translateError(error, 'Qeydiyyat zamanı xəta baş verdi'), 'error');
         } finally {
             setIsLoading(false);
         }

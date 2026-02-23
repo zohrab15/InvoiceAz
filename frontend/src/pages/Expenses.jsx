@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 
+import { translateError } from '../api/translateErrors';
 import { useBusiness } from '../context/BusinessContext';
 
 const Expenses = () => {
@@ -118,8 +119,7 @@ const Expenses = () => {
                 setShowUpgradeModal(true);
                 setShowAddModal(false);
             } else {
-                const detail = data?.detail || data?.error || 'Xərc əlavə edilərkən xəta baş verdi';
-                showToast(detail, 'error');
+                showToast(translateError(error), 'error');
             }
         }
     });
@@ -152,8 +152,7 @@ const Expenses = () => {
         },
         onError: (error) => {
             console.error('Update error:', error);
-            const msg = error.response?.data?.detail || error.response?.data?.error || 'Yeniləmə zamanı xəta baş verdi';
-            showToast(msg, 'error');
+            showToast(translateError(error), 'error');
         }
     });
 
@@ -162,7 +161,8 @@ const Expenses = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['expenses']);
             showToast('Xərc silindi');
-        }
+        },
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const updateBudgetMutation = useMutation({
@@ -172,7 +172,7 @@ const Expenses = () => {
             showToast('Büdcə limiti yeniləndi');
             setIsEditingBudget(false);
         },
-        onError: () => showToast('Büdcəni yeniləmək mümkün olmadı', 'error')
+        onError: (err) => showToast(translateError(err, 'Büdcəni yeniləmək mümkün olmadı'), 'error')
     });
 
     const monthlyBudget = activeBusiness?.budget_limit || 1000;

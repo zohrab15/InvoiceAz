@@ -9,6 +9,7 @@ import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download
 import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
 import ProductQRScanner from '../components/ProductQRScanner';
+import { translateError } from '../api/translateErrors';
 import * as XLSX from 'xlsx';
 import usePlanLimits from '../hooks/usePlanLimits';
 import useAuthStore from '../store/useAuthStore';
@@ -162,8 +163,7 @@ const Invoices = () => {
                     message: `Hazırkı planınızda maksimum ${checkLimit('invoices')?.limit} faktura yarada bilərsiniz.`
                 });
             } else {
-                const detail = data ? JSON.stringify(data) : error.message;
-                showToast(`Xəta: ${detail}`, 'error');
+                showToast(translateError(error), 'error');
             }
         }
     });
@@ -181,7 +181,8 @@ const Invoices = () => {
             }
             setView('list');
             resetForm();
-        }
+        },
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const duplicateMutation = useMutation({
@@ -189,23 +190,26 @@ const Invoices = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['invoices']);
             showToast('Faktura dublikat edildi!');
-        }
+        },
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const updateStatusMutation = useMutation({
         mutationFn: ({ id, status }) => clientApi.patch(`/invoices/${id}/`, { status }),
         onSuccess: () => queryClient.invalidateQueries(['invoices']),
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const markAsSentMutation = useMutation({
         mutationFn: (id) => clientApi.post(`/invoices/${id}/mark_as_sent/`),
         onSuccess: () => queryClient.invalidateQueries(['invoices']),
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const deleteMutation = useMutation({
         mutationFn: (id) => clientApi.delete(`/invoices/${id}/`),
         onSuccess: () => queryClient.invalidateQueries(['invoices']),
-        onError: (err) => showToast(err.response?.data?.detail || 'Faktura silinərkən xəta', 'error')
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const handleAddPayment = async (paymentData) => {
@@ -215,7 +219,7 @@ const Invoices = () => {
             showToast('Ödəniş uğurla qeyd edildi!');
         } catch (error) {
             console.error('Payment error:', error);
-            showToast('Ödəniş qeyd edilərkən xəta baş verdi', 'error');
+            showToast(translateError(error, 'Ödəniş qeyd edilərkən xəta baş verdi'), 'error');
         }
     };
 

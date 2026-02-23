@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import clientApi from '../api/client';
 import useAuthStore from '../store/useAuthStore';
 import { useToast } from '../components/Toast';
+import { translateError } from '../api/translateErrors';
 import { Mail, Lock, ArrowRight, Zap, Eye, EyeOff } from 'lucide-react';
 
 import { API_URL } from '../config';
@@ -35,11 +36,7 @@ const Login = () => {
                 showToast('Token tapılmadı', 'error');
             }
         } catch (error) {
-            const errorMsg = error.response?.data?.non_field_errors?.[0] ||
-                error.response?.data?.detail ||
-                error.response?.data?.email?.[0] ||
-                'E-poçt və ya şifrə yanlışdır';
-            showToast(errorMsg, 'error');
+            showToast(translateError(error, 'E-poçt və ya şifrə yanlışdır'), 'error');
         } finally {
             setIsLoading(false);
         }

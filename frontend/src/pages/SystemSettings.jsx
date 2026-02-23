@@ -4,6 +4,7 @@ import { Palette, Check, Coins, Bell, Moon, Sun, Mail, AppWindow, Loader2 } from
 import { useTheme } from '../context/ThemeContext';
 import client from '../api/client';
 import { useToast } from '../components/Toast';
+import { translateError } from '../api/translateErrors';
 import { useBusiness } from '../context/BusinessContext';
 
 const SystemSettings = () => {
@@ -24,7 +25,7 @@ const SystemSettings = () => {
             setSettings(response.data);
         } catch (error) {
             console.error('Bildiriş ayarlarını yükləmək mümkün olmadı:', error);
-            showToast('Bildiriş ayarlarını yükləmək mümkün olmadı', 'error');
+            showToast(translateError(error, 'Bildiriş ayarlarını yükləmək mümkün olmadı'), 'error');
         } finally {
             setLoading(false);
         }
@@ -42,7 +43,7 @@ const SystemSettings = () => {
             showToast('Ayarlar yeniləndi', 'success');
         } catch (error) {
             console.error('Ayarı yeniləmək mümkün olmadı:', error);
-            showToast('Ayarı yeniləmək mümkün olmadı', 'error');
+            showToast(translateError(error, 'Ayarı yeniləmək mümkün olmadı'), 'error');
         } finally {
             setSaving(false);
         }
@@ -56,8 +57,8 @@ const SystemSettings = () => {
             <div className="flex items-center justify-between p-4 rounded-2xl transition-all hover:bg-[var(--color-hover-bg)] group">
                 <div className="flex items-center gap-4 flex-1 min-w-0 mr-4">
                     <div className={`p-2.5 rounded-xl transition-all duration-300 ${isEmail
-                            ? (isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-blue-500/10 text-blue-500')
-                            : (isActive ? 'bg-[var(--color-brand)] text-white shadow-lg shadow-[var(--color-brand-shadow)]' : 'bg-purple-500/10 text-purple-600')
+                        ? (isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-blue-500/10 text-blue-500')
+                        : (isActive ? 'bg-[var(--color-brand)] text-white shadow-lg shadow-[var(--color-brand-shadow)]' : 'bg-purple-500/10 text-purple-600')
                         }`}>
                         <Icon size={20} className={isActive ? 'scale-110' : ''} />
                     </div>

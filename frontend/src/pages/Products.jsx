@@ -7,6 +7,10 @@ import {
     AlertCircle, CheckCircle2, ChevronRight, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import UpgradeModal from '../components/UpgradeModal';
+import usePlanLimits from '../hooks/usePlanLimits';
+import { translateError } from '../api/translateErrors';
+import useAuthStore from '../store/useAuthStore';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
 import ProductQRScanner from '../components/ProductQRScanner';
@@ -54,7 +58,7 @@ const Products = () => {
         onError: (err) => {
             const data = err.response?.data;
             if (data?.detail) {
-                showToast(data.detail, 'error');
+                showToast(translateError(err), 'error');
             } else if (data && typeof data === 'object') {
                 const errors = Object.entries(data).map(([key, value]) => {
                     const msg = Array.isArray(value) ? value[0] : value;
@@ -62,7 +66,7 @@ const Products = () => {
                 });
                 showToast(errors[0] || 'Xəta baş verdi', 'error');
             } else {
-                showToast('Server xətası baş verdi', 'error');
+                showToast(translateError(err), 'error');
             }
         }
     });
@@ -75,8 +79,7 @@ const Products = () => {
             setEditingProduct(null);
         },
         onError: (err) => {
-            const data = err.response?.data;
-            showToast(data?.detail || 'Yenilənmə zamanı xəta', 'error');
+            showToast(translateError(err), 'error');
         }
     });
 
@@ -85,7 +88,8 @@ const Products = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['products']);
             showToast('Məhsul silindi');
-        }
+        },
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const uploadMutation = useMutation({
@@ -98,7 +102,7 @@ const Products = () => {
             setIsUploadModalOpen(false);
             setExcelFile(null);
         },
-        onError: (err) => showToast(err.response?.data?.detail || 'Yükləmə zamanı xəta', 'error')
+        onError: (err) => showToast(translateError(err), 'error')
     });
 
     const unitMap = {

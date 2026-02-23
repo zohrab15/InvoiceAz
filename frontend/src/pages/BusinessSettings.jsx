@@ -15,6 +15,7 @@ import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 import useAuthStore from '../store/useAuthStore';
 import ReferralTab from '../components/ReferralTab';
+import { translateError } from '../api/translateErrors';
 import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
@@ -144,8 +145,7 @@ const BusinessSettings = () => {
         },
         onError: (error) => {
             console.error('Business save error:', error);
-            const rawError = error.response?.data ? JSON.stringify(error.response.data) : error.message;
-            showToast(`Xəta Detalı: ${rawError}`, 'error');
+            showToast(translateError(error), 'error');
         }
     });
 
@@ -163,7 +163,7 @@ const BusinessSettings = () => {
         },
         onError: (error) => {
             console.error('Business delete error:', error);
-            showToast('Biznesi silmək mümkün olmadı.', 'error');
+            showToast(translateError(error, 'Biznesi silmək mümkün olmadı.'), 'error');
         }
     });
 
