@@ -8,8 +8,9 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from notifications.utils import create_notification
 import uuid
+from utils.models import SoftDeleteModel
 
-class Invoice(models.Model):
+class Invoice(SoftDeleteModel):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('finalized', 'Finalized'),
@@ -152,7 +153,10 @@ class Invoice(models.Model):
     def __str__(self):
         return f"{self.invoice_number} - {self.client.name}"
 
-class InvoiceItem(models.Model):
+    def _get_related_soft_delete_objects(self):
+        return list(self.items.all()) + list(self.payments.all())
+
+class InvoiceItem(SoftDeleteModel):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('inventory.Product', on_delete=models.SET_NULL, blank=True, null=True, related_name='invoice_items')
     description = models.CharField(max_length=255)
@@ -167,7 +171,7 @@ class InvoiceItem(models.Model):
         self.amount = self.quantity * self.unit_price
         super().save(*args, **kwargs)
 
-class Payment(models.Model):
+class Payment(SoftDeleteModel):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField()
@@ -178,7 +182,7 @@ class Payment(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
 
-class Expense(models.Model):
+class Expense(SoftDeleteModel):
     CATEGORY_CHOICES = (
         ('office', 'Ofis ləvazimatları'),
         ('salary', 'Maaşlar'),

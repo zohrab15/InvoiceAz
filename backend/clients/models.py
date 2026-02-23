@@ -2,7 +2,9 @@ from django.db import models
 from users.models import Business
 from django.conf import settings
 
-class Client(models.Model):
+from utils.models import SoftDeleteModel
+
+class Client(SoftDeleteModel):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='clients')
     name = models.CharField(max_length=255)
     # Contact Type (Person or Company) - inferred from fields or explicit? Docs say client_type

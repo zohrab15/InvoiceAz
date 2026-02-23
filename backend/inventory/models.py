@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 
-class Product(models.Model):
+from utils.models import SoftDeleteModel
+
+class Product(SoftDeleteModel):
     UNIT_CHOICES = [
         ('pcs', 'Ədəd'),
         ('kg', 'Kq'),
