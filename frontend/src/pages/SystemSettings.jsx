@@ -53,23 +53,28 @@ const SystemSettings = () => {
         const isActive = settings?.[key];
 
         return (
-            <div className="flex items-center justify-between p-4 rounded-2xl transition-colors hover:bg-[var(--color-hover-bg)]">
-                <div className="flex items-center gap-4">
-                    <div className={`p-2 rounded-xl ${isEmail ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-600'}`}>
-                        <Icon size={20} />
+            <div className="flex items-center justify-between p-4 rounded-2xl transition-all hover:bg-[var(--color-hover-bg)] group">
+                <div className="flex items-center gap-4 flex-1 min-w-0 mr-4">
+                    <div className={`p-2.5 rounded-xl transition-all duration-300 ${isEmail
+                            ? (isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-blue-500/10 text-blue-500')
+                            : (isActive ? 'bg-[var(--color-brand)] text-white shadow-lg shadow-[var(--color-brand-shadow)]' : 'bg-purple-500/10 text-purple-600')
+                        }`}>
+                        <Icon size={20} className={isActive ? 'scale-110' : ''} />
                     </div>
-                    <div>
-                        <div className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{label}</div>
-                        <div className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{description}</div>
+                    <div className="flex-1 min-w-0">
+                        <div className="text-sm font-bold truncate leading-none mb-1" style={{ color: 'var(--color-text-primary)' }}>{label}</div>
+                        <div className="text-[11px] leading-relaxed line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{description}</div>
                     </div>
                 </div>
                 <button
                     onClick={() => toggleSetting(key)}
                     disabled={saving || loading}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isActive ? 'bg-[var(--color-brand)]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none ${isActive ? 'bg-[var(--color-brand)]' : 'bg-gray-300 dark:bg-gray-700'
+                        }`}
                 >
                     <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-6' : 'translate-x-1'}`}
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xl ring-0 transition duration-300 ease-in-out ${isActive ? 'translate-x-5' : 'translate-x-0'
+                            }`}
                     />
                 </button>
             </div>
