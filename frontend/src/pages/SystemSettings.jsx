@@ -184,6 +184,9 @@ const SystemSettings = () => {
                         const isInventoryManager = role === 'INVENTORY_MANAGER';
                         const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);
                         const isAccountant = role === 'ACCOUNTANT';
+                        const isSalesRep = role === 'SALES_REP';
+
+                        const showInventorySettings = isOwnerOrManager || isInventoryManager;
 
                         return (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -202,7 +205,9 @@ const SystemSettings = () => {
                                                 <NotificationToggle id="expense_created" label="Yeni Xərc" description="Yeni xərc əlavə edildikdə bildir" icon={Bell} />
                                             </>
                                         )}
-                                        <NotificationToggle id="low_stock" label="Kritik Stok" description="Məhsul sayı limitdən aşağı düşdükdə bildir" icon={Bell} />
+                                        {showInventorySettings && (
+                                            <NotificationToggle id="low_stock" label="Kritik Stok" description="Məhsul sayı limitdən aşağı düşdükdə bildir" icon={Bell} />
+                                        )}
                                     </div>
                                 </div>
 
@@ -218,7 +223,9 @@ const SystemSettings = () => {
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
                                             </>
                                         )}
-                                        <NotificationToggle id="low_stock" label="Kritik Stok" description="Məhsul sayı limitdən aşağı düşdükdə email göndər" icon={Mail} isEmail />
+                                        {showInventorySettings && (
+                                            <NotificationToggle id="low_stock" label="Kritik Stok" description="Məhsul sayı limitdən aşağı düşdükdə email göndər" icon={Mail} isEmail />
+                                        )}
                                     </div>
                                 </div>
                             </div>
