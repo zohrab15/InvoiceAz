@@ -360,17 +360,36 @@ const Dashboard = () => {
                             <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
                         </div>
                         {isSalesRep && (
-                            <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[var(--color-card-border)]">
-                                <TrendingUp size={14} className="text-emerald-500" />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-muted)]">Aylıq Hədəf: {salesTarget.toLocaleString()} ₼</span>
-                                    <div className="w-32 h-1.5 bg-[var(--color-hover-bg)] rounded-full mt-1 overflow-hidden">
+                            <div className="hidden sm:flex items-center gap-4 pl-6 border-l border-[var(--color-card-border)]">
+                                <div className="flex flex-col items-end">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <TrendingUp size={12} className={targetProgress >= 100 ? "text-emerald-500" : "text-amber-500"} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-muted)]">Aylıq Hədəf</span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1.5">
+                                        <span className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>
+                                            {stats.totalRevenue.toLocaleString()}
+                                        </span>
+                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)]">/ {salesTarget.toLocaleString()} ₼</span>
+                                    </div>
+                                    <div className="w-32 h-2 bg-[var(--color-hover-bg)] rounded-full mt-2 overflow-hidden border border-[var(--color-card-border)] relative">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${targetProgress}%` }}
-                                            className="h-full bg-emerald-500"
+                                            className={`h-full relative z-10 ${targetProgress >= 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`}
+                                            transition={{ duration: 1, ease: "easeOut" }}
                                         />
+                                        {targetProgress >= 100 && (
+                                            <motion.div
+                                                animate={{ opacity: [0.2, 0.5, 0.2] }}
+                                                transition={{ repeat: Infinity, duration: 2 }}
+                                                className="absolute inset-0 bg-emerald-400 blur-sm"
+                                            />
+                                        )}
                                     </div>
+                                </div>
+                                <div className={`flex items-center justify-center w-10 h-10 rounded-xl border ${targetProgress >= 100 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'}`}>
+                                    <span className="text-xs font-black">{Math.round(targetProgress)}%</span>
                                 </div>
                             </div>
                         )}
