@@ -850,37 +850,14 @@ const Invoices = () => {
                                                             onChange={(e) => updateItem(index, 'description', e.target.value)}
                                                         />
                                                     </div>
-                                                    <div className="w-full sm:w-20">
+                                                    <div className="w-full sm:w-24">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Miqdar</label>
-                                                        <input min="1" type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 text-sm text-center font-bold text-[var(--color-text-primary)]" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 1)} />
-                                                    </div>
-                                                    <div className="w-full sm:w-28">
-                                                        <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Vahid</label>
-                                                        <select
-                                                            className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 text-xs font-bold text-[var(--color-text-primary)]"
-                                                            value={UNIT_CHOICES.find(u => u.value === item.unit) ? item.unit : 'digər'}
-                                                            onChange={(e) => {
-                                                                const val = e.target.value;
-                                                                if (val === 'digər') {
-                                                                    updateItem(index, 'unit', '');
-                                                                } else {
-                                                                    updateItem(index, 'unit', val);
-                                                                }
-                                                            }}
-                                                        >
-                                                            {UNIT_CHOICES.map(u => (
-                                                                <option key={u.value} value={u.value}>{u.label}</option>
-                                                            ))}
-                                                        </select>
-                                                        {(!UNIT_CHOICES.find(u => u.value === item.unit) || item.unit === 'digər') && (
-                                                            <input
-                                                                type="text"
-                                                                className="w-full mt-1 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-lg p-1 text-[10px] font-bold text-[var(--color-text-primary)]"
-                                                                placeholder="Vahid..."
-                                                                value={item.unit === 'digər' ? '' : item.unit}
-                                                                onChange={(e) => updateItem(index, 'unit', e.target.value)}
-                                                            />
-                                                        )}
+                                                        <div className="relative">
+                                                            <input min="1" type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 pr-10 text-sm text-center font-bold text-[var(--color-text-primary)]" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 1)} />
+                                                            <span className="absolute right-2 top-2.5 text-[10px] font-black uppercase text-[var(--color-text-muted)] pointer-events-none">
+                                                                {item.unit || 'ədəd'}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                     <div className="w-full sm:w-32 relative">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Qiymət</label>
