@@ -1,7 +1,7 @@
 import openpyxl
 from decimal import Decimal
 from django.db import transaction
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 from rest_framework import viewsets, status, permissions, pagination, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -25,6 +25,17 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'sku']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        stock_status = self.request.query_params.get('stock_status')
+        if stock_status == 'out_of_stock':
+            queryset = queryset.filter(stock_quantity__lte=0)
+        elif stock_status == 'low_stock':
+            queryset = queryset.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level'))
+        elif stock_status == 'sufficient':
+            queryset = queryset.filter(stock_quantity__gt=F('min_stock_level'))
+        return queryset
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
     def upload_excel(self, request):
@@ -141,12 +152,14 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         
         out_of_stock = products.filter(stock_quantity__lte=0).count()
         low_stock = products.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
+        in_stock_count = products.filter(stock_quantity__gt=0).count()
         
         return Response({
             "total_products": total_products,
             "total_value": float(total_value),
             "out_of_stock": out_of_stock,
-            "low_stock": low_stock
+            "low_stock": low_stock,
+            "in_stock": in_stock_count
         })
 
     @action(detail=False, methods=['get'], url_path='all')

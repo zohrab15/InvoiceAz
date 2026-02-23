@@ -45,17 +45,25 @@ const Products = () => {
     const [stockFilter, setStockFilter] = useState('all'); // 'all', 'out_of_stock', 'low_stock', 'sufficient'
     const [page, setPage] = useState(1);
 
+    // Fetch Stats
+    const { data: stats } = useQuery({
+        queryKey: ['products-stats', activeBusiness?.id],
+        queryFn: async () => {
+            const res = await clientApi.get('/inventory/stats/');
+            return res.data;
+        },
+        enabled: !!activeBusiness,
+    });
+
     // Fetch Products
     const { data: products, isLoading } = useQuery({
         queryKey: ['products', activeBusiness?.id, page, search, stockFilter],
         queryFn: async () => {
             const params = new URLSearchParams({
                 page: page,
-                search: search,
+                search: search || '',
+                stock_status: stockFilter !== 'all' ? stockFilter : '',
             });
-            // Map stockFilter to backend logic if needed, 
-            // but but for now we do local filtering of results for simplicity 
-            // unless we add backend filtering filters later.
             const res = await clientApi.get(`/inventory/?${params.toString()}`);
             return res.data;
         },
@@ -144,32 +152,7 @@ const Products = () => {
         return data;
     }, [products]);
 
-    const filteredProducts = useMemo(() => {
-        let items = productsData;
-
-        // 1. Stock Status Filter (Local implementation as noted in queryFn)
-        if (stockFilter !== 'all') {
-            items = items.filter(p => {
-                const stock = Number(p.stock_quantity || 0);
-                const min = Number(p.min_stock_level || 0);
-                if (stockFilter === 'out_of_stock') return stock <= 0;
-                if (stockFilter === 'low_stock') return stock <= min && stock > 0;
-                if (stockFilter === 'sufficient') return stock > min;
-                return true;
-            });
-        }
-
-        // 2. Local Search Filter (Safeguard for backend search discrepancies)
-        if (search) {
-            const s = search.toLowerCase();
-            items = items.filter(p =>
-                (p.name || '').toLowerCase().includes(s) ||
-                (p.sku || '').toLowerCase().includes(s)
-            );
-        }
-
-        return items;
-    }, [productsData, search, stockFilter]);
+    const filteredProducts = productsData;
 
     const totalCount = products?.count || productsData.length || 0;
     const totalPages = Math.ceil(totalCount / 50);
@@ -254,26 +237,18 @@ const Products = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Ümumi Çeşid</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{totalCount}</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{stats?.total_products || 0}</div>
                 </div>
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Aktiv Məhsul</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--color-brand)' }}>{filteredProducts.length}</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-brand)' }}>{totalCount}</div>
                 </div>
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Anbar Vəziyyəti</div>
-                    <div className={`text-3xl font-black ${productsData.some(p => {
-                        const stock = Number(p.stock_quantity || 0);
-                        const min = Number(p.min_stock_level || 0);
-                        return stock <= min && stock > 0;
-                    }) ? 'text-rose-500' : productsData.some(p => Number(p.stock_quantity || 0) <= 0) ? 'text-rose-500' : 'text-emerald-500'}`}>
+                    <div className={`text-3xl font-black ${(stats?.low_stock || 0) > 0 || (stats?.out_of_stock || 0) > 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
                         {(() => {
-                            const lowStockCount = productsData.filter(p => {
-                                const stock = Number(p.stock_quantity || 0);
-                                const min = Number(p.min_stock_level || 0);
-                                return stock <= min;
-                            }).length || 0;
-                            return lowStockCount > 0 ? `${lowStockCount} Xəbərdarlıq` : 'Normal';
+                            const warningCount = (stats?.low_stock || 0) + (stats?.out_of_stock || 0);
+                            return warningCount > 0 ? `${warningCount} Xəbərdarlıq` : 'Normal';
                         })()}
                     </div>
                 </div>
