@@ -230,12 +230,12 @@ const SystemSettings = () => {
                                             <>
                                                 <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
-                                                <NotificationToggle id="email_overdue_invoice" label="Gecikən Ödəniş xatırlatması" description="Fakturanın ödəniş müddəti bitdikdə email göndər" icon={Mail} isEmail />
+                                                <NotificationToggle id="overdue_invoice" label="Gecikən Ödəniş xatırlatması" description="Fakturanın ödəniş müddəti bitdikdə email göndər" icon={Mail} isEmail />
                                             </>
                                         )}
                                         {isSalesRep && (
                                             <>
-                                                <NotificationToggle id="email_overdue_invoice" label="Gecikən Ödəniş Xatırlatması" description="Təhkim olunduğunuz müştərinin faktura ödənişi gecikdikdə email göndər" icon={Mail} isEmail />
+                                                <NotificationToggle id="overdue_invoice" label="Gecikən Ödəniş Xatırlatması" description="Təhkim olunduğunuz müştərinin faktura ödənişi gecikdikdə email göndər" icon={Mail} isEmail />
                                             </>
                                         )}
                                         {showInventorySettings && (
