@@ -144,7 +144,7 @@ def check_business_limit(user):
     }
 
 
-def get_full_plan_status(user):
+def get_full_plan_status(user, business_id=None):
     """Get complete plan status with all limits and current usage."""
     from invoices.models import Invoice, Expense
     from clients.models import Client
@@ -153,12 +153,22 @@ def get_full_plan_status(user):
     
     now = timezone.now()
     
-    # Detect organization owner if user is a team member
+    # Detect organization owner
     organization_owner = user
-    from users.models import TeamMember
-    membership = TeamMember.objects.filter(user=user).first()
-    if membership:
-        organization_owner = membership.owner
+    selected_business = None
+
+    if business_id:
+        try:
+            selected_business = Business.objects.get(id=business_id)
+            organization_owner = selected_business.user
+        except Business.DoesNotExist:
+            pass
+    
+    if not selected_business:
+        from users.models import TeamMember
+        membership = TeamMember.objects.filter(user=user).first()
+        if membership:
+            organization_owner = membership.owner
         
     plan = get_plan_limits(organization_owner)
     if not plan:
