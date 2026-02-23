@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -13,6 +13,8 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'voen', 'phone', 'email']
     
     # Mixin handles get_queryset (filtering by business and role)
     # Mixin handles perform_create (auto-attaching business and assigned_to)

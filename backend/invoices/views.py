@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -17,6 +17,8 @@ class ExpenseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['description', 'category']
 
     def perform_create(self, serializer):
         business = self.get_active_business()
@@ -62,6 +64,8 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['invoice_number', 'client__name']
 
     def get_queryset(self):
         # Still use mixin's filtered queryset but add performance optimizations

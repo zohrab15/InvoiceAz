@@ -2,7 +2,7 @@ import openpyxl
 from decimal import Decimal
 from django.db import transaction
 from django.db.models import Sum, F
-from rest_framework import viewsets, status, permissions, pagination
+from rest_framework import viewsets, status, permissions, pagination, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -23,6 +23,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
     pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'sku']
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
     def upload_excel(self, request):
