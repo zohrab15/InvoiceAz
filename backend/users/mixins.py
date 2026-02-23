@@ -12,6 +12,16 @@ class BusinessContextMixin:
         if hasattr(self.request, '_active_business'):
             return self.request._active_business
 
+        # CRITICAL FIX for Audit Log: DRF resolves request.user lazily, so Django's AuthenticationMiddleware
+        # often yields AnonymousUser for JWT requests. We must manually inject the resolved user into thread_locals
+        # for our post_save/post_delete signals, since they don't have access to the DRF request.
+        try:
+            from notifications.middleware import _thread_locals
+            if hasattr(self.request, 'user') and self.request.user.is_authenticated:
+                _thread_locals.user = self.request.user
+        except ImportError:
+            pass
+
         business_id = self.request.headers.get('X-Business-ID')
         if not business_id:
             business_id = self.request.query_params.get('business_id')
