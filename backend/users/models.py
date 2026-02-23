@@ -43,6 +43,7 @@ class SubscriptionPlan(models.Model):
     clients_limit = models.IntegerField(default=10, null=True, blank=True)
     expenses_per_month = models.IntegerField(default=20, null=True, blank=True)
     businesses_limit = models.IntegerField(default=1, null=True, blank=True)
+    products_limit = models.IntegerField(default=20, null=True, blank=True)
     
     has_forecast_analytics = models.BooleanField(default=False)
     has_csv_export = models.BooleanField(default=False)

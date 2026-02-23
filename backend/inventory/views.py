@@ -12,6 +12,8 @@ from users.models import Business
 
 from users.mixins import BusinessContextMixin
 from users.permissions import IsRoleAuthorized
+from users.plan_limits import check_product_limit
+from rest_framework.exceptions import PermissionDenied
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
     page_size = 50
@@ -36,6 +38,23 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         elif stock_status == 'sufficient':
             queryset = queryset.filter(stock_quantity__gt=F('min_stock_level'))
         return queryset
+
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+            
+        limit_check = check_product_limit(self.request.user, business)
+        if not limit_check['allowed']:
+            raise PermissionDenied({
+                "code": "plan_limit", 
+                "detail": "Məhsul limitiniz dolub.",
+                "limit": limit_check['limit'],
+                "current": limit_check['current'],
+                "upgrade_required": True
+            })
+            
+        super().perform_create(serializer)
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
     def upload_excel(self, request):
@@ -89,6 +108,28 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
                 if not excel_data_map:
                     return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Check limit before processing
+                limit_check = check_product_limit(request.user, business)
+                if not limit_check['allowed']:
+                    raise PermissionDenied({
+                        "code": "plan_limit", 
+                        "detail": "Məhsul limitiniz dolub.",
+                        "limit": limit_check['limit'],
+                        "current": limit_check['current'],
+                        "upgrade_required": True
+                    })
+                
+                # Check if Excel file itself exceeds the remaining limit
+                remaining = limit_check['limit'] - limit_check['current'] if limit_check['limit'] else 999999
+                if len(excel_data_map) > remaining:
+                     raise PermissionDenied({
+                        "code": "plan_limit", 
+                        "detail": f"Excel faylındakı məhsul sayı ({len(excel_data_map)}) qalan limitinizi ({remaining}) aşır.",
+                        "limit": limit_check['limit'],
+                        "current": limit_check['current'],
+                        "upgrade_required": True
+                    })
 
                 # 2. Prepare products to process (Overwrite Mode: Database stock is ignored)
                 products_to_process = []

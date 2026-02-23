@@ -44,6 +44,10 @@ export const usePlanLimits = () => {
                 limit = limits.businesses;
                 current = usage.businesses;
                 break;
+            case 'products':
+                limit = limits.products;
+                current = usage.products;
+                break;
             default:
                 return { allowed: true, limit: null, current: 0 };
         }

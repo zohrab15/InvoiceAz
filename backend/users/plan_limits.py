@@ -151,12 +151,39 @@ def check_business_limit(user):
     }
 
 
+def check_product_limit(user, business):
+    """Check if user can create a new product."""
+    owner = business.user
+    
+    if owner.email == 'demo_user@invoice.az':
+        return {'allowed': True, 'current': 0, 'limit': None}
+
+    plan = get_plan_limits(owner)
+    if not plan:
+        return {'allowed': True, 'current': 0, 'limit': None}
+
+    max_products = plan.products_limit
+    
+    if max_products is None:
+        return {'allowed': True, 'current': 0, 'limit': None}
+        
+    from inventory.models import Product
+    current_count = Product.objects.filter(business=business).count()
+    
+    return {
+        'allowed': current_count < max_products,
+        'current': current_count,
+        'limit': max_products
+    }
+
+
 def get_full_plan_status(user, business_id=None):
     """Get complete plan status with all limits and current usage."""
     from invoices.models import Invoice, Expense
     from clients.models import Client
     from users.models import Business
     from users.models import SubscriptionPlan
+    from inventory.models import Product
     
     now = timezone.now()
     
@@ -211,6 +238,7 @@ def get_full_plan_status(user, business_id=None):
     
     total_clients = Client.objects.filter(business__user=organization_owner).count()
     total_businesses = active_businesses.count()
+    total_products = Product.objects.filter(business__user=organization_owner).count()
     
     is_demo = user.email == 'demo_user@invoice.az'
     is_privileged = user.is_superuser or user.is_staff or is_demo
@@ -229,11 +257,13 @@ def get_full_plan_status(user, business_id=None):
             'api_access': True if is_privileged else (plan.has_api_access if plan else False),
             'team_members': 99 if is_privileged else (plan.team_members_limit if plan else 0),
             'custom_themes': True if is_privileged else (plan.has_custom_themes if plan else False),
+            'products': None if is_privileged else (plan.products_limit if plan else 0),
         },
         'usage': {
             'invoices_this_month': invoices_this_month,
             'clients': total_clients,
             'expenses_this_month': expenses_this_month,
             'businesses': total_businesses,
+            'products': total_products,
         }
     }

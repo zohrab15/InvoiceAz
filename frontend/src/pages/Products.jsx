@@ -47,6 +47,8 @@ const Products = () => {
     const [excelFile, setExcelFile] = useState(null);
     const [stockFilter, setStockFilter] = useState('all'); // 'all', 'out_of_stock', 'low_stock', 'sufficient'
     const [page, setPage] = useState(1);
+    const { checkLimit } = usePlanLimits();
+    const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
 
     // Fetch Stats
     const { data: stats } = useQuery({
@@ -214,7 +216,18 @@ const Products = () => {
                     {canManageProducts && (
                         <>
                             <button
-                                onClick={() => setIsUploadModalOpen(true)}
+                                onClick={() => {
+                                    const check = checkLimit('products');
+                                    if (!check.allowed) {
+                                        setUpgradeConfig({
+                                            isOpen: true,
+                                            title: 'Məhsul Limiti dolub 📦',
+                                            message: `Pulsuz planda maksimum ${check.limit} məhsul əlavə edə bilərsiniz. Daha çox məhsul və anbar idarəetməsi üçün Pro plana keçin.`
+                                        });
+                                        return;
+                                    }
+                                    setIsUploadModalOpen(true);
+                                }}
                                 className="p-3 rounded-xl transition-all flex items-center gap-2 font-bold text-sm"
                                 style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
                             >
@@ -230,7 +243,18 @@ const Products = () => {
                                 <span className="hidden sm:inline">QR Skan</span>
                             </button>
                             <button
-                                onClick={() => setIsAddModalOpen(true)}
+                                onClick={() => {
+                                    const check = checkLimit('products');
+                                    if (!check.allowed) {
+                                        setUpgradeConfig({
+                                            isOpen: true,
+                                            title: 'Məhsul Limiti dolub 📦',
+                                            message: `Pulsuz planda maksimum ${check.limit} məhsul əlavə edə bilərsiniz. Daha çox məhsul və anbar idarəetməsi üçün Pro plana keçin.`
+                                        });
+                                        return;
+                                    }
+                                    setIsAddModalOpen(true);
+                                }}
                                 className="text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 text-sm"
                                 style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 20px var(--color-brand-shadow)' }}
                             >
@@ -673,6 +697,15 @@ const Products = () => {
                     onClose={() => setIsQRScannerOpen(false)}
                 />
             )}
+
+            <UpgradeModal
+                isOpen={upgradeConfig.isOpen}
+                onClose={() => setUpgradeConfig({ ...upgradeConfig, isOpen: false })}
+                title={upgradeConfig.title}
+                message={upgradeConfig.message}
+                resourceName="Məhsul"
+                limit={checkLimit('products').limit}
+            />
         </div>
     );
 };
