@@ -40,6 +40,18 @@ const getActionColor = (action) => {
     }
 };
 
+const mapRole = (role) => {
+    if (!role) return '';
+    const map = {
+        'OWNER': 'Sahib',
+        'MANAGER': 'Menecer',
+        'ACCOUNTANT': 'Mühasib',
+        'INVENTORY_MANAGER': 'Anbar Meneceri',
+        'SALES_REP': 'Satış Təmsilçisi'
+    };
+    return map[role.toUpperCase()] || role.replace('_', ' ');
+};
+
 const ActivityLog = () => {
     const { activeBusiness } = useBusiness();
     const [searchTerm, setSearchTerm] = useState('');
@@ -122,7 +134,7 @@ const ActivityLog = () => {
                                             {log.user_role && (
                                                 <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full"
                                                     style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
-                                                    {log.user_role.replace('_', ' ')}
+                                                    {mapRole(log.user_role)}
                                                 </span>
                                             )}
                                         </div>
