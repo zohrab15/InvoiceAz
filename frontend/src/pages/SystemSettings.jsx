@@ -196,13 +196,22 @@ const SystemSettings = () => {
                                         <AppWindow size={14} /> Sistem Daxili Bildirişlər
                                     </h4>
                                     <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
-                                        {!isInventoryManager && (
+                                        {!isInventoryManager && !isSalesRep && (
                                             <>
                                                 <NotificationToggle id="invoice_created" label="Yeni Faktura" description="Yeni faktura yaradıldıqda bildir" icon={Bell} />
                                                 <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə bildir" icon={Bell} />
                                                 <NotificationToggle id="client_created" label="Yeni Müştəri" description="Yeni müştəri əlavə edildikdə bildir" icon={Bell} />
                                                 <NotificationToggle id="expense_created" label="Yeni Xərc" description="Yeni xərc əlavə edildikdə bildir" icon={Bell} />
+                                                <NotificationToggle id="overdue_invoice" label="Gecikən Ödəniş xatırlatması" description="Fakturanın ödəniş müddəti bitdikdə bildir" icon={Bell} />
+                                            </>
+                                        )}
+                                        {isSalesRep && (
+                                            <>
+                                                <NotificationToggle id="in_app_overdue_invoice" label="Gecikən Ödəniş Xatırlatması" description="Təhkim olunduğunuz müştərinin faktura ödənişi gecikdikdə bildir" icon={Bell} />
+                                                <NotificationToggle id="in_app_target_reached" label="Aylıq Hədəf Statusu" description="Aylıq hədəfinizə yaxınlaşdıqda və ya tamamladıqda bildir" icon={Bell} />
+                                                <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda bildir" icon={Bell} />
+                                                <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Müştəriniz ödəniş etdikdə bildir" icon={Bell} />
                                             </>
                                         )}
                                         {showInventorySettings && (
@@ -217,10 +226,16 @@ const SystemSettings = () => {
                                         <Mail size={14} /> E-poçt Bildirişləri
                                     </h4>
                                     <div className="space-y-2 border-t border-[var(--color-card-border)] pt-4">
-                                        {!isInventoryManager && (
+                                        {!isInventoryManager && !isSalesRep && (
                                             <>
                                                 <NotificationToggle id="invoice_viewed" label="Faktura Baxıldı" description="Müştəri fakturaya baxdıqda email göndər" icon={Mail} isEmail />
                                                 <NotificationToggle id="payment_received" label="Yeni Ödəniş" description="Ödəniş qəbul edildikdə email göndər" icon={Mail} isEmail />
+                                                <NotificationToggle id="email_overdue_invoice" label="Gecikən Ödəniş xatırlatması" description="Fakturanın ödəniş müddəti bitdikdə email göndər" icon={Mail} isEmail />
+                                            </>
+                                        )}
+                                        {isSalesRep && (
+                                            <>
+                                                <NotificationToggle id="email_overdue_invoice" label="Gecikən Ödəniş Xatırlatması" description="Təhkim olunduğunuz müştərinin faktura ödənişi gecikdikdə email göndər" icon={Mail} isEmail />
                                             </>
                                         )}
                                         {showInventorySettings && (

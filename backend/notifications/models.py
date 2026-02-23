@@ -35,11 +35,14 @@ class NotificationSetting(models.Model):
     in_app_client_created = models.BooleanField(default=True)
     in_app_expense_created = models.BooleanField(default=True)
     in_app_low_stock = models.BooleanField(default=True)
+    in_app_overdue_invoice = models.BooleanField(default=True)
+    in_app_target_reached = models.BooleanField(default=True)
     
     # Email notifications
     email_invoice_viewed = models.BooleanField(default=True)
     email_payment_received = models.BooleanField(default=True)
     email_low_stock = models.BooleanField(default=True)
+    email_overdue_invoice = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Settings for {self.user.email}"
