@@ -274,10 +274,10 @@ const Products = () => {
 
                 <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl w-fit" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
                     {[
-                        { id: 'all', label: `Bütün (${stats?.total_products || 0})` },
-                        { id: 'out_of_stock', label: `Bitib (${stats?.out_of_stock || 0})` },
-                        { id: 'low_stock', label: `Azalır (${stats?.low_stock || 0})` },
-                        { id: 'sufficient', label: `Kifayət qədər (${stats?.sufficient || 0})` }
+                        { id: 'all', label: 'Bütün' },
+                        { id: 'out_of_stock', label: 'Bitib' },
+                        { id: 'low_stock', label: 'Azalır' },
+                        { id: 'sufficient', label: 'Kifayət qədər' }
                     ].map(f => (
                         <button
                             key={f.id}
