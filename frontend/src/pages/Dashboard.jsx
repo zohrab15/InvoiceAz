@@ -98,7 +98,7 @@ const Dashboard = () => {
         const overdue = invList.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
 
         const pipeline = [
-            { name: 'Layihə', count: invList.filter(i => i.status === 'draft').length, color: '#94a3b8' },
+            { name: 'Qaralama', count: invList.filter(i => i.status === 'draft').length, color: '#94a3b8' },
             { name: 'Göndərilib', count: invList.filter(i => i.status === 'sent').length, color: '#3b82f6' },
             { name: 'Baxılıb', count: invList.filter(i => i.status === 'viewed').length, color: '#8b5cf6' },
             { name: 'Gecikən', count: invList.filter(i => i.status === 'overdue').length, color: '#ef4444' },
