@@ -18,13 +18,15 @@ const Notifications = () => {
     const queryClient = useQueryClient();
     const [filter, setFilter] = useState('all'); // all, unread, read
 
-    const { data: notifications = [], isLoading } = useQuery({
+    const { data: notificationsData, isLoading } = useQuery({
         queryKey: ['notifications'],
         queryFn: async () => {
             const response = await client.get('/notifications/');
             return response.data;
         },
     });
+
+    const notifications = notificationsData?.results || (Array.isArray(notificationsData) ? notificationsData : []);
 
     const markAsReadMutation = useMutation({
         mutationFn: (id) => client.post(`/notifications/${id}/mark_as_read/`),

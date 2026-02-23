@@ -361,7 +361,7 @@ const Invoices = () => {
     const calculateTotal = () => calculateSubtotal() + calculateTax();
 
     const handleDownloadPdf = (id) => {
-        const inv = invoices?.find(i => i.id === id);
+        const inv = invoicesData.find(i => i.id === id);
         if (inv && inv.share_token) {
             const url = `${API_URL}/api/invoices/public/${inv.share_token}/pdf/`;
             window.open(url, '_blank');

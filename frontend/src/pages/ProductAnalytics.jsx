@@ -39,8 +39,8 @@ const ProductAnalytics = () => {
     });
 
     const filteredData = useMemo(() => {
-        if (!products) return [];
-        let data = [...products];
+        const productsList = products?.results || (Array.isArray(products) ? products : []);
+        let data = [...productsList];
 
         if (searchTerm) {
             data = data.filter(p =>
