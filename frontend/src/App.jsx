@@ -78,9 +78,9 @@ const RoleGate = ({ roles, children }) => {
     role = 'OWNER';
   }
 
-  // If still no role, default to OWNER safely — the backend controls actual data access
   // Defaulting to SALES_REP was the cause of normal users seeing restricted UI
-  if (!role) role = 'OWNER';
+  // But defaulting to OWNER for non-owners is a security risk. If no role, deny access.
+  if (!role) return <Navigate to="/dashboard" replace />;
 
   const normalizedRoles = roles.map(r => String(r).trim().toUpperCase());
   if (normalizedRoles.includes(role)) return children;
