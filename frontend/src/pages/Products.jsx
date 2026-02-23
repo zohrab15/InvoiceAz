@@ -139,8 +139,44 @@ const Products = () => {
         'service': 'xidmət'
     };
 
+    const productsData = useMemo(() => {
+        const data = products?.results || (Array.isArray(products) ? products : []);
+        return data;
+    }, [products]);
+
+    const filteredProducts = useMemo(() => {
+        let items = productsData;
+
+        // 1. Stock Status Filter (Local implementation as noted in queryFn)
+        if (stockFilter !== 'all') {
+            items = items.filter(p => {
+                const stock = Number(p.stock_quantity || 0);
+                const min = Number(p.min_stock_level || 0);
+                if (stockFilter === 'out_of_stock') return stock <= 0;
+                if (stockFilter === 'low_stock') return stock <= min && stock > 0;
+                if (stockFilter === 'sufficient') return stock > min;
+                return true;
+            });
+        }
+
+        // 2. Local Search Filter (Safeguard for backend search discrepancies)
+        if (search) {
+            const s = search.toLowerCase();
+            items = items.filter(p =>
+                (p.name || '').toLowerCase().includes(s) ||
+                (p.sku || '').toLowerCase().includes(s)
+            );
+        }
+
+        return items;
+    }, [productsData, search, stockFilter]);
+
+    const totalCount = products?.count || productsData.length || 0;
+    const totalPages = Math.ceil(totalCount / 50);
+
     const handleInitialQRScan = (result) => {
         setIsQRScannerOpen(false);
+        // Search in the full list if possible, or current view
         const found = productsData?.find(p => p.sku === result);
         if (found) {
             setEditingProduct(found);
@@ -157,11 +193,6 @@ const Products = () => {
         formData.append('business', activeBusiness.id);
         uploadMutation.mutate(formData);
     };
-
-    const productsData = products?.results || (Array.isArray(products) ? products : []);
-    const filteredProducts = productsData;
-    const totalCount = products?.count || productsData.length || 0;
-    const totalPages = Math.ceil(totalCount / 50);
 
     const handleSearchChange = (val) => {
         setSearch(val);
