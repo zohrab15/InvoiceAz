@@ -43,6 +43,8 @@ const Notifications = () => {
     const roleFiltered = notifications.filter(n => {
         if (role === 'SALES_REP' || role === 'ACCOUNTANT') {
             if (n.category === 'inventory') return false;
+            // Fallback for legacy notifications
+            if (n.title && n.title.toLowerCase().includes('stok')) return false;
         }
         return true;
     });

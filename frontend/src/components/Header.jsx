@@ -55,6 +55,8 @@ const Header = ({ onMenuClick }) => {
             // Restriction: SALES_REP and ACCOUNTANT should not see stock/inventory notifications
             if (role === 'SALES_REP' || role === 'ACCOUNTANT') {
                 if (notif.category === 'inventory') return false;
+                // Fallback for legacy notifications without category
+                if (notif.title && notif.title.toLowerCase().includes('stok')) return false;
             }
             return true;
         });
