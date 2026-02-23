@@ -15,6 +15,13 @@ def get_plan_limits(user):
     if user.subscription_plan:
         return user.subscription_plan
     
+    # Try to find plan based on membership string (legacy fallback)
+    if hasattr(user, 'membership') and user.membership:
+        from users.models import SubscriptionPlan
+        plan = SubscriptionPlan.objects.filter(name=user.membership.lower()).first()
+        if plan:
+            return plan
+    
     # Fallback to free plan from DB if not set
     from users.models import SubscriptionPlan
     free_plan = SubscriptionPlan.objects.filter(name='free').first()
@@ -159,14 +166,17 @@ def get_full_plan_status(user, business_id=None):
 
     if business_id:
         try:
-            selected_business = Business.objects.get(id=business_id)
-            organization_owner = selected_business.user
-        except Business.DoesNotExist:
+            # Use filter().first() instead of get() to avoid raising DoesNotExist and be more robust
+            selected_business = Business.objects.filter(id=business_id).first()
+            if selected_business:
+                organization_owner = selected_business.user
+        except (ValueError, TypeError, Business.DoesNotExist):
             pass
     
+    # If no business found by ID, fall back to the first team membership to find the owner
     if not selected_business:
         from users.models import TeamMember
-        membership = TeamMember.objects.filter(user=user).first()
+        membership = TeamMember.objects.filter(user=user).select_related('owner').first()
         if membership:
             organization_owner = membership.owner
         
@@ -203,21 +213,22 @@ def get_full_plan_status(user, business_id=None):
     total_businesses = active_businesses.count()
     
     is_demo = user.email == 'demo_user@invoice.az'
+    is_privileged = user.is_superuser or user.is_staff or is_demo
     
     return {
-        'plan': 'pro' if is_demo else plan.name,
-        'label': 'Professional (Demo)' if is_demo else plan.label,
+        'plan': 'pro' if is_privileged else plan.name,
+        'label': 'Professional (Privileged)' if (user.is_superuser or user.is_staff) else ('Professional (Demo)' if is_demo else plan.label),
         'limits': {
-            'invoices_per_month': None if is_demo else (plan.invoices_per_month if plan else 0),
-            'clients': None if is_demo else (plan.clients_limit if plan else 0),
-            'expenses_per_month': None if is_demo else (plan.expenses_per_month if plan else 0),
-            'businesses': None if is_demo else (plan.businesses_limit if plan else 1),
-            'forecast_analytics': True if is_demo else (plan.has_forecast_analytics if plan else False),
-            'csv_export': True if is_demo else (plan.has_csv_export if plan else False),
-            'premium_pdf': True if is_demo else (plan.has_premium_pdf if plan else False),
-            'api_access': True if is_demo else (plan.has_api_access if plan else False),
-            'team_members': 99 if is_demo else (plan.team_members_limit if plan else 0),
-            'custom_themes': True if is_demo else (plan.has_custom_themes if plan else False),
+            'invoices_per_month': None if is_privileged else (plan.invoices_per_month if plan else 0),
+            'clients': None if is_privileged else (plan.clients_limit if plan else 0),
+            'expenses_per_month': None if is_privileged else (plan.expenses_per_month if plan else 0),
+            'businesses': None if is_privileged else (plan.businesses_limit if plan else 1),
+            'forecast_analytics': True if is_privileged else (plan.has_forecast_analytics if plan else False),
+            'csv_export': True if is_privileged else (plan.has_csv_export if plan else False),
+            'premium_pdf': True if is_privileged else (plan.has_premium_pdf if plan else False),
+            'api_access': True if is_privileged else (plan.has_api_access if plan else False),
+            'team_members': 99 if is_privileged else (plan.team_members_limit if plan else 0),
+            'custom_themes': True if is_privileged else (plan.has_custom_themes if plan else False),
         },
         'usage': {
             'invoices_this_month': invoices_this_month,

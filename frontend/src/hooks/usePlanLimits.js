@@ -15,7 +15,7 @@ export const usePlanLimits = () => {
             return res.data;
         },
         enabled: !!token,
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 30, // Cache for 30 seconds
     });
 
     const checkLimit = (resource) => {

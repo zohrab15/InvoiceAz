@@ -9,6 +9,7 @@ class PlanStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        business_id = request.query_params.get('business_id')
+        # Look for business_id in query params or X-Business-ID header
+        business_id = request.query_params.get('business_id') or request.headers.get('X-Business-ID')
         status = get_full_plan_status(request.user, business_id=business_id)
         return Response(status)
