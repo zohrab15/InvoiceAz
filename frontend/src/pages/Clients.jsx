@@ -22,6 +22,7 @@ const Clients = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(1);
     const [editingClient, setEditingClient] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
@@ -46,14 +47,28 @@ const Clients = () => {
     };
 
     const { data: clients, isLoading } = useQuery({
-        queryKey: ['clients', activeBusiness?.id],
+        queryKey: ['clients', activeBusiness?.id, page, searchTerm],
         queryFn: async () => {
-            const res = await clientApi.get('/clients/all/');
+            const res = await clientApi.get('/clients/all/', {
+                params: {
+                    page,
+                    search: searchTerm || undefined
+                }
+            });
             return res.data;
         },
         enabled: !!activeBusiness,
         retry: false,
     });
+
+    const clientsData = clients?.results || (Array.isArray(clients) ? clients : []);
+    const totalCount = clients?.count || clientsData.length || 0;
+    const totalPages = Math.ceil(totalCount / 50);
+
+    const handleSearchChange = (val) => {
+        setSearchTerm(val);
+        setPage(1);
+    };
 
     const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
     const isAccountant = activeBusiness?.user_role === 'ACCOUNTANT';
@@ -160,11 +175,7 @@ const Clients = () => {
         }
     };
 
-    const filteredClients = clients?.filter(client =>
-        (client.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (client.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (client.phone || '').includes(searchTerm)
-    );
+    const filteredClients = clientsData;
 
     const toggleSelectAll = () => {
         if (selectedIds.length === filteredClients?.length) {
@@ -227,7 +238,7 @@ const Clients = () => {
                         placeholder="Ad, email və ya telefon ilə axtar..."
                         className="bg-transparent border-none outline-none w-full text-sm font-medium text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => handleSearchChange(e.target.value)}
                     />
                 </div>
 
@@ -344,6 +355,48 @@ const Clients = () => {
                         </tbody>
                     </table>
                 </div>
+                {totalPages > 1 && (
+                    <div className="p-4 border-t border-[var(--color-card-border)] bg-[var(--color-hover-bg)] flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">
+                            CƏMİ {totalCount} MÜŞTƏRİ
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-card-bg)] border border-[var(--color-card-border)] disabled:opacity-50 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
+                            >
+                                Əvvəlki
+                            </button>
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) pageNum = i + 1;
+                                    else if (page <= 3) pageNum = i + 1;
+                                    else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                    else pageNum = page - 2 + i;
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => setPage(pageNum)}
+                                            className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-lg' : 'bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] hover:border-blue-500'}`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-card-bg)] border border-[var(--color-card-border)] disabled:opacity-50 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
+                            >
+                                Növbəti
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <AnimatePresence>

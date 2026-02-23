@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status, filters
+from rest_framework import viewsets, status, permissions, pagination, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -9,10 +9,16 @@ from users.mixins import BusinessContextMixin
 from users.plan_limits import check_client_limit
 from users.permissions import IsRoleAuthorized
 
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
 class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'voen', 'phone', 'email']
     
@@ -79,3 +85,16 @@ class ClientViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             "detail": f"{updated_count} müştəri uğurla təhkim edildi.",
             "updated_count": updated_count
         })
+
+    @action(detail=False, methods=['get'], url_path='dropdown')
+    def all_clients(self, request):
+        """
+        Dropdownlar üçün bütün müştəriləri səhifələmə olmadan qaytarır.
+        """
+        business = self.get_active_business()
+        if not business:
+            return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        clients = self.get_queryset() # Use mixin's filtered queryset
+        serializer = self.get_serializer(clients, many=True)
+        return Response(serializer.data)

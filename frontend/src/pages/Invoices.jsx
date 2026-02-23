@@ -72,6 +72,7 @@ const Invoices = () => {
     // Filter & Search State
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [page, setPage] = useState(1);
 
     // Form State
     const [items, setItems] = useState([{ description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd' }]);
@@ -87,32 +88,43 @@ const Invoices = () => {
     };
 
     const { data: invoices, isLoading: isLoadingInvoices } = useQuery({
-        queryKey: ['invoices', activeBusiness?.id],
+        queryKey: ['invoices', activeBusiness?.id, page, searchTerm, statusFilter],
         queryFn: async () => {
-            const res = await clientApi.get('/invoices/');
+            const res = await clientApi.get('/invoices/', {
+                params: {
+                    page,
+                    search: searchTerm || undefined,
+                    // Status filter is currently handled locally in useMemo, 
+                    // but we could pass it to backend if needed.
+                }
+            });
             return res.data;
         },
         enabled: !!activeBusiness,
         retry: false,
     });
 
+    const invoicesData = invoices?.results || (Array.isArray(invoices) ? invoices : []);
+    const totalCount = invoices?.count || invoicesData.length || 0;
+    const totalPages = Math.ceil(totalCount / 50);
+
+    const handleSearchChange = (val) => {
+        setSearchTerm(val);
+        setPage(1);
+    };
+
     const filteredInvoices = useMemo(() => {
-        if (!invoices) return [];
-        return invoices.filter(inv => {
-            const matchesSearch =
-                (inv.invoice_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (inv.client_name || '').toLowerCase().includes(searchTerm.toLowerCase());
-
+        if (!invoicesData) return [];
+        return invoicesData.filter(inv => {
             const matchesStatus = statusFilter === 'all' || inv.status === statusFilter;
-
-            return matchesSearch && matchesStatus;
+            return matchesStatus;
         });
-    }, [invoices, searchTerm, statusFilter]);
+    }, [invoicesData, statusFilter]);
 
     const { data: clients } = useQuery({
-        queryKey: ['clients', activeBusiness?.id],
+        queryKey: ['clients', 'dropdown', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/clients/all/');
+            const res = await clientApi.get('/clients/all/dropdown/');
             return res.data;
         },
         enabled: !!activeBusiness,
@@ -548,7 +560,7 @@ const Invoices = () => {
                                     placeholder="Faktura # və ya Müştəri axtar..."
                                     className="block w-full pl-11 pr-4 py-3 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-xl text-sm placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-0 focus:bg-[var(--color-card-bg)] focus:border-primary-blue transition-all"
                                     value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
                                 />
                                 {searchTerm && (
                                     <button
@@ -696,6 +708,48 @@ const Invoices = () => {
                                     </tbody>
                                 </table>
                             </div>
+                            {totalPages > 1 && (
+                                <div className="p-4 border-t border-[var(--color-card-border)] bg-[var(--color-hover-bg)] flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <div className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">
+                                        CƏMİ {totalCount} FAKTURA
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                                            disabled={page === 1}
+                                            className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-card-bg)] border border-[var(--color-card-border)] disabled:opacity-50 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
+                                        >
+                                            Əvvəlki
+                                        </button>
+                                        <div className="flex items-center gap-1">
+                                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                                let pageNum;
+                                                if (totalPages <= 5) pageNum = i + 1;
+                                                else if (page <= 3) pageNum = i + 1;
+                                                else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                                else pageNum = page - 2 + i;
+
+                                                return (
+                                                    <button
+                                                        key={pageNum}
+                                                        onClick={() => setPage(pageNum)}
+                                                        className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-lg' : 'bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] hover:border-blue-500'}`}
+                                                    >
+                                                        {pageNum}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <button
+                                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                            disabled={page === totalPages}
+                                            className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-card-bg)] border border-[var(--color-card-border)] disabled:opacity-50 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
+                                        >
+                                            Növbəti
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 ) : (

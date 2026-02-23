@@ -27,6 +27,7 @@ const Expenses = () => {
     const [editingExpense, setEditingExpense] = useState(null);
     const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetLimitInput, setBudgetLimitInput] = useState('');
+    const [page, setPage] = useState(1);
 
     const categories = [
         { id: 'office', name: 'Ofis ləvazimatları', color: '#3B82F6' }, // Blue
@@ -75,18 +76,32 @@ const Expenses = () => {
     };
 
     const { data: expenses, isLoading } = useQuery({
-        queryKey: ['expenses', activeBusiness?.id],
+        queryKey: ['expenses', activeBusiness?.id, page, searchTerm],
         queryFn: async () => {
-            const res = await clientApi.get('/invoices/expenses/');
+            const res = await clientApi.get('/invoices/expenses/', {
+                params: {
+                    page,
+                    search: searchTerm || undefined
+                }
+            });
             return res.data;
         },
         enabled: !!activeBusiness,
     });
 
+    const expensesData = expenses?.results || (Array.isArray(expenses) ? expenses : []);
+    const totalCount = expenses?.count || expensesData.length || 0;
+    const totalPages = Math.ceil(totalCount / 50);
+
+    const handleSearchChange = (val) => {
+        setSearchTerm(val);
+        setPage(1);
+    };
+
     const { data: clients } = useQuery({
-        queryKey: ['clients', activeBusiness?.id],
+        queryKey: ['clients', 'dropdown', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/clients/clients/');
+            const res = await clientApi.get('/clients/all/dropdown/');
             return res.data;
         },
         enabled: !!activeBusiness,
@@ -253,83 +268,83 @@ const Expenses = () => {
                             <Search size={20} className="text-[var(--color-text-muted)] ml-2" />
                             <input
                                 type="text"
-                                placeholder="Xərclərdə axtar..."
-                                className="bg-transparent border-none focus:ring-0 w-full font-medium text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
+                                placeholder="Axtar..."
+                                className="bg-transparent border-none outline-none w-full text-sm font-medium text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={(e) => handleSearchChange(e.target.value)}
                             />
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left min-w-[600px]">
-                                <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-[10px] uppercase font-black tracking-widest">
+                            <table className="w-full text-left border-collapse">
+                                <thead className="bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] text-[10px] sm:text-xs uppercase font-bold">
                                     <tr>
-                                        <th className="px-6 py-4">Təsvir / Kateqoriya</th>
-                                        <th className="px-6 py-4 text-center">Tarix</th>
-                                        <th className="px-6 py-4 text-right">Məbləğ</th>
-                                        <th className="px-6 py-4 text-right"></th>
+                                        <th className="px-3 sm:px-6 py-4">Tarix & Kateqoriya</th>
+                                        <th className="px-3 sm:px-6 py-4">Təsvir & Müştəri</th>
+                                        <th className="px-3 sm:px-6 py-4">Məbləğ</th>
+                                        <th className="px-3 sm:px-6 py-4">Status</th>
+                                        <th className="px-3 sm:px-6 py-4 text-right">Əməliyyat</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[var(--color-card-border)]">
-                                    {filteredExpenses?.map((exp) => (
-                                        <tr key={exp.id} className="hover:bg-[var(--color-hover-bg)] transition-colors group">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="font-bold text-[var(--color-text-primary)] leading-tight">{exp.description}</div>
-                                                    {exp.attachment && (
-                                                        <a href={exp.attachment.startsWith('http') ? exp.attachment : `${API_URL}${exp.attachment}`} target="_blank" rel="noreferrer">
-                                                            <Paperclip size={12} className="text-blue-400" />
-                                                        </a>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className="text-[10px] font-black uppercase tracking-tighter text-[var(--color-text-muted)]">
-                                                        {categories.find(c => c.id === exp.category)?.name}
-                                                    </span>
-                                                    {exp.vendor && (
-                                                        <>
-                                                            <span className="text-[10px] text-[var(--color-text-muted)] opacity-50">•</span>
-                                                            <span className="text-[10px] font-bold text-[var(--color-text-secondary)]">{exp.vendor}</span>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-center">
+                                    {expensesData.map((expense) => (
+                                        <tr key={expense.id} className="hover:bg-[var(--color-hover-bg)] transition-colors group">
+                                            <td className="px-3 sm:px-6 py-4">
                                                 <div className="text-xs font-semibold text-[var(--color-text-muted)]">
                                                     {(() => {
-                                                        const d = new Date(exp.date);
+                                                        const d = new Date(expense.date);
                                                         if (isNaN(d.getTime())) return '---';
                                                         const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
                                                         return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
                                                     })()}
                                                 </div>
-                                                <div className={`text-[9px] font-black uppercase mt-1 px-1.5 py-0.5 rounded-md inline-block ${exp.status === 'paid' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                                                    {exp.status === 'paid' ? 'Ödənilib' : 'Gözləmədə'}
+                                                <div className="text-[10px] font-black uppercase tracking-tighter text-[var(--color-text-muted)] mt-1">
+                                                    {categories.find(c => c.id === expense.category)?.name}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-red-500 text-sm">
-                                                -{parseFloat(exp.amount).toFixed(2)} {exp.currency}
+                                            <td className="px-3 sm:px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-bold text-[var(--color-text-primary)] leading-tight">{expense.description}</div>
+                                                    {expense.attachment && (
+                                                        <a href={expense.attachment.startsWith('http') ? expense.attachment : `${API_URL}${expense.attachment}`} target="_blank" rel="noreferrer">
+                                                            <Paperclip size={12} className="text-blue-400" />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                                {expense.vendor && (
+                                                    <div className="text-[10px] font-bold text-[var(--color-text-secondary)] mt-0.5">
+                                                        {expense.vendor}
+                                                    </div>
+                                                )}
                                             </td>
-                                            <td className="px-6 py-4 text-right">
+                                            <td className="px-3 sm:px-6 py-4 font-black text-red-500 text-sm">
+                                                -{parseFloat(expense.amount).toFixed(2)} {expense.currency}
+                                            </td>
+                                            <td className="px-3 sm:px-6 py-4">
+                                                <div className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md inline-block ${expense.status === 'paid' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                                    {expense.status === 'paid' ? 'Ödənilib' : 'Gözləmədə'}
+                                                </div>
+                                            </td>
+                                            <td className="px-3 sm:px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-1 flex-wrap lg:opacity-0 lg:group-hover:opacity-100 transition-all">
                                                     {canManageExpenses && (
                                                         <>
                                                             <button
                                                                 onClick={() => {
-                                                                    setEditingExpense(exp);
+                                                                    setEditingExpense(expense);
                                                                     setFormData({
-                                                                        description: exp.description,
-                                                                        vendor: exp.vendor || '',
-                                                                        amount: exp.amount,
-                                                                        currency: exp.currency,
-                                                                        date: exp.date,
-                                                                        category: exp.category,
-                                                                        status: exp.status,
-                                                                        payment_method: exp.payment_method || '',
-                                                                        client: exp.client || '',
-                                                                        notes: exp.notes || ''
+                                                                        description: expense.description,
+                                                                        vendor: expense.vendor || '',
+                                                                        amount: expense.amount,
+                                                                        currency: expense.currency,
+                                                                        date: expense.date,
+                                                                        category: expense.category,
+                                                                        status: expense.status,
+                                                                        payment_method: expense.payment_method || '',
+                                                                        client: expense.client || '',
+                                                                        notes: expense.notes || ''
                                                                     });
-                                                                    setAttachment(exp.attachment);
+                                                                    setAttachment(expense.attachment);
                                                                     setShowAddModal(true);
                                                                 }}
                                                                 className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-400 hover:text-blue-500 transition-colors"
@@ -337,7 +352,7 @@ const Expenses = () => {
                                                                 <Edit2 size={16} />
                                                             </button>
                                                             <button
-                                                                onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(exp.id); }}
+                                                                onClick={() => { if (window.confirm('Silinsin?')) deleteMutation.mutate(expense.id); }}
                                                                 className="p-2 hover:bg-red-500/10 rounded-lg text-red-300 hover:text-red-500 transition-colors"
                                                             >
                                                                 <Trash2 size={16} />
@@ -348,12 +363,55 @@ const Expenses = () => {
                                             </td>
                                         </tr>
                                     ))}
-                                    {filteredExpenses?.length === 0 && (
-                                        <tr><td colSpan="4" className="p-12 text-center text-gray-300 italic">Xərc tapılmadı</td></tr>
+                                    {expensesData.length === 0 && (
+                                        <tr><td colSpan="5" className="p-12 text-center text-gray-300 italic">Xərc tapılmadı</td></tr>
                                     )}
                                 </tbody>
                             </table>
                         </div>
+
+                        {totalPages > 1 && (
+                            <div className="p-4 border-t border-[var(--color-card-border)] bg-[var(--color-hover-bg)] flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest">
+                                    CƏMİ {totalCount} XƏRC
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                                        disabled={page === 1}
+                                        className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-card-bg)] border border-[var(--color-card-border)] disabled:opacity-50 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
+                                    >
+                                        Əvvəlki
+                                    </button>
+                                    <div className="flex items-center gap-1">
+                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                            let pageNum;
+                                            if (totalPages <= 5) pageNum = i + 1;
+                                            else if (page <= 3) pageNum = i + 1;
+                                            else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                            else pageNum = page - 2 + i;
+
+                                            return (
+                                                <button
+                                                    key={pageNum}
+                                                    onClick={() => setPage(pageNum)}
+                                                    className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-lg' : 'bg-[var(--color-card-bg)] border border-[var(--color-card-border)] text-[var(--color-text-secondary)] hover:border-blue-500'}`}
+                                                >
+                                                    {pageNum}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    <button
+                                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={page === totalPages}
+                                        className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-card-bg)] border border-[var(--color-card-border)] disabled:opacity-50 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
+                                    >
+                                        Növbəti
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
