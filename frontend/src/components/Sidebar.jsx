@@ -74,7 +74,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             }
             // SALES_REP or any other unrecognized role gets minimum access
             if (role === 'SALES_REP') {
-                return ['Ana səhifə', 'Fakturalar', 'Müştərilər', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
+                return ['Ana səhifə', 'Fakturalar', 'Məhsullar', 'Müştərilər', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             return false;
         });

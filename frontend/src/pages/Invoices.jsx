@@ -5,9 +5,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
-import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X, Lock } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X, Lock, QrCode } from 'lucide-react';
 import UpgradeModal from '../components/UpgradeModal';
 import AddPaymentModal from '../components/AddPaymentModal';
+import ProductQRScanner from '../components/ProductQRScanner';
 import * as XLSX from 'xlsx';
 import usePlanLimits from '../hooks/usePlanLimits';
 import useAuthStore from '../store/useAuthStore';
@@ -54,6 +55,7 @@ const Invoices = () => {
     const [paymentInvoice, setPaymentInvoice] = useState(null);
     const [triggerSendModal, setTriggerSendModal] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
+    const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
     const previewRef = useRef(null);
 
     useEffect(() => {
@@ -310,6 +312,32 @@ const Invoices = () => {
         }
 
         setItems(newItems);
+    };
+
+    const handleQRScan = (result) => {
+        setIsQRScannerOpen(false);
+        const productsData = Array.isArray(products) ? products : (products?.results || []);
+        const found = productsData.find(p => p.sku === result);
+
+        if (found) {
+            // Find first empty item or create new
+            const emptyIndex = items.findIndex(item => !item.description && !item.product);
+            if (emptyIndex !== -1) {
+                updateItem(emptyIndex, 'product_id', found.id);
+            } else {
+                setItems([...items, {
+                    product: found.id,
+                    description: found.name,
+                    quantity: 1,
+                    unit_price: parseFloat(found.base_price),
+                    tax_rate: 18,
+                    unit: found.unit || 'ədəd'
+                }]);
+            }
+            showToast(`${found.name} əlavə edildi`);
+        } else {
+            showToast('Bu SKU kodu ilə məhsul tapılmadı', 'warning');
+        }
     };
 
     const calculateSubtotal = () => items.reduce((sum, item) => sum + (Number(item.quantity) * Number(item.unit_price)), 0);
@@ -778,7 +806,16 @@ const Invoices = () => {
 
                                 <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] space-y-6">
                                     <div className="flex justify-between items-center border-b border-[var(--color-card-border)] pb-4">
-                                        <h3 className="font-bold text-[var(--color-text-primary)] flex items-center gap-2"><List size={18} className="text-primary-blue" /> Məhsul Siyahısı</h3>
+                                        <h3 className="font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                                            <List size={18} className="text-primary-blue" /> Məhsul Siyahısı
+                                        </h3>
+                                        <button
+                                            onClick={() => setIsQRScannerOpen(true)}
+                                            className="px-4 py-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-xl text-xs font-black flex items-center gap-2 hover:bg-emerald-500/20 transition-all"
+                                        >
+                                            <QrCode size={16} />
+                                            <span>QR Skan</span>
+                                        </button>
                                     </div>
                                     <div className="space-y-4">
                                         <AnimatePresence>
@@ -1037,6 +1074,12 @@ const Invoices = () => {
                 resourceName="Faktura"
                 limit={checkLimit('invoices').limit}
             />
+            {isQRScannerOpen && (
+                <ProductQRScanner
+                    onScan={handleQRScan}
+                    onClose={() => setIsQRScannerOpen(false)}
+                />
+            )}
         </>
     );
 };

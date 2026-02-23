@@ -38,7 +38,7 @@ const Products = () => {
             const res = await clientApi.get(`/inventory/?${params.toString()}`);
             return res.data;
         },
-        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
+        enabled: !!activeBusiness,
         retry: false,
         keepPreviousData: true
     });
@@ -116,7 +116,7 @@ const Products = () => {
 
     const handleInitialQRScan = (result) => {
         setIsQRScannerOpen(false);
-        const found = products?.find(p => p.sku === result);
+        const found = productsData?.find(p => p.sku === result);
         if (found) {
             setEditingProduct(found);
         } else {
@@ -133,8 +133,9 @@ const Products = () => {
         uploadMutation.mutate(formData);
     };
 
-    const filteredProducts = products?.results || [];
-    const totalCount = products?.count || 0;
+    const productsData = products?.results || (Array.isArray(products) ? products : []);
+    const filteredProducts = productsData;
+    const totalCount = products?.count || productsData.length || 0;
     const totalPages = Math.ceil(totalCount / 50);
 
     const handleSearchChange = (val) => {
@@ -197,7 +198,7 @@ const Products = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Ümumi Çeşid</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{products?.length || 0}</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-text-primary)' }}>{totalCount}</div>
                 </div>
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Aktiv Məhsul</div>
@@ -205,13 +206,13 @@ const Products = () => {
                 </div>
                 <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                     <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Anbar Vəziyyəti</div>
-                    <div className={`text-3xl font-black ${products?.some(p => {
+                    <div className={`text-3xl font-black ${productsData.some(p => {
                         const stock = Number(p.stock_quantity || 0);
                         const min = Number(p.min_stock_level || 0);
                         return stock <= min && stock > 0;
-                    }) ? 'text-rose-500' : products?.some(p => Number(p.stock_quantity || 0) <= 0) ? 'text-rose-500' : 'text-emerald-500'}`}>
+                    }) ? 'text-rose-500' : productsData.some(p => Number(p.stock_quantity || 0) <= 0) ? 'text-rose-500' : 'text-emerald-500'}`}>
                         {(() => {
-                            const lowStockCount = (products || []).filter(p => {
+                            const lowStockCount = productsData.filter(p => {
                                 const stock = Number(p.stock_quantity || 0);
                                 const min = Number(p.min_stock_level || 0);
                                 return stock <= min;
