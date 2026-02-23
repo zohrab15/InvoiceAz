@@ -100,8 +100,19 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 else:
                     root_owner = user
             
-        # Return all members belonging to this organization
-        return TeamMember.objects.filter(owner=root_owner).order_by('-created_at')
+        # Return all members belonging to this organization ordered by role hierarchy
+        from django.db.models import Case, When, Value, IntegerField
+        
+        return TeamMember.objects.filter(owner=root_owner).annotate(
+            role_order=Case(
+                When(role='MANAGER', then=Value(1)),
+                When(role='ACCOUNTANT', then=Value(2)),
+                When(role='INVENTORY_MANAGER', then=Value(3)),
+                When(role='SALES_REP', then=Value(4)),
+                default=Value(5),
+                output_field=IntegerField(),
+            )
+        ).order_by('role_order', '-created_at')
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email', '').strip().lower()

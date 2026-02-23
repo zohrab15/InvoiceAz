@@ -194,13 +194,27 @@ const TeamSettings = () => {
     };
 
 
-    const filteredMembers = teamMembers?.filter(member => {
+    const roleWeights = {
+        'MANAGER': 1,
+        'ACCOUNTANT': 2,
+        'INVENTORY_MANAGER': 3,
+        'SALES_REP': 4
+    };
+
+    const sortedMembers = [...(teamMembers || [])].sort((a, b) => {
+        const weightA = roleWeights[a.role] || 5;
+        const weightB = roleWeights[b.role] || 5;
+        if (weightA !== weightB) return weightA - weightB;
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    const filteredMembers = sortedMembers.filter(member => {
         const search = searchTerm.toLowerCase();
         return (
             member.user_name?.toLowerCase().includes(search) ||
             member.user_email?.toLowerCase().includes(search)
         );
-    }) || [];
+    });
 
     return (
         <motion.div
@@ -328,7 +342,12 @@ const TeamSettings = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {invitations.map((invite) => (
+                                {([...(invitations || [])].sort((a, b) => {
+                                    const weightA = roleWeights[a.role] || 5;
+                                    const weightB = roleWeights[b.role] || 5;
+                                    if (weightA !== weightB) return weightA - weightB;
+                                    return new Date(b.created_at) - new Date(a.created_at);
+                                })).map((invite) => (
                                     <tr key={invite.id} className="border-b last:border-0" style={{ borderColor: 'var(--color-border)' }}>
                                         <td className="py-4 text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{invite.email}</td>
                                         <td className="py-4">
