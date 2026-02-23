@@ -1,79 +1,79 @@
-# InvoiceAZ - Professional Business Management Platform
+# InvoiceAZ - Peşəkar Biznes İdarəetmə Platforması
 
-InvoiceAZ is a comprehensive cloud-based SaaS platform designed to streamline financial operations, inventory management, and team activities for small to medium-sized businesses. Built with a modern tech stack, it provides a seamless and secure experience for business owners to digitize their operations.
+InvoiceAZ, kiçik və orta ölçülü müəssisələr üçün maliyyə əməliyyatlarını, anbar idarəetməsini və komanda fəaliyyətlərini sadələşdirmək üçün hazırlanmış genişmiqyaslı bulud əsaslı (SaaS) platformadır. Müasir texnoloji stek ilə qurulmuş bu sistem, biznes sahiblərinə öz əməliyyatlarını rəqəmsallaşdırmaq üçün kəsintisiz və təhlükəsiz təcrübə təqdim edir.
 
-## 🚀 Key Features
+## 🚀 Əsas Funksiyalar
 
-### 📊 Financial Dashboard
-- **Real-time Overview:** Monitor revenue, expenses, net profit, and pending payments at a glance.
-- **Performance Charts:** Interactive visualizations of cash flow trends and financial health.
-- **Recent Activity:** Centralized log of 100+ latest transactions, invoices, and expense records.
+### 📊 Maliyyə Paneli (Dashboard)
+- **Real Vaxt Rejimində Xülasə:** Gəlir, xərc, xalis mənfəət və gözləyən ödənişləri bir baxışda izləyin.
+- **Performans Qrafikləri:** Nağd pul axını trendlərinin və maliyyə vəziyyətinin interaktiv vizuallaşdırılması.
+- **Son Fəaliyyətlər:** Ən son əməliyyatların, fakturaların və xərc qeydlərinin mərkəzləşdirilmiş siyahısı.
 
-### 📄 Intelligent Invoicing
-- **Quick Creation:** Fast invoice generation with auto-filled product and client data.
-- **Professional PDF:** Auto-generated, high-quality PDF documents with business branding and logos.
-- **Public Tracking:** Shareable public links to invoices with "viewed/not viewed" tracking for transparency.
-- **Lifecycle Management:** Track statuses from Draft and Sent to Paid and Overdue.
+### 📄 Ağıllı Fakturasiya
+- **Sürətli Yaradılma:** Avtomatik doldurulan məhsul və müştəri məlumatları ilə sürətli faktura generasiyası.
+- **Peşəkar PDF:** Biznes brendinqi və loqoları ilə avtomatik hazırlanan yüksək keyfiyyətli PDF sənədlər.
+- **İctimai İzləmə:** Şəffaflıq üçün "baxıldı/baxılmadı" statusu olan paylaşıla bilən ictimai linklər.
+- **Həyat Dövrü İdarəetməsi:** Fakturaları "Qaralama" və "Göndərildi" statusundan "Ödənildi" və "Gecikmiş" statusuna qədər izləyin.
 
-### 📦 Inventory & Product Management
-- **QR/Barcode Scanning:** Instant product lookup and sales entry using mobile camera or scanner devices.
-- **Stock Control:** Real-time stock quantity tracking with automated deduction on sales.
-- **Critical Level Alerts:** Visual indicators and notifications when products fall below minimum stock levels.
-- **Bulk Import/Export:** Seamlessly manage large inventory lists using Excel integration.
+### 📦 Anbar və Məhsul İdarəetməsi
+- **QR/Barkod Skaner:** Mobil kamera və ya skaner cihazlarından istifadə edərək məhsul axtarışı və satışa əlavə etmə.
+- **Stok Nəzarəti:** Satış zamanı məhsul sayının avtomatik azaldılması ilə real vaxtda stok izlənməsi.
+- **Kritik Səviyyə Xəbərdarlıqları:** Məhsullar minimum stok səviyyəsindən aşağı düşdükdə vizual indikatorlar və bildirişlər.
+- **Toplu İdxal/İxrac:** Excel inteqrasiyası vasitəsilə böyük məhsul siyahılarının rahat idarə edilməsi.
 
-### 💰 Expense & Budget Tracking
-- **Category Analysis:** Categorize spending (Rent, Salary, Marketing, etc.) for better cost control.
-- **Smart Notifications:** Automated warnings when monthly spending approaches or exceeds predefined budget limits.
-- **Proof of Purchase:** Digital archival of receipts and transaction documents.
+### 💰 Xərc və Büdcə İdarəetməsi
+- **Kateqoriya Analizi:** Xərcləri (İcarə, Maaş, Marketinq və s.) daha yaxşı nəzarət üçün kateqoriyalara bölün.
+- **Ağıllı Bildirişlər:** Aylıq xərclər təyin edilmiş büdcə limitlərinə yaxınlaşdıqda və ya keçdikdə avtomatik xəbərdarlıqlar.
+- **Sənəd Arxivi:** Qəbzlərin və əməliyyat sənədlərinin rəqəmsal arxivləşdirilməsi.
 
-### 📈 Advanced Analytics & AI
-- **Smart Forecasting:** AI-driven revenue and cash flow projections for the next 3 months.
-- **Tax Reporting:** Automatically generated summaries for quarterly and annual tax periods.
-- **Problematic Invoice Analysis:** Identification of chronic late payers with automated reminder tools.
+### 📈 Qabaqcıl Analitika və AI
+- **Ağıllı Proqnozlaşdırma:** Növbəti 3 ay üçün süni intellekt (AI) əsaslı gəlir və nağd pul axını proqnozları.
+- **Vergi Hesabatlılığı:** Rüblük və illik vergi dövrləri üçün avtomatik hazırlanan xülasələr.
+- **Problemli Faktura Analizi:** Gecikmiş ödənişləri olan müştərilərin müəyyən edilməsi və xatırlatma alətləri.
 
-### 👥 Team & Role Management (RBAC)
-- **Granular Permissions:** Predefined roles including Owner, Manager, Accountant, Inventory Manager, and Sales Representative.
-- **Sales Rep Tracking:** Real-time GPS location tracking and monthly sales target management for field representatives.
-- **Invitation System:** Secure email-based invitation flow to grow your professional organization.
+### 👥 Komanda və Rol İdarəetməsi (RBAC)
+- **Dəqiq İcazələr:** Sahib (Owner), Menecer, Mühasib, Anbar Meneceri və Satış Təmsilçisi kimi öncədən təyin edilmiş rollar.
+- **Satış Təmsilçilərinin İzlənməsi:** Sahə nümayəndələri üçün real vaxtda GPS yerləşmə izlənməsi və aylıq satış hədəflərinin idarə edilməsi.
+- **Dəvət Sistemi:** Peşəkar təşkilatınızı böyütmək üçün təhlükəsiz e-poçt əsaslı dəvət axını.
 
-## 🛠 Tech Stack
+## 🛠 Texnoloji Stek
 
 - **Frontend:** React 19, Vite, Tailwind CSS, Framer Motion, TanStack Query (React Query).
 - **Backend:** Django 5.1, Django REST Framework (DRF), PostgreSQL.
-- **Authentication:** JWT (JSON Web Tokens), Google OAuth integration, 2FA support.
+- **Autentifikasiya:** JWT (JSON Web Tokens), Google OAuth inteqrasiyası, 2FA dəstəyi.
 - **State Management:** Zustand.
 - **Deployment:** Vercel (Frontend), Render (Backend).
 
-## 🧪 Testing & Quality Assurance
+## 🧪 Testləşdirmə və Keyfiyyət Təminatı
 
-The project includes a robust testing suite focusing on business logic and security:
-- **Functional Tests:** Comprehensive testing of the invitation system, role-based access controls, and core API operations.
-- **Edge Case Testing:** Verification of plan limits, self-referencing safeguards, and data integrity boundaries.
+Layihə biznes məntiqinə və təhlükəsizliyə yönəlmiş güclü test paketini ehtiva edir:
+- **Funksional Testlər:** Dəvət sistemi, rol-əsaslı giriş nəzarəti və əsas API əməliyyatlarının geniş sınağı.
+- **Kənar Halların (Edge Case) Testi:** Plan limitlərinin, özünü-referans qorumalarının və məlumat bütövlüyü sərhədlərinin yoxlanılması.
 
-Run tests using:
+Testləri işə salmaq üçün:
 ```bash
 python manage.py test users.tests_sales_rep
 python manage.py test users.tests_edge_cases
 ```
 
-## 🏗 Installation
+## 🏗 Quraşdırılma
 
-### Prerequisites
+### Tələblər
 - Python 3.10+
 - Node.js 18+
 
-### Backend Setup
+### Backend Quraşdırılması
 1. `cd backend`
 2. `python -m venv venv`
-3. `source venv/bin/activate` (or `venv\Scripts\activate` on Windows)
+3. `source venv/bin/activate` (və ya Windows-da `venv\Scripts\activate`)
 4. `pip install -r requirements.txt`
 5. `python manage.py migrate`
 6. `python manage.py runserver`
 
-### Frontend Setup
+### Frontend Quraşdırılması
 1. `cd frontend`
 2. `npm install`
 3. `npm run dev`
 
 ---
-*InvoiceAZ - Empowering businesses through digital excellence.*
+*InvoiceAZ - Rəqəmsal mükəmməllik vasitəsilə biznesləri gücləndiririk.*
