@@ -72,17 +72,16 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
                     {label}
                 </label>
             )}
-            <div className="relative flex group">
+            <div className="relative flex group border border-[var(--color-input-border)] rounded-xl bg-[var(--color-input-bg)] transition-all focus-within:border-primary-blue focus-within:ring-4 focus-within:ring-blue-500/10">
                 {/* Operator Selector */}
-                <div className="relative">
+                <div className="relative border-r border-[var(--color-input-border)]">
                     <button
                         type="button"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="h-full flex items-center gap-1.5 px-2.5 border-2 border-transparent border-r-[var(--color-card-border)] rounded-l-xl transition-colors focus:outline-none"
-                        style={{ backgroundColor: 'var(--color-hover-bg)' }}
+                        className="h-full flex items-center gap-1.5 px-3 rounded-l-xl hover:bg-[var(--color-hover-bg)] transition-colors focus:outline-none"
                     >
-                        <span className="font-bold text-xs" style={{ color: 'var(--color-text-primary)' }}>{phoneState.operator}</span>
-                        <ChevronDown size={10} className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--color-text-muted)' }} />
+                        <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{phoneState.operator}</span>
+                        <ChevronDown size={12} className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--color-text-muted)' }} />
                     </button>
 
                     {isMenuOpen && (
@@ -123,8 +122,7 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
                         value={formatDisplay(phoneState.number)}
                         onChange={handleNumberChange}
                         placeholder="123 45 67"
-                        className="w-full border-2 border-transparent focus:border-[var(--color-brand)] rounded-r-xl p-2.5 pl-4 outline-none transition-all font-bold text-sm"
-                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
+                        className="w-full bg-transparent border-none py-3 px-4 rounded-r-xl outline-none transition-all font-medium text-[var(--color-text-primary)]"
                     />
                 </div>
             </div>
