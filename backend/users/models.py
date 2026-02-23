@@ -52,6 +52,10 @@ class SubscriptionPlan(models.Model):
     
     team_members_limit = models.IntegerField(default=0, null=True, blank=True)
     has_custom_themes = models.BooleanField(default=False)
+    has_white_label = models.BooleanField(
+        default=False, 
+        help_text="Whether to hide 'Powered by InvoiceAZ' branding"
+    )
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

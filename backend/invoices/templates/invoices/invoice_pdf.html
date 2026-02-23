@@ -252,12 +252,14 @@
     </table>
 
     <!-- Footer -->
+    {% if not has_white_label %}
     <div style="margin-top: 50pt; text-align: center; border-top: 1pt solid #f1f5f9; padding-top: 10pt;">
         <div style="font-size: 8pt; color: #94a3b8; font-weight: bold;">
             Powered by <span style="color: #1e293b;">InvoiceAZ</span>
         </div>
         <div style="font-size: 7pt; color: #cbd5e1; margin-top: 3pt;">Bütün Hüquqlar Qorunur © 2026</div>
     </div>
+    {% endif %}
 </body>
 
 </html>

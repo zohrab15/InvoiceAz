@@ -97,7 +97,9 @@ const PublicPayment = () => {
                         <div className="relative z-10 flex justify-between items-end">
                             <div>
                                 <h1 className="text-3xl font-black tracking-tight mb-2 uppercase italic">Checkout</h1>
-                                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Powered by InvoiceAZ Secure</p>
+                                {!invoice.business_details?.white_label_enabled && (
+                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Powered by InvoiceAZ Secure</p>
+                                )}
                             </div>
                             <div className="text-right">
                                 <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Məbləğ</p>

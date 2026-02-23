@@ -258,6 +258,7 @@ def get_full_plan_status(user, business_id=None):
             'team_members': 99 if is_privileged else (plan.team_members_limit if plan else 0),
             'custom_themes': True if is_privileged else (plan.has_custom_themes if plan else False),
             'products': None if is_privileged else (plan.products_limit if plan else 0),
+            'white_label': True if is_privileged else (plan.has_white_label if plan else False),
         },
         'usage': {
             'invoices_this_month': invoices_this_month,

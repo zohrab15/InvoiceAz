@@ -369,13 +369,15 @@ const PublicInvoice = () => {
                 </motion.div>
 
                 {/* Footer Branding */}
-                <div className="py-10 text-center opacity-50">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                        <div className="w-5 h-5 bg-slate-800 rounded flex items-center justify-center text-[10px] text-white font-bold">AZ</div>
-                        <span className="text-xs font-bold text-slate-800 tracking-tighter">Powered by InvoiceAZ</span>
+                {!invoice.business_details?.white_label_enabled && (
+                    <div className="py-10 text-center opacity-50">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <div className="w-5 h-5 bg-slate-800 rounded flex items-center justify-center text-[10px] text-white font-bold">AZ</div>
+                            <span className="text-xs font-bold text-slate-800 tracking-tighter">Powered by InvoiceAZ</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-medium">Bütün Hüquqlar Qorunur © 2026</p>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium">Bütün Hüquqlar Qorunur © 2026</p>
-                </div>
+                )}
             </div>
         </div>
     );

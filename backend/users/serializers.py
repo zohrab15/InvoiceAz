@@ -72,6 +72,11 @@ class BusinessSerializer(serializers.ModelSerializer):
             for field in sensitive_fields:
                 data.pop(field, None)
                 
+        # White label check
+        from users.plan_limits import get_full_plan_status
+        status = get_full_plan_status(instance.user, business_id=instance.id)
+        data['white_label_enabled'] = status.get('limits', {}).get('white_label', False)
+        
         return data
 
 class TeamMemberSerializer(serializers.ModelSerializer):

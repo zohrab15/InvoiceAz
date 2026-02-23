@@ -163,6 +163,11 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         arial_font_base64 = get_font_base64("arial.ttf")
         arial_bold_font_base64 = get_font_base64("arialbd.ttf")
 
+        # Check for white label permission
+        from users.plan_limits import get_full_plan_status
+        plan_status = get_full_plan_status(invoice.business.user, business_id=invoice.business_id)
+        has_white_label = plan_status.get('limits', {}).get('white_label', False)
+
         context = {
             'invoice': invoice,
             'business': invoice.business,
@@ -172,6 +177,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'theme': invoice.invoice_theme or 'modern',
             'arial_font_base64': arial_font_base64,
             'arial_bold_font_base64': arial_bold_font_base64,
+            'has_white_label': has_white_label,
         }
         
         html_string = render_to_string('invoices/invoice_pdf.html', context)
