@@ -140,25 +140,33 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         if not business:
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
         
-        products = Product.objects.filter(business=business)
+        # Get base queryset (business-filtered)
+        # We manually use super().get_queryset() to avoid the stock_status filter 
+        # defined in our own get_queryset(), so button counts show all categories.
+        queryset = super(ProductViewSet, self).get_queryset().filter(business=business)
         
-        total_products = products.count()
+        # Apply search filters from query params (respect current search)
+        queryset = self.filter_queryset(queryset)
         
-        # Calculate total value: Sum of (base_price * stock_quantity)
-        total_value_data = products.aggregate(
+        total_products = queryset.count()
+        
+        # Calculate total value for the filtered set
+        total_value_data = queryset.aggregate(
             total_value=Sum(F('base_price') * F('stock_quantity'))
         )
         total_value = total_value_data['total_value'] or 0.00
         
-        out_of_stock = products.filter(stock_quantity__lte=0).count()
-        low_stock = products.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
-        in_stock_count = products.filter(stock_quantity__gt=0).count()
+        out_of_stock = queryset.filter(stock_quantity__lte=0).count()
+        low_stock = queryset.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
+        sufficient = queryset.filter(stock_quantity__gt=F('min_stock_level')).count()
+        in_stock_count = queryset.filter(stock_quantity__gt=0).count()
         
         return Response({
             "total_products": total_products,
             "total_value": float(total_value),
             "out_of_stock": out_of_stock,
             "low_stock": low_stock,
+            "sufficient": sufficient,
             "in_stock": in_stock_count
         })
 
