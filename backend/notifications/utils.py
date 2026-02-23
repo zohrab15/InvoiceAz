@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Notification, NotificationSetting
 
-def create_notification(user, title, message, type='info', link=None, setting_key=None):
+def create_notification(user, title, message, type='info', link=None, setting_key=None, business=None, category=None):
     """
     Utility function to create a new notification for a user.
     Checks user's NotificationSetting if setting_key is provided.
@@ -20,9 +20,11 @@ def create_notification(user, title, message, type='info', link=None, setting_ke
     if in_app_enabled:
         notification = Notification.objects.create(
             user=user,
+            business=business,
             title=title,
             message=message,
             type=type,
+            category=category,
             link=link
         )
 

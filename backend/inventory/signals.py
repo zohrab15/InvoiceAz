@@ -20,11 +20,13 @@ def check_low_stock(sender, instance, **kwargs):
         # 1. Notify Owner
         create_notification(
             user=owner,
+            business=business,
             title=title,
             message=message,
             type='warning',
             link=link,
-            setting_key='low_stock'
+            setting_key='low_stock',
+            category='inventory'
         )
         
         # 2. Notify Inventory Managers and Managers in the team
@@ -36,9 +38,11 @@ def check_low_stock(sender, instance, **kwargs):
         for tm in team_members:
             create_notification(
                 user=tm.user,
+                business=business,
                 title=title,
                 message=message,
                 type='warning',
                 link=link,
-                setting_key='low_stock'
+                setting_key='low_stock',
+                category='inventory'
             )

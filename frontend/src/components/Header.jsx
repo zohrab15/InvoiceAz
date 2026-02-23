@@ -33,16 +33,35 @@ const Header = ({ onMenuClick }) => {
     const queryClient = useQueryClient();
 
     const { data: notifications = [] } = useQuery({
-        queryKey: ['notifications'],
+        queryKey: ['notifications', activeBusiness?.id],
         queryFn: async () => {
-            const response = await client.get('/notifications/');
+            const response = await client.get('/notifications/', {
+                params: { business_id: activeBusiness?.id }
+            });
             return response.data;
         },
         refetchInterval: 30000,
-        enabled: !!user,
+        enabled: !!user && !!activeBusiness?.id,
     });
 
     const unreadCount = notifications.filter(n => !n.is_read).length;
+
+    // Role-based filtering of notifications
+    const getFilteredNotifications = () => {
+        const rawRole = activeBusiness?.user_role;
+        const role = (rawRole || 'OWNER').toUpperCase();
+
+        return notifications.filter(notif => {
+            // Restriction: SALES_REP and ACCOUNTANT should not see stock/inventory notifications
+            if (role === 'SALES_REP' || role === 'ACCOUNTANT') {
+                if (notif.category === 'inventory') return false;
+            }
+            return true;
+        });
+    };
+
+    const filteredNotifications = getFilteredNotifications();
+    const displayUnreadCount = filteredNotifications.filter(n => !n.is_read).length;
 
     const markAsReadMutation = useMutation({
         mutationFn: (id) => client.post(`/notifications/${id}/mark_as_read/`),
@@ -134,7 +153,7 @@ const Header = ({ onMenuClick }) => {
                         style={{ color: 'var(--color-text-muted)' }}
                     >
                         <Bell size={22} />
-                        {unreadCount > 0 && (
+                        {displayUnreadCount > 0 && (
                             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" style={{ border: '2px solid var(--color-page-bg)' }}></span>
                         )}
                     </button>
@@ -150,13 +169,13 @@ const Header = ({ onMenuClick }) => {
                             >
                                 <div className="p-4 flex justify-between items-center" style={{ borderBottom: '1px solid var(--color-card-border)', backgroundColor: 'var(--color-hover-bg)' }}>
                                     <h3 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>Bildirişlər</h3>
-                                    {unreadCount > 0 && (
-                                        <span className="text-[10px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full font-black">{unreadCount} YENİ</span>
+                                    {displayUnreadCount > 0 && (
+                                        <span className="text-[10px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full font-black">{displayUnreadCount} YENİ</span>
                                     )}
                                 </div>
                                 <div className="max-h-96 overflow-y-auto">
-                                    {notifications.length > 0 ? (
-                                        notifications.map(n => (
+                                    {filteredNotifications.length > 0 ? (
+                                        filteredNotifications.map(n => (
                                             <div
                                                 key={n.id}
                                                 onClick={() => {
@@ -196,7 +215,7 @@ const Header = ({ onMenuClick }) => {
                                         </div>
                                     )}
                                 </div>
-                                {unreadCount > 0 && (
+                                {displayUnreadCount > 0 && (
                                     <button
                                         onClick={() => markAllAsReadMutation.mutate()}
                                         className="w-full p-3 text-center text-xs font-bold transition-colors hover:bg-[var(--color-hover-bg)]"

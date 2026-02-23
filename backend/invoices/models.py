@@ -122,21 +122,25 @@ class Invoice(models.Model):
                 # Notify business owner
                 create_notification(
                     user=self.business.user,
+                    business=self.business,
                     title="Faktura Tam Ödənildi",
                     message=f"#{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} AZN ödəniş tamamlandı.",
                     type='success',
                     link='/invoices',
-                    setting_key='payment_received'
+                    setting_key='payment_received',
+                    category='finance'
                 )
                 # Notify assigned user (Sales Rep) if applicable
                 if self.client and self.client.assigned_to:
                     create_notification(
                         user=self.client.assigned_to,
+                        business=self.business,
                         title="Faktura Tam Ödənildi",
                         message=f"Müştəriniz {self.client.name} üçün #{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} AZN ödəniş tamamlandı.",
                         type='success',
                         link='/invoices',
-                        setting_key='payment_received'
+                        setting_key='payment_received',
+                        category='finance'
                     )
         elif self.status == 'paid' and self.paid_amount < self.total:
             self.status = 'sent' # Revert to sent if payment removed
@@ -231,11 +235,13 @@ def expense_created_notification(sender, instance, created, **kwargs):
         # Notify business owner
         create_notification(
             user=instance.business.user,
+            business=instance.business,
             title="Yeni Xərc",
             message=f"'{instance.description}' adlı yeni xərc əlavə edildi ({instance.amount} {instance.currency}).",
             type='info',
             link='/expenses',
-            setting_key='expense_created'
+            setting_key='expense_created',
+            category='finance'
         )
 
 @receiver(post_save, sender=Expense)
@@ -254,8 +260,10 @@ def check_budget_limit(sender, instance, created, **kwargs):
         if total_monthly_expenses > business.budget_limit:
             create_notification(
                 user=business.user,
+                business=business,
                 title="Büdcə Limiti Keçildi!",
                 message=f"{now.strftime('%B')} ayı üçün təyin etdiyiniz {business.budget_limit} ₼ limit keçildi. Cari xərc: {total_monthly_expenses} ₼",
                 type='warning',
-                link='/expenses'
+                link='/expenses',
+                category='finance'
             )

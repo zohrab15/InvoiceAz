@@ -9,7 +9,15 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)
+        queryset = Notification.objects.filter(user=self.request.user)
+        
+        # Get business from query param or custom header
+        business_id = self.request.query_params.get('business_id') or self.request.headers.get('X-Business-ID')
+        
+        if business_id:
+            queryset = queryset.filter(business_id=business_id)
+            
+        return queryset
 
     @action(detail=False, methods=['post'])
     def mark_all_as_read(self, request):

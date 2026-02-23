@@ -10,9 +10,11 @@ class Notification(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    business = models.ForeignKey('users.Business', on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
     title = models.CharField(max_length=255)
     message = models.TextField()
     type = models.CharField(max_length=10, choices=NOTIFICATION_TYPES, default='info')
+    category = models.CharField(max_length=50, blank=True, null=True)
     is_read = models.BooleanField(default=False)
     link = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
