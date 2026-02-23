@@ -57,9 +57,24 @@ from rest_framework import status
 
 from .mixins import BusinessContextMixin
 
+from rest_framework.decorators import action
+
 class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     serializer_class = TeamMemberSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        business = self.get_active_business()
+        if not business:
+            return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            member = TeamMember.objects.get(owner=business.user, user=request.user)
+            serializer = self.get_serializer(member)
+            return Response(serializer.data)
+        except TeamMember.DoesNotExist:
+            return Response({"detail": "Bu biznesin üzvü deyilsiniz."}, status=status.HTTP_404_NOT_FOUND)
 
     def get_queryset(self):
         user = self.request.user

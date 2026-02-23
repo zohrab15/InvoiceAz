@@ -154,6 +154,9 @@ class TeamMember(models.Model):
     last_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     last_location_update = models.DateTimeField(null=True, blank=True)
 
+    # Sales Performance
+    monthly_target = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, help_text="Monthly sales target for Sales Rep")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

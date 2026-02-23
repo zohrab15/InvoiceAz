@@ -59,13 +59,21 @@ const Dashboard = () => {
             const res = await clientApi.get('/inventory/stats/');
             return res.data;
         },
-        enabled: !!activeBusiness && activeBusiness?.user_role !== 'SALES_REP',
-        retry: 1, // Only retry once for stats
+        enabled: !!activeBusiness && (activeBusiness?.user_role !== 'SALES_REP' && activeBusiness?.user_role !== 'ACCOUNTANT'),
+        retry: 1,
     });
 
-    const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments || isLoadingInventory;
+    const { data: teamInfo } = useQuery({
+        queryKey: ['team-info', activeBusiness?.id, user?.id],
+        queryFn: async () => {
+            const res = await clientApi.get('/users/team/me/');
+            return res.data;
+        },
+        enabled: !!activeBusiness && activeBusiness?.user_role === 'SALES_REP',
+    });
 
-    // Time-aware greeting
+    const isLoading = isLoadingInvoices || isLoadingExpenses || isLoadingPayments || (activeBusiness?.user_role !== 'SALES_REP' && activeBusiness?.user_role !== 'ACCOUNTANT' && isLoadingInventory);
+
     const greeting = useMemo(() => {
         const hour = new Date().getHours();
         if (hour < 12) return 'Sabahınız xeyir';
@@ -80,16 +88,40 @@ const Dashboard = () => {
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${days[d.getDay()]}`;
     }, []);
 
-    const stats = {
-        totalRevenue: (invoices || []).filter(i => !['draft', 'cancelled'].includes(i.status)).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
-        paidRevenue: (invoices || []).filter(i => i.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
-        pendingRevenue: (invoices || []).filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0,
-        totalExpenses: (expenses || []).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0,
-        invoiceCount: (invoices || []).length || 0,
-        paidCount: (invoices || []).filter(i => i.status === 'paid').length || 0,
-    };
+    const stats = useMemo(() => {
+        const invList = invoices || [];
+        const activeInvoices = invList.filter(i => !['draft', 'cancelled'].includes(i.status));
+
+        const revenue = activeInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
+        const paid = invList.filter(i => i.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
+        const pending = invList.filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
+        const overdue = invList.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
+
+        const pipeline = [
+            { name: 'Layihə', count: invList.filter(i => i.status === 'draft').length, color: '#94a3b8' },
+            { name: 'Göndərilib', count: invList.filter(i => i.status === 'sent').length, color: '#3b82f6' },
+            { name: 'Baxılıb', count: invList.filter(i => i.status === 'viewed').length, color: '#8b5cf6' },
+            { name: 'Gecikən', count: invList.filter(i => i.status === 'overdue').length, color: '#ef4444' },
+            { name: 'Ödənilib', count: invList.filter(i => i.status === 'paid').length, color: '#10b981' },
+        ];
+
+        return {
+            totalRevenue: revenue,
+            paidRevenue: paid,
+            pendingRevenue: pending,
+            overdueRevenue: overdue,
+            totalExpenses: (expenses || []).reduce((sum, exp) => sum + parseFloat(exp.amount), 0) || 0,
+            invoiceCount: invList.length,
+            paidCount: invList.filter(i => i.status === 'paid').length,
+            pipeline
+        };
+    }, [invoices, expenses]);
 
     const profit = stats.paidRevenue - stats.totalExpenses;
+
+    // Default target for Sales Rep if not set
+    const salesTarget = parseFloat(teamInfo?.monthly_target || 0) || 5000;
+    const targetProgress = Math.min((stats.totalRevenue / salesTarget) * 100, 100);
 
     const monthlyData = useMemo(() => {
         const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyun', 'İyul', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
@@ -122,6 +154,16 @@ const Dashboard = () => {
     }, [invoices, expenses]);
 
     const recentTransactions = useMemo(() => {
+        const overdueInvoices = (invoices || [])
+            .filter(inv => inv.status === 'overdue')
+            .map(inv => ({
+                id: inv.id,
+                number: inv.invoice_number,
+                client: inv.client_name,
+                total: parseFloat(inv.total),
+                due_date: inv.due_date
+            }));
+
         const trans = [
             ...(invoices || [])
                 .filter(inv => !['draft', 'cancelled'].includes(inv.status))
@@ -157,7 +199,6 @@ const Dashboard = () => {
                 positive: true
             }))
         ];
-        // Filter out items with missing or invalid dates to prevent crashes
         const validTrans = trans.filter(t => t.rawDate && !isNaN(t.date.getTime()));
         return validTrans.sort((a, b) => b.date - a.date).slice(0, 15);
     }, [invoices, expenses, payments]);
@@ -170,13 +211,16 @@ const Dashboard = () => {
         </div>
     );
 
-    const rawRole = activeBusiness?.user_role;
-    const role = (rawRole || 'OWNER').toUpperCase();
+    const rawRole = activeBusiness?.user_role || 'OWNER';
+    const role = String(rawRole).toUpperCase();
+
+    // Debug: If you're still not seeing the right UI, it might be because the role in activeBusiness is stale.
+    // Try switching businesses to refresh your local state.
 
     const isInventoryManager = role === 'INVENTORY_MANAGER';
     const isOwnerOrManager = ['OWNER', 'MANAGER'].includes(role);
     const isAccountant = role === 'ACCOUNTANT';
-    const isSalesRep = role === 'SALES_REP';
+    const isSalesRep = role === 'SALES_REP' || role === 'SATıŞ TƏMSILÇISI'; // Fallback for display names if they leak
 
     const statCards = [
         {
@@ -186,7 +230,7 @@ const Dashboard = () => {
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
-            visible: !isSalesRep,
+            visible: !isSalesRep && !isAccountant,
             isCurrency: false
         },
         {
@@ -220,7 +264,7 @@ const Dashboard = () => {
             isCurrency: false
         },
         {
-            label: 'Ümumi Gəlir',
+            label: isSalesRep ? 'Sizin Satış' : 'Ümumi Gəlir',
             val: stats.totalRevenue,
             icon: <TrendingUp size={20} />,
             color: '#3b82f6',
@@ -268,7 +312,6 @@ const Dashboard = () => {
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="space-y-8 pb-16"
         >
-            {/* ── NO BUSINESS ALERT ── */}
             {!activeBusiness && (
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -279,7 +322,6 @@ const Dashboard = () => {
                         boxShadow: '0 20px 40px var(--color-brand-shadow)'
                     }}
                 >
-                    {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full -ml-16 -mb-16 blur-2xl" />
 
@@ -307,15 +349,31 @@ const Dashboard = () => {
                 </motion.div>
             )}
 
-            {/* ── HEADER ── */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-                <div>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div className="flex-1">
                     <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-roboto" style={{ color: 'var(--color-text-primary)' }}>
                         {greeting}{user?.first_name ? `, ${user.first_name}` : ''} 👋
                     </h2>
-                    <div className="flex items-center gap-2 mt-2">
-                        <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
-                        <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
+                    <div className="flex items-center gap-4 mt-2">
+                        <div className="flex items-center gap-2">
+                            <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
+                            <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
+                        </div>
+                        {isSalesRep && (
+                            <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[var(--color-card-border)]">
+                                <TrendingUp size={14} className="text-emerald-500" />
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-muted)]">Aylıq Hədəf: {salesTarget.toLocaleString()} ₼</span>
+                                    <div className="w-32 h-1.5 bg-[var(--color-hover-bg)] rounded-full mt-1 overflow-hidden">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${targetProgress}%` }}
+                                            className="h-full bg-emerald-500"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 {isInventoryManager ? (
@@ -349,7 +407,6 @@ const Dashboard = () => {
                 )}
             </div>
 
-            {/* ── STAT CARDS ── */}
             <div className={`grid grid-cols-2 lg:grid-cols-${statCards.length} gap-4`}>
                 {statCards.map((s, i) => (
                     <motion.div
@@ -371,7 +428,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                            {isLoadingInventory ? '...' : isErrorInventory ? 'Xəta' : (
+                            {(isLoadingInventory && !isSalesRep && !isAccountant) ? '...' : isErrorInventory ? 'Xəta' : (
                                 <>
                                     <CountUp to={s.val} decimals={s.isCurrency ? 2 : 0} />
                                     {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>}
@@ -382,10 +439,8 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            {/* ── CHART + TRANSACTIONS ── */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                {/* Chart — 3 cols */}
-                {(isOwnerOrManager || isAccountant) && (
+                {(isOwnerOrManager || isAccountant || isSalesRep) && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -394,108 +449,134 @@ const Dashboard = () => {
                     >
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                             <div>
-                                <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Maliyyə İcmalı</h3>
-                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Son 6 aylıq gəlir və xərc</p>
+                                <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
+                                    {isSalesRep ? 'Satış Tuneli (Pipeline)' : 'Maliyyə İcmalı'}
+                                </h3>
+                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                                    {isSalesRep ? 'Fakturaların status üzrə paylanması' : 'Son 6 aylıq gəlir və xərc'}
+                                </p>
                             </div>
-                            <div className="flex gap-5">
-                                <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                                    Gəlir
+                            {!isSalesRep && (
+                                <div className="flex gap-5">
+                                    <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                                        Gəlir
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                                        Xərc
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                                    <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
-                                    Xərc
-                                </div>
-                            </div>
+                            )}
                         </div>
 
-                        <div className="h-72 w-full">
-                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
-                                <ComposedChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="gəlirGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
-                                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid
-                                        strokeDasharray="3 3"
-                                        stroke="var(--color-card-border)"
-                                        vertical={false}
-                                    />
-                                    <XAxis
-                                        dataKey="name"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }}
-                                        dy={8}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: 'var(--color-text-muted)', fontSize: 10, fontWeight: 600 }}
-                                        tickFormatter={v => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'}
-                                    />
-                                    <Tooltip
-                                        cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.5 }}
-                                        content={({ active, payload, label }) => {
-                                            if (active && payload?.length) {
-                                                return (
-                                                    <div
-                                                        className="p-4 rounded-xl shadow-xl backdrop-blur-md min-w-[180px]"
-                                                        style={{
-                                                            backgroundColor: 'var(--color-dropdown-bg)',
-                                                            border: '1px solid var(--color-dropdown-border)'
-                                                        }}
-                                                    >
-                                                        <p className="text-[10px] font-bold uppercase tracking-wider mb-3 pb-2"
-                                                            style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-card-border)' }}>
-                                                            {label}
-                                                        </p>
-                                                        <div className="space-y-2">
-                                                            {payload.map((entry, idx) => (
-                                                                <div key={idx} className="flex justify-between items-center gap-6">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                                                                        <span className="text-xs font-medium capitalize" style={{ color: 'var(--color-text-secondary)' }}>{entry.name}</span>
+                        {isSalesRep ? (
+                            <div className="space-y-5 py-2">
+                                {stats.pipeline.map((item) => {
+                                    const maxCount = Math.max(...stats.pipeline.map(p => p.count), 1);
+                                    const percent = (item.count / maxCount) * 100;
+                                    return (
+                                        <div key={item.name} className="space-y-1.5">
+                                            <div className="flex justify-between text-xs font-bold">
+                                                <span style={{ color: 'var(--color-text-secondary)' }}>{item.name}</span>
+                                                <span style={{ color: 'var(--color-text-primary)' }}>{item.count} faktura</span>
+                                            </div>
+                                            <div className="h-2 w-full bg-[var(--color-hover-bg)] rounded-full overflow-hidden">
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${percent}%` }}
+                                                    className="h-full rounded-full"
+                                                    style={{ backgroundColor: item.color }}
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="h-72 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <ComposedChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="gəlirGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+                                                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border)" vertical={false} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600 }} dy={8} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--color-text-muted)', fontSize: 10, fontWeight: 600 }} tickFormatter={v => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'} />
+                                        <Tooltip
+                                            cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.5 }}
+                                            content={({ active, payload, label }) => {
+                                                if (active && payload?.length) {
+                                                    return (
+                                                        <div className="p-4 rounded-xl shadow-xl backdrop-blur-md min-w-[180px]" style={{ backgroundColor: 'var(--color-dropdown-bg)', border: '1px solid var(--color-dropdown-border)' }}>
+                                                            <p className="text-[10px] font-bold uppercase tracking-wider mb-3 pb-2" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-card-border)' }}>{label}</p>
+                                                            <div className="space-y-2">
+                                                                {payload.map((entry, idx) => (
+                                                                    <div key={idx} className="flex justify-between items-center gap-6">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                                            <span className="text-xs font-medium capitalize" style={{ color: 'var(--color-text-secondary)' }}>{entry.name}</span>
+                                                                        </div>
+                                                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{entry.value?.toLocaleString()} ₼</span>
                                                                     </div>
-                                                                    <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                                                                        {entry.value?.toLocaleString()} ₼
-                                                                    </span>
-                                                                </div>
-                                                            ))}
+                                                                ))}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="gəlir"
-                                        name="gəlir"
-                                        fill="url(#gəlirGrad)"
-                                        stroke="#3b82f6"
-                                        strokeWidth={2.5}
-                                        animationDuration={1200}
-                                    />
-                                    <Bar
-                                        dataKey="xərc"
-                                        name="xərc"
-                                        fill="#fb7185"
-                                        radius={[4, 4, 0, 0]}
-                                        barSize={16}
-                                        animationDuration={1200}
-                                        opacity={0.85}
-                                    />
-                                </ComposedChart>
-                            </ResponsiveContainer>
+                                                    );
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                        <Area type="monotone" dataKey="gəlir" fill="url(#gəlirGrad)" stroke="#3b82f6" strokeWidth={2.5} animationDuration={1200} />
+                                        <Bar dataKey="xərc" fill="#fb7185" radius={[4, 4, 0, 0]} barSize={16} animationDuration={1200} />
+                                    </ComposedChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+
+                {/* Overdue Payments Highlight for Sales Rep */}
+                {isSalesRep && stats.overdueRevenue > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="lg:col-span-5 p-6 rounded-2xl"
+                        style={{ backgroundColor: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)' }}
+                    >
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 rounded-lg bg-red-500 text-white shadow-lg shadow-red-500/20">
+                                <AlertCircle size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-base" style={{ color: '#ef4444' }}>Gecikən Ödənişləriniz</h3>
+                                <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Müştərilərlə əlaqə saxlayın</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {(invoices || []).filter(inv => inv.status === 'overdue').slice(0, 3).map(inv => (
+                                <div
+                                    key={inv.id}
+                                    onClick={() => navigate(`/invoices`)}
+                                    className="p-4 rounded-xl bg-white/50 cursor-pointer border border-red-100 hover:border-red-300 transition-all flex justify-between items-center"
+                                >
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>{inv.client_name}</p>
+                                        <p className="text-[10px] font-medium" style={{ color: '#ef4444' }}>#{inv.invoice_number} • Gecikir</p>
+                                    </div>
+                                    <div className="text-right shrink-0 ml-4">
+                                        <p className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>{parseFloat(inv.total).toLocaleString()} ₼</p>
+                                        <p className="text-[9px] font-bold" style={{ color: 'var(--color-text-muted)' }}>{inv.due_date}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
                 )}
 
-                {/* Transactions — 2 cols (Hidden for Inventory Manager) */}
                 {!isInventoryManager && (
                     <motion.div
                         initial={{ opacity: 0, x: 16 }}
@@ -504,19 +585,18 @@ const Dashboard = () => {
                         style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
                     >
                         <div className="flex justify-between items-center mb-5">
-                            <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>Son Əməliyyatlar</h3>
+                            <h3 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
+                                {isSalesRep ? 'Müştəri Aktivliyi' : 'Son Əməliyyatlar'}
+                            </h3>
                             <Activity size={16} style={{ color: 'var(--color-text-muted)' }} />
                         </div>
 
-                        <div className="space-y-1 flex-1 overflow-y-auto">
+                        <div className="space-y-1 flex-1 overflow-y-auto max-h-[400px]">
                             {recentTransactions.map((t) => (
                                 <div
                                     key={t.id}
                                     onClick={() => navigate(t.type === 'expense' ? '/expenses' : '/invoices')}
-                                    className="flex justify-between items-center py-3 px-3 rounded-xl cursor-pointer transition-colors"
-                                    style={{ '--hover-bg': 'var(--color-hover-bg)' }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover-bg)'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                                    className="flex justify-between items-center py-3 px-3 rounded-xl cursor-pointer transition-colors hover:bg-[var(--color-hover-bg)]"
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -534,6 +614,7 @@ const Dashboard = () => {
                                             <div className="text-[10px] font-medium truncate" style={{ color: 'var(--color-text-muted)' }}>
                                                 {t.subtitle}
                                                 {t.type === 'payment' && <span className="text-emerald-500 ml-1">• ödəniş</span>}
+                                                {t.status === 'overdue' && <span className="text-red-500 ml-1 font-bold">• GECİKƏN</span>}
                                             </div>
                                         </div>
                                     </div>
@@ -543,7 +624,6 @@ const Dashboard = () => {
                                         </div>
                                         <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>
                                             {(() => {
-                                                if (!t.date || isNaN(t.date.getTime())) return '---';
                                                 const shortMonths = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
                                                 return `${t.date.getDate()} ${shortMonths[t.date.getMonth()]}`;
                                             })()}
@@ -551,6 +631,11 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             ))}
+                            {recentTransactions.length === 0 && (
+                                <div className="py-10 text-center text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                                    Hələ ki əməliyyat yoxdur.
+                                </div>
+                            )}
                         </div>
 
                         {(isOwnerOrManager || isAccountant) && (
@@ -569,7 +654,6 @@ const Dashboard = () => {
                 )}
             </div>
 
-            {/* ── TOP PRODUCTS — Full Width ── */}
             <TopProductsChart />
         </motion.div>
     );

@@ -80,7 +80,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamMember
-        fields = ('id', 'user', 'user_email', 'user_name', 'role', 'last_latitude', 'last_longitude', 'last_location_update', 'created_at')
+        fields = ('id', 'user', 'user_email', 'user_name', 'role', 'monthly_target', 'last_latitude', 'last_longitude', 'last_location_update', 'created_at')
         read_only_fields = ('id', 'user', 'created_at', 'last_latitude', 'last_longitude', 'last_location_update')
 
 class TeamMemberInvitationSerializer(serializers.ModelSerializer):

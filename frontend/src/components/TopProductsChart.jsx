@@ -52,12 +52,16 @@ const TopProductsChart = ({ hideLink = false }) => {
         ['#10b981', '#34d399'],
     ];
 
+    const isSalesRep = activeBusiness?.user_role === 'SALES_REP';
+
     // Django Decimal fields come as strings in JSON — parse them
-    const parsed = (topProducts || []).map(p => ({
-        ...p,
-        total_quantity: Number(p.total_quantity) || 0,
-        total_revenue: Number(p.total_revenue) || 0,
-    }));
+    const parsed = (topProducts || [])
+        .slice(0, isSalesRep ? 5 : (topProducts?.length || 0))
+        .map(p => ({
+            ...p,
+            total_quantity: Number(p.total_quantity) || 0,
+            total_revenue: Number(p.total_revenue) || 0,
+        }));
 
     const maxVal = Math.max(...parsed.map(p => p.total_quantity), 0) * 1.15 || 10;
     const chartData = parsed.map(p => ({ ...p, maxVal }));
@@ -207,9 +211,9 @@ const TopProductsChart = ({ hideLink = false }) => {
 
             {!hideLink && (
                 <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--color-card-border)' }}>
-                    <Link to="/analytics/products" className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs hover:underline cursor-pointer">
+                    <Link to={isSalesRep ? "/invoices" : "/analytics/products"} className="flex items-center gap-1.5 text-emerald-500 font-semibold text-xs hover:underline cursor-pointer">
                         <ArrowUpRight size={14} />
-                        <span>Real vaxt hesabatı</span>
+                        <span>{isSalesRep ? "Bütün Satışlarım" : "Real vaxt hesabatı"}</span>
                     </Link>
                 </div>
             )}
