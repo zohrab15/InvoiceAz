@@ -115,6 +115,7 @@ const ProductAnalytics = lazy(() => import('./pages/ProductAnalytics'));
 const DemoLogin = lazy(() => import('./pages/DemoLogin'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Notifications = lazy(() => import('./pages/Notifications'));
+const ActivityLog = lazy(() => import('./pages/ActivityLog'));
 const HelpSupport = lazy(() => import('./pages/HelpSupport'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const Akademiya = lazy(() => import('./pages/Akademiya'));
@@ -220,6 +221,11 @@ const AuthenticatedRoutes = () => {
           </RoleGate>
         } />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/activity-logs" element={
+          <RoleGate roles={['OWNER', 'MANAGER']}>
+            <ActivityLog />
+          </RoleGate>
+        } />
       </Routes>
     </Layout>
   );

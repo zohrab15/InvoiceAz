@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Notification, NotificationSetting
+from .models import Notification, NotificationSetting, ActivityLog
 
 def create_notification(user, title, message, type='info', link=None, setting_key=None, business=None, category=None):
     """
@@ -43,3 +43,28 @@ def create_notification(user, title, message, type='info', link=None, setting_ke
             print(f"Error sending notification email: {e}")
 
     return notification
+
+def log_activity(business, user, action, module, description, details=None, ip_address=None):
+    """
+    Utility function to create an activity log entry.
+    """
+    user_role = None
+    if user and business:
+        from users.models import TeamMember
+        try:
+            member = TeamMember.objects.get(owner=business.user, user=user)
+            user_role = member.role
+        except TeamMember.DoesNotExist:
+            if user == business.user:
+                user_role = 'OWNER'
+    
+    return ActivityLog.objects.create(
+        business=business,
+        user=user,
+        user_role=user_role,
+        action=action,
+        module=module,
+        description=description,
+        details=details,
+        ip_address=ip_address
+    )

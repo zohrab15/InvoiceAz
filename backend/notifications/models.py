@@ -46,3 +46,42 @@ class NotificationSetting(models.Model):
 
     def __str__(self):
         return f"Settings for {self.user.email}"
+
+class ActivityLog(models.Model):
+    ACTION_CHOICES = (
+        ('CREATE', 'Yaradıldı'),
+        ('UPDATE', 'Yeniləndi'),
+        ('DELETE', 'Silindi'),
+        ('LOGIN', 'Giriş'),
+        ('EXPORT', 'Eksport'),
+        ('OTHER', 'Digər'),
+    )
+    MODULE_CHOICES = (
+        ('INVOICE', 'Faktura'),
+        ('PAYMENT', 'Ödəniş'),
+        ('CLIENT', 'Müştəri'),
+        ('PRODUCT', 'Məhsul'),
+        ('EXPENSE', 'Xərc'),
+        ('TEAM', 'Komanda'),
+        ('SETTINGS', 'Tənzimləmələr'),
+        ('AUTH', 'Sistem'),
+    )
+    
+    business = models.ForeignKey('users.Business', on_delete=models.CASCADE, related_name='activity_logs', null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='activity_logs')
+    user_role = models.CharField(max_length=50, blank=True, null=True)
+    
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES, default='OTHER')
+    module = models.CharField(max_length=20, choices=MODULE_CHOICES, default='AUTH')
+    description = models.TextField()
+    
+    details = models.JSONField(null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.get_action_display()}] {self.user} - {self.description}"

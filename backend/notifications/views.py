@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Notification, NotificationSetting
-from .serializers import NotificationSerializer, NotificationSettingSerializer
+from .models import Notification, NotificationSetting, ActivityLog
+from .serializers import NotificationSerializer, NotificationSettingSerializer, ActivityLogSerializer
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = NotificationSerializer
@@ -54,3 +54,31 @@ class NotificationSettingViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(settings)
         return Response(serializer.data)
+
+class ActivityLogViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ActivityLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        business_id = self.request.query_params.get('business_id') or self.request.headers.get('X-Business-ID')
+        if not business_id:
+            return ActivityLog.objects.none()
+
+        # Only Owner or Manager should see this
+        user = self.request.user
+        from users.models import TeamMember, Business
+        
+        try:
+            business = Business.objects.get(id=business_id)
+        except Business.DoesNotExist:
+            return ActivityLog.objects.none()
+
+        if user != business.user:
+            try:
+                member = TeamMember.objects.get(owner=business.user, user=user)
+                if member.role not in ['OWNER', 'MANAGER']:
+                    return ActivityLog.objects.none()
+            except TeamMember.DoesNotExist:
+                return ActivityLog.objects.none()
+                
+        return ActivityLog.objects.filter(business_id=business_id)
