@@ -13,6 +13,23 @@ import { translateError } from '../api/translateErrors';
 import useAuthStore from '../store/useAuthStore';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
+
+const UNIT_CHOICES = [
+    { value: 'pcs', label: 'Ədəd' },
+    { value: 'kg', label: 'Kq' },
+    { value: 'gr', label: 'Qram' },
+    { value: 'l', label: 'Litr' },
+    { value: 'm', label: 'Metr' },
+    { value: 'm2', label: 'm²' },
+    { value: 'm3', label: 'm³' },
+    { value: 'box', label: 'Qutu' },
+    { value: 'koli', label: 'Koli' },
+    { value: 'pack', label: 'Paçka' },
+    { value: 'block', label: 'Blok' },
+    { value: 'set', label: 'Dəst' },
+    { value: 'roll', label: 'Rulo' },
+    { value: 'service', label: 'Xidmət' }
+];
 import ProductQRScanner from '../components/ProductQRScanner';
 
 const Products = () => {
@@ -108,14 +125,18 @@ const Products = () => {
     const unitMap = {
         'pcs': 'ədəd',
         'kg': 'kq',
-        'm': 'metr',
+        'gr': 'qram',
         'l': 'litr',
-        'service': 'xidmət',
-        'ədəd': 'ədəd',
-        'kq': 'kq',
-        'metr': 'metr',
-        'litr': 'litr',
-        'xidmət': 'xidmət'
+        'm': 'metr',
+        'm2': 'm²',
+        'm3': 'm³',
+        'box': 'qutu',
+        'koli': 'koli',
+        'pack': 'paçka',
+        'block': 'blok',
+        'set': 'dəst',
+        'roll': 'rulo',
+        'service': 'xidmət'
     };
 
     const handleInitialQRScan = (result) => {
@@ -509,11 +530,9 @@ const Products = () => {
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold cursor-pointer"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                         >
-                                            <option value="pcs">Ədəd</option>
-                                            <option value="kg">Kq</option>
-                                            <option value="m">Metr</option>
-                                            <option value="l">Litr</option>
-                                            <option value="service">Xidmət</option>
+                                            {UNIT_CHOICES.map(u => (
+                                                <option key={u.value} value={u.value}>{u.label}</option>
+                                            ))}
                                         </select>
                                     </div>
 
