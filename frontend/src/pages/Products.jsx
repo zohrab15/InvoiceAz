@@ -34,6 +34,9 @@ import ProductQRScanner from '../components/ProductQRScanner';
 
 const Products = () => {
     const { activeBusiness } = useBusiness();
+    const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
+    const isInventoryManager = activeBusiness?.user_role === 'INVENTORY_MANAGER';
+    const canManageProducts = isOwnerOrManager || isInventoryManager;
     const queryClient = useQueryClient();
     const showToast = useToast();
     const [search, setSearch] = useState('');
@@ -208,30 +211,34 @@ const Products = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsUploadModalOpen(true)}
-                        className="p-3 rounded-xl transition-all flex items-center gap-2 font-bold text-sm"
-                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
-                    >
-                        <Upload size={18} />
-                        <span className="hidden sm:inline">Excel Yüklə</span>
-                    </button>
-                    <button
-                        onClick={() => setIsQRScannerOpen(true)}
-                        className="p-3 rounded-xl transition-all flex items-center gap-2 font-bold text-sm"
-                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
-                    >
-                        <QrCode size={18} />
-                        <span className="hidden sm:inline">QR Skan</span>
-                    </button>
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 text-sm"
-                        style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 20px var(--color-brand-shadow)' }}
-                    >
-                        <Plus size={18} />
-                        Yeni Məhsul
-                    </button>
+                    {canManageProducts && (
+                        <>
+                            <button
+                                onClick={() => setIsUploadModalOpen(true)}
+                                className="p-3 rounded-xl transition-all flex items-center gap-2 font-bold text-sm"
+                                style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
+                            >
+                                <Upload size={18} />
+                                <span className="hidden sm:inline">Excel Yüklə</span>
+                            </button>
+                            <button
+                                onClick={() => setIsQRScannerOpen(true)}
+                                className="p-3 rounded-xl transition-all flex items-center gap-2 font-bold text-sm"
+                                style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}
+                            >
+                                <QrCode size={18} />
+                                <span className="hidden sm:inline">QR Skan</span>
+                            </button>
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 text-sm"
+                                style={{ background: 'linear-gradient(135deg, var(--color-brand), var(--color-brand-dark))', boxShadow: '0 10px 20px var(--color-brand-shadow)' }}
+                            >
+                                <Plus size={18} />
+                                Yeni Məhsul
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -372,22 +379,26 @@ const Products = () => {
                                     </td>
                                     <td className="p-5 text-right">
                                         <div className="flex items-center justify-end gap-1 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => setEditingProduct(product)}
-                                                className="p-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-slate-400 hover:text-blue-600 rounded-lg transition-colors"
-                                            >
-                                                <Edit2 size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    if (window.confirm('Bu məhsulu silmək istədiyinizə əminsiniz?')) {
-                                                        deleteMutation.mutate(product.id);
-                                                    }
-                                                }}
-                                                className="p-2 hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                            {canManageProducts && (
+                                                <>
+                                                    <button
+                                                        onClick={() => setEditingProduct(product)}
+                                                        className="p-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-slate-400 hover:text-blue-600 rounded-lg transition-colors"
+                                                    >
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            if (window.confirm('Bu məhsulu silmək istədiyinizə əminsiniz?')) {
+                                                                deleteMutation.mutate(product.id);
+                                                            }
+                                                        }}
+                                                        className="p-2 hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
