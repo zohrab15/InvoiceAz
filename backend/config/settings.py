@@ -154,7 +154,8 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = not DEBUG # True in production
 SESSION_COOKIE_SECURE = not DEBUG # True in production
 CSRF_USE_SESSIONS = False
-CSRF_TRUSTED_ORIGINS = [
+
+_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:8000",
@@ -162,6 +163,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://invoiceaz.vercel.app", 
     "https://invoice-az-backend.onrender.com",
 ]
+_ENV_TRUSTED = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if _ENV_TRUSTED:
+    _TRUSTED_ORIGINS.extend([origin.strip() for origin in _ENV_TRUSTED.split(',') if origin.strip()])
+
+CSRF_TRUSTED_ORIGINS = _TRUSTED_ORIGINS
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -323,11 +329,16 @@ SIMPLE_JWT = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = [
+_CORS_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://invoiceaz.vercel.app",
 ]
+_ENV_CORS = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+if _ENV_CORS:
+    _CORS_ORIGINS.extend([origin.strip() for origin in _ENV_CORS.split(',') if origin.strip()])
+
+CORS_ALLOWED_ORIGINS = _CORS_ORIGINS
 
 # Jazzmin Settings
 JAZZMIN_SETTINGS = {
