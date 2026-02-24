@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import client from '../api/client';
 import { API_URL } from '../config';
 import useAuthStore from '../store/useAuthStore';
 import { useToast } from '../components/Toast';
@@ -33,7 +34,7 @@ const DemoLogin = () => {
                 localStorage.removeItem('invoice_token');
                 localStorage.removeItem('active_business');
 
-                const response = await axios.post(`${API_URL}/api/auth/login/`, {
+                const response = await client.post('/auth/login/', {
                     email: 'demo_user@invoice.az',
                     password: 'demopassword123'
                 });

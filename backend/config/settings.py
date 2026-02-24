@@ -349,6 +349,8 @@ if _ENV_CORS:
     _CORS_ORIGINS.extend([origin.strip() for origin in _ENV_CORS.split(',') if origin.strip()])
 
 CORS_ALLOWED_ORIGINS = _CORS_ORIGINS
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all in debug/staging
+CORS_ALLOW_CREDENTIALS = True
 
 # Jazzmin Settings
 JAZZMIN_SETTINGS = {
