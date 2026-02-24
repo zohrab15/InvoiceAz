@@ -183,9 +183,9 @@ CSRF_TRUSTED_ORIGINS = _TRUSTED_ORIGINS
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -338,19 +338,27 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# CORS
-_CORS_ORIGINS = [
+# CORS & CSRF Settings for Staging/Production
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://invoiceaz.vercel.app",
+    "https://invoice-az-backend.onrender.com",
+    "https://invoiceaz-staging.onrender.com",
 ]
-_ENV_CORS = os.environ.get('CORS_ALLOWED_ORIGINS', '')
-if _ENV_CORS:
-    _CORS_ORIGINS.extend([origin.strip() for origin in _ENV_CORS.split(',') if origin.strip()])
 
-CORS_ALLOWED_ORIGINS = _CORS_ORIGINS
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all in debug/staging
-CORS_ALLOW_CREDENTIALS = True
+_ENV_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+if _ENV_ORIGINS:
+    for origin in _ENV_ORIGINS.split(','):
+        o = origin.strip()
+        if o and o not in _TRUSTED_ORIGINS:
+            _TRUSTED_ORIGINS.append(o)
+
+CSRF_TRUSTED_ORIGINS = _TRUSTED_ORIGINS
+CORS_ALLOWED_ORIGINS = _TRUSTED_ORIGINS
 
 # Jazzmin Settings
 JAZZMIN_SETTINGS = {
