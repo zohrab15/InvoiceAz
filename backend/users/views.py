@@ -13,22 +13,16 @@ class BusinessViewSet(viewsets.ModelViewSet):
         # Direct owner
         owned = Business.objects.filter(user=user)
         
-        # Team memberships
-        direct_team_owners = TeamMember.objects.filter(user=user).values_list('owner_id', flat=True)
-        
-        # Support legacy hierarchical teams: 
-        # If my owner is also a member, get the ID of the person who owns THEM.
-        grand_owners = TeamMember.objects.filter(user_id__in=direct_team_owners).values_list('owner_id', flat=True)
-        
-        all_relevant_owner_ids = set(direct_team_owners) | set(grand_owners)
-        team_businesses = Business.objects.filter(user_id__in=all_relevant_owner_ids)
+        # Team memberships in specific businesses
+        team_business_ids = TeamMember.objects.filter(user=user).values_list('business_id', flat=True)
+        team_businesses = Business.objects.filter(id__in=team_business_ids)
         
         return (owned | team_businesses).distinct()
 
     def update(self, request, *args, **kwargs):
         business = self.get_object()
         if request.user != business.user:
-            is_manager = TeamMember.objects.filter(owner=business.user, user=request.user, role='MANAGER').exists()
+            is_manager = TeamMember.objects.filter(business=business, user=request.user, role='MANAGER').exists()
             if not is_manager:
                 raise PermissionDenied("Bu biznes məlumatlarını yalnız sahib və ya menecer redaktə edə bilər.")
         return super().update(request, *args, **kwargs)
@@ -70,40 +64,22 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            member = TeamMember.objects.get(owner=business.user, user=request.user)
+            member = TeamMember.objects.get(business=business, user=request.user)
             serializer = self.get_serializer(member)
             return Response(serializer.data)
         except TeamMember.DoesNotExist:
             return Response({"detail": "Bu biznesin üzvü deyilsiniz."}, status=status.HTTP_404_NOT_FOUND)
 
     def get_queryset(self):
-        user = self.request.user
-        # Owners see everyone in their organization
-        
-        # Determine root owner based on the active business header if provided
+        # Determine business context
         business = self.get_active_business()
-        root_owner = None
-        
-        if business:
-            root_owner = business.user
-                
-        if not root_owner:
-            # Fallback if no business header:
-            # First, check if they own any business directly
-            if Business.objects.filter(user=user).exists():
-                root_owner = user
-            else:
-                # Find who is the root owner for this user by getting their first membership
-                membership = TeamMember.objects.filter(user=user).first()
-                if membership:
-                    root_owner = membership.owner
-                else:
-                    root_owner = user
+        if not business:
+            return TeamMember.objects.none()
             
-        # Return all members belonging to this organization ordered by role hierarchy
+        # Return all members belonging to THIS specific business
         from django.db.models import Case, When, Value, IntegerField
         
-        return TeamMember.objects.filter(owner=root_owner).annotate(
+        return TeamMember.objects.filter(business=business).annotate(
             role_order=Case(
                 When(role='MANAGER', then=Value(1)),
                 When(role='ACCOUNTANT', then=Value(2)),
@@ -121,17 +97,19 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         if not email:
             raise PermissionDenied("İstifadəçi e-poçtu tələb olunur.")
         
-        # Determine the corporate owner (the root user who owns the businesses)
-        try:
-            inviter_membership = TeamMember.objects.get(user=request.user)
-            corporate_owner = inviter_membership.owner
-            inviter_role = inviter_membership.role
-        except TeamMember.DoesNotExist:
-            corporate_owner = request.user
-            inviter_role = 'OWNER'
+        # Determine business context
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Bu əməliyyat üçün aktiv biznes seçilməlidir.")
 
-        if inviter_role not in ['OWNER', 'MANAGER']:
-            raise PermissionDenied("Komandaya işçi əlavə etmək üçün səlahiyyətiniz yoxdur.")
+        # inviter check
+        if request.user != business.user:
+            inviter_membership = TeamMember.objects.filter(business=business, user=request.user, role='MANAGER').first()
+            if not inviter_membership:
+                raise PermissionDenied("Komandaya işçi əlavə etmək üçün səlahiyyətiniz yoxdur.")
+            corporate_owner = business.user
+        else:
+            corporate_owner = request.user
 
         # Plan check
         plan = get_plan_limits(corporate_owner)
@@ -152,12 +130,13 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 raise PermissionDenied("Özünüzü komandaya əlavə edə bilməzsiniz.")
             if target_user == corporate_owner:
                 raise PermissionDenied("Biznes sahibini komandaya əlavə edə bilməzsiniz.")
-            if TeamMember.objects.filter(owner=corporate_owner, user=target_user).exists():
-                raise PermissionDenied("Bu istifadəçi artıq komandadadır.")
+            if TeamMember.objects.filter(business=business, user=target_user).exists():
+                raise PermissionDenied("Bu istifadəçi artıq bu biznesin komandasındadır.")
             
-            # Create record directly
+            # Create record directly for this business
             member = TeamMember.objects.create(
                 owner=corporate_owner, 
+                business=business,
                 user=target_user,
                 role=role_code
             )
@@ -165,12 +144,13 @@ class TeamMemberViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
             
         except User.DoesNotExist:
-            # Create invitation instead
-            if TeamMemberInvitation.objects.filter(inviter=corporate_owner, email__iexact=email, is_used=False).exists():
-                raise PermissionDenied("Bu e-poçta artıq dəvət göndərilib.")
+            # Create invitation instead for this business
+            if TeamMemberInvitation.objects.filter(business=business, email__iexact=email, is_used=False).exists():
+                raise PermissionDenied("Bu biznes üçün bu e-poçta artıq dəvət göndərilib.")
             
             invitation = TeamMemberInvitation.objects.create(
                 inviter=corporate_owner,
+                business=business,
                 email=email,
                 role=role_code
             )

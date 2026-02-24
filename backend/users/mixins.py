@@ -38,26 +38,16 @@ class BusinessContextMixin:
         except Business.DoesNotExist:
             pass
             
-        # If not the owner, check if they are a team member under the owner of this business
+        # If not the owner, check if they are a team member assigned to THIS specific business
         try:
-            business = Business.objects.get(id=business_id, is_active=True)
-            
-            # 1. Direct check: user was invited by the business owner
+            business = Business.objects.filter(id=business_id, is_active=True).first()
+            if not business:
+                return None
+
+            # Check if user is a team member for this specific business
             team_member = TeamMember.objects.filter(
-                owner=business.user, user=self.request.user
+                business=business, user=self.request.user
             ).first()
-            
-            # 2. Hierarchical check: user was invited by a Manager (or other team member)
-            #    who themselves belong to the business owner's team
-            if not team_member:
-                # Find all users who are team members of the business owner
-                owner_team_user_ids = TeamMember.objects.filter(
-                    owner=business.user
-                ).values_list('user_id', flat=True)
-                # Check if any of those team members invited the current user
-                team_member = TeamMember.objects.filter(
-                    owner_id__in=owner_team_user_ids, user=self.request.user
-                ).first()
             
             if team_member:
                 self.request._active_business = business

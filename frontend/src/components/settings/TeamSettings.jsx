@@ -17,34 +17,36 @@ const TeamSettings = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
+    const { activeBusiness } = useBusiness();
+
     // Fetch team members
     const { data: teamMembers, isLoading } = useQuery({
-        queryKey: ['team', token],
+        queryKey: ['team', activeBusiness?.id, token],
         queryFn: async () => {
             const res = await client.get('/users/team/');
             return res.data;
         },
-        enabled: !!token,
+        enabled: !!token && !!activeBusiness?.id,
     });
 
     // Fetch pending invitations
     const { data: invitations, isLoading: isInvitesLoading } = useQuery({
-        queryKey: ['invitations', token],
+        queryKey: ['invitations', activeBusiness?.id, token],
         queryFn: async () => {
             const res = await client.get('/users/invitations/');
             return res.data;
         },
-        enabled: !!token,
+        enabled: !!token && !!activeBusiness?.id,
     });
 
     // Fetch plan status
     const { data: planStatus } = useQuery({
-        queryKey: ['plan_status', token],
+        queryKey: ['plan_status', activeBusiness?.id, token],
         queryFn: async () => {
             const res = await client.get('/users/plan/status/');
             return res.data;
         },
-        enabled: !!token,
+        enabled: !!token && !!activeBusiness?.id,
     });
 
     const getRoleName = (roleCode) => {

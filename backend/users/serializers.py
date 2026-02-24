@@ -85,7 +85,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamMember
-        fields = ('id', 'user', 'user_email', 'user_name', 'role', 'monthly_target', 'last_latitude', 'last_longitude', 'last_location_update', 'created_at')
+        fields = ('id', 'user', 'user_email', 'user_name', 'business', 'role', 'monthly_target', 'last_latitude', 'last_longitude', 'last_location_update', 'created_at')
         read_only_fields = ('id', 'user', 'created_at', 'last_latitude', 'last_longitude', 'last_location_update')
 
 class TeamMemberInvitationSerializer(serializers.ModelSerializer):
@@ -93,7 +93,7 @@ class TeamMemberInvitationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamMemberInvitation
-        fields = ('id', 'email', 'inviter', 'inviter_email', 'role', 'is_used', 'created_at')
+        fields = ('id', 'email', 'inviter', 'inviter_email', 'business', 'role', 'is_used', 'created_at')
         read_only_fields = ('id', 'inviter', 'is_used', 'created_at')
 
 from dj_rest_auth.registration.serializers import RegisterSerializer
@@ -132,11 +132,14 @@ class CustomRegisterSerializer(RegisterSerializer):
         # 2. Process Team Invitations
         invites = TeamMemberInvitation.objects.filter(email__iexact=user.email, is_used=False)
         for invite in invites:
-            # Create TeamMember record
+            # Create TeamMember record linked to specific business
             TeamMember.objects.get_or_create(
-                owner=invite.inviter,
+                business=invite.business,
                 user=user,
-                defaults={'role': invite.role}
+                defaults={
+                    'owner': invite.inviter,
+                    'role': invite.role
+                }
             )
             invite.is_used = True
             invite.save(update_fields=['is_used'])

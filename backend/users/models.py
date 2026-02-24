@@ -144,6 +144,7 @@ class Business(models.Model):
 
 class TeamMember(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='team_owner', on_delete=models.CASCADE)
+    business = models.ForeignKey(Business, related_name='team_members', on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='team_member', on_delete=models.CASCADE)
     
     ROLE_CHOICES = (
@@ -169,7 +170,7 @@ class TeamMember(models.Model):
         return f"{self.user.email} (Team of {self.owner.email})"
 
     class Meta:
-        unique_together = ('owner', 'user') # A user can only be added once per owner
+        unique_together = ('business', 'user') # A user can be added in different businesses, but once per business
 
 
 class DiscountCoupon(models.Model):
@@ -199,6 +200,7 @@ class DiscountCoupon(models.Model):
 class TeamMemberInvitation(models.Model):
     email = models.EmailField()
     inviter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_invitations', on_delete=models.CASCADE)
+    business = models.ForeignKey(Business, related_name='invitations', on_delete=models.CASCADE, null=True, blank=True)
     role = models.CharField(max_length=20, choices=TeamMember.ROLE_CHOICES, default='SALES_REP')
     
     is_used = models.BooleanField(default=False)
@@ -209,5 +211,5 @@ class TeamMemberInvitation(models.Model):
         return f"Invite for {self.email} by {self.inviter.email} ({self.role})"
 
     class Meta:
-        unique_together = ('email', 'inviter')
+        unique_together = ('email', 'business')
         ordering = ['-created_at']
