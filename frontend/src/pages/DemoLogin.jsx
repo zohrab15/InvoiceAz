@@ -56,8 +56,9 @@ const DemoLogin = () => {
                 }
             } catch (err) {
                 console.error('Demo Login Error:', err);
-                showToast('Demo giriş xətası baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.', 'error');
-                setTimeout(() => navigate('/'), 2000);
+                const errorMsg = err.response?.data?.detail || err.response?.data?.non_field_errors?.[0] || err.message;
+                showToast(`Demo giriş xətası: ${errorMsg}`, 'error');
+                setTimeout(() => navigate('/'), 3000);
             }
         };
 

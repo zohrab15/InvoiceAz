@@ -25,14 +25,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!(yj$6&qa##p=p@(v!+k0kq8k@y(wd9y$7%_gwf870^r4=nn$t')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-if 'RENDER' in os.environ:
-    DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,invoice-az-backend.onrender.com').split(',')
-if '*' in ALLOWED_HOSTS and not DEBUG:
-    # Explicitly prevent wildcard in production
-    ALLOWED_HOSTS = ['invoice-az-backend.onrender.com']
+# Auto-add Render hostname
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# Allow all onrender.com subdomains if not strictly in production
+if DEBUG:
+    ALLOWED_HOSTS.append('.onrender.com')
+
+# Standard production hosts
+if not DEBUG and 'invoice-az-backend.onrender.com' not in ALLOWED_HOSTS:
+     ALLOWED_HOSTS.append('invoice-az-backend.onrender.com')
 # import warnings
 # warnings.filterwarnings('ignore', message='.*allauth.*deprecated.*')
 
@@ -76,6 +85,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Account Settings
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional' 
