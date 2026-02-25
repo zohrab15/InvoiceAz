@@ -73,29 +73,34 @@ class PaymentAnalyticsView(AnalyticsBaseView):
                 'amount': float(m['total_amount'])
             })
 
-        # 4. Payment Speed Analysis (Days from Invoice Date to Payment Date)
-        # 0-7, 8-14, 15-30, 30+
-        speed_buckets = {
-            '0-7 gün': 0,
-            '8-14 gün': 0,
-            '15-30 gün': 0,
-            '30+ gün': 0
-        }
+        # 4. Payment Speed Analysis & Customer Rating
+        # Optimized: Fetch only needed fields and select related invoice/client to avoid N+1
+        all_payments_dates = payments.select_related('invoice', 'invoice__client').only(
+            'payment_date', 
+            'invoice__invoice_date', 
+            'invoice__due_date', 
+            'invoice__client__name',
+            'invoice__client__id'
+        )
         
-        # We fetch minimal fields to iterate
-        all_payments_dates = payments.select_related('invoice').only('payment_date', 'invoice__invoice_date')
+        speed_buckets = {'0-7 gün': 0, '8-14 gün': 0, '15-30 gün': 0, '30+ gün': 0}
+        clients_analytics = {}
         
         for p in all_payments_dates:
+            # Speed Analysis
             days_taken = (p.payment_date - p.invoice.invoice_date).days
-            if days_taken <= 7:
-                speed_buckets['0-7 gün'] += 1
-            elif days_taken <= 14:
-                speed_buckets['8-14 gün'] += 1
-            elif days_taken <= 30:
-                speed_buckets['15-30 gün'] += 1
-            else:
-                speed_buckets['30+ gün'] += 1
+            if days_taken <= 7: speed_buckets['0-7 gün'] += 1
+            elif days_taken <= 14: speed_buckets['8-14 gün'] += 1
+            elif days_taken <= 30: speed_buckets['15-30 gün'] += 1
+            else: speed_buckets['30+ gün'] += 1
 
+            # Customer Rating Analysis
+            client = p.invoice.client
+            delay = (p.payment_date - p.invoice.due_date).days
+            if client.id not in clients_analytics:
+                clients_analytics[client.id] = {'name': client.name, 'delays': []}
+            clients_analytics[client.id]['delays'].append(delay)
+        
         total_speed_count = sum(speed_buckets.values())
         formatted_speed = []
         for label, count in speed_buckets.items():
@@ -105,23 +110,6 @@ class PaymentAnalyticsView(AnalyticsBaseView):
                 'count': count,
                 'percentage': round(percent, 1)
             })
-
-        # 5. Customer Rating
-        # Calculate avg payment delay per client
-        # Delay = Payment Date - Due Date (Negative means early/on-time, Positive means late)
-        
-        clients_analytics = {}
-        
-        for p in all_payments_dates:
-            client_name = p.invoice.client.name
-            client_id = p.invoice.client.id
-            delay = (p.payment_date - p.invoice.due_date).days
-            
-            if client_id not in clients_analytics:
-                clients_analytics[client_id] = {'name': client_name, 'delays': [], 'total_paid': 0}
-            
-            clients_analytics[client_id]['delays'].append(delay)
-            # Note: total_paid is simplistic here, aggregating per payment object
         
         customer_ratings = []
         for cid, data in clients_analytics.items():
