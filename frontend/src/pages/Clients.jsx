@@ -273,7 +273,7 @@ const Clients = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     key={client.id}
-                                    className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(client.id) ? 'bg-blue-50/50' : ''}`}
+                                    className={`hover:bg-[var(--color-hover-bg)] transition-colors group ${selectedIds.includes(client.id) ? 'bg-[var(--color-brand-light)]' : ''}`}
                                 >
                                     {isOwnerOrManager && (
                                         <td className="px-6 py-4">
@@ -287,7 +287,7 @@ const Clients = () => {
                                     )}
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 bg-blue-500/10 text-primary-blue rounded-full flex items-center justify-center font-bold text-lg">
+                                            <div className="w-10 h-10 bg-[var(--color-brand-light)] text-[var(--color-brand)] rounded-full flex items-center justify-center font-bold text-lg">
                                                 {(client.name || '?').charAt(0).toUpperCase()}
                                             </div>
                                             <div>
@@ -296,7 +296,7 @@ const Clients = () => {
                                                     <Building size={10} className="text-[var(--color-text-muted)]" /> {client.voen ? `VÖEN: ${client.voen}` : 'VÖEN yoxdur'}
                                                 </div>
                                                 {client.assigned_to && isOwnerOrManager && (
-                                                    <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded max-w-max mt-1 border border-blue-100 uppercase tracking-tight">
+                                                    <div className="text-[10px] font-bold text-[var(--color-brand)] bg-[var(--color-brand-light)] px-2 py-0.5 rounded max-w-max mt-1 border border-[var(--color-brand)]/20 uppercase tracking-tight">
                                                         Təhkim: {teamMembers?.find(m => m.user === client.assigned_to)?.user_name || 'Satış Təmsilçisi'}
                                                     </div>
                                                 )}
@@ -335,7 +335,7 @@ const Clients = () => {
                                             {!isAccountant && (
                                                 <button
                                                     onClick={() => handleEdit(client)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-2 text-[var(--color-brand)] hover:bg-[var(--color-brand-light)] rounded-lg transition-colors"
                                                 >
                                                     <Edit size={18} />
                                                 </button>
@@ -343,7 +343,7 @@ const Clients = () => {
                                             {isOwnerOrManager && (
                                                 <button
                                                     onClick={() => handleDelete(client.id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    className="p-2 text-[var(--color-error)] hover:bg-[var(--color-error-bg)] rounded-lg transition-colors"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -531,18 +531,18 @@ const Clients = () => {
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 50 }}
-                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-white/10 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-10 min-w-[500px]"
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[var(--color-card-bg)] backdrop-blur-2xl border border-[var(--color-card-border)] px-8 py-5 rounded-3xl shadow-[0_20px_50px_var(--color-brand-shadow)] flex items-center gap-10 min-w-[500px]"
                     >
                         <div className="flex flex-col">
-                            <span className="text-xl font-black text-white">{selectedIds.length}</span>
-                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Seçilib</span>
+                            <span className="text-xl font-black text-[var(--color-brand)]">{selectedIds.length}</span>
+                            <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Seçilib</span>
                         </div>
 
-                        <div className="h-10 w-px bg-white/10"></div>
+                        <div className="h-10 w-px bg-[var(--color-card-border)]"></div>
 
                         <div className="flex-1 flex items-center gap-4">
                             <select
-                                className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl text-white text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/50 transition-all appearance-none cursor-pointer hover:bg-white/10"
+                                className="flex-1 px-5 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-2xl text-[var(--color-text-primary)] text-sm font-bold outline-none focus:ring-2 focus:ring-[var(--color-brand)]/50 transition-all appearance-none cursor-pointer hover:bg-[var(--color-hover-bg)]"
                                 onChange={(e) => {
                                     if (e.target.value) {
                                         bulkAssignMutation.mutate({
@@ -552,9 +552,9 @@ const Clients = () => {
                                     }
                                 }}
                             >
-                                <option value="" className="bg-slate-900 text-white">Təhkim et...</option>
+                                <option value="" className="bg-[var(--color-dropdown-bg)]">Təhkim et...</option>
                                 {salesReps.map(member => (
-                                    <option key={member.user} value={member.user} className="bg-slate-900 text-white">
+                                    <option key={member.user} value={member.user} className="bg-[var(--color-dropdown-bg)]">
                                         {member.user_name}
                                     </option>
                                 ))}
