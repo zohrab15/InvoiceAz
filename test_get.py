@@ -1,0 +1,1 @@
+import urllib.request\nreq = urllib.request.Request('https://invoiceaz-staging.onrender.com/api/auth/registration/')\ntry:\n    res = urllib.request.urlopen(req)\n    print(res.status)\nexcept Exception as e:\n    print(e)

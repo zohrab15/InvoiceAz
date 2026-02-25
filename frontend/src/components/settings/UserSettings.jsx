@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
 import { useToast } from '../Toast';
-import { Save, User, Mail, Phone, Upload, Check } from 'lucide-react';
+import { Save, User, Mail, Upload, Check } from 'lucide-react';
 import useAuthStore from '../../store/useAuthStore';
 import PhoneInput from '../common/PhoneInput';
 
@@ -28,8 +28,12 @@ const UserSettings = () => {
                 email: user.email || '',
                 phone: user.phone || '',
             });
+
             if (user.avatar) {
-                setAvatarPreview(user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`);
+                const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `${API_URL}${user.avatar}`;
+                setAvatarPreview(avatarUrl);
+            } else {
+                setAvatarPreview(null);
             }
         }
     }, [user]);
@@ -61,7 +65,12 @@ const UserSettings = () => {
     });
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target) {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        } else {
+            // For components that pass values directly like PhoneInput
+            setFormData({ ...formData, phone: e });
+        }
     };
 
     const handleAvatarChange = (e) => {
@@ -116,7 +125,7 @@ const UserSettings = () => {
                                 name="first_name"
                                 value={formData.first_name}
                                 onChange={handleChange}
-                                className="w-full border-2 border-transparent focus:border-[var(--color-brand)] focus:bg-white rounded-xl p-3 pl-12 outline-none transition-all font-bold"
+                                className="w-full border-2 border-transparent focus:border-[var(--color-brand)] rounded-xl p-3 pl-12 outline-none transition-all font-bold"
                                 style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                 placeholder="Adınız"
                             />
@@ -150,7 +159,7 @@ const UserSettings = () => {
                             label="Telefon"
                             name="phone"
                             value={formData.phone}
-                            onChange={handleChange}
+                            onChange={(val) => handleChange(val)}
                         />
                     </div>
                 </div>

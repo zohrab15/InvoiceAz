@@ -20,8 +20,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        if instance.avatar and str(instance.avatar).startswith('http'):
-            data['avatar'] = str(instance.avatar)
+        # Ensure avatar URL is absolute and correct
+        if instance.avatar:
+            request = self.context.get('request')
+            if request:
+                data['avatar'] = request.build_absolute_uri(instance.avatar.url)
+            elif not str(instance.avatar).startswith('http'):
+                # Manual fallback if no request (e.g., from some background tasks)
+                from django.conf import settings
+                domain = getattr(settings, 'FRONTEND_URL', '').replace('https://', '').replace('/', '')
+                if domain:
+                    data['avatar'] = f"https://{domain}{instance.avatar.url}"
         return data
 
 class BusinessSerializer(serializers.ModelSerializer):
@@ -62,8 +71,16 @@ class BusinessSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        if instance.logo and str(instance.logo).startswith('http'):
-            data['logo'] = str(instance.logo)
+        # Ensure logo URL is absolute
+        if instance.logo:
+            request = self.context.get('request')
+            if request:
+                data['logo'] = request.build_absolute_uri(instance.logo.url)
+            elif not str(instance.logo).startswith('http'):
+                from django.conf import settings
+                domain = getattr(settings, 'FRONTEND_URL', '').replace('https://', '').replace('/', '')
+                if domain:
+                    data['logo'] = f"https://{domain}{instance.logo.url}"
             
         # Role-based sensitive data hiding (Data Leak prevention)
         role = data.get('user_role')

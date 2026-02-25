@@ -96,7 +96,13 @@ const BusinessSettings = () => {
         setIsCreating(false);
         setSelectedBusiness(business);
         setFormData(business);
-        setLogoPreview(business.logo);
+        if (business.logo) {
+            // Backend now returns absolute URLs, but we keep fallback for local dev
+            const logoUrl = business.logo.startsWith('http') ? business.logo : `${API_URL}${business.logo}`;
+            setLogoPreview(logoUrl);
+        } else {
+            setLogoPreview(null);
+        }
         setLogoFile(null);
     };
 
