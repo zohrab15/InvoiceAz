@@ -11,6 +11,7 @@ class Client(SoftDeleteModel):
     CLIENT_TYPES = (
         ('individual', 'Individual'),
         ('company', 'Company'),
+        ('foreign', 'Foreign / Non-resident'),
     )
     client_type = models.CharField(max_length=20, choices=CLIENT_TYPES, default='company')
     

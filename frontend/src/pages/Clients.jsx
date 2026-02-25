@@ -138,8 +138,8 @@ const Clients = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validate VÖEN if provided
-        if (formData.voen && formData.voen.length !== 10) {
+        // Validate VÖEN if provided and NOT a foreign client
+        if (formData.client_type !== 'foreign' && formData.voen && formData.voen.length !== 10) {
             showToast('Müştəri VÖEN-i mütləq 10 rəqəmli olmalıdır!', 'error');
             return;
         }
@@ -474,15 +474,22 @@ const Clients = () => {
                                             <input
                                                 type="text"
                                                 className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
-                                                placeholder="10 rəqəmli VÖEN"
+                                                placeholder={formData.client_type === 'foreign' ? "Vergi ID / Qeydiyyat nömrəsi" : "10 rəqəmli VÖEN"}
                                                 value={formData.voen || ''}
                                                 onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/g, '').substring(0, 10);
+                                                    let val = e.target.value;
+                                                    if (formData.client_type !== 'foreign') {
+                                                        val = val.replace(/\D/g, '').substring(0, 10);
+                                                    } else {
+                                                        val = val.substring(0, 20); // Foreign IDs can be longer
+                                                    }
                                                     setFormData({ ...formData, voen: val });
                                                 }}
-                                                maxLength={10}
+                                                maxLength={formData.client_type === 'foreign' ? 20 : 10}
                                             />
-                                            <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">e-qaimə üçün 10 rəqəmli VÖEN mütləqdir</p>
+                                            {formData.client_type !== 'foreign' && (
+                                                <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">e-qaimə üçün 10 rəqəmli VÖEN mütləqdir</p>
+                                            )}
                                         </div>
                                     </div>
                                     <div>
@@ -490,10 +497,11 @@ const Clients = () => {
                                         <select
                                             className="w-full px-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] outline-none transition-all font-medium appearance-none"
                                             value={formData.client_type}
-                                            onChange={(e) => setFormData({ ...formData, client_type: e.target.value })}
+                                            onChange={(e) => setFormData({ ...formData, client_type: e.target.value, voen: e.target.value === 'foreign' ? formData.voen : formData.voen.replace(/\D/g, '').substring(0, 10) })}
                                         >
                                             <option value="company" className="bg-[var(--color-dropdown-bg)]">Hüquqi şəxs (Şirkət)</option>
                                             <option value="individual" className="bg-[var(--color-dropdown-bg)]">Fiziki şəxs (Fərdi)</option>
+                                            <option value="foreign" className="bg-[var(--color-dropdown-bg)]">Xarici / Qeyri-rezident</option>
                                         </select>
                                     </div>
                                 </div>
