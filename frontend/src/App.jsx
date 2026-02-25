@@ -12,6 +12,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 import { ToastProvider, useToast } from './components/Toast';
 import useLocationTracker from './hooks/useLocationTracker';
+import ScrollToTop from './components/ScrollToTop';
 
 const PAGE_TITLES = {
   '/': 'InvoiceAZ - Peşəkar Faktura və Maliyyə İdarəetməsi',
@@ -274,6 +275,7 @@ function App() {
           <ThemeProvider>
             <ToastProvider>
               <Router>
+                <ScrollToTop />
                 <PageTitleUpdater />
                 <Suspense fallback={<LoadingScreen />}>
                   <Routes>
