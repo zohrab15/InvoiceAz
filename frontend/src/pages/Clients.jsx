@@ -490,13 +490,13 @@ const Clients = () => {
                                     <div>
                                         <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Satış Təmsilçisinə Təhkim Et (Könüllü)</label>
                                         <select
-                                            className="w-full px-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] outline-none transition-all font-medium appearance-none"
+                                            className="w-full px-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-[var(--color-brand)] text-[var(--color-text-primary)] outline-none transition-all font-medium appearance-none"
                                             value={formData.assigned_to || ''}
                                             onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
                                         >
-                                            <option value="">Heç kimə (Yalnız mən)</option>
+                                            <option value="" className="bg-[var(--color-dropdown-bg)] text-[var(--color-text-primary)]">Heç kimə (Yalnız mən)</option>
                                             {salesReps.map(member => (
-                                                <option key={member.user} value={member.user}>
+                                                <option key={member.user} value={member.user} className="bg-[var(--color-dropdown-bg)] text-[var(--color-text-primary)]">
                                                     {member.user_name}
                                                 </option>
                                             ))}
@@ -552,9 +552,9 @@ const Clients = () => {
                                     }
                                 }}
                             >
-                                <option value="" className="bg-[var(--color-dropdown-bg)]">Təhkim et...</option>
+                                <option value="" className="bg-[var(--color-dropdown-bg)] text-[var(--color-text-primary)]">Təhkim et...</option>
                                 {salesReps.map(member => (
-                                    <option key={member.user} value={member.user} className="bg-[var(--color-dropdown-bg)]">
+                                    <option key={member.user} value={member.user} className="bg-[var(--color-dropdown-bg)] text-[var(--color-text-primary)]">
                                         {member.user_name}
                                     </option>
                                 ))}
