@@ -627,6 +627,21 @@ const Expenses = () => {
                                         </div>
                                     </div>
 
+                                    <div className="flex items-center gap-3 p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10 mb-2">
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-bold text-[var(--color-text-primary)]">Rəsmi xərc kimi tanınsın?</h4>
+                                            <p className="text-[10px] text-[var(--color-text-muted)] italic">Bu xərc vergi bəyannaməsində gəlirdən çıxılacaq.</p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="sr-only peer"
+                                                checked={formData.is_tax_deductible}
+                                                onChange={(e) => setFormData({ ...formData, is_tax_deductible: e.target.checked })}
+                                            />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
 
                                     <div className="relative">
                                         <div className={`w-full bg-[var(--color-input-bg)] border-2 border-dashed ${attachment ? 'border-green-500 bg-green-500/10' : 'border-[var(--color-card-border)]'} rounded-xl p-4 transition-all`}>
