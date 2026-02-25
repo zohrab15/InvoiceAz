@@ -443,8 +443,7 @@ const Products = () => {
                             <button
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className="px-4 py-2 rounded-xl font-bold text-sm bg-white border border-slate-200 disabled:opacity-50 transition-all hover:border-blue-500"
-                                style={{ color: 'var(--color-text-primary)' }}
+                                className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-input-bg)] border border-[var(--color-card-border)] disabled:opacity-30 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
                             >
                                 Əvvəlki
                             </button>
@@ -460,7 +459,7 @@ const Products = () => {
                                         <button
                                             key={pageNum}
                                             onClick={() => setPage(pageNum)}
-                                            className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-lg' : 'bg-white border border-slate-200 text-slate-600 hover:border-blue-500'}`}
+                                            className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-lg' : 'bg-[var(--color-input-bg)] border border-[var(--color-card-border)] text-[var(--color-text-primary)] hover:border-blue-500'}`}
                                         >
                                             {pageNum}
                                         </button>
@@ -470,8 +469,7 @@ const Products = () => {
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
-                                className="px-4 py-2 rounded-xl font-bold text-sm bg-white border border-slate-200 disabled:opacity-50 transition-all hover:border-blue-500"
-                                style={{ color: 'var(--color-text-primary)' }}
+                                className="px-4 py-2 rounded-xl font-bold text-sm bg-[var(--color-input-bg)] border border-[var(--color-card-border)] disabled:opacity-30 transition-all hover:border-blue-500 text-[var(--color-text-primary)]"
                             >
                                 Növbəti
                             </button>
