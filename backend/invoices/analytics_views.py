@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.db.models import Sum, Count, F, Avg, Case, When, Value, IntegerField
+from django.db.models import Sum, Count, F, Avg, Case, When, Value, IntegerField, DecimalField
 from django.db.models.functions import TruncDate, ExtractWeekDay
 from django.utils import timezone
 from datetime import timedelta
@@ -483,8 +483,8 @@ class TaxAnalyticsView(AnalyticsBaseView):
         # 1. VAT (ƏDV) Analysis
         vat_summary = relevant_invoices.aggregate(
             total_vat=Sum('tax_amount'),
-            vat_18=Sum(Case(When(tax_rate=18, then=F('tax_amount')), output_field=IntegerField())),
-            vat_0=Sum(Case(When(tax_rate=0, then=F('tax_amount')), output_field=IntegerField()))
+            vat_18=Sum(Case(When(tax_rate=18, then=F('tax_amount'))), output_field=DecimalField(max_digits=10, decimal_places=2)),
+            vat_0=Sum(Case(When(tax_rate=0, then=F('tax_amount'))), output_field=DecimalField(max_digits=10, decimal_places=2))
         )
 
         # Monthly VAT Breakdown

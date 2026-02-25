@@ -47,7 +47,7 @@ def check_invoice_limit(user, business):
     
     from invoices.models import Invoice
     now = timezone.now()
-    current_count = Invoice.objects.filter(
+    current_count = Invoice.all_objects.filter(
         business=business,
         created_at__year=now.year,
         created_at__month=now.month
@@ -114,7 +114,7 @@ def check_expense_limit(user, business):
     
     from invoices.models import Expense
     now = timezone.now()
-    current_count = Expense.objects.filter(
+    current_count = Expense.all_objects.filter(
         business=business,
         date__year=now.year,
         date__month=now.month

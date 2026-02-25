@@ -105,7 +105,14 @@ class Invoice(SoftDeleteModel):
     def calculate_totals(self):
         items = self.items.all()
         self.subtotal = sum(item.amount for item in items)
-        self.tax_amount = sum(item.amount * (item.tax_rate / 100) for item in items)
+        
+        # Calculate tax: Use item-level tax if set, otherwise fallback to invoice-level tax
+        total_tax = 0
+        for item in items:
+            effective_tax_rate = item.tax_rate if item.tax_rate > 0 else self.tax_rate
+            total_tax += item.amount * (effective_tax_rate / 100)
+            
+        self.tax_amount = total_tax
         self.total = self.subtotal + self.tax_amount - self.discount
         self.update_payment_status(save=False)
         self.save()

@@ -104,7 +104,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
             
             # Update items
             if items_data:
-                instance.items.all().delete()
+                # Use all_objects to bypass soft-delete filter and actually delete from DB
+                instance.items.model.all_objects.filter(invoice=instance).delete()
                 for item_data in items_data:
                     InvoiceItem.objects.create(invoice=instance, **item_data)
             
