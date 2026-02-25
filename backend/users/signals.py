@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 
@@ -46,3 +46,20 @@ def handle_pro_upgrade(sender, instance, **kwargs):
     sender.objects.filter(pk=instance.pk).update(
         referral_rewarded=True
     )
+
+
+@receiver(post_delete, sender='users.TeamMember')
+def unassign_clients_on_member_delete(sender, instance, **kwargs):
+    """
+    When a team member is removed from a business, clients assigned to them
+    in that specific business should be unassigned.
+    """
+    if not instance.user or not instance.business:
+        return
+
+    from clients.models import Client
+    # Only unassign clients belonging to the business the member was removed from
+    Client.objects.filter(
+        business=instance.business,
+        assigned_to=instance.user
+    ).update(assigned_to=None)
