@@ -152,17 +152,17 @@ const TaxReports = () => {
             {/* VAT Registration Threshold Alert - New Section */}
             {taxData.vat_registration && (
                 <div className={`p-6 rounded-3xl border-2 shadow-lg transition-all relative overflow-hidden ${taxData.vat_registration.is_over
-                        ? 'bg-red-500/10 border-red-500/50'
-                        : taxData.vat_registration.is_approaching
-                            ? 'bg-amber-500/10 border-amber-500/50'
-                            : 'bg-emerald-500/10 border-emerald-500/50'
+                    ? 'bg-red-500/10 border-red-500/50'
+                    : taxData.vat_registration.is_approaching
+                        ? 'bg-amber-500/10 border-amber-500/50'
+                        : 'bg-emerald-500/10 border-emerald-500/50'
                     }`}>
                     <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
                         <div className={`p-4 rounded-2xl ${taxData.vat_registration.is_over
-                                ? 'bg-red-500 text-white'
-                                : taxData.vat_registration.is_approaching
-                                    ? 'bg-amber-500 text-white'
-                                    : 'bg-emerald-500 text-white'
+                            ? 'bg-red-500 text-white'
+                            : taxData.vat_registration.is_approaching
+                                ? 'bg-amber-500 text-white'
+                                : 'bg-emerald-500 text-white'
                             }`}>
                             {taxData.vat_registration.is_over ? <AlertTriangle size={32} /> : <ShieldCheck size={32} />}
                         </div>
@@ -380,6 +380,82 @@ const TaxReports = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Tax Calendar - New Section */}
+            {taxData.tax_calendar && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-8 bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm">
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text-primary)]">
+                                    <Calendar className="text-blue-500" /> Vergi Təqvimi
+                                </h3>
+                                <p className="text-sm text-[var(--color-text-secondary)] mt-1">2025-ci il üzrə bəyannamə və öhdəlik tarixləri</p>
+                            </div>
+                            <div className="bg-amber-500/10 text-amber-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider animate-pulse">
+                                Yaxınlaşan öhdəliklər
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {taxData.tax_calendar.map((item, idx) => (
+                                <div key={idx} className="p-4 rounded-2xl border border-[var(--color-card-border)] bg-[var(--color-hover-bg)] flex justify-between items-center group hover:border-blue-500/50 transition-all">
+                                    <div className="space-y-1">
+                                        <h4 className="text-xs font-black uppercase tracking-tight text-[var(--color-text-primary)]">{item.title}</h4>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--color-text-muted)]">
+                                            <Calendar size={12} />
+                                            {item.date}
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className={`text-lg font-black ${item.days_left < 10 && item.days_left >= 0 ? 'text-red-500' : 'text-blue-500'}`}>
+                                            {item.days_left < 0 ? 'Bitib' : `${item.days_left} gün`}
+                                        </div>
+                                        <div className="text-[8px] font-black uppercase tracking-widest text-[var(--color-text-muted)]">Qalıb</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="lg:col-span-4 bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm flex flex-col justify-between">
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Xərc Təhlili</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold text-[var(--color-text-secondary)]">Cəmi Xərclər:</span>
+                                    <span className="text-sm font-black text-[var(--color-text-primary)]">{taxData.expense_meta.total_recorded.toLocaleString()} ₼</span>
+                                </div>
+                                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden flex">
+                                    <div
+                                        className="bg-blue-500 h-full"
+                                        style={{ width: `${(taxData.expense_meta.total_deductible / (taxData.expense_meta.total_recorded || 1)) * 100}%` }}
+                                    />
+                                    <div
+                                        className="bg-amber-500 h-full opacity-30"
+                                        style={{ width: `${(taxData.expense_meta.non_deductible / (taxData.expense_meta.total_recorded || 1)) * 100}%` }}
+                                    />
+                                </div>
+                                <div className="space-y-2 pt-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Rəsmi (Deductible): {taxData.expense_meta.total_deductible.toLocaleString()} ₼</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-amber-500 opacity-30" />
+                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Qeyri-rəsmi: {taxData.expense_meta.non_deductible.toLocaleString()} ₼</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-8 p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                            <p className="text-[10px] font-medium text-blue-600 leading-tight">
+                                <b>Məsləhət:</b> Gəlir vergisini azaltmaq üçün xərclərinizi e-qaimə əsasında (rəsmi) sənədləşdirməyə çalışın.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Print Only Summary Table */}
             <div className="hidden print:block mt-12">

@@ -233,6 +233,7 @@ class Expense(SoftDeleteModel):
     
     notes = models.TextField(blank=True, null=True)
     attachment = models.FileField(upload_to='expenses/', blank=True, null=True)
+    is_tax_deductible = models.BooleanField(default=True, help_text="Bu xərc vergi bəyannaməsində gəlirdən çıxılsınmı?")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -54,7 +54,8 @@ const Expenses = () => {
         status: 'paid',
         payment_method: 'Nəqd',
         client: '',
-        notes: ''
+        notes: '',
+        is_tax_deductible: true
     });
     const [attachment, setAttachment] = useState(null);
 
@@ -69,7 +70,8 @@ const Expenses = () => {
             status: 'paid',
             payment_method: 'Nəqd',
             client: '',
-            notes: ''
+            notes: '',
+            is_tax_deductible: true
         });
         setAttachment(null);
         setEditingExpense(null);
@@ -317,8 +319,11 @@ const Expenses = () => {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td className="px-3 sm:px-6 py-4 font-black text-red-500 text-sm">
-                                                -{parseFloat(expense.amount).toFixed(2)} {expense.currency}
+                                            <td className="px-3 sm:px-6 py-4">
+                                                <div className="font-black text-red-500 text-sm">-{parseFloat(expense.amount).toFixed(2)} {expense.currency}</div>
+                                                <div className={`text-[8px] font-black uppercase mt-1 ${expense.is_tax_deductible ? 'text-blue-500' : 'text-gray-400'}`}>
+                                                    {expense.is_tax_deductible ? '✓ Rəsmi' : '× Qeyri-rəsmi'}
+                                                </div>
                                             </td>
                                             <td className="px-3 sm:px-6 py-4">
                                                 <div className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md inline-block ${expense.status === 'paid' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
@@ -342,7 +347,8 @@ const Expenses = () => {
                                                                         status: expense.status,
                                                                         payment_method: expense.payment_method || '',
                                                                         client: expense.client || '',
-                                                                        notes: expense.notes || ''
+                                                                        notes: expense.notes || '',
+                                                                        is_tax_deductible: expense.is_tax_deductible
                                                                     });
                                                                     setAttachment(expense.attachment);
                                                                     setShowAddModal(true);

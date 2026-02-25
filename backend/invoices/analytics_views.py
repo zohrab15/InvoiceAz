@@ -506,8 +506,13 @@ class TaxAnalyticsView(AnalyticsBaseView):
 
         # 2. Income Tax (Gəlir Vergisi)
         total_revenue = float(relevant_invoices.aggregate(Sum('total'))['total__sum'] or 0)
+        
+        # Professional Logic: Only deduct tax-deductible expenses from the tax base
+        deductible_expenses = expenses.filter(is_tax_deductible=True)
         total_expenses = float(expenses.aggregate(Sum('amount'))['amount__sum'] or 0)
-        tax_base = max(0, total_revenue - total_expenses)
+        official_expenses = float(deductible_expenses.aggregate(Sum('amount'))['amount__sum'] or 0)
+        
+        tax_base = max(0, total_revenue - official_expenses)
         
         # 3. Quarterly Breakdown
         from django.db.models.functions import ExtractQuarter
@@ -585,6 +590,17 @@ class TaxAnalyticsView(AnalyticsBaseView):
                 'is_approaching': is_approaching_vat,
                 'is_over': is_over_vat,
                 'rule_text': "Azərbaycan Vergi Məcəlləsinə əsasən, ardıcıl 12 aylıq dövriyyə 200,000 AZN-i keçdikdə ƏDV qeydiyyatı məcburidir. (Qeyd: 2026-cı ildən pərakəndə ticarət və xidmət sahələrində bu limitin 400,000 AZN-ə qaldırılması planlaşdırılır)."
+            },
+            'tax_calendar': [
+                {'title': 'Rüblük Sadələşdirilmiş Vergi / Sosial / İTS', 'date': '2025-04-20', 'days_left': (timezone.datetime(2025, 4, 20).date() - today).days},
+                {'title': 'Rüblük Məşğulluq Hesabatı', 'date': '2025-04-15', 'days_left': (timezone.datetime(2025, 4, 15).date() - today).days},
+                {'title': 'İllik Gəlir / Mənfəət Vergisi', 'date': '2025-03-31', 'days_left': (timezone.datetime(2025, 3, 31).date() - today).days},
+                {'title': 'İllik Əmlak Vergisi', 'date': '2025-05-15', 'days_left': (timezone.datetime(2025, 5, 15).date() - today).days},
+            ],
+            'expense_meta': {
+                'total_recorded': total_expenses,
+                'total_deductible': official_expenses,
+                'non_deductible': total_expenses - official_expenses
             }
         }
 
