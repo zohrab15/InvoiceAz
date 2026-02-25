@@ -59,7 +59,6 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
         { id: 'cash', label: 'Nəğd', icon: Banknote, color: 'text-green-600', bg: 'bg-green-50' },
         { id: 'bank_transfer', label: 'Köçürmə', icon: Landmark, color: 'text-blue-600', bg: 'bg-blue-50' },
         { id: 'card', label: 'Kart', icon: CreditCard, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { id: 'online', label: 'Onlayn', icon: DollarSign, color: 'text-orange-600', bg: 'bg-orange-50' },
     ];
 
     return (
@@ -164,13 +163,12 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                         <option value="cash">Nəğd</option>
                                         <option value="bank_transfer">Köçürmə</option>
                                         <option value="card">Kart</option>
-                                        <option value="online">Onlayn</option>
                                     </select>
                                 </div>
                             </div>
 
                             {/* Method Selector (Visual) */}
-                            <div className="grid grid-cols-4 gap-2">
+                            <div className="grid grid-cols-3 gap-2">
                                 {methods.map((m) => {
                                     const Icon = m.icon;
                                     return (
