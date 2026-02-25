@@ -343,13 +343,13 @@ const BusinessSettings = () => {
                                             <div
                                                 key={b.id}
                                                 onClick={() => handleSelectBusiness(b)}
-                                                className={`min-w-[180px] p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm`}
+                                                className={`w-48 shrink-0 p-4 shrink-0 rounded-2xl border-2 cursor-pointer transition-all shadow-sm flex flex-col justify-center`}
                                                 style={{
                                                     backgroundColor: selectedBusiness?.id === b.id ? 'var(--color-brand-light)' : 'var(--color-card-bg)',
                                                     borderColor: selectedBusiness?.id === b.id ? 'var(--color-brand)' : 'var(--color-card-border)'
                                                 }}
                                             >
-                                                <div className="font-bold truncate text-sm" style={{ color: 'var(--color-text-primary)' }}>{b.name}</div>
+                                                <div className="font-bold truncate text-sm" style={{ color: 'var(--color-text-primary)' }} title={b.name}>{b.name}</div>
                                                 <div className="text-[10px] font-black mt-1 uppercase tracking-tighter" style={{ color: 'var(--color-text-muted)' }}>{b.voen || 'VÖEN yoxdur'}</div>
                                             </div>
                                         ))}
