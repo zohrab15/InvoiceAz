@@ -14,7 +14,9 @@ import {
     PieChart,
     ChevronDown,
     FileText,
-    Percent
+    Percent,
+    AlertTriangle,
+    ShieldCheck
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -146,6 +148,59 @@ const TaxReports = () => {
                     </div>
                 </div>
             </div>
+
+            {/* VAT Registration Threshold Alert - New Section */}
+            {taxData.vat_registration && (
+                <div className={`p-6 rounded-3xl border-2 shadow-lg transition-all relative overflow-hidden ${taxData.vat_registration.is_over
+                        ? 'bg-red-500/10 border-red-500/50'
+                        : taxData.vat_registration.is_approaching
+                            ? 'bg-amber-500/10 border-amber-500/50'
+                            : 'bg-emerald-500/10 border-emerald-500/50'
+                    }`}>
+                    <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                        <div className={`p-4 rounded-2xl ${taxData.vat_registration.is_over
+                                ? 'bg-red-500 text-white'
+                                : taxData.vat_registration.is_approaching
+                                    ? 'bg-amber-500 text-white'
+                                    : 'bg-emerald-500 text-white'
+                            }`}>
+                            {taxData.vat_registration.is_over ? <AlertTriangle size={32} /> : <ShieldCheck size={32} />}
+                        </div>
+
+                        <div className="flex-1 space-y-2 text-center md:text-left">
+                            <h3 className="text-xl font-black uppercase tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                                ƏDV Qeydiyyatı Həddi İzləyicisi
+                            </h3>
+                            <p className="text-sm font-medium opacity-80" style={{ color: 'var(--color-text-secondary)' }}>
+                                {taxData.vat_registration.rule_text}
+                            </p>
+                        </div>
+
+                        <div className="w-full md:w-80 space-y-3 border-l pl-6 border-[var(--color-card-border)] md:border-l">
+                            <div className="flex justify-between text-xs font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
+                                <span>Dövriyyə (Son 12 ay)</span>
+                                <span>{taxData.vat_registration.percent_reached}%</span>
+                            </div>
+                            <div className="h-4 w-full bg-black/10 rounded-full overflow-hidden p-0.5 border border-white/10 shadow-inner">
+                                <div
+                                    className={`h-full rounded-full transition-all duration-1000 shadow-sm ${taxData.vat_registration.is_over ? 'bg-red-500' : taxData.vat_registration.is_approaching ? 'bg-amber-500' : 'bg-emerald-500'
+                                        }`}
+                                    style={{ width: `${Math.min(100, taxData.vat_registration.percent_reached)}%` }}
+                                />
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-lg font-black" style={{ color: 'var(--color-text-primary)' }}>
+                                    {taxData.vat_registration.current_12m_revenue.toLocaleString()} / {taxData.vat_registration.threshold.toLocaleString()}
+                                </span>
+                                <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter shadow-sm ${taxData.vat_registration.is_over ? 'bg-red-500 text-white' : taxData.vat_registration.is_approaching ? 'bg-amber-500 text-white' : 'bg-emerald-500 text-white'
+                                    }`}>
+                                    {taxData.vat_registration.is_over ? 'Limit Keçilib' : taxData.vat_registration.is_approaching ? 'Limitə Yaxın' : 'Təhlükəsiz'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* 2. VAT SECTION */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
