@@ -85,10 +85,14 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Account Settings
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'optional' 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SIGNUP_FIELDS = [] # Correctly override default to exclude username
 LOGIN_REDIRECT_URL = '/api/users/google/callback/'
 LOGIN_URL = 'account_login'
 ACCOUNT_LOGOUT_ON_GET = True
