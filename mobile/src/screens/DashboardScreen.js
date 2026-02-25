@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import apiClient from '../api/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const DashboardScreen = () => {
     const [stats, setStats] = useState(null);
@@ -51,25 +52,25 @@ const DashboardScreen = () => {
                     <View style={[styles.statCard, { borderLeftColor: '#3b82f6' }]}>
                         <Text style={styles.statLabel}>Ümumi Məbləğ</Text>
                         <Text style={styles.statValue}>
-                            {stats?.total_amount || 0} ₼
+                            {stats?.total_amount || 0} {CURRENCY_SYMBOLS[stats?.currency] || '₼'}
                         </Text>
                     </View>
                     <View style={[styles.statCard, { borderLeftColor: '#10b981' }]}>
                         <Text style={styles.statLabel}>Ödənilmiş</Text>
                         <Text style={styles.statValue}>
-                            {stats?.paid_amount || 0} ₼
+                            {stats?.paid_amount || 0} {CURRENCY_SYMBOLS[stats?.currency] || '₼'}
                         </Text>
                     </View>
                     <View style={[styles.statCard, { borderLeftColor: '#f59e0b' }]}>
                         <Text style={styles.statLabel}>Gözlənilən</Text>
                         <Text style={styles.statValue}>
-                            {stats?.pending_amount || 0} ₼
+                            {stats?.pending_amount || 0} {CURRENCY_SYMBOLS[stats?.currency] || '₼'}
                         </Text>
                     </View>
                     <View style={[styles.statCard, { borderLeftColor: '#ef4444' }]}>
                         <Text style={styles.statLabel}>Gecikmiş</Text>
                         <Text style={styles.statValue}>
-                            {stats?.overdue_amount || 0} ₼
+                            {stats?.overdue_amount || 0} {CURRENCY_SYMBOLS[stats?.currency] || '₼'}
                         </Text>
                     </View>
                 </View>
@@ -83,7 +84,7 @@ const DashboardScreen = () => {
                                     <Text style={styles.recentClient}>{inv.client_name}</Text>
                                     <Text style={styles.recentDate}>{inv.issue_date}</Text>
                                 </View>
-                                <Text style={styles.recentAmount}>{inv.total_amount} ₼</Text>
+                                <Text style={styles.recentAmount}>{inv.total_amount} {CURRENCY_SYMBOLS[inv.currency] || '₼'}</Text>
                             </View>
                         ))}
                     </View>

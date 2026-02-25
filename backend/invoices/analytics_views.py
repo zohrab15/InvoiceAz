@@ -1,13 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.db.models import Sum, Count, F, Avg, Case, When, Value, IntegerField, DecimalField
+from django.db.models import Sum, Count, F, Avg, Case, When, Value, IntegerField, DecimalField, Q
 from django.db.models.functions import TruncDate, ExtractWeekDay
 from django.utils import timezone
 import datetime
 from datetime import timedelta
-from .models import Invoice, Payment
-from users.models import Business
+from .models import Invoice, Payment, Expense
+from users.models import Business, TeamMember
 
 from rest_framework.exceptions import PermissionDenied
 
@@ -617,3 +617,53 @@ class TaxAnalyticsView(AnalyticsBaseView):
         }
 
         return Response(response_data)
+
+class DashboardStatsView(AnalyticsBaseView):
+    def get(self, request):
+        business = self.get_business(request)
+        
+        # Get active invoices (excluding draft and cancelled)
+        invoices = Invoice.objects.filter(business=business).exclude(status__in=['draft', 'cancelled'])
+        
+        # Role-based filtering
+        team_member = TeamMember.objects.filter(business=business, user=request.user).first()
+        if team_member and team_member.role == 'SALES_REP':
+            # Sales Reps see only their assigned clients' invoices or created by them
+            invoices = invoices.filter(
+                Q(created_by=request.user) | Q(client__assigned_to=request.user)
+            ).distinct()
+
+        # KPIs
+        total_revenue = invoices.aggregate(Sum('total'))['total__sum'] or 0
+        total_paid = invoices.aggregate(Sum('paid_amount'))['paid_amount__sum'] or 0
+        
+        # Pending: Sent or Viewed but not fully paid
+        pending_amount = invoices.filter(status__in=['sent', 'viewed']).aggregate(
+            amt=Sum(F('total') - F('paid_amount'))
+        )['amt'] or 0
+        
+        # Overdue: Overdue status
+        overdue_amount = invoices.filter(status='overdue').aggregate(
+            amt=Sum(F('total') - F('paid_amount'))
+        )['amt'] or 0
+
+        # Recent Invoices
+        recent = invoices.order_by('-created_at')[:5]
+        recent_data = []
+        for inv in recent:
+            recent_data.append({
+                'client_name': inv.client.name,
+                'issue_date': inv.invoice_date.strftime('%Y-%m-%d'),
+                'total_amount': float(inv.total),
+                'currency': inv.currency,
+                'status': inv.status
+            })
+
+        return Response({
+            'total_amount': float(total_revenue),
+            'paid_amount': float(total_paid),
+            'pending_amount': float(pending_amount),
+            'overdue_amount': float(overdue_amount),
+            'recent_invoices': recent_data,
+            'currency': business.default_currency
+        })

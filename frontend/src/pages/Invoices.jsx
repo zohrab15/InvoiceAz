@@ -264,7 +264,7 @@ const Invoices = () => {
         setDueDate(inv.due_date);
         setNotes(inv.notes || '');
         setInvoiceTheme(inv.invoice_theme || 'modern');
-        setCurrency(inv.currency || 'AZN');
+        setCurrency(inv.currency || activeBusiness?.default_currency || 'AZN');
         setItems(inv.items.length > 0 ? inv.items.map(item => ({
             ...item,
             quantity: Number(item.quantity) || 0,
@@ -498,9 +498,9 @@ const Invoices = () => {
             </table>
 
             <div className="ml-auto w-48 space-y-2 pt-4 border-t-2 border-gray-50">
-                <div className="flex justify-between text-xs text-gray-500"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
-                <div className="flex justify-between text-xs text-gray-500"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
-                <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
+                <div className="flex justify-between text-xs text-gray-500"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
+                <div className="flex justify-between text-xs text-gray-500"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
+                <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
             </div>
 
             <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] text-gray-400 italic leading-relaxed">
@@ -659,9 +659,9 @@ const Invoices = () => {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-[var(--color-text-primary)]">{parseFloat(inv.total).toFixed(2)} {CURRENCY_SYMBOLS[inv.currency] || '₼'}</span>
+                                                        <span className="font-bold text-[var(--color-text-primary)]">{parseFloat(inv.total).toFixed(2)} {CURRENCY_SYMBOLS[inv.currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span>
                                                         {parseFloat(inv.paid_amount) > 0 && parseFloat(inv.paid_amount) < parseFloat(inv.total) && (
-                                                            <span className="text-[10px] text-orange-500 font-bold">Ödənilib: {parseFloat(inv.paid_amount).toFixed(2)} {CURRENCY_SYMBOLS[inv.currency] || '₼'}</span>
+                                                            <span className="text-[10px] text-orange-500 font-bold">Ödənilib: {parseFloat(inv.paid_amount).toFixed(2)} {CURRENCY_SYMBOLS[inv.currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span>
                                                         )}
                                                     </div>
                                                 </td>
@@ -951,13 +951,13 @@ const Invoices = () => {
                                                     <div className="w-full sm:w-32 relative">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Qiymət</label>
                                                         <div className="relative">
-                                                            <span className="absolute left-3 top-2 text-xs text-[var(--color-text-muted)] font-bold">{CURRENCY_SYMBOLS[currency] || '₼'}</span>
+                                                            <span className="absolute left-3 top-2 text-xs text-[var(--color-text-muted)] font-bold">{CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span>
                                                             <input type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 pl-10 text-sm font-bold text-[var(--color-text-primary)]" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
                                                         </div>
                                                     </div>
                                                     <div className="w-full sm:w-24 text-right font-bold text-primary-blue text-sm flex justify-between items-center sm:block border-t sm:border-t-0 pt-3 sm:pt-0 mt-2 sm:mt-0 italic sm:not-italic">
                                                         <span className="sm:hidden text-gray-400 font-bold uppercase text-[10px]">Cəm:</span>
-                                                        <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span>
+                                                        <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span>
                                                     </div>
                                                     <button onClick={() => removeItem(index)} className="p-2 text-[var(--color-text-muted)] hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10 self-end sm:self-center mt-2 sm:mt-0"><Trash2 size={20} /></button>
                                                 </motion.div>
@@ -991,9 +991,9 @@ const Invoices = () => {
                                         <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] shadow-sm space-y-4">
                                             <h3 className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-card-border)] pb-4">Xülasə</h3>
                                             <div className="space-y-4">
-                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
-                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
-                                                <div className="flex justify-between text-2xl font-black border-t-2 border-[var(--color-hover-bg)] pt-4 text-[var(--color-text-primary)] italic"><span>YEKUN:</span><span className="text-primary-blue">{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
+                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
+                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
+                                                <div className="flex justify-between text-2xl font-black border-t-2 border-[var(--color-hover-bg)] pt-4 text-[var(--color-text-primary)] italic"><span>YEKUN:</span><span className="text-primary-blue">{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
                                             </div>
                                         </div>
 

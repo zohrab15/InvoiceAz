@@ -56,7 +56,9 @@ const InvoicesScreen = () => {
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
                     <Text style={styles.label}>Məbləğ</Text>
-                    <Text style={styles.amount}>{item.total_amount} ₼</Text>
+                    <Text style={styles.amount}>
+                        {item.total} {CURRENCY_SYMBOLS[item.currency] || '₼'}
+                    </Text>
                 </View>
             </View>
         </View>

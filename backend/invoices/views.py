@@ -145,7 +145,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'total': invoice.subtotal,
             'total_tax': invoice.tax_amount,
             'grand_total': invoice.total,
-            'currency': invoice.currency or 'AZN',
+            'currency': invoice.currency or invoice.business.default_currency or 'AZN',
         }
         
         try:
@@ -228,7 +228,10 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'RUB': '₽',
             'GBP': '£'
         }
-        currency_symbol = currency_symbols.get(invoice.currency, '₼')
+        currency_symbol = currency_symbols.get(
+            invoice.currency or invoice.business.default_currency, 
+            '₼'
+        )
 
         context = {
             'invoice': invoice,
@@ -359,7 +362,10 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 'RUB': '₽',
                 'GBP': '£'
             }
-            currency_symbol = currency_symbols.get(invoice.currency, '₼')
+            currency_symbol = currency_symbols.get(
+                invoice.currency or invoice.business.default_currency, 
+                '₼'
+            )
             
             body = f"Salam {client.name},\n\n"
             body += f"{invoice.business.name} tərəfindən sizə {invoice.invoice_number} nömrəli faktura göndərilib.\n"

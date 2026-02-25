@@ -257,11 +257,8 @@ def update_invoice_on_payment(sender, instance, **kwargs):
 @receiver(post_save, sender=Expense)
 def expense_created_notification(sender, instance, created, **kwargs):
         currency_symbol = '₼'
-        if instance.currency == 'USD': currency_symbol = '$'
-        elif instance.currency == 'EUR': currency_symbol = '€'
-        elif instance.currency == 'TRY': currency_symbol = '₺'
-        elif instance.currency == 'RUB': currency_symbol = '₽'
-        elif instance.currency == 'GBP': currency_symbol = '£'
+        currency_symbols = {'AZN': '₼', 'USD': '$', 'EUR': '€', 'TRY': '₺', 'RUB': '₽', 'GBP': '£'}
+        currency_symbol = currency_symbols.get(instance.currency, '₼')
 
         # Notify business owner
         create_notification(
@@ -290,9 +287,8 @@ def check_budget_limit(sender, instance, created, **kwargs):
         
         if total_monthly_expenses > business.budget_limit:
             # Budget notifications usually imply the default currency of the business
-            currency_symbol = '₼'
-            if business.default_currency == 'USD': currency_symbol = '$'
-            elif business.default_currency == 'EUR': currency_symbol = '€'
+            currency_symbols = {'AZN': '₼', 'USD': '$', 'EUR': '€', 'TRY': '₺', 'RUB': '₽', 'GBP': '£'}
+            currency_symbol = currency_symbols.get(business.default_currency, '₼')
             
             create_notification(
                 user=business.user,
