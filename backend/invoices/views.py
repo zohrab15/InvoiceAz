@@ -216,9 +216,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
             # 2. Block any absolute paths or current-directory escapes for security (LFI prevention)
             if os.path.isabs(uri_clean) or '..' in uri_clean or ':' in uri_clean:
-                # We only allow relative paths that we resolve ourselves below
-                # or absolute paths that we explicitly construction from settings
-                pass
+                return uri
 
             # 3. Resolve Media/Static paths exclusively
             if uri_clean.startswith('/media/'):

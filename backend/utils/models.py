@@ -34,10 +34,13 @@ class SoftDeleteModel(models.Model):
     def delete(self, using=None, keep_parents=False):
         self.is_deleted = True
         self.deleted_at = timezone.now()
-        self.save()
+        # Trigger save to fire post_save signals for inventory/audit
+        self.save(update_fields=['is_deleted', 'deleted_at'])
+        
         # Handle related soft deletes if any (manual cascade)
         for related_obj in self._get_related_soft_delete_objects():
             related_obj.delete()
+
 
     def _get_related_soft_delete_objects(self):
         """Override this in subclasses to return related objects that should be soft-deleted."""

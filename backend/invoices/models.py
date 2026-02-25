@@ -43,7 +43,7 @@ class Invoice(SoftDeleteModel):
         related_name='created_invoices'
     )
     
-    invoice_number = models.CharField(max_length=50, unique=True) # E.g. INV-001
+    invoice_number = models.CharField(max_length=50, db_index=True) # E.g. INV-001
     invoice_date = models.DateField()
     due_date = models.DateField()
     
@@ -71,6 +71,9 @@ class Invoice(SoftDeleteModel):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('business', 'invoice_number')
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
@@ -149,6 +152,8 @@ class Invoice(SoftDeleteModel):
             
         if save:
             self.save()
+
+
 
     def __str__(self):
         return f"{self.invoice_number} - {self.client.name}"
