@@ -390,7 +390,7 @@ const TaxReports = () => {
                                 <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text-primary)]">
                                     <Calendar className="text-blue-500" /> Vergi Təqvimi
                                 </h3>
-                                <p className="text-sm text-[var(--color-text-secondary)] mt-1">2025-ci il üzrə bəyannamə və öhdəlik tarixləri</p>
+                                <p className="text-sm text-[var(--color-text-secondary)] mt-1">{new Date().getFullYear()}-cı il üzrə bəyannamə və öhdəlik tarixləri</p>
                             </div>
                             <div className="bg-amber-500/10 text-amber-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider animate-pulse">
                                 Yaxınlaşan öhdəliklər
