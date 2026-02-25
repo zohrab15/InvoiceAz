@@ -6,6 +6,7 @@ import useAuthStore from '../../store/useAuthStore';
 import { useToast } from '../Toast';
 import { Trash2, UserPlus, Mail, Users, MapPin, AlertCircle, Search, Clock, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBusiness } from '../../context/BusinessContext';
 
 const TeamSettings = () => {
     const queryClient = useQueryClient();
