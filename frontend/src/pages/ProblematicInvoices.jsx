@@ -14,8 +14,11 @@ import { Link } from 'react-router-dom';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 import { utils, writeFile } from 'xlsx';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
+
 const ProblematicInvoices = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const { isFeatureLocked } = usePlanLimits();
@@ -46,7 +49,7 @@ const ProblematicInvoices = () => {
             'Telefon': debtor.phone,
             'Faktura Sayı': debtor.invoices_count,
             'Maks. Gecikmə (Gün)': debtor.max_overdue_days,
-            'Cəmi Borc (AZN)': debtor.total_debt.toFixed(2)
+            [`Cəmi Borc (${activeBusiness?.default_currency || 'AZN'})`]: debtor.total_debt.toFixed(2)
         }));
 
         const worksheet = utils.json_to_sheet(data);
@@ -104,7 +107,7 @@ const ProblematicInvoices = () => {
                         <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gecikmə</h3>
                     </div>
                     <div className="text-3xl font-black relative z-10" style={{ color: 'var(--color-text-primary)' }}>
-                        {kpi.total_overdue.toFixed(2)} ₼
+                        {kpi.total_overdue.toFixed(2)} {currencySymbol}
                     </div>
                     <p className="text-xs text-red-500 font-bold mt-2 relative z-10">Ödənilməmiş məbləğ</p>
                 </div>
@@ -118,7 +121,7 @@ const ProblematicInvoices = () => {
                         <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Kritik Borc (90+ gün)</h3>
                     </div>
                     <div className="text-3xl font-black relative z-10" style={{ color: 'var(--color-text-primary)' }}>
-                        {kpi.critical_debt.toFixed(2)} ₼
+                        {kpi.critical_debt.toFixed(2)} {currencySymbol}
                     </div>
                     <p className="text-xs text-orange-500 font-bold mt-2 relative z-10">Risk altında olan gəlir</p>
                 </div>
@@ -150,7 +153,7 @@ const ProblematicInvoices = () => {
                             <BarChart data={aging} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
                                 <XAxis dataKey="range" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} tickFormatter={(value) => `${value}₼`} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} tickFormatter={(value) => `${value}${currencySymbol}`} />
                                 <Tooltip
                                     cursor={{ fill: 'var(--color-hover-bg)', opacity: 0.4 }}
                                     contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '12px', border: '1px solid var(--color-dropdown-border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
@@ -236,7 +239,7 @@ const ProblematicInvoices = () => {
                                             </span>
                                         </td>
                                         <td className="px-8 py-4 text-right font-black" style={{ color: 'var(--color-text-primary)' }}>
-                                            {debtor.total_debt.toFixed(2)} ₼
+                                            {debtor.total_debt.toFixed(2)} {currencySymbol}
                                         </td>
                                         <td className="px-8 py-4 text-center relative">
                                             <button
@@ -252,7 +255,7 @@ const ProblematicInvoices = () => {
                                                     <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)}></div>
                                                     <div className="absolute right-8 top-12 z-50 rounded-xl shadow-xl border p-2 w-48 flex flex-col gap-1 text-left" style={{ backgroundColor: 'var(--color-dropdown-bg)', borderColor: 'var(--color-dropdown-border)' }}>
                                                         <a
-                                                            href={`https://wa.me/${debtor.phone?.replace(/[^0-9]/g, '')}?text=Hörmətli ${debtor.name}, sizin ${debtor.total_debt} AZN gecikmiş borcunuz var. Xahiş edirik ödəniş edəsiniz.`}
+                                                            href={`https://wa.me/${debtor.phone?.replace(/[^0-9]/g, '')}?text=Hörmətli ${debtor.name}, sizin ${debtor.total_debt} ${activeBusiness?.default_currency || 'AZN'} gecikmiş borcunuz var. Xahiş edirik ödəniş edəsiniz.`}
                                                             target="_blank"
                                                             rel="noreferrer"
                                                             className="flex items-center gap-3 px-3 py-2 hover:bg-green-500/10 text-[var(--color-text-secondary)] hover:text-green-500 rounded-lg transition-colors text-sm font-medium"
@@ -261,7 +264,7 @@ const ProblematicInvoices = () => {
                                                             WhatsApp
                                                         </a>
                                                         <a
-                                                            href={`mailto:${debtor.email}?subject=Ödəniş Xatırlatması&body=Hörmətli ${debtor.name},%0D%0A%0D%0ASizin ${debtor.total_debt} AZN məbləğində gecikmiş borcunuz var.`}
+                                                            href={`mailto:${debtor.email}?subject=Ödəniş Xatırlatması&body=Hörmətli ${debtor.name},%0D%0A%0D%0ASizin ${debtor.total_debt} ${activeBusiness?.default_currency || 'AZN'} məbləğində gecikmiş borcunuz var.`}
                                                             className="flex items-center gap-3 px-3 py-2 hover:bg-blue-500/10 text-[var(--color-text-secondary)] hover:text-blue-500 rounded-lg transition-colors text-sm font-medium"
                                                         >
                                                             <Mail size={16} />

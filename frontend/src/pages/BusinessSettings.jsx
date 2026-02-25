@@ -56,6 +56,7 @@ const BusinessSettings = () => {
         iban: '',
         swift: '',
         default_invoice_theme: 'modern',
+        default_currency: 'AZN',
     };
     const [formData, setFormData] = useState(initialFormState);
 
@@ -486,6 +487,27 @@ const BusinessSettings = () => {
                                                         })} className="absolute inset-0 z-10 cursor-pointer" />
                                                     )}
                                                 </div>
+                                            </div>
+
+                                            <div className="pt-4 border-t" style={{ borderColor: 'var(--color-card-border)' }}>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Əsas Valyuta</label>
+                                                <div className="relative mt-1.5">
+                                                    <select
+                                                        name="default_currency"
+                                                        value={formData.default_currency || 'AZN'}
+                                                        onChange={handleChange}
+                                                        className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer"
+                                                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
+                                                    >
+                                                        <option value="AZN">AZN (₼)</option>
+                                                        <option value="USD">USD ($)</option>
+                                                        <option value="EUR">EUR (€)</option>
+                                                        <option value="TRY">TRY (₺)</option>
+                                                        <option value="RUB">RUB (₽)</option>
+                                                        <option value="GBP">GBP (£)</option>
+                                                    </select>
+                                                </div>
+                                                <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">Yeni faktura yaradarkən bu valyuta avtomatik seçiləcək</p>
                                             </div>
                                         </div>
                                     </div>

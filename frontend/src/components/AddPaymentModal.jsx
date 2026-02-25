@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, DollarSign, Calendar, CreditCard, Banknote, Landmark, FileText, Check } from 'lucide-react';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
+    const currencySymbol = CURRENCY_SYMBOLS[invoice?.currency] || '₼';
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [method, setMethod] = useState('cash');
@@ -100,16 +102,16 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                             <div className="p-4 flex justify-between items-center border rounded-xl" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
                                 <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Ümumi Qalıq:</span>
                                 <span className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                                    {(parseFloat(invoice.total) - parseFloat(invoice.paid_amount)).toFixed(2)} ₼
+                                    {(parseFloat(invoice.total) - parseFloat(invoice.paid_amount)).toFixed(2)} {currencySymbol}
                                 </span>
                             </div>
 
                             {/* Amount Input */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Məbləğ (₼)</label>
+                                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Məbləğ ({currencySymbol})</label>
                                 <div className="relative">
                                     <div className="absolute left-5 top-1/2 -translate-y-1/2 font-bold" style={{ color: 'var(--color-text-muted)' }}>
-                                        ₼
+                                        {currencySymbol}
                                     </div>
                                     <input
                                         type="number"

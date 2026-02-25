@@ -177,7 +177,7 @@
                 <div class="text-slate font-bold" style="font-size: 8pt; margin-top: 5pt;">Invoice #{{ invoice.invoice_number }}</div>
             </td>
             <td class="valign-top text-right">
-                <div class="minimal-amount">{{ invoice.total|floatformat:2 }} ₼</div>
+                <div class="minimal-amount">{{ invoice.total|floatformat:2 }} {{ currency_symbol }}</div>
                 <div class="text-slate uppercase font-bold" style="font-size: 7pt;">{% if invoice.status == 'paid' %}ÖDƏNİLİB{% else %}ÖDƏNİŞ GÖZLƏNİLİR{% endif %}</div>
             </td>
         </tr>
@@ -200,8 +200,8 @@
                 <tr>
                     <td class="text-black font-bold">{{ item.description }}</td>
                     <td class="text-center text-slate">{{ item.quantity|floatformat:-2 }} {{ item.unit }}</td>
-                    <td class="text-right text-slate">{{ item.unit_price|floatformat:2 }} ₼</td>
-                    <td class="text-right font-bold text-black">{{ item.amount|floatformat:2 }} ₼</td>
+                    <td class="text-right text-slate">{{ item.unit_price|floatformat:2 }} {{ currency_symbol }}</td>
+                    <td class="text-right font-bold text-black">{{ item.amount|floatformat:2 }} {{ currency_symbol }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -235,15 +235,15 @@
                     <table class="w-full">
                         <tr>
                             <td class="text-slate">Cəm:</td>
-                            <td class="text-right font-bold">{{ invoice.subtotal|floatformat:2 }} ₼</td>
+                            <td class="text-right font-bold">{{ invoice.subtotal|floatformat:2 }} {{ currency_symbol }}</td>
                         </tr>
                         <tr>
                             <td class="text-slate">ƏDV (18%):</td>
-                            <td class="text-right font-bold">{{ invoice.tax_amount|floatformat:2 }} ₼</td>
+                            <td class="text-right font-bold">{{ invoice.tax_amount|floatformat:2 }} {{ currency_symbol }}</td>
                         </tr>
                         <tr>
                             <td class="font-bold text-black" style="padding-top: 15pt; font-size: 14pt;">YEKUN:</td>
-                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">{{ invoice.total|floatformat:2 }} ₼</td>
+                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">{{ invoice.total|floatformat:2 }} {{ currency_symbol }}</td>
                         </tr>
                     </table>
                 </div>

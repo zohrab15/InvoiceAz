@@ -13,6 +13,7 @@ import { translateError } from '../api/translateErrors';
 import useAuthStore from '../store/useAuthStore';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const UNIT_CHOICES = [
     { value: 'pcs', label: 'Ədəd' },
@@ -34,6 +35,7 @@ import ProductQRScanner from '../components/ProductQRScanner';
 
 const Products = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
     const isInventoryManager = activeBusiness?.user_role === 'INVENTORY_MANAGER';
     const canManageProducts = isOwnerOrManager || isInventoryManager;
@@ -377,7 +379,7 @@ const Products = () => {
                                     </td>
                                     <td className="p-5">
                                         <div className="font-black" style={{ color: 'var(--color-text-primary)' }}>
-                                            {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>₼</span>
+                                            {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>{currencySymbol}</span>
                                         </div>
                                     </td>
                                     <td className="p-5">
@@ -551,7 +553,7 @@ const Products = () => {
                                     </div>
 
                                     <div>
-                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Qiymət (₼)</label>
+                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Qiymət ({currencySymbol})</label>
                                         <input
                                             name="base_price"
                                             type="number"

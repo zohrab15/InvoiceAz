@@ -470,10 +470,9 @@ const Clients = () => {
                                     <div>
                                         <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">VÖEN</label>
                                         <div className="relative">
-                                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
                                             <input
                                                 type="text"
-                                                className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                className="w-full px-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                                 placeholder={formData.client_type === 'foreign' ? "Vergi ID / Qeydiyyat nömrəsi" : "10 rəqəmli VÖEN"}
                                                 value={formData.voen || ''}
                                                 onChange={(e) => {

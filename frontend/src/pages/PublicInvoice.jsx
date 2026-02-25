@@ -5,8 +5,9 @@ import { API_URL } from '../config';
 import { motion } from 'framer-motion';
 import { Download, CheckCircle, Clock, AlertCircle, FileText, Globe, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
-const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }) => (
+const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token, currencySymbol }) => (
     <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
         <div className={`py-4 px-8 text-center text-sm font-bold uppercase tracking-widest ${isPaid ? 'bg-green-500 text-white' : 'bg-blue-600 text-white'}`}>
             {isPaid ? (
@@ -112,16 +113,16 @@ const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }
                     )}
                 </div>
                 <div className="w-full md:w-80 space-y-4 pt-4 border-t-4 border-slate-900">
-                    <div className="flex justify-between text-sm text-slate-500 font-medium px-2"><span>Cəm:</span><span>{subtotal.toFixed(2)} ₼</span></div>
-                    <div className="flex justify-between text-sm text-slate-500 font-medium px-2"><span>ƏDV (18%):</span><span>{tax.toFixed(2)} ₼</span></div>
-                    <div className="flex justify-between text-2xl font-black text-slate-900 bg-slate-100 p-4 rounded-2xl"><span>YEKUN:</span><span className="text-blue-600">{total.toFixed(2)} ₼</span></div>
+                    <div className="flex justify-between text-sm text-slate-500 font-medium px-2"><span>Cəm:</span><span>{subtotal.toFixed(2)} {currencySymbol}</span></div>
+                    <div className="flex justify-between text-sm text-slate-500 font-medium px-2"><span>ƏDV (18%):</span><span>{tax.toFixed(2)} {currencySymbol}</span></div>
+                    <div className="flex justify-between text-2xl font-black text-slate-900 bg-slate-100 p-4 rounded-2xl"><span>YEKUN:</span><span className="text-blue-600">{total.toFixed(2)} {currencySymbol}</span></div>
                 </div>
             </div>
         </div>
     </div>
 );
 
-const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }) => (
+const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token, currencySymbol }) => (
     <div className="bg-white shadow-xl border border-slate-200 overflow-hidden font-serif">
         <div className="p-12 md:p-20">
             <div className="text-center mb-16 space-y-4">
@@ -171,7 +172,7 @@ const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token 
                     })()}
                 </p></div>
                 <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</h4><p className="font-bold uppercase text-blue-700">{invoice.status}</p></div>
-                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ümumi</h4><p className="font-bold text-xl">{total.toFixed(2)} ₼</p></div>
+                <div><h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ümumi</h4><p className="font-bold text-xl">{total.toFixed(2)} {currencySymbol}</p></div>
             </div>
 
             <table className="w-full mb-16">
@@ -201,16 +202,16 @@ const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token 
                     <div className="p-6 bg-slate-50 border italic text-xs text-slate-500 leading-relaxed">{invoice.notes || "Zəhmət olmasa vaxtında ödəniş edin."}</div>
                 </div>
                 <div className="w-full md:w-80 space-y-4">
-                    <div className="flex justify-between text-sm py-2 border-b"><span>Alt-cəm</span><span className="font-mono">{subtotal.toFixed(2)} ₼</span></div>
-                    <div className="flex justify-between text-sm py-2 border-b"><span>Vergi (18%)</span><span className="font-mono">{tax.toFixed(2)} ₼</span></div>
-                    <div className="flex justify-between text-2xl font-black pt-4"><span>YEKUN</span><span>{total.toFixed(2)} ₼</span></div>
+                    <div className="flex justify-between text-sm py-2 border-b"><span>Alt-cəm</span><span className="font-mono">{subtotal.toFixed(2)} {currencySymbol}</span></div>
+                    <div className="flex justify-between text-sm py-2 border-b"><span>Vergi (18%)</span><span className="font-mono">{tax.toFixed(2)} {currencySymbol}</span></div>
+                    <div className="flex justify-between text-2xl font-black pt-4"><span>YEKUN</span><span>{total.toFixed(2)} {currencySymbol}</span></div>
                 </div>
             </div>
         </div>
     </div>
 );
 
-const MinimalTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token }) => (
+const MinimalTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token, currencySymbol }) => (
     <div className="bg-white p-8 md:p-16 space-y-20 font-inter">
         <div className="flex justify-between items-start">
             <div className="space-y-2">
@@ -220,7 +221,7 @@ const MinimalTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token 
                 <h1 className="text-sm font-bold tracking-widest uppercase text-slate-400">Invoice #{invoice.invoice_number}</h1>
             </div>
             <div className="text-right">
-                <p className="text-4xl font-light tracking-tighter text-slate-900">{total.toFixed(2)} ₼</p>
+                <p className="text-4xl font-light tracking-tighter text-slate-900">{total.toFixed(2)} {currencySymbol}</p>
                 <p className={`text-[10px] font-black uppercase mt-2 ${isPaid ? 'text-green-500' : 'text-slate-400'}`}>{isPaid ? 'Payment Received' : 'Balance Due'}</p>
             </div>
         </div>
@@ -241,7 +242,7 @@ const MinimalTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token 
                             <p className="font-bold text-slate-900">{item.description}</p>
                             <p className="text-[10px] text-slate-400">{item.quantity} × {parseFloat(item.unit_price).toFixed(2)}</p>
                         </div>
-                        <p className="font-bold text-slate-900">{item.amount} ₼</p>
+                        <p className="font-bold text-slate-900">{parseAmount(item.amount).toFixed(2)} {currencySymbol}</p>
                     </div>
                 ))}
             </div>
@@ -251,9 +252,9 @@ const MinimalTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token 
         <div className="flex flex-col md:flex-row justify-between gap-12">
             <div className="max-w-xs text-xs text-slate-400 leading-relaxed font-medium">{invoice.notes || "Thank you for your business."}</div>
             <div className="w-full md:w-64 space-y-4">
-                <div className="flex justify-between text-xs text-slate-400"><span>Subtotal</span><span>{subtotal.toFixed(2)} ₼</span></div>
-                <div className="flex justify-between text-xs text-slate-400"><span>Tax (18%)</span><span>{tax.toFixed(2)} ₼</span></div>
-                <div className="flex justify-between text-lg font-bold text-slate-900 border-t pt-4"><span>Total</span><span>{total.toFixed(2)} ₼</span></div>
+                <div className="flex justify-between text-xs text-slate-400"><span>Subtotal</span><span>{subtotal.toFixed(2)} {currencySymbol}</span></div>
+                <div className="flex justify-between text-xs text-slate-400"><span>Tax (18%)</span><span>{tax.toFixed(2)} {currencySymbol}</span></div>
+                <div className="flex justify-between text-lg font-bold text-slate-900 border-t pt-4"><span>Total</span><span>{total.toFixed(2)} {currencySymbol}</span></div>
                 <div className="pt-6 flex justify-end opacity-20 hover:opacity-100 transition-opacity">
                     {isPayable && <QRCodeSVG value={window.location.origin + '/public/pay/' + token} size={70} level="M" />}
                 </div>
@@ -320,6 +321,8 @@ const PublicInvoice = () => {
     const tax = parseFloat(invoice.tax_amount);
     const total = parseFloat(invoice.total);
     const currentTheme = invoice.invoice_theme || 'modern';
+    const currencySymbol = CURRENCY_SYMBOLS[invoice.currency] || '₼';
+    const parseAmount = (amt) => isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
 
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4 md:px-8 font-inter">
@@ -360,11 +363,11 @@ const PublicInvoice = () => {
                     key={currentTheme}
                 >
                     {currentTheme === 'classic' ? (
-                        <ClassicTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} />
+                        <ClassicTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} currencySymbol={currencySymbol} />
                     ) : currentTheme === 'minimal' ? (
-                        <MinimalTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} />
+                        <MinimalTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} currencySymbol={currencySymbol} />
                     ) : (
-                        <ModernTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} />
+                        <ModernTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} currencySymbol={currencySymbol} />
                     )}
                 </motion.div>
 

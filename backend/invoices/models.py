@@ -24,6 +24,9 @@ class Invoice(SoftDeleteModel):
         ('AZN', 'AZN'),
         ('USD', 'USD'),
         ('EUR', 'EUR'),
+        ('TRY', 'TRY'),
+        ('RUB', 'RUB'),
+        ('GBP', 'GBP'),
     )
     THEME_CHOICES = (
         ('modern', 'Müasir'),
@@ -128,14 +131,20 @@ class Invoice(SoftDeleteModel):
                 from django.utils import timezone
                 self.paid_at = timezone.now()
             
-            if previous_status != 'paid':
+                currency_symbol = '₼'
+                if self.currency == 'USD': currency_symbol = '$'
+                elif self.currency == 'EUR': currency_symbol = '€'
+                elif self.currency == 'TRY': currency_symbol = '₺'
+                elif self.currency == 'RUB': currency_symbol = '₽'
+                elif self.currency == 'GBP': currency_symbol = '£'
+
                 # Tam ödəniş bildirişi
                 # Notify business owner
                 create_notification(
                     user=self.business.user,
                     business=self.business,
                     title="Faktura Tam Ödənildi",
-                    message=f"#{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} AZN ödəniş tamamlandı.",
+                    message=f"#{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} {currency_symbol} ödəniş tamamlandı.",
                     type='success',
                     link='/invoices',
                     setting_key='payment_received',
@@ -147,7 +156,7 @@ class Invoice(SoftDeleteModel):
                         user=self.client.assigned_to,
                         business=self.business,
                         title="Faktura Tam Ödənildi",
-                        message=f"Müştəriniz {self.client.name} üçün #{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} AZN ödəniş tamamlandı.",
+                        message=f"Müştəriniz {self.client.name} üçün #{self.invoice_number} nömrəli faktura üzrə {self.paid_amount:.2f} {currency_symbol} ödəniş tamamlandı.",
                         type='success',
                         link='/invoices',
                         setting_key='payment_received',
@@ -248,13 +257,19 @@ def update_invoice_on_payment(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Expense)
 def expense_created_notification(sender, instance, created, **kwargs):
-    if created:
+        currency_symbol = '₼'
+        if instance.currency == 'USD': currency_symbol = '$'
+        elif instance.currency == 'EUR': currency_symbol = '€'
+        elif instance.currency == 'TRY': currency_symbol = '₺'
+        elif instance.currency == 'RUB': currency_symbol = '₽'
+        elif instance.currency == 'GBP': currency_symbol = '£'
+
         # Notify business owner
         create_notification(
             user=instance.business.user,
             business=instance.business,
             title="Yeni Xərc",
-            message=f"'{instance.description}' adlı yeni xərc əlavə edildi ({instance.amount} {instance.currency}).",
+            message=f"'{instance.description}' adlı yeni xərc əlavə edildi ({instance.amount} {currency_symbol}).",
             type='info',
             link='/expenses',
             setting_key='expense_created',
@@ -275,11 +290,16 @@ def check_budget_limit(sender, instance, created, **kwargs):
         ).aggregate(total=Sum('amount'))['total'] or 0
         
         if total_monthly_expenses > business.budget_limit:
+            # Budget notifications usually imply the default currency of the business
+            currency_symbol = '₼'
+            if business.default_currency == 'USD': currency_symbol = '$'
+            elif business.default_currency == 'EUR': currency_symbol = '€'
+            
             create_notification(
                 user=business.user,
                 business=business,
                 title="Büdcə Limiti Keçildi!",
-                message=f"{now.strftime('%B')} ayı üçün təyin etdiyiniz {business.budget_limit} ₼ limit keçildi. Cari xərc: {total_monthly_expenses} ₼",
+                message=f"{now.strftime('%B')} ayı üçün təyin etdiyiniz {business.budget_limit} {currency_symbol} limit keçildi. Cari xərc: {total_monthly_expenses} {currency_symbol}",
                 type='warning',
                 link='/expenses',
                 category='finance'

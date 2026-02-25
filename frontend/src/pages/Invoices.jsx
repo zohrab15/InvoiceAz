@@ -35,6 +35,24 @@ const THEME_CHOICES = [
     { value: 'minimal', label: 'Minimal' }
 ];
 
+const CURRENCY_SYMBOLS = {
+    'AZN': '₼',
+    'USD': '$',
+    'EUR': '€',
+    'TRY': '₺',
+    'RUB': '₽',
+    'GBP': '£'
+};
+
+const CURRENCY_CHOICES = [
+    { value: 'AZN', label: 'AZN (₼)' },
+    { value: 'USD', label: 'USD ($)' },
+    { value: 'EUR', label: 'EUR (€)' },
+    { value: 'TRY', label: 'TRY (₺)' },
+    { value: 'RUB', label: 'RUB (₽)' },
+    { value: 'GBP', label: 'GBP (£)' }
+];
+
 const Invoices = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
@@ -81,9 +99,16 @@ const Invoices = () => {
     const [dueDate, setDueDate] = useState('');
     const [notes, setNotes] = useState('');
     const [invoiceTheme, setInvoiceTheme] = useState('modern');
+    const [currency, setCurrency] = useState('AZN');
 
     const handleCreateNew = () => {
         resetForm();
+        if (activeBusiness?.default_currency) {
+            setCurrency(activeBusiness.default_currency);
+        }
+        if (activeBusiness?.default_invoice_theme) {
+            setInvoiceTheme(activeBusiness.default_invoice_theme);
+        }
         setView('create');
     };
 
@@ -246,6 +271,7 @@ const Invoices = () => {
         setDueDate(inv.due_date);
         setNotes(inv.notes || '');
         setInvoiceTheme(inv.invoice_theme || 'modern');
+        setCurrency(inv.currency || 'AZN');
         setItems(inv.items.length > 0 ? inv.items.map(item => ({
             ...item,
             quantity: Number(item.quantity) || 0,
@@ -262,6 +288,7 @@ const Invoices = () => {
         setDueDate('');
         setNotes('');
         setInvoiceTheme('modern');
+        setCurrency(activeBusiness?.default_currency || 'AZN');
         setEditInvoice(null);
         setShowPreview(false);
     };
@@ -285,6 +312,7 @@ const Invoices = () => {
             due_date: dueDate || invoiceDate,
             notes,
             invoice_theme: invoiceTheme,
+            currency,
             status: (triggerSend && (!editInvoice || editInvoice.status === 'draft')) ? 'finalized' : (editInvoice ? editInvoice.status : status),
             items: validItems.map((item, index) => ({
                 description: item.description,
@@ -380,7 +408,8 @@ const Invoices = () => {
         if (!phone) return showToast('Müştərinin telefon nömrəsi yoxdur', 'error');
 
         const publicUrl = `${window.location.origin}/view/${targetInvoice.share_token}`;
-        const text = `Salam! ${activeBusiness?.name} tərəfindən fakturanız hazırdır.\n\nMəbləğ: ${parseFloat(targetInvoice.total).toFixed(2)} ₼\nBaxmaq və ödəmək üçün link: ${publicUrl}`;
+        const currencySymbol = CURRENCY_SYMBOLS[targetInvoice.currency] || '₼';
+        const text = `Salam! ${activeBusiness?.name} tərəfindən fakturanız hazırdır.\n\nMəbləğ: ${parseFloat(targetInvoice.total).toFixed(2)} ${currencySymbol}\nBaxmaq və ödəmək üçün link: ${publicUrl}`;
 
         if (!targetInvoice.sent_at) {
             markAsSentMutation.mutate(targetInvoice.id);
@@ -476,9 +505,9 @@ const Invoices = () => {
             </table>
 
             <div className="ml-auto w-48 space-y-2 pt-4 border-t-2 border-gray-50">
-                <div className="flex justify-between text-xs text-gray-500"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)}</span></div>
-                <div className="flex justify-between text-xs text-gray-500"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)}</span></div>
-                <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} ₼</span></div>
+                <div className="flex justify-between text-xs text-gray-500"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
+                <div className="flex justify-between text-xs text-gray-500"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
+                <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
             </div>
 
             <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] text-gray-400 italic leading-relaxed">
@@ -521,7 +550,7 @@ const Invoices = () => {
                                                     return !isNaN(d) ? `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}` : '';
                                                 })(),
                                                 'Məbləğ': parseFloat(inv.total_amount),
-                                                'Valyuta': inv.currency || '₼',
+                                                'Valyuta': CURRENCY_SYMBOLS[inv.currency] || '₼',
                                                 'Status': inv.status === 'paid' ? 'Ödənilib' :
                                                     inv.status === 'sent' ? 'Göndərilib' :
                                                         inv.status === 'viewed' ? 'Baxılıb' :
@@ -637,9 +666,9 @@ const Invoices = () => {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-[var(--color-text-primary)]">{parseFloat(inv.total).toFixed(2)} ₼</span>
+                                                        <span className="font-bold text-[var(--color-text-primary)]">{parseFloat(inv.total).toFixed(2)} {CURRENCY_SYMBOLS[inv.currency] || '₼'}</span>
                                                         {parseFloat(inv.paid_amount) > 0 && parseFloat(inv.paid_amount) < parseFloat(inv.total) && (
-                                                            <span className="text-[10px] text-orange-500 font-bold">Ödənilib: {parseFloat(inv.paid_amount).toFixed(2)}</span>
+                                                            <span className="text-[10px] text-orange-500 font-bold">Ödənilib: {parseFloat(inv.paid_amount).toFixed(2)} {CURRENCY_SYMBOLS[inv.currency] || '₼'}</span>
                                                         )}
                                                     </div>
                                                 </td>
@@ -807,7 +836,7 @@ const Invoices = () => {
                             <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-8'} space-y-6 transition-all duration-500 order-1`}>
                                 <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div>
+                                        <div className="md:col-span-1">
                                             <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Müştəri seçimi</label>
                                             <select
                                                 className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold text-[var(--color-text-primary)]"
@@ -825,7 +854,7 @@ const Invoices = () => {
                                                 })}
                                             </select>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4 text-[var(--color-text-primary)]">
+                                        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4 text-[var(--color-text-primary)]">
                                             <div>
                                                 <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Tarix</label>
                                                 <input type="date" className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
@@ -834,30 +863,42 @@ const Invoices = () => {
                                                 <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Son Tarix</label>
                                                 <input type="date" className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
                                             </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2 flex items-center gap-2">
-                                                Dizayn (Mövzu)
-                                                {!canUseThemes && <Lock size={12} className="text-[var(--color-text-muted)]" />}
-                                            </label>
-                                            <div className="relative group/theme text-[var(--color-text-primary)]">
+                                            <div>
+                                                <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2">Valyuta</label>
                                                 <select
-                                                    disabled={!canUseThemes}
-                                                    className={`w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                    value={invoiceTheme}
-                                                    onChange={(e) => setInvoiceTheme(e.target.value)}
+                                                    className="w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold"
+                                                    value={currency}
+                                                    onChange={(e) => setCurrency(e.target.value)}
                                                 >
-                                                    {THEME_CHOICES.map(t => (
-                                                        <option key={t.value} value={t.value}>{t.label}</option>
+                                                    {CURRENCY_CHOICES.map(c => (
+                                                        <option key={c.value} value={c.value}>{c.label}</option>
                                                     ))}
                                                 </select>
-                                                {!canUseThemes && (
-                                                    <div onClick={() => setUpgradeConfig({
-                                                        isOpen: true,
-                                                        title: 'Professional Dizaynlar 🎨',
-                                                        message: 'Faktura mövzularını dəyişmək və brendinizə uyğun özəl dizaynlar seçmək üçün Pro plana keçin.'
-                                                    })} className="absolute inset-0 cursor-pointer z-10" />
-                                                )}
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase mb-2 flex items-center gap-2">
+                                                    Dizayn
+                                                    {!canUseThemes && <Lock size={12} className="text-[var(--color-text-muted)]" />}
+                                                </label>
+                                                <div className="relative group/theme">
+                                                    <select
+                                                        disabled={!canUseThemes}
+                                                        className={`w-full border-2 border-[var(--color-input-border)] rounded-xl p-3 focus:border-primary-blue outline-none transition-all cursor-pointer bg-[var(--color-input-bg)] hover:bg-[var(--color-card-bg)] text-sm font-bold ${!canUseThemes ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        value={invoiceTheme}
+                                                        onChange={(e) => setInvoiceTheme(e.target.value)}
+                                                    >
+                                                        {THEME_CHOICES.map(t => (
+                                                            <option key={t.value} value={t.value}>{t.label}</option>
+                                                        ))}
+                                                    </select>
+                                                    {!canUseThemes && (
+                                                        <div onClick={() => setUpgradeConfig({
+                                                            isOpen: true,
+                                                            title: 'Professional Dizaynlar 🎨',
+                                                            message: 'Faktura mövzularını dəyişmək və brendinizə uyğun özəl dizaynlar seçmək üçün Pro plana keçin.'
+                                                        })} className="absolute inset-0 cursor-pointer z-10" />
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -917,13 +958,13 @@ const Invoices = () => {
                                                     <div className="w-full sm:w-32 relative">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Qiymət</label>
                                                         <div className="relative">
-                                                            <span className="absolute left-3 top-2 text-xs text-[var(--color-text-muted)] font-bold">₼</span>
+                                                            <span className="absolute left-3 top-2 text-xs text-[var(--color-text-muted)] font-bold">{CURRENCY_SYMBOLS[currency] || '₼'}</span>
                                                             <input type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 pl-10 text-sm font-bold text-[var(--color-text-primary)]" value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)} />
                                                         </div>
                                                     </div>
                                                     <div className="w-full sm:w-24 text-right font-bold text-primary-blue text-sm flex justify-between items-center sm:block border-t sm:border-t-0 pt-3 sm:pt-0 mt-2 sm:mt-0 italic sm:not-italic">
                                                         <span className="sm:hidden text-gray-400 font-bold uppercase text-[10px]">Cəm:</span>
-                                                        <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} ₼</span>
+                                                        <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span>
                                                     </div>
                                                     <button onClick={() => removeItem(index)} className="p-2 text-[var(--color-text-muted)] hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10 self-end sm:self-center mt-2 sm:mt-0"><Trash2 size={20} /></button>
                                                 </motion.div>
@@ -957,9 +998,9 @@ const Invoices = () => {
                                         <div className="bg-[var(--color-card-bg)] p-6 rounded-xl border border-[var(--color-card-border)] shadow-sm space-y-4">
                                             <h3 className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-card-border)] pb-4">Xülasə</h3>
                                             <div className="space-y-4">
-                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} ₼</span></div>
-                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} ₼</span></div>
-                                                <div className="flex justify-between text-2xl font-black border-t-2 border-[var(--color-hover-bg)] pt-4 text-[var(--color-text-primary)] italic"><span>YEKUN:</span><span className="text-primary-blue">{calculateTotal().toFixed(2)} ₼</span></div>
+                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
+                                                <div className="flex justify-between text-[var(--color-text-secondary)] font-medium"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
+                                                <div className="flex justify-between text-2xl font-black border-t-2 border-[var(--color-hover-bg)] pt-4 text-[var(--color-text-primary)] italic"><span>YEKUN:</span><span className="text-primary-blue">{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || '₼'}</span></div>
                                             </div>
                                         </div>
 

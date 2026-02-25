@@ -22,9 +22,11 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart as RePieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from 'recharts';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const TaxReports = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [taxMode, setTaxMode] = useState('simplified'); // 'simplified' or 'profit'
 
@@ -424,7 +426,7 @@ const TaxReports = () => {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-[var(--color-text-secondary)]">Cəmi Xərclər:</span>
-                                    <span className="text-sm font-black text-[var(--color-text-primary)]">{taxData.expense_meta.total_recorded.toLocaleString()} ₼</span>
+                                    <span className="text-sm font-black text-[var(--color-text-primary)]">{taxData.expense_meta.total_recorded.toLocaleString()} {currencySymbol}</span>
                                 </div>
                                 <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden flex">
                                     <div
@@ -439,11 +441,11 @@ const TaxReports = () => {
                                 <div className="space-y-2 pt-2">
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Rəsmi (Deductible): {taxData.expense_meta.total_deductible.toLocaleString()} ₼</span>
+                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Rəsmi (Deductible): {taxData.expense_meta.total_deductible.toLocaleString()} {currencySymbol}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-amber-500 opacity-30" />
-                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Qeyri-rəsmi: {taxData.expense_meta.non_deductible.toLocaleString()} ₼</span>
+                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Qeyri-rəsmi: {taxData.expense_meta.non_deductible.toLocaleString()} {currencySymbol}</span>
                                     </div>
                                 </div>
                             </div>

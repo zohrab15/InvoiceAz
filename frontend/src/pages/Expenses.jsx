@@ -12,9 +12,11 @@ import usePlanLimits from '../hooks/usePlanLimits';
 
 import { translateError } from '../api/translateErrors';
 import { useBusiness } from '../context/BusinessContext';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const Expenses = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
     const isAccountant = activeBusiness?.user_role === 'ACCOUNTANT';
     const canManageExpenses = isOwnerOrManager || isAccountant;
@@ -446,7 +448,7 @@ const Expenses = () => {
                                         contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '12px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                         itemStyle={{ color: 'var(--color-text-primary)', fontWeight: 'bold' }}
                                         labelStyle={{ color: 'var(--color-text-muted)', fontWeight: 'bold', marginBottom: '4px' }}
-                                        formatter={(value) => [`${Number(value).toFixed(2)} ₼`, 'Məbləğ']}
+                                        formatter={(value) => [`${Number(value).toFixed(2)} ${currencySymbol}`, 'Məbləğ']}
                                     />
                                     <Bar
                                         dataKey="value"
@@ -476,7 +478,7 @@ const Expenses = () => {
                                             const d = new Date(e.date);
                                             const now = new Date();
                                             return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                                        }).reduce((sum, e) => sum + parseFloat(e.amount), 0).toFixed(2)} ₼
+                                        }).reduce((sum, e) => sum + parseFloat(e.amount), 0).toFixed(2)} {currencySymbol}
                                     </span>
                                 </div>
                                 <div className="w-full bg-[var(--color-hover-bg)] h-2 rounded-full overflow-hidden">
@@ -498,7 +500,7 @@ const Expenses = () => {
                                 </div>
                                 <div className="flex justify-between items-center mt-3">
                                     <div className="text-[10px] text-[var(--color-text-muted)] font-medium italic">
-                                        Limit: {monthlyBudget} ₼
+                                        Limit: {monthlyBudget} {currencySymbol}
                                     </div>
                                     {isOwnerOrManager && (
                                         <button
@@ -512,7 +514,7 @@ const Expenses = () => {
 
                                 {isEditingBudget && (
                                     <div className="mt-4 p-3 bg-[var(--color-hover-bg)] rounded-xl space-y-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[9px] font-black uppercase text-[var(--color-text-muted)]">Yeni Aylıq Limit (₼)</label>
+                                        <label className="text-[9px] font-black uppercase text-[var(--color-text-muted)]">Yeni Aylıq Limit ({currencySymbol})</label>
                                         <div className="flex gap-2">
                                             <input
                                                 type="number"

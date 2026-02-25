@@ -7,6 +7,7 @@ import { useToast } from '../Toast';
 import { Trash2, UserPlus, Mail, Users, MapPin, AlertCircle, Search, Clock, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../../context/BusinessContext';
+import { CURRENCY_SYMBOLS } from '../../utils/currency';
 
 const TeamSettings = () => {
     const queryClient = useQueryClient();
@@ -19,6 +20,7 @@ const TeamSettings = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
 
     // Fetch team members
     const { data: teamMembers, isLoading } = useQuery({
@@ -480,7 +482,7 @@ const TeamSettings = () => {
                                                                 }}
                                                             >
                                                                 <span className="font-bold text-sm text-[var(--color-text-primary)]">
-                                                                    {(member.monthly_target || 0).toLocaleString()} ₼
+                                                                    {(member.monthly_target || 0).toLocaleString()} {currencySymbol}
                                                                 </span>
                                                                 <span className="text-[10px] text-[var(--color-brand)] opacity-0 group-hover:opacity-100 transition-opacity">Redaktə</span>
                                                             </div>

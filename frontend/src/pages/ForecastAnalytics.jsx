@@ -13,9 +13,11 @@ import {
 } from 'lucide-react';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const ForecastAnalytics = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const { isFeatureLocked, plan } = usePlanLimits();
     const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
     const isLocked = isFeatureLocked('forecast_analytics');
@@ -181,7 +183,7 @@ const ForecastAnalytics = () => {
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
                             <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} dy={10} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} tickFormatter={(value) => `${value}₼`} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-secondary)' }} tickFormatter={(value) => `${value}${currencySymbol}`} />
                             <Tooltip
                                 contentStyle={{ backgroundColor: 'var(--color-dropdown-bg)', borderRadius: '16px', border: '1px solid var(--color-dropdown-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                 itemStyle={{ fontWeight: 'bold' }}

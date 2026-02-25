@@ -6,9 +6,11 @@ import clientApi from '../api/client';
 import { useBusiness } from '../context/BusinessContext';
 import TopProductsChart from '../components/TopProductsChart';
 import CountUp from '../components/CountUp';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const ProductAnalytics = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: 'total_quantity', direction: 'desc' });
 
@@ -174,10 +176,10 @@ const ProductAnalytics = () => {
                                                 {item.total_quantity} ədəd
                                             </td>
                                             <td className="p-4 text-right font-bold text-sm text-emerald-500">
-                                                <CountUp to={item.total_revenue} decimals={2} /> ₼
+                                                <CountUp to={item.total_revenue} decimals={2} /> {currencySymbol}
                                             </td>
                                             <td className="p-4 text-right font-medium text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                                                ~{avgPrice.toFixed(2)} ₼
+                                                ~{avgPrice.toFixed(2)} {currencySymbol}
                                             </td>
                                         </tr>
                                     );

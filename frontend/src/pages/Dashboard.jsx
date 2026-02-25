@@ -17,9 +17,11 @@ import { useBusiness } from '../context/BusinessContext';
 import TopProductsChart from '../components/TopProductsChart';
 import CountUp from '../components/CountUp';
 import useAuthStore from '../store/useAuthStore';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const Dashboard = () => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const navigate = useNavigate();
     const user = useAuthStore(state => state.user);
 
@@ -367,7 +369,7 @@ const Dashboard = () => {
                                         <span className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>
                                             {stats.totalRevenue.toLocaleString()}
                                         </span>
-                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)]">/ {salesTarget.toLocaleString()} ₼</span>
+                                        <span className="text-[10px] font-bold text-[var(--color-text-muted)]">/ {salesTarget.toLocaleString()} {currencySymbol}</span>
                                     </div>
                                     <div className="w-32 h-2 bg-[var(--color-hover-bg)] rounded-full mt-2 overflow-hidden border border-[var(--color-card-border)] relative">
                                         <motion.div
@@ -447,7 +449,7 @@ const Dashboard = () => {
                             {(isLoadingInventory && !isSalesRep && !isAccountant) ? '...' : isErrorInventory ? 'Xəta' : (
                                 <>
                                     <CountUp to={s.val} decimals={s.isCurrency ? 2 : 0} />
-                                    {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>₼</span>}
+                                    {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>{currencySymbol}</span>}
                                 </>
                             )}
                         </p>
@@ -536,7 +538,7 @@ const Dashboard = () => {
                                                                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                                                                             <span className="text-xs font-medium capitalize" style={{ color: 'var(--color-text-secondary)' }}>{entry.name}</span>
                                                                         </div>
-                                                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{entry.value?.toLocaleString()} ₼</span>
+                                                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{entry.value?.toLocaleString()} {currencySymbol}</span>
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -584,7 +586,7 @@ const Dashboard = () => {
                                         <p className="text-[10px] font-medium" style={{ color: '#ef4444' }}>#{inv.invoice_number} • Gecikir</p>
                                     </div>
                                     <div className="text-right shrink-0 ml-4">
-                                        <p className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>{parseFloat(inv.total).toLocaleString()} ₼</p>
+                                        <p className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>{parseFloat(inv.total).toLocaleString()} {CURRENCY_SYMBOLS[inv.currency] || currencySymbol}</p>
                                         <p className="text-[9px] font-bold" style={{ color: 'var(--color-text-muted)' }}>{inv.due_date}</p>
                                     </div>
                                 </div>

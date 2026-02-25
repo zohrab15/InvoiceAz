@@ -220,6 +220,16 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         plan_status = get_full_plan_status(invoice.business.user, business_id=invoice.business_id)
         has_white_label = plan_status.get('limits', {}).get('white_label', False)
 
+        currency_symbols = {
+            'AZN': '₼',
+            'USD': '$',
+            'EUR': '€',
+            'TRY': '₺',
+            'RUB': '₽',
+            'GBP': '£'
+        }
+        currency_symbol = currency_symbols.get(invoice.currency, '₼')
+
         context = {
             'invoice': invoice,
             'business': invoice.business,
@@ -230,6 +240,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'arial_font_base64': arial_font_base64,
             'arial_bold_font_base64': arial_bold_font_base64,
             'has_white_label': has_white_label,
+            'currency_symbol': currency_symbol,
         }
         
         html_string = render_to_string('invoices/invoice_pdf.html', context)
@@ -340,9 +351,19 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             # Simple body with link
             frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
             public_link = f"{frontend_url}/view/{invoice.share_token}"
+            currency_symbols = {
+                'AZN': '₼',
+                'USD': '$',
+                'EUR': '€',
+                'TRY': '₺',
+                'RUB': '₽',
+                'GBP': '£'
+            }
+            currency_symbol = currency_symbols.get(invoice.currency, '₼')
+            
             body = f"Salam {client.name},\n\n"
             body += f"{invoice.business.name} tərəfindən sizə {invoice.invoice_number} nömrəli faktura göndərilib.\n"
-            body += f"Məbləğ: {invoice.total} AZN\n\n"
+            body += f"Məbləğ: {invoice.total} {currency_symbol}\n\n"
             body += f"Fakturanı onlayn izləmək və ödəmək üçün aşağıdakı linkə daxil olun:\n{public_link}\n\n"
             body += "Təşəkkürlər!"
             

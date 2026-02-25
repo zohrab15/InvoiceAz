@@ -38,7 +38,7 @@ class BusinessSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'voen', 'logo', 'address', 'city', 'phone', 
             'email', 'website', 'bank_name', 'iban', 'swift', 
-            'budget_limit', 'default_invoice_theme', 'is_active', 
+            'budget_limit', 'default_invoice_theme', 'default_currency', 'is_active', 
             'created_at', 'updated_at', 'user_role'
         ]
         read_only_fields = ('id', 'user')
