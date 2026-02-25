@@ -13,6 +13,7 @@ import { translateError } from '../api/translateErrors';
 import * as XLSX from 'xlsx';
 import usePlanLimits from '../hooks/usePlanLimits';
 import useAuthStore from '../store/useAuthStore';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const UNIT_CHOICES = [
     { value: 'ədəd', label: 'Ədəd' },
@@ -35,14 +36,6 @@ const THEME_CHOICES = [
     { value: 'minimal', label: 'Minimal' }
 ];
 
-const CURRENCY_SYMBOLS = {
-    'AZN': '₼',
-    'USD': '$',
-    'EUR': '€',
-    'TRY': '₺',
-    'RUB': '₽',
-    'GBP': '£'
-};
 
 const CURRENCY_CHOICES = [
     { value: 'AZN', label: 'AZN (₼)' },
@@ -549,7 +542,7 @@ const Invoices = () => {
                                                     const m = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
                                                     return !isNaN(d) ? `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}` : '';
                                                 })(),
-                                                'Məbləğ': parseFloat(inv.total_amount),
+                                                'Məbləğ': parseFloat(inv.total),
                                                 'Valyuta': CURRENCY_SYMBOLS[inv.currency] || '₼',
                                                 'Status': inv.status === 'paid' ? 'Ödənilib' :
                                                     inv.status === 'sent' ? 'Göndərilib' :

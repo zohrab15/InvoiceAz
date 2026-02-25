@@ -38,7 +38,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
         }
 
         if (numAmount > balance + 0.01) {
-            setError(`Məbləğ qalıq borcdan (${balance.toFixed(2)} AZN) çox ola bilməz`);
+            setError(`Məbləğ qalıq borcdan (${balance.toFixed(2)} ${currencySymbol}) çox ola bilməz`);
             return;
         }
 

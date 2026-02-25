@@ -131,12 +131,11 @@ class Invoice(SoftDeleteModel):
                 from django.utils import timezone
                 self.paid_at = timezone.now()
             
-                currency_symbol = '₼'
-                if self.currency == 'USD': currency_symbol = '$'
-                elif self.currency == 'EUR': currency_symbol = '€'
-                elif self.currency == 'TRY': currency_symbol = '₺'
-                elif self.currency == 'RUB': currency_symbol = '₽'
-                elif self.currency == 'GBP': currency_symbol = '£'
+                currency_symbols = {
+                    'AZN': '₼', 'USD': '$', 'EUR': '€',
+                    'TRY': '₺', 'RUB': '₽', 'GBP': '£'
+                }
+                currency_symbol = currency_symbols.get(self.currency, '₼')
 
                 # Tam ödəniş bildirişi
                 # Notify business owner

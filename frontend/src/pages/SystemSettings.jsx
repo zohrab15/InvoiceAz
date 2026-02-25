@@ -6,6 +6,7 @@ import client from '../api/client';
 import { useToast } from '../components/Toast';
 import { translateError } from '../api/translateErrors';
 import { useBusiness } from '../context/BusinessContext';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const SystemSettings = () => {
     const { theme: currentTheme, setTheme, themes } = useTheme();
@@ -160,14 +161,16 @@ const SystemSettings = () => {
                             <div className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>Bütün hesabatlar bu valyutada göstəriləcək</div>
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="font-black px-4 py-2 rounded-xl" style={{ color: 'var(--color-text-primary)', backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>₼ AZN</span>
+                            <span className="font-black px-4 py-2 rounded-xl" style={{ color: 'var(--color-text-primary)', backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
+                                {CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'} {activeBusiness?.default_currency || 'AZN'}
+                            </span>
                             <span className="text-[10px] font-black px-2 py-0.5 rounded-full uppercase" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>Aktiv</span>
                         </div>
                     </div>
 
                     <div className="p-4 rounded-xl italic text-xs flex items-center gap-2" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)', border: '1px solid var(--color-card-border)' }}>
                         <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-brand)' }} />
-                        Tezliklə: Multi-valyuta dəstəyi (USD, EUR) üzərində işləyirik.
+                        Məlumat: Valyuta növünü Biznes Tənzimləmələri bölməsindən dəyişə bilərsiniz.
                     </div>
                 </div>
 

@@ -103,7 +103,7 @@ const TaxReports = () => {
                         <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gəlir</span>
                         <div className="flex items-baseline gap-2 mt-1">
                             <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.revenue.toLocaleString()}</span>
-                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
                         </div>
                     </div>
                 </div>
@@ -117,7 +117,7 @@ const TaxReports = () => {
                         <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Xərclər</span>
                         <div className="flex items-baseline gap-2 mt-1">
                             <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.expenses.toLocaleString()}</span>
-                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@ const TaxReports = () => {
                         <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Vergi Bazası</span>
                         <div className="flex items-baseline gap-2 mt-1">
                             <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.tax_base.toLocaleString()}</span>
-                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@ const TaxReports = () => {
                         <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Toplanmış ƏDV</span>
                         <div className="flex items-baseline gap-2 mt-1">
                             <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.vat.total.toLocaleString()}</span>
-                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>AZN</span>
+                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
                         </div>
                     </div>
                 </div>
@@ -225,7 +225,7 @@ const TaxReports = () => {
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '16px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(val) => [`${val.toLocaleString()} AZN`, 'ƏDV']}
+                                    formatter={(val) => [`${val.toLocaleString()} ${currencySymbol}`, 'ƏDV']}
                                 />
                                 <Area type="monotone" dataKey="vat" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorVat)" />
                             </AreaChart>
@@ -248,7 +248,7 @@ const TaxReports = () => {
                             <div>
                                 <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>18% Rate</span>
                                 <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
-                                    {taxData.vat.by_rate.rate_18.toLocaleString()} <span className="text-sm font-bold opacity-50">AZN</span>
+                                    {taxData.vat.by_rate.rate_18.toLocaleString()} <span className="text-sm font-bold opacity-50">{currencySymbol}</span>
                                 </p>
                             </div>
                             <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
@@ -260,7 +260,7 @@ const TaxReports = () => {
                             <div>
                                 <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>0% Rate (Azad)</span>
                                 <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
-                                    {taxData.vat.by_rate.rate_0.toLocaleString()} <span className="text-sm font-bold opacity-50">AZN</span>
+                                    {taxData.vat.by_rate.rate_0.toLocaleString()} <span className="text-sm font-bold opacity-50">{currencySymbol}</span>
                                 </p>
                             </div>
                             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}>
@@ -271,7 +271,7 @@ const TaxReports = () => {
                         <div className="pt-4">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>Yekun Ödənilməli ƏDV</span>
-                                <span className="text-xl font-bold text-blue-500">{taxData.vat.total.toLocaleString()} AZN</span>
+                                <span className="text-xl font-bold text-blue-500">{taxData.vat.total.toLocaleString()} {currencySymbol}</span>
                             </div>
                             <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
                                 <div className="bg-blue-500 h-full w-[100%]" />
@@ -345,7 +345,7 @@ const TaxReports = () => {
                             <div className="border p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'var(--color-brand-light)', borderColor: 'var(--color-brand-shadow)' }}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm font-bold" style={{ color: 'var(--color-brand-dark)' }}>Sadələşdirilmiş Vergi (2%)</span>
-                                    <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.simplified_2pct.toLocaleString()} AZN</span>
+                                    <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.simplified_2pct.toLocaleString()} {currencySymbol}</span>
                                 </div>
                                 <p className="text-xs opacity-70" style={{ color: 'var(--color-brand)' }}>Ümumi dövriyyə (Gəlir) əsasında hesablanır.</p>
                             </div>
@@ -354,14 +354,14 @@ const TaxReports = () => {
                                 <div className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'var(--color-badge-bg)', border: '1px solid var(--color-card-border)' }}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Mənfəət Vergisi (20%)</span>
-                                        <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.profit_20pct.toLocaleString()} AZN</span>
+                                        <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.profit_20pct.toLocaleString()} {currencySymbol}</span>
                                     </div>
                                     <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Gəlir ilə xərc fərqi əsasında standart dərəcə ilə hesablanır.</p>
                                 </div>
                                 <div className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Mikro Sahibkar (5%)</span>
-                                        <span className="text-2xl font-black text-emerald-500">{taxData.income_tax.estimates.micro_5pct.toLocaleString()} AZN</span>
+                                        <span className="text-2xl font-black text-emerald-500">{taxData.income_tax.estimates.micro_5pct.toLocaleString()} {currencySymbol}</span>
                                     </div>
                                     <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Gəlir və xərc fərqi əsasında 75% güzəştli dərəcə ilə.</p>
                                 </div>
@@ -464,12 +464,12 @@ const TaxReports = () => {
                 <h3 className="text-xl font-bold mb-6">İl Sonu Maliyyə Xülasəsi</h3>
                 <div className="grid grid-cols-2 gap-12">
                     <div className="space-y-4">
-                        <div className="flex justify-between border-b py-2"><span>Yekun Gəlir:</span><span className="font-bold">{taxData.income_tax.revenue.toLocaleString()} AZN</span></div>
-                        <div className="flex justify-between border-b py-2"><span>Yekun Xərc:</span><span className="font-bold">{taxData.income_tax.expenses.toLocaleString()} AZN</span></div>
-                        <div className="flex justify-between border-b py-2 text-xl font-black pt-4"><span>Xalis Mənfəət:</span><span>{taxData.income_tax.tax_base.toLocaleString()} AZN</span></div>
+                        <div className="flex justify-between border-b py-2"><span>Yekun Gəlir:</span><span className="font-bold">{taxData.income_tax.revenue.toLocaleString()} {currencySymbol}</span></div>
+                        <div className="flex justify-between border-b py-2"><span>Yekun Xərc:</span><span className="font-bold">{taxData.income_tax.expenses.toLocaleString()} {currencySymbol}</span></div>
+                        <div className="flex justify-between border-b py-2 text-xl font-black pt-4"><span>Xalis Mənfəət:</span><span>{taxData.income_tax.tax_base.toLocaleString()} {currencySymbol}</span></div>
                     </div>
                     <div className="space-y-4">
-                        <div className="flex justify-between border-b py-2"><span>Hesablanmış ƏDV (Yekun):</span><span className="font-bold">{taxData.vat.total.toLocaleString()} AZN</span></div>
+                        <div className="flex justify-between border-b py-2"><span>Hesablanmış ƏDV (Yekun):</span><span className="font-bold">{taxData.vat.total.toLocaleString()} {currencySymbol}</span></div>
                         <div className="flex justify-between border-b py-2"><span>Müştəri Sayı:</span><span className="font-bold">{taxData.summary.customer_count}</span></div>
                         <div className="flex justify-between border-b py-2"><span>Ən Uğurlu Ay:</span><span className="font-bold">{taxData.summary.best_month}</span></div>
                     </div>

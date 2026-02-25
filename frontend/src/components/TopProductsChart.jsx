@@ -8,8 +8,11 @@ import { Package, TrendingUp, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CountUp from './CountUp';
 
+import { CURRENCY_SYMBOLS } from '../utils/currency';
+
 const TopProductsChart = ({ hideLink = false }) => {
     const { activeBusiness } = useBusiness();
+    const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
 
     const { data: topProducts, isLoading } = useQuery({
         queryKey: ['top-products', activeBusiness?.id],
@@ -157,7 +160,7 @@ const TopProductsChart = ({ hideLink = false }) => {
                                                 <div>
                                                     <p className="text-[10px] font-semibold uppercase" style={{ color: 'var(--color-text-muted)' }}>Gəlir</p>
                                                     <p className="text-base font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                                                        <CountUp to={data.total_revenue} decimals={2} /> ₼
+                                                        <CountUp to={data.total_revenue} decimals={2} /> {currencySymbol}
                                                     </p>
                                                 </div>
                                                 <div className="w-px h-8" style={{ backgroundColor: 'var(--color-card-border)' }} />

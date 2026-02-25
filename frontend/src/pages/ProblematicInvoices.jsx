@@ -255,7 +255,7 @@ const ProblematicInvoices = () => {
                                                     <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)}></div>
                                                     <div className="absolute right-8 top-12 z-50 rounded-xl shadow-xl border p-2 w-48 flex flex-col gap-1 text-left" style={{ backgroundColor: 'var(--color-dropdown-bg)', borderColor: 'var(--color-dropdown-border)' }}>
                                                         <a
-                                                            href={`https://wa.me/${debtor.phone?.replace(/[^0-9]/g, '')}?text=Hörmətli ${debtor.name}, sizin ${debtor.total_debt} ${activeBusiness?.default_currency || 'AZN'} gecikmiş borcunuz var. Xahiş edirik ödəniş edəsiniz.`}
+                                                            href={`https://wa.me/${debtor.phone?.replace(/[^0-9]/g, '')}?text=Hörmətli ${debtor.name}, sizin ${debtor.total_debt.toFixed(2)} ${activeBusiness?.default_currency || 'AZN'} gecikmiş borcunuz var. Xahiş edirik ödəniş edəsiniz.`}
                                                             target="_blank"
                                                             rel="noreferrer"
                                                             className="flex items-center gap-3 px-3 py-2 hover:bg-green-500/10 text-[var(--color-text-secondary)] hover:text-green-500 rounded-lg transition-colors text-sm font-medium"
@@ -264,7 +264,7 @@ const ProblematicInvoices = () => {
                                                             WhatsApp
                                                         </a>
                                                         <a
-                                                            href={`mailto:${debtor.email}?subject=Ödəniş Xatırlatması&body=Hörmətli ${debtor.name},%0D%0A%0D%0ASizin ${debtor.total_debt} ${activeBusiness?.default_currency || 'AZN'} məbləğində gecikmiş borcunuz var.`}
+                                                            href={`mailto:${debtor.email}?subject=Ödəniş Xatırlatması&body=Hörmətli ${debtor.name},%0D%0A%0D%0ASizin ${debtor.total_debt.toFixed(2)} ${activeBusiness?.default_currency || 'AZN'} məbləğində gecikmiş borcunuz var.`}
                                                             className="flex items-center gap-3 px-3 py-2 hover:bg-blue-500/10 text-[var(--color-text-secondary)] hover:text-blue-500 rounded-lg transition-colors text-sm font-medium"
                                                         >
                                                             <Mail size={16} />

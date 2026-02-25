@@ -4,6 +4,7 @@ import axios from 'axios';
 import { API_URL } from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, ShieldCheck, ArrowLeft, CheckCircle2, Loader2, Smartphone } from 'lucide-react';
+import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const PublicPayment = () => {
     const { token } = useParams();
@@ -103,7 +104,7 @@ const PublicPayment = () => {
                             </div>
                             <div className="text-right">
                                 <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Məbləğ</p>
-                                <p className="text-3xl font-black text-blue-400">{parseFloat(invoice.total).toFixed(2)} AZN</p>
+                                <p className="text-3xl font-black text-blue-400">{parseFloat(invoice.total).toFixed(2)} {CURRENCY_SYMBOLS[invoice.currency] || '₼'}</p>
                             </div>
                         </div>
                         {/* Decorative background element */}
@@ -186,7 +187,7 @@ const PublicPayment = () => {
                                     ) : (
                                         <>
                                             <ShieldCheck size={20} />
-                                            {parseFloat(invoice.total).toFixed(2)} AZN ÖDƏ
+                                            {parseFloat(invoice.total).toFixed(2)} {CURRENCY_SYMBOLS[invoice.currency] || '₼'} ÖDƏ
                                         </>
                                     )}
                                 </button>
