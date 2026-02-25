@@ -25,21 +25,21 @@ class Command(BaseCommand):
                 'last_name': 'İstifadəçi',
                 'is_active': True,
                 'is_email_verified': True,
-                'membership': 'pro'
+                'membership': 'premium'
             }
         )
         user.set_password('demopassword123')
         
         # Ensure subscription plan if exists
         from users.models import SubscriptionPlan
-        free_plan = SubscriptionPlan.objects.filter(name='pro').first() # Give pro to demo
-        if not free_plan:
-            free_plan = SubscriptionPlan.objects.filter(name='free').first()
+        premium_plan = SubscriptionPlan.objects.filter(name='Premium').first() # Give Premium to demo
+        if not premium_plan:
+            premium_plan = SubscriptionPlan.objects.filter(name='pro').first()
         
-        if free_plan:
-            user.subscription_plan = free_plan
+        if premium_plan:
+            user.subscription_plan = premium_plan
             
-        user.membership = 'pro'
+        user.membership = 'premium'
         user.is_active = True
         user.is_email_verified = True
         user.save()
