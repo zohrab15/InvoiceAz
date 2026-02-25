@@ -80,7 +80,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+                        className="relative bg-[var(--color-card-bg)] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
                     >
                         {/* Header */}
                         <div className="bg-gradient-to-r from-primary-blue to-blue-700 p-6 text-white">
@@ -98,19 +98,19 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="p-6 space-y-6">
                             {/* Balance Info */}
-                            <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center border border-gray-100">
-                                <span className="text-gray-500 text-sm">Ümumi Qalıq:</span>
-                                <span className="text-lg font-bold text-gray-900">
-                                    {(parseFloat(invoice.total) - parseFloat(invoice.paid_amount)).toFixed(2)} AZN
+                            <div className="p-4 flex justify-between items-center border rounded-xl" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
+                                <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Ümumi Qalıq:</span>
+                                <span className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                                    {(parseFloat(invoice.total) - parseFloat(invoice.paid_amount)).toFixed(2)} ₼
                                 </span>
                             </div>
 
                             {/* Amount Input */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Məbləğ (AZN)</label>
+                                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Məbləğ (₼)</label>
                                 <div className="relative">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                        <DollarSign size={18} />
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 font-bold" style={{ color: 'var(--color-text-muted)' }}>
+                                        ₼
                                     </div>
                                     <input
                                         type="number"
@@ -120,8 +120,13 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                             setAmount(e.target.value);
                                             setError('');
                                         }}
-                                        className={`w-full pl-12 pr-4 py-3 bg-white border-2 rounded-xl focus:ring-4 transition-all outline-none ${error ? 'border-red-200 focus:ring-red-100' : 'border-gray-100 focus:border-primary-blue focus:ring-blue-100'
+                                        className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 transition-all outline-none font-bold text-xl ${error ? 'border-red-200 focus:ring-red-100' : 'focus:border-primary-blue focus:ring-blue-100'
                                             }`}
+                                        style={{
+                                            backgroundColor: 'var(--color-input-bg)',
+                                            color: 'var(--color-text-primary)',
+                                            borderColor: error ? '' : 'var(--color-input-border)'
+                                        }}
                                         placeholder="0.00"
                                         required
                                         onInvalid={(e) => e.target.setCustomValidity('Zəhmət olmasa bu sahəni doldurun')}
@@ -134,7 +139,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                             {/* Date and Method Grid */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Tarix</label>
+                                    <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Tarix</label>
                                     <div className="relative">
                                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                             <Calendar size={16} />
@@ -143,16 +148,18 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                             type="date"
                                             value={date}
                                             onChange={(e) => setDate(e.target.value)}
-                                            className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none text-sm"
+                                            className="w-full pl-10 pr-3 py-2.5 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none text-sm"
+                                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Metod</label>
+                                    <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Metod</label>
                                     <select
                                         value={method}
                                         onChange={(e) => setMethod(e.target.value)}
-                                        className="w-full px-3 py-2.5 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none text-sm appearance-none"
+                                        className="w-full px-3 py-2.5 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none text-sm appearance-none cursor-pointer"
+                                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                     >
                                         <option value="cash">Nəğd</option>
                                         <option value="bank_transfer">Köçürmə</option>
@@ -173,11 +180,12 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                             onClick={() => setMethod(m.id)}
                                             className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${method === m.id
                                                 ? `border-primary-blue ${m.bg}`
-                                                : 'border-transparent bg-gray-50 hover:bg-gray-100'
+                                                : `border-transparent hover:bg-[var(--color-hover-bg)]`
                                                 }`}
+                                            style={{ backgroundColor: method === m.id ? '' : 'var(--color-hover-bg)' }}
                                         >
                                             <Icon size={20} className={method === m.id ? m.color : 'text-gray-400'} />
-                                            <span className={`text-[10px] mt-1 font-bold ${method === m.id ? 'text-gray-900' : 'text-gray-500'}`}>
+                                            <span className={`text-[10px] mt-1 font-bold ${method === m.id ? 'text-gray-900' : 'text-[var(--color-text-muted)]'}`}>
                                                 {m.label}
                                             </span>
                                         </button>
@@ -187,7 +195,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
 
                             {/* Note Input */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Qeyd (İxtiyari)</label>
+                                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Qeyd (İxtiyari)</label>
                                 <div className="relative">
                                     <div className="absolute left-4 top-4 text-gray-400">
                                         <FileText size={18} />
@@ -195,7 +203,8 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
                                     <textarea
                                         value={note}
                                         onChange={(e) => setNote(e.target.value)}
-                                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none min-h-[100px] text-sm"
+                                        className="w-full pl-12 pr-4 py-3 border-0 rounded-xl focus:ring-2 focus:ring-primary-blue outline-none min-h-[100px] text-sm"
+                                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                         placeholder="Məsələn: Ödəniş tapşırığı №123"
                                     />
                                 </div>
