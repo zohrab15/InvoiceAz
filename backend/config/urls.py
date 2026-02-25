@@ -40,6 +40,8 @@ urlpatterns = [
     # Auth
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    # dj-rest-auth requires this URL name to exist to generate the reset URL during save/registration
+    path('api/auth/password/reset/confirm/<uidb64>/<token>/', health_check, name='password_reset_confirm'),
     path('accounts/', include('allauth.urls')),
     # Apps
     path('api/clients/', include('clients.urls')),
