@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_URL } from '../config';
 
 const client = axios.create({
-    baseURL: `${API_URL}/api`,
+    baseURL: `${API_URL}/api/`,
     timeout: 60000, // 60 seconds timeout - better for Render cold starts
 });
 

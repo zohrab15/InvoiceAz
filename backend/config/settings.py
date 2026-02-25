@@ -172,12 +172,21 @@ _TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "https://invoiceaz.vercel.app", 
     "https://invoice-az-backend.onrender.com",
+    "https://invoiceaz-staging.onrender.com",
 ]
+
+# Support Vercel Preview Deployments
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://invoiceaz-.*\.vercel\.app$",
+    r"^https://invoiceaz-.*-zohrab15s-projects\.vercel\.app$",
+]
+
 _ENV_TRUSTED = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
 if _ENV_TRUSTED:
     _TRUSTED_ORIGINS.extend([origin.strip() for origin in _ENV_TRUSTED.split(',') if origin.strip()])
 
 CSRF_TRUSTED_ORIGINS = _TRUSTED_ORIGINS
+CORS_ALLOWED_ORIGINS = _TRUSTED_ORIGINS
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -338,27 +347,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# CORS & CSRF Settings for Staging/Production
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-
-_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://invoiceaz.vercel.app",
-    "https://invoice-az-backend.onrender.com",
-    "https://invoiceaz-staging.onrender.com",
-]
-
-_ENV_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '')
-if _ENV_ORIGINS:
-    for origin in _ENV_ORIGINS.split(','):
-        o = origin.strip()
-        if o and o not in _TRUSTED_ORIGINS:
-            _TRUSTED_ORIGINS.append(o)
-
-CSRF_TRUSTED_ORIGINS = _TRUSTED_ORIGINS
-CORS_ALLOWED_ORIGINS = _TRUSTED_ORIGINS
+# CORS & CSRF Settings for Staging/Production are now handled above to avoid duplication
 
 # Jazzmin Settings
 JAZZMIN_SETTINGS = {
