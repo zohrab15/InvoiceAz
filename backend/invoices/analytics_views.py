@@ -593,10 +593,10 @@ class TaxAnalyticsView(AnalyticsBaseView):
                 'rule_text': "Azərbaycan Vergi Məcəlləsinə əsasən, ardıcıl 12 aylıq dövriyyə 200,000 AZN-i keçdikdə ƏDV qeydiyyatı məcburidir. (Qeyd: 2026-cı ildən pərakəndə ticarət və xidmət sahələrində bu limitin 400,000 AZN-ə qaldırılması planlaşdırılır)."
             },
             'tax_calendar': [
-                {'title': 'Rüblük Sadələşdirilmiş Vergi / Sosial / İTS', 'date': '2025-04-20', 'days_left': (datetime.date(2025, 4, 20) - today).days},
-                {'title': 'Rüblük Məşğulluq Hesabatı', 'date': '2025-04-15', 'days_left': (datetime.date(2025, 4, 15) - today).days},
-                {'title': 'İllik Gəlir / Mənfəət Vergisi', 'date': '2025-03-31', 'days_left': (datetime.date(2025, 3, 31) - today).days},
-                {'title': 'İllik Əmlak Vergisi', 'date': '2025-05-15', 'days_left': (datetime.date(2025, 5, 15) - today).days},
+                {'title': 'İllik Gəlir / Mənfəət Vergisi (2025-ci il üzrə)', 'date': '2026-03-31', 'days_left': (datetime.date(2026, 3, 31) - today).days},
+                {'title': '1-ci Rüblük Sadələşdirilmiş / Sosial / İTS', 'date': '2026-04-20', 'days_left': (datetime.date(2026, 4, 20) - today).days},
+                {'title': 'Rüblük Məşğulluq Hesabatı (1-ci rüb)', 'date': '2026-04-15', 'days_left': (datetime.date(2026, 4, 15) - today).days},
+                {'title': 'İllik Əmlak Vergisi bəyannaməsi', 'date': '2026-05-15', 'days_left': (datetime.date(2026, 5, 15) - today).days},
             ],
             'expense_meta': {
                 'total_recorded': total_expenses,
