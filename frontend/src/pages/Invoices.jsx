@@ -696,6 +696,7 @@ const Invoices = () => {
                                                             </button>
                                                         )}
 
+                                                        <button onClick={() => window.open(`${API_URL}/api/invoices/${inv.id}/etag_xml/`, '_blank')} title="E-Qaimə XML" className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"><FileText size={18} /></button>
                                                         <button onClick={() => handleDownloadPdf(inv.id)} title="Yüklə" className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"><Download size={18} /></button>
                                                         <button onClick={() => duplicateMutation.mutate(inv.id)} title="Kopyala" className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"><List size={18} /></button>
                                                         {canManageInvoices && (

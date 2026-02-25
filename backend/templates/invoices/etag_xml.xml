@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QayimeFaktura xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <SenedinMelumati>
+        <Seriya>{{ series }}</Seriya>
+        <Nomre>{{ number }}</Nomre>
+        <Tarix>{{ date }}</Tarix>
+        <Valyuta>{{ currency|default:"AZN" }}</Valyuta>
+    </SenedinMelumati>
+    <Satici>
+        <Ad>{{ satici_ad }}</Ad>
+        <Voen>{{ satici_voen }}</Voen>
+        <Unvan>{{ satici_unvan }}</Unvan>
+    </Satici>
+    <Alici>
+        <Ad>{{ alici_ad }}</Ad>
+        <Voen>{{ alici_voen }}</Voen>
+        <Unvan>{{ alici_unvan }}</Unvan>
+    </Alici>
+    <Mallar>
+        {% for item in items %}
+        <Mal>
+            <Ad>{{ item.description }}</Ad>
+            <OlcueVahidi>{{ item.unit|default:"ədəd" }}</OlcueVahidi>
+            <Miqdar>{{ item.quantity }}</Miqdar>
+            <Qiymet>{{ item.unit_price }}</Qiymet>
+            <Mebleq>{{ item.amount }}</Mebleq>
+            <EdvDerecesi>{{ item.tax_rate|floatformat:0 }}</EdvDerecesi>
+        </Mal>
+        {% endfor %}
+    </Mallar>
+    <Yekun>
+        <CemiMebleq>{{ total }}</CemiMebleq>
+        <CemiEdv>{{ total_tax }}</CemiEdv>
+        <YekunMebleq>{{ grand_total }}</YekunMebleq>
+    </Yekun>
+</QayimeFaktura>

@@ -413,10 +413,16 @@ const BusinessSettings = () => {
                                                     <input
                                                         name="voen"
                                                         value={formData.voen}
-                                                        onChange={handleChange}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value.replace(/\D/g, '').substring(0, 10);
+                                                            setFormData({ ...formData, voen: val });
+                                                        }}
+                                                        maxLength={10}
+                                                        placeholder="10 rəqəmli VÖEN"
                                                         className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold"
                                                         style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
                                                     />
+                                                    <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">e-qaimə üçün 10 rəqəmli VÖEN mütləqdir</p>
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <PhoneInput

@@ -43,6 +43,16 @@ class BusinessSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('id', 'user')
 
+    def validate_voen(self, value):
+        if value:
+            # Remove any spaces or dashes
+            value = value.replace(' ', '').replace('-', '')
+            if not value.isdigit():
+                raise serializers.ValidationError("VÖEN yalnız rəqəmlərdən ibarət olmalıdır.")
+            if len(value) != 10:
+                raise serializers.ValidationError("VÖEN mütləq 10 rəqəmli olmalıdır.")
+        return value
+
     def get_user_role(self, obj):
         request = self.context.get('request')
         if not request or not request.user or request.user.is_anonymous:

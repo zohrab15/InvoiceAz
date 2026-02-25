@@ -2,6 +2,7 @@ from rest_framework import serializers
 from invoices.models import Invoice, InvoiceItem, Payment, Expense
 from users.serializers import BusinessSerializer
 from clients.serializers import ClientSerializer
+from django.db import transaction
 
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,12 +33,10 @@ class PaymentSerializer(serializers.ModelSerializer):
             
             # Security: Prevent adding payments to invoices from other businesses (IDOR)
             if business and invoice.business_id != business.id:
-                from rest_framework import serializers
                 raise serializers.ValidationError({"invoice": "Bu faktura seçilmiş biznesə aid deyil."})
                 
             payment_date = data.get('payment_date')
             if payment_date and payment_date < invoice.invoice_date:
-                from rest_framework import serializers
                 raise serializers.ValidationError({"payment_date": "Ödəniş tarixi fakturanın kəsildiyi tarixdən əvvəl ola bilməz."})
                 
         return data
@@ -78,7 +77,6 @@ class InvoiceSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        from django.db import transaction
         with transaction.atomic():
             items_data = validated_data.pop('items', [])
             invoice = Invoice.objects.create(**validated_data)
@@ -93,7 +91,6 @@ class InvoiceSerializer(serializers.ModelSerializer):
         if instance.status in ['viewed', 'paid'] or (instance.status == 'sent' and instance.sent_at):
             raise serializers.ValidationError({"error": "Göndərilmiş və ya ödənilmiş fakturaları redaktə etmək olmaz. Zəhmət olmasa dublikat yaradın."})
 
-        from django.db import transaction
         with transaction.atomic():
             items_data = validated_data.pop('items', [])
 

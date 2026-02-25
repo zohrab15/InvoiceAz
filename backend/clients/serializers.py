@@ -12,6 +12,16 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'business', 'created_at', 'updated_at')
 
+    def validate_voen(self, value):
+        if value:
+            # Remove any spaces or dashes
+            value = value.replace(' ', '').replace('-', '')
+            if not value.isdigit():
+                raise serializers.ValidationError("VÖEN yalnız rəqəmlərdən ibarət olmalıdır.")
+            if len(value) != 10:
+                raise serializers.ValidationError("VÖEN mütləq 10 rəqəmli olmalıdır.")
+        return value
+
     def get_total_revenue(self, obj):
         return obj.invoices.exclude(status='draft').aggregate(Sum('total'))['total__sum'] or 0
 

@@ -30,13 +30,14 @@ const Clients = () => {
         phone: '',
         address: '',
         voen: '',
+        client_type: 'company',
         assigned_to: ''
     });
     const [selectedIds, setSelectedIds] = useState([]);
     const [isBulkAssignLoading, setIsBulkAssignLoading] = useState(false);
 
     const resetForm = () => {
-        setFormData({ name: '', email: '', phone: '', address: '', voen: '', assigned_to: '' });
+        setFormData({ name: '', email: '', phone: '', address: '', voen: '', client_type: 'company', assigned_to: '' });
         setEditingClient(null);
         setIsModalOpen(false);
     };
@@ -164,6 +165,7 @@ const Clients = () => {
             phone: client.phone || '',
             address: client.address || '',
             voen: client.voen || '',
+            client_type: client.client_type || 'company',
             assigned_to: client.assigned_to || ''
         });
         setIsModalOpen(true);
@@ -466,23 +468,39 @@ const Clients = () => {
                                                 type="text"
                                                 className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
                                                 placeholder="10 rəqəmli VÖEN"
-                                                value={formData.voen}
-                                                onChange={(e) => setFormData({ ...formData, voen: e.target.value })}
+                                                value={formData.voen || ''}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.replace(/\D/g, '').substring(0, 10);
+                                                    setFormData({ ...formData, voen: val });
+                                                }}
+                                                maxLength={10}
                                             />
+                                            <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">e-qaimə üçün 10 rəqəmli VÖEN mütləqdir</p>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Ünvan</label>
-                                        <div className="relative">
-                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
-                                            <input
-                                                type="text"
-                                                className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
-                                                placeholder="Şəhər, küçə..."
-                                                value={formData.address}
-                                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            />
-                                        </div>
+                                        <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Müştəri Növü</label>
+                                        <select
+                                            className="w-full px-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] outline-none transition-all font-medium appearance-none"
+                                            value={formData.client_type}
+                                            onChange={(e) => setFormData({ ...formData, client_type: e.target.value })}
+                                        >
+                                            <option value="company" className="bg-[var(--color-dropdown-bg)]">Hüquqi şəxs (Şirkət)</option>
+                                            <option value="individual" className="bg-[var(--color-dropdown-bg)]">Fiziki şəxs (Fərdi)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-1">Ünvan</label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
+                                        <input
+                                            type="text"
+                                            className="w-full pl-10 pr-4 py-3 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-xl focus:border-primary-blue text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                            placeholder="Şəhər, küçə..."
+                                            value={formData.address}
+                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                        />
                                     </div>
                                 </div>
 
@@ -522,8 +540,9 @@ const Clients = () => {
                             </form>
                         </motion.div>
                     </div>
-                )}
-            </AnimatePresence>
+                )
+                }
+            </AnimatePresence >
 
             <AnimatePresence>
                 {selectedIds.length > 0 && (
@@ -577,7 +596,7 @@ const Clients = () => {
                 resourceName="Müştəri"
                 limit={checkLimit('clients')?.limit}
             />
-        </div>
+        </div >
     );
 };
 

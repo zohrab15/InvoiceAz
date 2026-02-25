@@ -1,17 +1,31 @@
 from rest_framework import viewsets, permissions, status, filters, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
-from .models import Invoice, Expense
-from .serializers import InvoiceSerializer, ExpenseSerializer
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from .models import Invoice, Expense, Payment, InvoiceItem
+from .serializers import InvoiceSerializer, ExpenseSerializer, PaymentSerializer
 from users.models import Business
 from users.mixins import BusinessContextMixin
-from users.plan_limits import check_invoice_limit, check_expense_limit
+from users.plan_limits import check_invoice_limit, check_expense_limit, get_full_plan_status
 from users.permissions import IsRoleAuthorized
 from notifications.utils import create_notification
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.utils import timezone
+from django.conf import settings
+from django.db.models import Sum, F
+from django.core.mail import EmailMessage
 import io
+import os
+import uuid
+import base64
+import qrcode
+import tempfile
+import requests
+try:
+    from xhtml2pdf import pisa
+except ImportError:
+    pisa = None
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
     page_size = 50
@@ -44,8 +58,6 @@ class ExpenseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         super().perform_create(serializer)
 
 class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
-    from .models import Payment
-    from .serializers import PaymentSerializer
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
@@ -59,7 +71,6 @@ class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     def perform_create(self, serializer):
         business = self.get_active_business()
         if not business:
-            from rest_framework.exceptions import ValidationError
             raise ValidationError({"detail": "Əməliyyat üçün Biznes Profili seçilməyib."})
         
         # The mixin's perform_create tries to save(business=business)
@@ -98,6 +109,53 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             
         super().perform_create(serializer)
 
+    @action(detail=True, methods=['get'])
+    def etag_xml(self, request, pk=None):
+        invoice = self.get_object()
+        
+        # Split series and number from INV-0001 format
+        series = "INV"
+        number = invoice.invoice_number
+        if "-" in invoice.invoice_number:
+            parts = invoice.invoice_number.split("-")
+            series = parts[0]
+            number = "-".join(parts[1:])
+            
+        # Validation for e-taxes compliance
+        satici_voen = str(invoice.business.voen or "").strip()
+        alici_voen = str(invoice.client.voen or "").strip()
+        
+        if len(satici_voen) != 10:
+             return Response({"error": "Sizin (Satıcının) 10 rəqəmli VÖEN-i daxil edilməyib. Zəhmət olmasa Biznes tənzimləmələrində daxil edin."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if len(alici_voen) != 10:
+             return Response({"error": "Müştərinin (Alıcının) 10 rəqəmli VÖEN-i daxil edilməyib. Zəhmət olmasa Müştəri məlumatlarında daxil edin."}, status=status.HTTP_400_BAD_REQUEST)
+
+        context = {
+            'series': series,
+            'number': number,
+            'date': invoice.invoice_date.strftime('%Y-%m-%d'),
+            'satici_ad': invoice.business.name,
+            'satici_voen': satici_voen,
+            'satici_unvan': invoice.business.address,
+            'alici_ad': invoice.client.name,
+            'alici_voen': alici_voen,
+            'alici_unvan': invoice.client.address,
+            'items': invoice.items.all(),
+            'total': invoice.subtotal,
+            'total_tax': invoice.tax_amount,
+            'grand_total': invoice.total,
+            'currency': invoice.currency or 'AZN',
+        }
+        
+        try:
+            xml_string = render_to_string('invoices/etag_xml.xml', context)
+            response = HttpResponse(xml_string, content_type='application/xml')
+            response['Content-Disposition'] = f'attachment; filename="e-qaime-{invoice.invoice_number}.xml"'
+            return response
+        except Exception as e:
+            return Response({"error": f"XML generasiya xətası: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=True, methods=['post'])
     def duplicate(self, request, pk=None):
         invoice = self.get_object()
@@ -106,7 +164,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         # Clone invoice
         invoice.pk = None
         invoice.invoice_number = None # Let model's save() generate a new number
-        import uuid
         invoice.share_token = uuid.uuid4()
         invoice.status = 'draft'
         invoice.save()
@@ -124,10 +181,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     def _generate_pdf(self, invoice):
         invoice.calculate_totals()
         
-        import qrcode
-        import tempfile
-        import os
-        from django.conf import settings
+        invoice.calculate_totals()
         
         # Generate QR code for payment
         qr_code_path = None
@@ -148,8 +202,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         static_dir = str(settings.BASE_DIR / "static")
         fonts_dir = os.path.join(static_dir, "fonts")
         
-        # Read and encode fonts to base64 to avoid path issues
-        import base64
+        # Prepare font paths for template
         
         def get_font_base64(font_name):
             font_path = os.path.join(fonts_dir, font_name)
@@ -164,7 +217,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         arial_bold_font_base64 = get_font_base64("arialbd.ttf")
 
         # Check for white label permission
-        from users.plan_limits import get_full_plan_status
         plan_status = get_full_plan_status(invoice.business.user, business_id=invoice.business_id)
         has_white_label = plan_status.get('limits', {}).get('white_label', False)
 
@@ -191,8 +243,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         # and rely 100% on the HTML/CSS embedding.
 
         def link_callback(uri, rel):
-            import os
-            from django.conf import settings
             
             if not uri: return uri
             
@@ -202,8 +252,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             # 1. Handle HTTP/HTTPS URLs (external images)
             if uri_clean.startswith('http://') or uri_clean.startswith('https://'):
                 try:
-                    import requests
-                    import tempfile
                     response = requests.get(uri_clean, timeout=3)
                     if response.status_code == 200:
                         temp_img = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
@@ -243,7 +291,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return uri
 
         try:
-            from xhtml2pdf import pisa
             result = io.BytesIO()
             pisa_status = pisa.pisaDocument(
                 io.BytesIO(html_string.encode("UTF-8")), 
@@ -287,8 +334,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response({"error": "PDF yaradıla bilmədi."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
         try:
-            from django.core.mail import EmailMessage
-            from django.conf import settings
             
             subject = f"Faktura #{invoice.invoice_number} - {invoice.business.name}"
             
@@ -314,7 +359,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             # Update status if needed
             if invoice.status in ['draft', 'finalized']:
                 invoice.status = 'sent'
-                import django.utils.timezone as timezone
                 invoice.sent_at = timezone.now()
                 invoice.save()
                 
@@ -325,7 +369,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def mark_as_sent(self, request, pk=None):
         invoice = self.get_object()
-        from django.utils import timezone
         invoice.sent_at = timezone.now()
         if invoice.status in ['draft', 'finalized']:
             invoice.status = 'sent'
@@ -335,7 +378,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='public/(?P<share_token>[^/.]+)')
     def public_view(self, request, share_token=None):
         try:
-            from django.utils import timezone
             invoice = Invoice.objects.get(share_token=share_token)
             
             # Tracking logic
@@ -382,9 +424,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             if invoice.status == 'paid':
                 return Response({"message": "Bu faktura artıq ödənilib"}, status=status.HTTP_200_OK)
             
-            # Create a mock payment record
-            from .models import Payment
-            from django.utils import timezone
+             # Create a mock payment record
             Payment.objects.create(
                 invoice=invoice,
                 amount=invoice.total,
@@ -414,8 +454,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response({"error": "Faktura tapılmadı"}, status=status.HTTP_404_NOT_FOUND)
     @action(detail=False, methods=['get'], url_path='top-products')
     def top_products(self, request):
-        from django.db.models import Sum, F
-        from .models import InvoiceItem
         
         business = self.get_active_business()
         if not business:
