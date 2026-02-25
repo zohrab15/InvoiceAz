@@ -67,9 +67,13 @@ class PaymentAnalyticsView(AnalyticsBaseView):
         
         # Mapping for Azerbaijani translations
         METHOD_MAP = {
+            'bank_transfer': 'Bank Köçürməsi',
             'Bank Transfer': 'Bank Köçürməsi',
+            'card': 'Kart',
             'Card': 'Kart',
+            'cash': 'Nağd',
             'Cash': 'Nağd',
+            'online': 'Onlayn',
             'Transfer': 'Köçürmə'
         }
         
