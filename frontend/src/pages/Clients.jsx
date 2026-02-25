@@ -137,6 +137,13 @@ const Clients = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Validate VÖEN if provided
+        if (formData.voen && formData.voen.length !== 10) {
+            showToast('Müştəri VÖEN-i mütləq 10 rəqəmli olmalıdır!', 'error');
+            return;
+        }
+
         const submitData = { ...formData };
 
         // If user is Owner/Manager, handle empty assignment

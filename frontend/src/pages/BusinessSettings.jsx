@@ -193,6 +193,12 @@ const BusinessSettings = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (formData.voen && formData.voen.length !== 10) {
+            showToast('Biznes VÖEN-i mütləq 10 rəqəmli olmalıdır!', 'error');
+            return;
+        }
+
         mutation.mutate(formData);
     };
 
