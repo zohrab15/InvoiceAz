@@ -64,9 +64,21 @@ class PaymentAnalyticsView(AnalyticsBaseView):
 
         # 3. Payment Methods
         methods_data = payments.values('payment_method').annotate(count=Count('id'), total_amount=Sum('amount'))
+        
+        # Mapping for Azerbaijani translations
+        METHOD_MAP = {
+            'Bank Transfer': 'Bank Köçürməsi',
+            'Card': 'Kart',
+            'Cash': 'Nağd',
+            'Transfer': 'Köçürmə'
+        }
+        
         formatted_methods = []
         for m in methods_data:
-            method_name = m['payment_method'] if m['payment_method'] else 'Digər'
+            raw_method = m['payment_method']
+            # Translate if exists in map, otherwise use raw or 'Digər'
+            method_name = METHOD_MAP.get(raw_method, raw_method) if raw_method else 'Digər'
+            
             formatted_methods.append({
                 'name': method_name,
                 'count': m['count'],
