@@ -464,6 +464,7 @@ class ForecastAnalyticsView(AnalyticsBaseView):
 class TaxAnalyticsView(AnalyticsBaseView):
     def get(self, request):
         business = self.get_business(request)
+        today = timezone.now().date()
 
         # Fix Bug 12: Year validation
         try:
@@ -537,6 +538,18 @@ class TaxAnalyticsView(AnalyticsBaseView):
             })
 
         # 4. Yearly Summary & Comparisons
+        # 4. VAT Registration Threshold Analysis (200,000 AZN / 12 months)
+        # Any consecutive 12 months!
+        twelve_months_ago = today - timedelta(days=365)
+        twelve_month_revenue = float(Invoice.objects.filter(
+            business=business,
+            invoice_date__gte=twelve_months_ago
+        ).exclude(status__in=['draft', 'cancelled']).aggregate(total=Sum('total'))['total'] or 0)
+        
+        vat_limit = 200000.00
+        is_approaching_vat = twelve_month_revenue > (vat_limit * 0.8)
+        is_over_vat = twelve_month_revenue >= vat_limit
+
         customer_count = relevant_invoices.values('client').distinct().count()
         
         response_data = {
@@ -563,6 +576,15 @@ class TaxAnalyticsView(AnalyticsBaseView):
             'summary': {
                 'customer_count': customer_count,
                 'best_month': max(formatted_monthly, key=lambda x: x['revenue'])['month'] if formatted_monthly else None
+            },
+            'vat_registration': {
+                'threshold': vat_limit,
+                'current_12m_revenue': twelve_month_revenue,
+                'remaining': max(0, vat_limit - twelve_month_revenue),
+                'percent_reached': round((twelve_month_revenue / vat_limit * 100), 1) if vat_limit > 0 else 0,
+                'is_approaching': is_approaching_vat,
+                'is_over': is_over_vat,
+                'rule_text': "Azərbaycan Vergi Məcəlləsinə əsasən, ardıcıl 12 aylıq dövriyyə 200,000 AZN-i keçdikdə ƏDV qeydiyyatı məcburidir. (Qeyd: 2026-cı ildən pərakəndə ticarət və xidmət sahələrində bu limitin 400,000 AZN-ə qaldırılması planlaşdırılır)."
             }
         }
 
