@@ -77,17 +77,23 @@ class PaymentAnalyticsView(AnalyticsBaseView):
             'Transfer': 'Köçürmə'
         }
         
-        formatted_methods = []
+        # Aggregate methods by their translated name
+        methods_agg = {}
         for m in methods_data:
             raw_method = m['payment_method']
             # Translate if exists in map, otherwise use raw or 'Digər'
-            method_name = METHOD_MAP.get(raw_method, raw_method) if raw_method else 'Digər'
+            name = METHOD_MAP.get(raw_method, raw_method) if raw_method else 'Digər'
             
-            formatted_methods.append({
-                'name': method_name,
-                'count': m['count'],
-                'amount': float(m['total_amount'])
-            })
+            if name not in methods_agg:
+                methods_agg[name] = {'count': 0, 'amount': 0.0}
+            
+            methods_agg[name]['count'] += m['count']
+            methods_agg[name]['amount'] += float(m['total_amount'])
+            
+        formatted_methods = [
+            {'name': name, 'count': val['count'], 'amount': val['amount']}
+            for name, val in methods_agg.items()
+        ]
 
         # 4. Payment Speed Analysis & Customer Rating
         # Optimized: Fetch only needed fields and select related invoice/client to avoid N+1
