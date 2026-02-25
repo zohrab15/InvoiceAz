@@ -39,6 +39,7 @@ const PAGE_TITLES = {
   '/privacy': 'Məxfilik Siyasəti | InvoiceAZ',
   '/verify-email-sent': 'E-poçtu Yoxlayın | InvoiceAZ',
   '/akademiya': 'Akademiya | InvoiceAZ',
+  '/about': 'Haqqımızda | InvoiceAZ',
 };
 
 const PageTitleUpdater = () => {
@@ -120,6 +121,7 @@ const HelpSupport = lazy(() => import('./pages/HelpSupport'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const Akademiya = lazy(() => import('./pages/Akademiya'));
 const AkademiyaPost = lazy(() => import('./pages/AkademiyaPost'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -290,6 +292,7 @@ function App() {
                     <Route path="/help" element={<HelpSupport />} />
                     <Route path="/akademiya" element={<Akademiya />} />
                     <Route path="/akademiya/:slug" element={<AkademiyaPost />} />
+                    <Route path="/about" element={<AboutUs />} />
                     <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
                     <Route
                       path="/*"

@@ -557,7 +557,7 @@ const LandingPage = () => {
                         </div>
                         <div className="flex flex-col gap-3">
                             <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Şirkət</h5>
-                            <a href="#" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Haqqımızda</a>
+                            <Link to="/about" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Haqqımızda</Link>
                             <a href="#reviews" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Rəylər</a>
                             <Link to="/akademiya" className="text-sm font-medium text-white/30 hover:text-white transition-colors">Akademiya</Link>
                             <button
