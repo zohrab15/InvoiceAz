@@ -502,12 +502,12 @@ const Expenses = () => {
                                 </div>
 
                                 {isEditingBudget && (
-                                    <div className="mt-4 p-3 bg-blue-50 rounded-xl space-y-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[9px] font-black uppercase text-blue-400">Yeni Aylıq Limit (₼)</label>
+                                    <div className="mt-4 p-3 bg-[var(--color-hover-bg)] rounded-xl space-y-2 animate-in fade-in slide-in-from-top-2">
+                                        <label className="text-[9px] font-black uppercase text-[var(--color-text-muted)]">Yeni Aylıq Limit (₼)</label>
                                         <div className="flex gap-2">
                                             <input
                                                 type="number"
-                                                className="flex-1 bg-white border border-blue-100 rounded-lg p-1.5 text-xs font-bold outline-none"
+                                                className="flex-1 bg-[var(--color-input-bg)] border border-[var(--color-input-border)] rounded-lg p-1.5 text-xs font-bold outline-none text-[var(--color-text-primary)]"
                                                 value={budgetLimitInput || monthlyBudget}
                                                 onChange={(e) => setBudgetLimitInput(e.target.value)}
                                             />
