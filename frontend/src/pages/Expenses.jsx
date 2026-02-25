@@ -431,13 +431,16 @@ const Expenses = () => {
                                         dataKey="name"
                                         type="category"
                                         width={140}
-                                        tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
+                                        tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--color-text-secondary)' }}
                                         axisLine={false}
                                         tickLine={false}
                                     />
                                     <Tooltip
                                         cursor={{ fill: 'var(--color-hover-bg)' }}
                                         contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '12px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                        itemStyle={{ color: 'var(--color-text-primary)', fontWeight: 'bold' }}
+                                        labelStyle={{ color: 'var(--color-text-muted)', fontWeight: 'bold', marginBottom: '4px' }}
+                                        formatter={(value) => [`${Number(value).toFixed(2)} ₼`, 'Məbləğ']}
                                     />
                                     <Bar
                                         dataKey="value"
