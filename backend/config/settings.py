@@ -173,9 +173,12 @@ _TRUSTED_ORIGINS = [
     "https://invoiceaz.vercel.app", 
     "https://invoice-az-backend.onrender.com",
     "https://invoiceaz-staging.onrender.com",
+    "https://*.vercel.app",
 ]
 
-# Support Vercel Preview Deployments
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Support Vercel Preview Deployments (Optional backup)
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://invoiceaz-.*\.vercel\.app$",
     r"^https://invoiceaz-.*-zohrab15s-projects\.vercel\.app$",
