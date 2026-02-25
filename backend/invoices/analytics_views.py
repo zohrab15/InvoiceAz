@@ -593,11 +593,11 @@ class TaxAnalyticsView(AnalyticsBaseView):
                 'rule_text': "Azərbaycan Vergi Məcəlləsinə əsasən, ardıcıl 12 aylıq dövriyyə 200,000 AZN-i keçdikdə ƏDV qeydiyyatı məcburidir. (Qeyd: 2026-cı ildən pərakəndə ticarət və xidmət sahələrində bu limitin 400,000 AZN-ə qaldırılması planlaşdırılır)."
             },
             'tax_calendar': [
-                {'title': 'Aylıq ƏDV və Aksiz bəyannaməsi', 'date': '2026-03-20', 'days_left': (datetime.date(2026, 3, 20) - today).days},
-                {'title': 'Maaş üzrə MDSS, İTS və Gəlir vergisi ödənişi', 'date': '2026-03-20', 'days_left': (datetime.date(2026, 3, 20) - today).days},
-                {'title': 'İllik Gəlir/Mənfəət və Əmlak vergisi (2025)', 'date': '2026-03-31', 'days_left': (datetime.date(2026, 3, 31) - today).days},
-                {'title': 'Rüblük Məşğulluq hesabatı (1-ci rüb)', 'date': '2026-04-15', 'days_left': (datetime.date(2026, 4, 15) - today).days},
-                {'title': '1-ci rüb: Sadələşdirilmiş və Vahid bəyannamə', 'date': '2026-04-20', 'days_left': (datetime.date(2026, 4, 20) - today).days},
+                {'title': f'Aylıq ƏDV və Aksiz bəyannaməsi ({today.year})', 'date': f'{today.year}-03-20', 'days_left': (datetime.date(today.year, 3, 20) - today).days},
+                {'title': 'Maaş üzrə MDSS, İTS və Gəlir vergisi ödənişi', 'date': f'{today.year}-03-20', 'days_left': (datetime.date(today.year, 3, 20) - today).days},
+                {'title': f'İllik Gəlir/Mənfəət və Əmlak vergisi ({today.year - 1})', 'date': f'{today.year}-03-31', 'days_left': (datetime.date(today.year, 3, 31) - today).days},
+                {'title': f'Rüblük Məşğulluq hesabatı (1-ci rüb {today.year})', 'date': f'{today.year}-04-15', 'days_left': (datetime.date(today.year, 4, 15) - today).days},
+                {'title': f'1-ci rüb: Sadələşdirilmiş və Vahid bəyannamə ({today.year})', 'date': f'{today.year}-04-20', 'days_left': (datetime.date(today.year, 4, 20) - today).days},
             ],
             'expense_meta': {
                 'total_recorded': total_expenses,
