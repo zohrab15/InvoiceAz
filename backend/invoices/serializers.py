@@ -36,9 +36,13 @@ class PaymentSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"invoice": "Bu faktura seçilmiş biznesə aid deyil."})
                 
             if invoice.status == 'draft':
-                raise serializers.ValidationError({"invoice": "Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz."})
+                raise serializers.ValidationError({"invoice": f"Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz. (Status: {invoice.status})"})
             if invoice.status == 'cancelled':
-                raise serializers.ValidationError({"invoice": "Ləğv edilmiş fakturaya ödəniş əlavə etmək olmaz."})
+                raise serializers.ValidationError({"invoice": f"Ləğv edilmiş fakturaya ödəniş əlavə etmək olmaz. (Status: {invoice.status})"})
+            
+            allowed_statuses = ['sent', 'viewed', 'overdue', 'finalized', 'paid']
+            if invoice.status not in allowed_statuses:
+                raise serializers.ValidationError({"invoice": f"Bu statusda olan fakturaya ödəniş əlavə etmək olmaz. (Status: {invoice.status})"})
 
             payment_date = data.get('payment_date')
             if payment_date and payment_date < invoice.invoice_date:

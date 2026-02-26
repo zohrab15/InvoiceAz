@@ -24,9 +24,10 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
 
         const canPay = ['sent', 'viewed', 'overdue', 'finalized'].includes(invoice?.status);
         if (!canPay) {
-            setError(invoice?.status === 'paid' ? 'Bu faktura artıq ödənilib' :
+            const statusLabel = invoice?.status === 'paid' ? 'Bu faktura artıq ödənilib' :
                 invoice?.status === 'cancelled' ? 'Ləğv edilmiş fakturaya ödəniş əlavə etmək olmaz' :
-                    'Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz');
+                    `Qaralama statusunda olan fakturaya ödəniş əlavə etmək olmaz (Status: ${invoice?.status})`;
+            setError(statusLabel);
             return;
         }
 
