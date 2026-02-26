@@ -543,8 +543,9 @@ const Invoices = () => {
                                                 'Status': inv.status === 'paid' ? 'Ödənilib' :
                                                     inv.status === 'sent' ? 'Göndərilib' :
                                                         inv.status === 'viewed' ? 'Baxılıb' :
-                                                            inv.status === 'overdue' ? 'Gecikir' :
-                                                                inv.status === 'cancelled' ? 'Ləğv edilib' : 'Qaralama'
+                                                            inv.status === 'finalized' ? 'Təsdiqləndi' :
+                                                                inv.status === 'overdue' ? 'Gecikir' :
+                                                                    inv.status === 'cancelled' ? 'Ləğv edilib' : 'Qaralama'
                                             };
                                         });
                                         const ws = XLSX.utils.json_to_sheet(data);
@@ -601,6 +602,7 @@ const Invoices = () => {
                                         onChange={(e) => setStatusFilter(e.target.value)}
                                     >
                                         <option value="all">Bütün Statuslar</option>
+                                        <option value="finalized">Təsdiqləndi</option>
                                         <option value="paid">Ödənilib</option>
                                         <option value="sent">Göndərilib</option>
                                         <option value="viewed">Baxılıb</option>
