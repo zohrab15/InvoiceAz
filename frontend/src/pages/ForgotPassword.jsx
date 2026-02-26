@@ -20,7 +20,7 @@ const ForgotPassword = () => {
             await clientApi.post('/auth/password/reset/', { email });
             setIsSent(true);
             showToast('Sıfırlama linki e-poçt ünvanınıza göndərildi');
-        } catch (error) {
+        } catch {
             showToast('Xəta baş verdi. E-poçt ünvanını yoxlayın', 'error');
         } finally {
             setIsLoading(false);

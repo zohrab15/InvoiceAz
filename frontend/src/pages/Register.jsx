@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { translateError } from '../api/translateErrors';
@@ -109,7 +109,7 @@ const Register = () => {
                             'Xərc və büdcə izləmə',
                             'Tam maliyyə analitikası'
                         ].map((text, i) => (
-                            <motion.div
+                            <Motion.div
                                 key={i}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -118,7 +118,7 @@ const Register = () => {
                             >
                                 <CheckCircle2 size={18} className="text-violet-400" />
                                 <span className="text-sm text-white/50 font-semibold">{text}</span>
-                            </motion.div>
+                            </Motion.div>
                         ))}
                     </div>
                 </div>
@@ -126,7 +126,7 @@ const Register = () => {
 
             {/* Right Side - Form */}
             <div className="flex-1 flex items-center justify-center px-6 py-12">
-                <motion.div
+                <Motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
@@ -259,7 +259,7 @@ const Register = () => {
                             </Link>
                         </p>
                     </div>
-                </motion.div>
+                </Motion.div>
             </div>
         </div>
     );

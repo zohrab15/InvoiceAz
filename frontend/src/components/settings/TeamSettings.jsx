@@ -33,7 +33,7 @@ const TeamSettings = () => {
     });
 
     // Fetch pending invitations
-    const { data: invitations, isLoading: isInvitesLoading } = useQuery({
+    const { data: invitations } = useQuery({
         queryKey: ['invitations', activeBusiness?.id, token],
         queryFn: async () => {
             const res = await client.get('/users/invitations/');

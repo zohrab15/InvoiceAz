@@ -21,7 +21,6 @@ import {
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
-import { useLocation } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import usePlanLimits from '../hooks/usePlanLimits';
 
@@ -29,7 +28,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     const { activeBusiness, businesses, switchBusiness } = useBusiness();
     const [isBusinessMenuOpen, setIsBusinessMenuOpen] = useState(false);
     const menuRef = useRef(null);
-    const location = useLocation();
     const { isFeatureLocked } = usePlanLimits();
 
     useEffect(() => {
@@ -198,7 +196,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <NavLink
                             key={item.to}
                             to={item.to}
-                            onClick={(e) => {
+                            onClick={() => {
                                 if (window.innerWidth < 1024) onClose();
                                 // Optional: Prevent navigation if locked? For now let them see the locked page
                                 // if (item.locked) e.preventDefault(); 

@@ -66,9 +66,9 @@ const ReferralTab = () => {
           { icon: ExternalLink, title: 'Linki paylaş', desc: 'Öz referral linkini dostuna göndər', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
           { icon: Users, title: 'Dost qeydiyyat keçir', desc: 'Linkdən qeydiyyat keçir', color: 'text-violet-400', bg: 'bg-violet-500/10 border-violet-500/20' },
           { icon: Gift, title: 'Hər ikiniz qazan', desc: 'O 10%, sən 20% endirim alırsınız', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
-        ].map(({ icon: Icon, title, desc, color, bg }) => (
+        ].map(({ icon, title, desc, color, bg }) => (
           <div key={title} className={`border rounded-xl p-4 ${bg}`}>
-            <Icon size={20} className={`${color} mb-2`} />
+            {React.createElement(icon, { size: 20, className: `${color} mb-2` })}
             <p className="text-sm font-semibold text-white/90 mb-0.5">{title}</p>
             <p className="text-xs text-white/45">{desc}</p>
           </div>
@@ -87,11 +87,10 @@ const ReferralTab = () => {
           </div>
           <button
             onClick={copyLink}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
-              copiedLink
-                ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'
-                : 'bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30'
-            }`}
+            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${copiedLink
+              ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'
+              : 'bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30'
+              }`}
           >
             {copiedLink ? <Check size={15} /> : <Copy size={15} />}
             {copiedLink ? 'Kopyalandı' : 'Kopyala'}
@@ -128,16 +127,14 @@ const ReferralTab = () => {
                 key={coupon.code}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                  coupon.is_used
-                    ? 'bg-white/[0.02] border-white/[0.05] opacity-50'
-                    : 'bg-white/[0.04] border-white/[0.08]'
-                }`}
+                className={`flex items-center justify-between p-4 rounded-xl border transition-all ${coupon.is_used
+                  ? 'bg-white/[0.02] border-white/[0.05] opacity-50'
+                  : 'bg-white/[0.04] border-white/[0.08]'
+                  }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black ${
-                    coupon.is_used ? 'bg-white/10 text-white/30' : 'bg-blue-500/20 text-blue-400'
-                  }`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black ${coupon.is_used ? 'bg-white/10 text-white/30' : 'bg-blue-500/20 text-blue-400'
+                    }`}>
                     {coupon.discount_percent}%
                   </div>
                   <div>

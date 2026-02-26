@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import clientApi from '../api/client';
 import { CheckCircle, XCircle, Loader, ArrowRight, Zap } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const VerifyEmail = () => {
     const { key } = useParams();
@@ -48,7 +48,7 @@ const VerifyEmail = () => {
             </div>
 
             <div className="flex-1 flex items-center justify-center p-6 relative z-10">
-                <motion.div
+                <Motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
@@ -64,13 +64,13 @@ const VerifyEmail = () => {
 
                     {status === 'success' && (
                         <div className="flex flex-col items-center">
-                            <motion.div
+                            <Motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 className="inline-flex p-5 bg-emerald-500/10 rounded-3xl mb-8 text-emerald-400 border border-emerald-500/20"
                             >
                                 <CheckCircle size={48} />
-                            </motion.div>
+                            </Motion.div>
                             <h2 className="text-3xl font-black text-white mb-4">Möhtəşəm!</h2>
                             <p className="text-white/40 mb-10 leading-relaxed font-medium">
                                 Hesabınız uğurla təsdiqləndi. İndi InvoiceAZ-ın bütün imkanlarından yararlana bilərsiniz.
@@ -102,7 +102,7 @@ const VerifyEmail = () => {
                             </Link>
                         </div>
                     )}
-                </motion.div>
+                </Motion.div>
             </div>
 
             {/* Footer Attribution */}

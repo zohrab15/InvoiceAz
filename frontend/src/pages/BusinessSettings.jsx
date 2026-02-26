@@ -20,12 +20,12 @@ import { Lock, FileText } from 'lucide-react';
 
 const BusinessSettings = () => {
     const queryClient = useQueryClient();
-    const { token, user } = useAuthStore();
+    const { token } = useAuthStore();
     const showToast = useToast();
     const { switchBusiness, refetchBusinesses } = useBusiness();
     const location = useLocation();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
-    const { theme: currentTheme } = useTheme();
+    const { theme: _currentTheme } = useTheme();
     const { checkLimit, canUseThemes } = usePlanLimits();
 
     const [activeTab, setActiveTab] = useState('user'); // 'user', 'business'
@@ -40,6 +40,7 @@ const BusinessSettings = () => {
         const searchParams = new URLSearchParams(location.search);
         const tab = searchParams.get('tab');
         if (tab && ['user', 'business', 'referral'].includes(tab)) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveTab(tab);
         }
     }, [location]);
@@ -71,6 +72,7 @@ const BusinessSettings = () => {
 
     useEffect(() => {
         if (businesses && businesses.length > 0 && !selectedBusiness && !isCreating) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedBusiness(businesses[0]);
             setFormData(businesses[0]);
         }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { X, CameraOff, RefreshCw, AlertTriangle, Video, Play } from 'lucide-react';
 
@@ -11,7 +11,43 @@ const ProductQRScanner = ({ onScan, onClose }) => {
 
     const isSecure = window.isSecureContext;
 
-    const initScanner = async () => {
+    const startScanning = useCallback(async (cameraId) => {
+        setIsCameraReady(false);
+        setError(null);
+
+        try {
+            // Ensure any previous scanning is stopped
+            if (html5QrCode.current?.isScanning) {
+                await html5QrCode.current.stop();
+            }
+
+            await html5QrCode.current.start(
+                cameraId,
+                { fps: 20, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    onScan(decodedText);
+                    onClose();
+                },
+                () => { /* ignore */ }
+            );
+
+            // Give it a tiny moment to actually start rendering
+            setTimeout(() => {
+                setIsCameraReady(true);
+            }, 300);
+
+        } catch (err) {
+            console.error("Camera start error:", err);
+            setIsCameraReady(false);
+            if (String(err).includes("NotAllowedError") || String(err).includes("Permission denied")) {
+                setError("Kamera icazəsi rədd edildi. Brauzer tənzimləmələrindən girişi aktivləşdirin.");
+            } else {
+                setError(`Kameranı açmaq mümkün olmadı. Başqa bir proqramın kamerasını istifadə etmədiyindən əmin olun.`);
+            }
+        }
+    }, [onScan, onClose]);
+
+    const initScanner = useCallback(async () => {
         if (!isSecure && window.location.hostname !== 'localhost') {
             setError("Kamera üçün HTTPS bağlantısı tələb olunur. Zəhmət olmasa təhlükəsiz bağlantını (HTTPS) yoxlayın.");
             return;
@@ -46,9 +82,10 @@ const ProductQRScanner = ({ onScan, onClose }) => {
             console.error("Camera detection error:", err);
             setError("Kamera tapılarkən xəta baş verdi. Zəhmət olmasa səhifəni yeniləyin və icazə verin.");
         }
-    };
+    }, [isSecure, startScanning]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         initScanner();
 
         return () => {
@@ -56,43 +93,8 @@ const ProductQRScanner = ({ onScan, onClose }) => {
                 html5QrCode.current.stop().catch(e => console.warn(e));
             }
         };
-    }, []);
+    }, [initScanner]);
 
-    const startScanning = async (cameraId) => {
-        setIsCameraReady(false);
-        setError(null);
-
-        try {
-            // Ensure any previous scanning is stopped
-            if (html5QrCode.current?.isScanning) {
-                await html5QrCode.current.stop();
-            }
-
-            await html5QrCode.current.start(
-                cameraId,
-                { fps: 20, qrbox: { width: 250, height: 250 } },
-                (decodedText) => {
-                    onScan(decodedText);
-                    onClose();
-                },
-                () => { /* ignore */ }
-            );
-
-            // Give it a tiny moment to actually start rendering
-            setTimeout(() => {
-                setIsCameraReady(true);
-            }, 300);
-
-        } catch (err) {
-            console.error("Camera start error:", err);
-            setIsCameraReady(false);
-            if (err.includes("NotAllowedError") || err.includes("Permission denied")) {
-                setError("Kamera icazəsi rədd edildi. Brauzer tənzimləmələrindən girişi aktivləşdirin.");
-            } else {
-                setError(`Kameranı açmaq mümkün olmadı. Başqa bir proqramın kamerasını istifadə etmədiyindən əmin olun.`);
-            }
-        }
-    };
 
     const handleCameraSwitch = (e) => {
         const id = e.target.value;

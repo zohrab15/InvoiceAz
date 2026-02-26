@@ -16,7 +16,7 @@ const Clients = () => {
     const { activeBusiness } = useBusiness();
     const queryClient = useQueryClient();
     const showToast = useToast();
-    const { checkLimit, isPro } = usePlanLimits();
+    const { checkLimit } = usePlanLimits();
     const { token, user } = useAuthStore();
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -34,7 +34,6 @@ const Clients = () => {
         assigned_to: ''
     });
     const [selectedIds, setSelectedIds] = useState([]);
-    const [isBulkAssignLoading, setIsBulkAssignLoading] = useState(false);
 
     const resetForm = () => {
         setFormData({ name: '', email: '', phone: '', address: '', voen: '', client_type: 'company', assigned_to: '' });

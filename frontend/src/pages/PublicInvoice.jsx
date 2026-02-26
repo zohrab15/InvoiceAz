@@ -7,6 +7,8 @@ import { Download, CheckCircle, Clock, AlertCircle, FileText, Globe, Smartphone 
 import { QRCodeSVG } from 'qrcode.react';
 import { CURRENCY_SYMBOLS } from '../utils/currency';
 
+const parseAmount = (amt) => isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
+
 const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token, currencySymbol }) => (
     <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
         <div className={`py-4 px-8 text-center text-sm font-bold uppercase tracking-widest ${isPaid ? 'bg-green-500 text-white' : 'bg-blue-600 text-white'}`}>
@@ -122,7 +124,7 @@ const ModernTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token, 
     </div>
 );
 
-const ClassicTheme = ({ invoice, subtotal, tax, total, isPaid, isPayable, token, currencySymbol }) => (
+const ClassicTheme = ({ invoice, subtotal, tax, total, isPayable, token, currencySymbol }) => (
     <div className="bg-white shadow-xl border border-slate-200 overflow-hidden font-serif">
         <div className="p-12 md:p-20">
             <div className="text-center mb-16 space-y-4">
@@ -322,7 +324,6 @@ const PublicInvoice = () => {
     const total = parseFloat(invoice.total);
     const currentTheme = invoice.invoice_theme || 'modern';
     const currencySymbol = CURRENCY_SYMBOLS[invoice.currency] || '₼';
-    const parseAmount = (amt) => isNaN(parseFloat(amt)) ? 0 : parseFloat(amt);
 
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4 md:px-8 font-inter">
@@ -363,7 +364,7 @@ const PublicInvoice = () => {
                     key={currentTheme}
                 >
                     {currentTheme === 'classic' ? (
-                        <ClassicTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} currencySymbol={currencySymbol} />
+                        <ClassicTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPayable={isPayable} token={token} currencySymbol={currencySymbol} />
                     ) : currentTheme === 'minimal' ? (
                         <MinimalTheme invoice={invoice} subtotal={subtotal} tax={tax} total={total} isPaid={isPaid} isPayable={isPayable} token={token} currencySymbol={currencySymbol} />
                     ) : (

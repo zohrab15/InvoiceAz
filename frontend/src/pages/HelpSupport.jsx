@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
+
 import {
     Search, Mail, MessageSquare, Phone,
     FileText, HelpCircle, ChevronRight, ChevronDown, ChevronLeft,

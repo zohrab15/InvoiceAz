@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useBusiness } from '../context/BusinessContext';
 import { API_URL } from '../config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { Plus, Trash2, Send, Save, Eye, MessageSquare, List, ArrowLeft, Download, Edit2, CheckCircle, FileText, Check, Search, Filter, X, Lock, QrCode } from 'lucide-react';
@@ -51,7 +51,7 @@ const Invoices = () => {
     const queryClient = useQueryClient();
     const showToast = useToast();
     const { token, user } = useAuthStore();
-    const { checkLimit, isPro, canUseThemes } = usePlanLimits();
+    const { checkLimit, canUseThemes } = usePlanLimits();
     const [upgradeConfig, setUpgradeConfig] = useState({ isOpen: false, title: '', message: '' });
 
     const isOwnerOrManager = activeBusiness?.user_role === 'OWNER' || activeBusiness?.user_role === 'MANAGER';
@@ -122,7 +122,7 @@ const Invoices = () => {
         retry: false,
     });
 
-    const invoicesData = invoices?.results || (Array.isArray(invoices) ? invoices : []);
+    const invoicesData = useMemo(() => invoices?.results || (Array.isArray(invoices) ? invoices : []), [invoices]);
     const totalCount = invoices?.count || invoicesData.length || 0;
     const totalPages = Math.ceil(totalCount / 50);
 
@@ -224,11 +224,7 @@ const Invoices = () => {
         onError: (err) => showToast(translateError(err), 'error')
     });
 
-    const updateStatusMutation = useMutation({
-        mutationFn: ({ id, status }) => clientApi.patch(`/invoices/${id}/`, { status }),
-        onSuccess: () => queryClient.invalidateQueries(['invoices']),
-        onError: (err) => showToast(translateError(err), 'error')
-    });
+
 
     const markAsSentMutation = useMutation({
         mutationFn: (id) => clientApi.post(`/invoices/${id}/mark_as_sent/`),
@@ -437,7 +433,7 @@ const Invoices = () => {
     const selectedClient = useMemo(() => clients?.find(c => String(c.id) === String(selectedClientId)), [clients, selectedClientId]);
 
     const InvoicePreview = () => (
-        <motion.div
+        <Motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white p-4 sm:p-8 shadow-2xl rounded-2xl border aspect-auto sm:aspect-[1/1.41] sticky top-8 text-gray-800"
@@ -506,14 +502,14 @@ const Invoices = () => {
             <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] text-gray-400 italic leading-relaxed">
                 {notes || activeBusiness?.bank_name ? `Qeyd: ${notes || activeBusiness?.bank_name}` : 'Qeyd: Bu faktura kompyuter vasitəsilə generasiya olunub. Zəhmət olmasa vaxtında ödəniş edin.'}
             </div>
-        </motion.div>
+        </Motion.div>
     );
 
     return (
         <>
             <AnimatePresence mode="wait">
                 {view === 'list' ? (
-                    <motion.div
+                    <Motion.div
                         key="list"
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -635,7 +631,7 @@ const Invoices = () => {
                                         ) : filteredInvoices.length === 0 ? (
                                             <tr><td colSpan="6" className="p-12 text-center text-gray-400">Faktura tapılmadı</td></tr>
                                         ) : filteredInvoices.map((inv) => (
-                                            <motion.tr
+                                            <Motion.tr
                                                 layout
                                                 key={inv.id}
                                                 className="hover:bg-[var(--color-hover-bg)] transition-colors group"
@@ -726,7 +722,7 @@ const Invoices = () => {
                                                         )}
                                                     </div>
                                                 </td>
-                                            </motion.tr>
+                                            </Motion.tr>
                                         ))}
                                     </tbody>
                                 </table>
@@ -774,9 +770,9 @@ const Invoices = () => {
                                 </div>
                             )}
                         </div>
-                    </motion.div>
+                    </Motion.div>
                 ) : (
-                    <motion.div
+                    <Motion.div
                         key="create"
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -913,7 +909,7 @@ const Invoices = () => {
                                     <div className="space-y-4">
                                         <AnimatePresence>
                                             {items.map((item, index) => (
-                                                <motion.div
+                                                <Motion.div
                                                     initial={{ opacity: 0, height: 0 }}
                                                     animate={{ opacity: 1, height: 'auto' }}
                                                     exit={{ opacity: 0, height: 0 }}
@@ -960,7 +956,7 @@ const Invoices = () => {
                                                         <span className="text-base sm:text-sm">{(item.quantity * item.unit_price).toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span>
                                                     </div>
                                                     <button onClick={() => removeItem(index)} className="p-2 text-[var(--color-text-muted)] hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10 self-end sm:self-center mt-2 sm:mt-0"><Trash2 size={20} /></button>
-                                                </motion.div>
+                                                </Motion.div>
                                             ))}
                                         </AnimatePresence>
                                         <button onClick={addItem} className="w-full py-3 border-2 border-dashed border-[var(--color-card-border)] rounded-xl text-[var(--color-text-secondary)] font-bold hover:border-primary-blue hover:text-primary-blue transition-all flex justify-center items-center gap-2 active:bg-blue-50/10">
@@ -1050,13 +1046,13 @@ const Invoices = () => {
                                 )}
                             </div>
                         </div>
-                    </motion.div>
+                    </Motion.div>
                 )}
             </AnimatePresence>
             <AnimatePresence>
                 {showSendModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-                        <motion.div
+                        <Motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -1126,7 +1122,7 @@ const Invoices = () => {
                                     </button>
                                 </div>
                             </div>
-                        </motion.div>
+                        </Motion.div>
                     </div>
                 )}
             </AnimatePresence>

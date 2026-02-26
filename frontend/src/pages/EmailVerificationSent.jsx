@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const EmailVerificationSent = () => {
     const navigate = useNavigate();
@@ -23,20 +23,20 @@ const EmailVerificationSent = () => {
             </div>
 
             <div className="flex-1 flex items-center justify-center p-6 relative z-10">
-                <motion.div
+                <Motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                     className="w-full max-w-md p-10 bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] shadow-2xl backdrop-blur-xl text-center"
                 >
-                    <motion.div
+                    <Motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
                         className="inline-flex p-6 bg-gradient-to-br from-blue-500/20 to-violet-500/20 rounded-3xl mb-8 text-blue-400 border border-blue-500/20"
                     >
                         <Mail size={40} className="animate-pulse" />
-                    </motion.div>
+                    </Motion.div>
 
                     <h1 className="text-3xl font-black tracking-tight mb-4 text-white">E-poçtunuzu yoxlayın</h1>
 
@@ -58,7 +58,7 @@ const EmailVerificationSent = () => {
                             <span>Spam qovluğunu da yoxlayın</span>
                         </div>
                     </div>
-                </motion.div>
+                </Motion.div>
             </div>
 
             {/* Footer Attribution */}

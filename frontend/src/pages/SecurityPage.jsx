@@ -1,11 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Shield } from 'lucide-react';
 import SecuritySettings from '../components/settings/SecuritySettings';
 
 const SecurityPage = () => {
     return (
-        <motion.div
+        <Motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto space-y-6 pb-12 px-4"
@@ -41,7 +41,7 @@ const SecurityPage = () => {
             >
                 <SecuritySettings />
             </div>
-        </motion.div>
+        </Motion.div>
     );
 };
 

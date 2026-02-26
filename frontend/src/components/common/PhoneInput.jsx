@@ -13,7 +13,7 @@ const OPERATORS = [
     { code: '012', label: '012 (Bakı/Şəhər)' },
 ];
 
-const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) => {
+const PhoneInput = ({ value, onChange, name, label }) => {
     // Parse initial value (e.g. "0501234567" or "+994501234567")
     const parseInitialValue = (val) => {
         if (!val) return { operator: '050', number: '' };
@@ -32,6 +32,7 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
 
     useEffect(() => {
         const parsed = parseInitialValue(value);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPhoneState(parsed);
     }, [value]);
 
@@ -63,7 +64,6 @@ const PhoneInput = ({ value, onChange, name, label, icon: Icon = PhoneIcon }) =>
         return formatted;
     };
 
-    const displayMask = `(${phoneState.operator}) ${formatDisplay(phoneState.number)}`;
 
     return (
         <div className="space-y-1.5">

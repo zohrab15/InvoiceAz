@@ -116,7 +116,7 @@ const ActivityLog = () => {
                     </div>
                 ) : (
                     <div className="relative border-l-2 ml-4 md:ml-6 mt-4 mb-4" style={{ borderColor: 'var(--color-card-border)' }}>
-                        {filteredLogs.map((log, index) => (
+                        {filteredLogs.map((log) => (
                             <div key={log.id} className="mb-8 ml-6 group">
                                 <span className="absolute flex items-center justify-center w-8 h-8 rounded-full -left-[17px] ring-4"
                                     style={{ backgroundColor: 'var(--color-page-bg)', ringColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>

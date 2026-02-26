@@ -44,7 +44,6 @@ const Header = ({ onMenuClick }) => {
         enabled: !!user && !!activeBusiness?.id,
     });
 
-    const unreadCount = notifications.filter(n => !n.is_read).length;
 
     // Role-based filtering of notifications
     const getFilteredNotifications = () => {
@@ -201,7 +200,7 @@ const Header = ({ onMenuClick }) => {
                                                                 const d = new Date(n.created_at);
                                                                 if (isNaN(d.getTime())) return '---';
                                                                 return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                                            } catch (e) {
+                                                            } catch {
                                                                 return '---';
                                                             }
                                                         })()}

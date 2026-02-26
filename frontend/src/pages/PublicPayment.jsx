@@ -25,7 +25,7 @@ const PublicPayment = () => {
             try {
                 const response = await axios.get(`${API_URL}/api/invoices/public/${token}/`);
                 setInvoice(response.data);
-            } catch (err) {
+            } catch {
                 console.error('Faktura tapılmadı');
             } finally {
                 setLoading(false);
@@ -45,7 +45,7 @@ const PublicPayment = () => {
                 if (response.data.status === 'paid') {
                     setSuccess(true);
                 }
-            } catch (err) {
+            } catch {
                 alert('Ödəniş zamanı xəta baş verdi.');
             } finally {
                 setProcessing(false);

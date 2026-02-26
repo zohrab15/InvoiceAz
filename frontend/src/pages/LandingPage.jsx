@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
     FileText,
@@ -59,7 +59,7 @@ const LandingPage = () => {
         }
     }, [searchParams]);
 
-    const goRegister = () => navigate(token ? '/dashboard' : '/register');
+
     const goLogin = () => navigate('/login');
 
     return (

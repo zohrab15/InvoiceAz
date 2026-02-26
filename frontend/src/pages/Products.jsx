@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import UpgradeModal from '../components/UpgradeModal';
 import usePlanLimits from '../hooks/usePlanLimits';
 import { translateError } from '../api/translateErrors';
-import useAuthStore from '../store/useAuthStore';
+
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
 import { CURRENCY_SYMBOLS } from '../utils/currency';

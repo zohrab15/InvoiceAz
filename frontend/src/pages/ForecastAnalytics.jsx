@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import clientApi from '../api/client';
 import { useBusiness } from '../context/BusinessContext';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
@@ -18,7 +18,7 @@ import { CURRENCY_SYMBOLS } from '../utils/currency';
 const ForecastAnalytics = () => {
     const { activeBusiness } = useBusiness();
     const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
-    const { isFeatureLocked, plan } = usePlanLimits();
+    const { isFeatureLocked } = usePlanLimits();
     const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
     const isLocked = isFeatureLocked('forecast_analytics');
 
@@ -42,17 +42,17 @@ const ForecastAnalytics = () => {
     if (isLocked) return (
         <div className="relative min-h-[80vh] flex flex-col items-center justify-center text-center space-y-6 p-8 overflow-hidden rounded-3xl border shadow-sm" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
             <div className="absolute inset-0 bg-grid-slate-50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
-            <motion.div
+            <Motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="relative z-10 w-24 h-24 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-200 rotate-3"
             >
                 <Lock className="text-white" size={48} />
-            </motion.div>
+            </Motion.div>
             <div className="relative z-10 max-w-lg space-y-4">
                 <h2 className="text-3xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Premium Analitika</h2>
                 <p className="font-medium text-lg leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                    Süni intellekt dəstəkli proqnozlar və trend analizləri yalnız <span className="text-blue-600 font-bold">Pro</span> və <span className="text-purple-600 font-bold">Premium</span> paketlərdə mövcuddur.
+                    Süni intellekt dəstəkli proqnozlar və trend analizləri yalnız <span className="text-blue-600 font-bold">Pro</span> ve <span className="text-purple-600 font-bold">Premium</span> paketlərdə mövcuddur.
                 </p>
                 <button
                     onClick={() => setShowUpgradeModal(true)}
@@ -92,7 +92,7 @@ const ForecastAnalytics = () => {
     }));
 
     return (
-        <motion.div
+        <Motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8 pb-12"
@@ -263,7 +263,7 @@ const ForecastAnalytics = () => {
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </Motion.div>
     );
 };
 

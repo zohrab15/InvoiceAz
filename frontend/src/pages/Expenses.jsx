@@ -22,7 +22,7 @@ const Expenses = () => {
     const canManageExpenses = isOwnerOrManager || isAccountant;
     const queryClient = useQueryClient();
     const showToast = useToast();
-    const { checkLimit, isPro } = usePlanLimits();
+    const { checkLimit } = usePlanLimits();
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
@@ -102,14 +102,7 @@ const Expenses = () => {
         setPage(1);
     };
 
-    const { data: clients } = useQuery({
-        queryKey: ['clients', 'dropdown', activeBusiness?.id],
-        queryFn: async () => {
-            const res = await clientApi.get('/clients/all/dropdown/');
-            return res.data;
-        },
-        enabled: !!activeBusiness,
-    });
+
 
     const createMutation = useMutation({
         mutationFn: (data) => {
@@ -186,7 +179,7 @@ const Expenses = () => {
 
     const updateBudgetMutation = useMutation({
         mutationFn: (newLimit) => clientApi.patch(`/users/business/${activeBusiness.id}/`, { budget_limit: newLimit }),
-        onSuccess: (res) => {
+        onSuccess: () => {
             queryClient.invalidateQueries(['business']);
             showToast('Büdcə limiti yeniləndi');
             setIsEditingBudget(false);
@@ -205,11 +198,7 @@ const Expenses = () => {
         value: (expenses?.results || []).filter(e => e.category === cat.id).reduce((sum, e) => sum + parseFloat(e.amount), 0) || 0
     })).filter(d => d.value > 0);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!formData.description || !formData.amount) return showToast('Məbləğ və təsvir məcburidir', 'error');
-        createMutation.mutate(formData);
-    };
+
 
     if (isLoading) return <div className="p-12 text-center text-gray-400">Yüklənir...</div>;
 

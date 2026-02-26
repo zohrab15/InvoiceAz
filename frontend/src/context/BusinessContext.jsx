@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client';
 import useAuthStore from '../store/useAuthStore';
@@ -31,13 +32,32 @@ export const BusinessProvider = ({ children }) => {
     // Clear active business and refetch if token changes
     useEffect(() => {
         if (!token) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveBusiness(null);
             localStorage.removeItem('active_business');
         } else {
-            // Refetch businesses for the new token
             refetch();
         }
     }, [token, refetch]);
+
+    const queryClient = useQueryClient();
+
+    const switchBusiness = useCallback((business) => {
+        setActiveBusiness(business);
+        if (business) {
+            localStorage.setItem('active_business', JSON.stringify(business));
+            // CRITICAL: Clear all cached data on switch to prevent cross-business visibility
+            // But preserve the business list itself so we don't lose context specific logic
+            queryClient.removeQueries({
+                predicate: (query) => {
+                    // Keep 'business' queries, remove everything else (clients, invoices, etc)
+                    return !query.queryKey.includes('business');
+                }
+            });
+        } else {
+            localStorage.removeItem('active_business');
+        }
+    }, [queryClient]);
 
     // Auto-select business logic
     useEffect(() => {
@@ -48,6 +68,7 @@ export const BusinessProvider = ({ children }) => {
                 if (found) {
                     // Update data if changed
                     if (JSON.stringify(found) !== JSON.stringify(activeBusiness)) {
+                        // eslint-disable-next-line react-hooks/set-state-in-effect
                         setActiveBusiness(found);
                         localStorage.setItem('active_business', JSON.stringify(found));
                     }
@@ -72,34 +93,15 @@ export const BusinessProvider = ({ children }) => {
                 switchBusiness(ownedBusiness || businesses[0]);
             }
         }
-    }, [businesses, isLoading, token]); // Re-run if businesses or token change
+    }, [businesses, isLoading, activeBusiness, switchBusiness]); // Added missing deps
 
-    const queryClient = useQueryClient();
-
-    const switchBusiness = (business) => {
-        setActiveBusiness(business);
-        if (business) {
-            localStorage.setItem('active_business', JSON.stringify(business));
-            // CRITICAL: Clear all cached data on switch to prevent cross-business visibility
-            // But preserve the business list itself so we don't lose context specific logic
-            queryClient.removeQueries({
-                predicate: (query) => {
-                    // Keep 'business' queries, remove everything else (clients, invoices, etc)
-                    return !query.queryKey.includes('business');
-                }
-            });
-        } else {
-            localStorage.removeItem('active_business');
-        }
-    };
-
-    const value = {
+    const value = useMemo(() => ({
         businesses,
         activeBusiness,
         switchBusiness,
         isLoading,
         refetchBusinesses: refetch
-    };
+    }), [businesses, activeBusiness, switchBusiness, isLoading, refetch]);
 
     return (
         <BusinessContext.Provider value={value}>

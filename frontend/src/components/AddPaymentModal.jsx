@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, DollarSign, Calendar, CreditCard, Banknote, Landmark, FileText, Check } from 'lucide-react';
+import { X, Calendar, CreditCard, Banknote, Landmark, FileText, Check } from 'lucide-react';
 import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
@@ -14,6 +14,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
     useEffect(() => {
         if (invoice) {
             const balance = (parseFloat(invoice.total) - parseFloat(invoice.paid_amount)).toFixed(2);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setAmount(balance);
         }
     }, [invoice, isOpen]);

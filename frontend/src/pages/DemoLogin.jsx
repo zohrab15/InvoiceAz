@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import client from '../api/client';
 import { API_URL } from '../config';
 import useAuthStore from '../store/useAuthStore';
 import { useToast } from '../components/Toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, ShieldCheck, Database, Rocket, LayoutDashboard } from 'lucide-react';
+
+const steps = [
+    { icon: <Database size={24} />, text: "Məlumat bazası ilə əlaqə qurulur..." },
+    { icon: <ShieldCheck size={24} />, text: "Təhlükəsizlik protokolları yoxlanılır..." },
+    { icon: <Zap size={24} />, text: "Demo hesab konfiqurasiya edilir..." },
+    { icon: <LayoutDashboard size={24} />, text: "İdarəetmə paneli hazırlanır..." },
+    { icon: <Rocket size={24} />, text: "Sizə giriş icazəsi verilir..." }
+];
 
 const DemoLogin = () => {
     const navigate = useNavigate();
@@ -16,13 +23,6 @@ const DemoLogin = () => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [progress, setProgress] = useState(0);
 
-    const steps = [
-        { icon: <Database size={24} />, text: "Məlumat bazası ilə əlaqə qurulur..." },
-        { icon: <ShieldCheck size={24} />, text: "Təhlükəsizlik protokolları yoxlanılır..." },
-        { icon: <Zap size={24} />, text: "Demo hesab konfiqurasiya edilir..." },
-        { icon: <LayoutDashboard size={24} />, text: "İdarəetmə paneli hazırlanır..." },
-        { icon: <Rocket size={24} />, text: "Sizə giriş icazəsi verilir..." }
-    ];
 
     useEffect(() => {
         let isMounted = true;

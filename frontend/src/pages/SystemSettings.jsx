@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Palette, Check, Coins, Bell, Moon, Sun, Mail, AppWindow, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Palette, Check, Coins, Bell, Moon, Mail, AppWindow, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import client from '../api/client';
 import { useToast } from '../components/Toast';
@@ -16,11 +16,7 @@ const SystemSettings = () => {
     const [saving, setSaving] = useState(false);
     const showToast = useToast();
 
-    useEffect(() => {
-        fetchSettings();
-    }, []);
-
-    const fetchSettings = async () => {
+    const fetchSettings = React.useCallback(async () => {
         try {
             const response = await client.get('/notifications/settings/me/');
             setSettings(response.data);
@@ -30,7 +26,11 @@ const SystemSettings = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
+
+    useEffect(() => {
+        fetchSettings();
+    }, [fetchSettings]);
 
     const toggleSetting = async (key) => {
         if (!settings || saving) return;
@@ -50,7 +50,7 @@ const SystemSettings = () => {
         }
     };
 
-    const NotificationToggle = ({ id, label, description, icon: Icon, isEmail = false }) => {
+    const NotificationToggle = ({ id, label, description, icon, isEmail = false }) => {
         const key = isEmail ? `email_${id}` : `in_app_${id}`;
         const isActive = settings?.[key];
 
@@ -61,7 +61,7 @@ const SystemSettings = () => {
                         ? (isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-blue-500/10 text-blue-500')
                         : (isActive ? 'bg-[var(--color-brand)] text-white shadow-lg shadow-[var(--color-brand-shadow)]' : 'bg-purple-500/10 text-purple-600')
                         }`}>
-                        <Icon size={20} className={isActive ? 'scale-110' : ''} />
+                        {React.createElement(icon, { size: 20, className: isActive ? 'scale-110' : '' })}
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="text-sm font-bold truncate leading-none mb-1" style={{ color: 'var(--color-text-primary)' }}>{label}</div>

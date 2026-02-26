@@ -6,54 +6,6 @@ const useLocationTracker = () => {
     const { token, user } = useAuthStore();
     const intervalRef = useRef(null);
 
-    useEffect(() => {
-        // Track only if user is logged in
-        if (!token || !user) {
-            stopTracking();
-            return;
-        }
-
-        // Check if user is a team member (not OWNER)
-        // Usually, the dashboard fetches activeBusiness, but at the App context, 
-        // we might not have it loaded if it's the first render.
-        // Let's rely on the activeBusiness from localStorage for an immediate check
-        const activeBusinessRaw = localStorage.getItem('active_business');
-        let isTrackable = false;
-
-        if (activeBusinessRaw) {
-            try {
-                const activeBusiness = JSON.parse(activeBusinessRaw);
-                // Only tracking specific roles (Sales Reps)
-                if (activeBusiness.user_role === 'SALES_REP') {
-                    isTrackable = true;
-                }
-            } catch (e) {
-                // Parse error, ignore
-            }
-        }
-
-        if (!isTrackable) {
-            // Do not track owners, managers, or accountants
-            return;
-        }
-
-        if (!navigator.geolocation) {
-            console.warn('Geolocation is not supported by your browser');
-            return;
-        }
-
-        // Initial quick check immediately after login/mount
-        sendLocation();
-
-        // Set up 10-minute interval (600,000 milliseconds)
-        const TEN_MINUTES = 10 * 60 * 1000;
-        intervalRef.current = setInterval(sendLocation, TEN_MINUTES);
-
-        return () => stopTracking();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token, user]);
-
     const sendLocation = () => {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -92,6 +44,53 @@ const useLocationTracker = () => {
             intervalRef.current = null;
         }
     };
+
+    useEffect(() => {
+        // Track only if user is logged in
+        if (!token || !user) {
+            stopTracking();
+            return;
+        }
+
+        // Check if user is a team member (not OWNER)
+        // Usually, the dashboard fetches activeBusiness, but at the App context, 
+        // we might not have it loaded if it's the first render.
+        // Let's rely on the activeBusiness from localStorage for an immediate check
+        const activeBusinessRaw = localStorage.getItem('active_business');
+        let isTrackable = false;
+
+        if (activeBusinessRaw) {
+            try {
+                const activeBusiness = JSON.parse(activeBusinessRaw);
+                // Only tracking specific roles (Sales Reps)
+                if (activeBusiness.user_role === 'SALES_REP') {
+                    isTrackable = true;
+                }
+            } catch {
+                // Parse error, ignore
+            }
+        }
+
+        if (!isTrackable) {
+            // Do not track owners, managers, or accountants
+            return;
+        }
+
+        if (!navigator.geolocation) {
+            console.warn('Geolocation is not supported by your browser');
+            return;
+        }
+
+        // Initial quick check immediately after login/mount
+        sendLocation();
+
+        // Set up 10-minute interval (600,000 milliseconds)
+        const TEN_MINUTES = 10 * 60 * 1000;
+        intervalRef.current = setInterval(sendLocation, TEN_MINUTES);
+
+        return () => stopTracking();
+
+    }, [token, user]);
 
     return null; // This hook doesn't render anything
 };
