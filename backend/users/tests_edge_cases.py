@@ -28,7 +28,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         )
         
         self.manager = User.objects.create_user(email='manager@edge.com', password='password123')
-        TeamMember.objects.create(owner=self.owner, user=self.manager, role='MANAGER')
+        TeamMember.objects.create(owner=self.owner, business=self.business, user=self.manager, role='MANAGER')
         
         self.rep1 = User.objects.create_user(email='rep1@edge.com', password='password123')
         self.rep2 = User.objects.create_user(email='rep2@edge.com', password='password123')
@@ -48,7 +48,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
 
         # Current members: 1 (manager from setUp). 
         # Add 1 more (Rep 1)
-        TeamMember.objects.create(owner=self.owner, user=self.rep1, role='SALES_REP')
+        TeamMember.objects.create(owner=self.owner, business=self.business, user=self.rep1, role='SALES_REP')
         
         # Now try to add a 3rd person (should fail because 1 manager + 1 rep = 2, which is the limit)
         url = reverse('team-list')
@@ -84,7 +84,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         """Cross-manager deletion should be restricted."""
         # Create second manager
         manager2 = User.objects.create_user(email='manager2@edge.com', password='password123')
-        tm2 = TeamMember.objects.create(owner=self.owner, user=manager2, role='MANAGER')
+        tm2 = TeamMember.objects.create(owner=self.owner, business=self.business, user=manager2, role='MANAGER')
         
         # Auth as Manager 1
         self.client.force_authenticate(user=self.manager)
@@ -103,7 +103,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         url = reverse('team-detail', args=[tm_manager.id])
         
         # Try to change role
-        response = self.client.patch(url, {'role': 'ACCOUNTANT'})
+        response = self.client.patch(url, {'role': 'ACCOUNTANT'}, HTTP_X_BUSINESS_ID=self.business.id)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unauthorized_user_cannot_access_team(self):
