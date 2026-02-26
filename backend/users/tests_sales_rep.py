@@ -50,7 +50,7 @@ class SalesRepFunctionalTestCase(APITestCase):
             'email': 'new_rep@test.com',
             'role': 'SALES_REP'
         }
-        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=str(self.business.id))
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertTrue(TeamMemberInvitation.objects.filter(email='new_rep@test.com').exists())
 
@@ -61,7 +61,7 @@ class SalesRepFunctionalTestCase(APITestCase):
             'email': 'rep@test.com',
             'role': 'SALES_REP'
         }
-        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=str(self.business.id))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(TeamMember.objects.filter(owner=self.owner, user=self.rep_user).exists())
 
@@ -71,7 +71,7 @@ class SalesRepFunctionalTestCase(APITestCase):
         
         url = reverse('team-detail', args=[member.id])
         data = {'monthly_target': 1000.50}
-        response = self.client.patch(url, data, HTTP_X_BUSINESS_ID=self.business.id)
+        response = self.client.patch(url, data, HTTP_X_BUSINESS_ID=str(self.business.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         member.refresh_from_db()
@@ -86,7 +86,7 @@ class SalesRepFunctionalTestCase(APITestCase):
         
         url = reverse('team-detail', args=[member.id])
         data = {'monthly_target': 99999}
-        response = self.client.patch(url, data, HTTP_X_BUSINESS_ID=self.business.id)
+        response = self.client.patch(url, data, HTTP_X_BUSINESS_ID=str(self.business.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_sales_rep_can_update_location(self):
@@ -115,7 +115,7 @@ class SalesRepFunctionalTestCase(APITestCase):
         
         url = reverse('team-list')
         data = {'email': 'some@test.com', 'role': 'SALES_REP'}
-        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=str(self.business.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_manager_can_invite_rep(self):
@@ -129,7 +129,7 @@ class SalesRepFunctionalTestCase(APITestCase):
         
         url = reverse('team-list')
         data = {'email': 'repv2@test.com', 'role': 'SALES_REP'}
-        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=str(self.business.id))
         # Note: In the view, inviting as a manager uses the owner of the inviter as the corporate_owner
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertTrue(TeamMemberInvitation.objects.filter(inviter=self.owner, email='repv2@test.com').exists())

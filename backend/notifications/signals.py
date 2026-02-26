@@ -124,22 +124,25 @@ def _log(business, action, module, description):
             if not user_role and hasattr(business, 'user') and user == business.user:
                 user_role = 'OWNER'
                     
-        # FINAL SAFETY CHECK: Ensure user exists in DB to avoid ForeignKeyViolation in tests
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        if not User.objects.filter(id=user.id).exists():
-            return
+        from django.db import transaction
+        with transaction.atomic():
+            # FINAL SAFETY CHECK: Ensure user exists in DB to avoid ForeignKeyViolation in tests
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            if not User.objects.filter(id=user.id).exists():
+                return
 
-        ActivityLog.objects.create(
-            business=business,
-            user=user,
-            user_role=user_role,
-            action=action,
-            module=module,
-            description=description
-        )
+            ActivityLog.objects.create(
+                business=business,
+                user=user,
+                user_role=user_role,
+                action=action,
+                module=module,
+                description=description
+            )
     except Exception as e:
-        print(f"Silent Activity Log exception: {e}")
+        # Silently fail if logging fails - don't break the main transaction
+        pass
 
 # --------- INVOICE ---------
 @receiver(post_save, sender=Invoice)
