@@ -21,7 +21,7 @@ const AddPaymentModal = ({ isOpen, onClose, invoice, onAddPayment }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const canPay = ['sent', 'viewed', 'overdue'].includes(invoice?.status);
+        const canPay = ['sent', 'viewed', 'overdue', 'finalized'].includes(invoice?.status);
         if (!canPay) {
             setError(invoice?.status === 'paid' ? 'Bu faktura artıq ödənilib' :
                 invoice?.status === 'cancelled' ? 'Ləğv edilmiş fakturaya ödəniş əlavə etmək olmaz' :
