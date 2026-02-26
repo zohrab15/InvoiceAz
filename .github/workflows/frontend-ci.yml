@@ -6,12 +6,12 @@ name: "⚛️ Frontend CI"
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, staging, develop]
     paths:
       - "frontend/**"
       - ".github/workflows/frontend-ci.yml"
   pull_request:
-    branches: [main]
+    branches: [main, staging]
     paths:
       - "frontend/**"
 
