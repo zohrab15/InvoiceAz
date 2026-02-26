@@ -191,16 +191,16 @@ const ForecastAnalytics = () => {
                             <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--color-text-muted)' }} />
 
                             {/* Worst Case */}
-                            <Area type="monotone" dataKey="worst" stroke="#EF4444" strokeDasharray="5 5" fill="transparent" name="Worst Case" />
+                            <Area type="monotone" dataKey="worst" stroke="#EF4444" strokeDasharray="5 5" fill="transparent" name="Ən Pis Ssenari" />
 
                             {/* Realistic Case */}
-                            <Area type="monotone" dataKey="realistic" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorHistorical)" name="Realistic" />
+                            <Area type="monotone" dataKey="realistic" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorHistorical)" name="Realist" />
 
                             {/* Best Case */}
-                            <Area type="monotone" dataKey="best" stroke="#10B981" strokeDasharray="5 5" fill="transparent" name="Best Case" />
+                            <Area type="monotone" dataKey="best" stroke="#10B981" strokeDasharray="5 5" fill="transparent" name="Ən Yaxşı Ssenari" />
 
                             {/* Historical (Solid line overlay) */}
-                            <Area type="monotone" dataKey="historical" stroke="#1E293B" strokeWidth={4} fill="transparent" name="Tarixi Məlumat" />
+                            <Area type="monotone" dataKey="historical" stroke="#1E293B" strokeWidth={4} fill="transparent" name="Keçmiş Məlumatlar" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
