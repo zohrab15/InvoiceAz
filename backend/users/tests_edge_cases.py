@@ -27,6 +27,9 @@ class EdgeCaseFunctionalTestCase(APITestCase):
             subscription_plan=self.pro_plan
         )
         
+        # 3. Setup Business
+        self.business = Business.objects.create(user=self.owner, name='Edge Test Business')
+        
         self.manager = User.objects.create_user(email='manager@edge.com', password='password123')
         TeamMember.objects.create(owner=self.owner, business=self.business, user=self.manager, role='MANAGER')
         
@@ -35,8 +38,6 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         
         self.unrelated_user = User.objects.create_user(email='hacker@edge.com', password='password123')
         
-        # 3. Setup Business
-        self.business = Business.objects.create(user=self.owner, name='Edge Test Business')
         
         self.client.force_authenticate(user=self.owner)
 
