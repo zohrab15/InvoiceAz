@@ -97,7 +97,7 @@ jobs:
       - name: "🧪 Django testlərini işlət"
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_invoiceaz
-          DJANGO_SETTINGS_MODULE: backend.settings
+          DJANGO_SETTINGS_MODULE: config.settings
           SECRET_KEY: ci-test-secret-key-not-for-production
         run: |
           cd backend
