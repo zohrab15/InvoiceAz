@@ -1,0 +1,116 @@
+# ══════════════════════════════════════════════════════════════
+# InvoiceAZ Backend CI Pipeline
+# Django REST Framework — Lint, Test, Security
+# ══════════════════════════════════════════════════════════════
+name: "🔧 Backend CI"
+
+on:
+  push:
+    branches: [main, staging]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # JOB 1: Kod keyfiyyəti yoxlaması
+  # ────────────────────────────────────────────────────────────
+  lint:
+    name: "🔍 Kod Keyfiyyəti"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "📥 Kodu yüklə"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Python qur"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: "🔍 Flake8 ilə yoxla"
+        run: |
+          pip install flake8
+          cd backend
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
+            --exclude=venv,migrations,__pycache__,staticfiles
+
+  # ────────────────────────────────────────────────────────────
+  # JOB 2: Django testləri
+  # ────────────────────────────────────────────────────────────
+  test:
+    name: "🧪 Testlər"
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: test_invoiceaz
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: "📥 Kodu yüklə"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Python qur"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: "📦 Pip cache"
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: "📦 Asılılıqları qur"
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: "🧪 Django testlərini işlət"
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_invoiceaz
+          DJANGO_SETTINGS_MODULE: backend.settings
+          SECRET_KEY: ci-test-secret-key-not-for-production
+        run: |
+          cd backend
+          python manage.py test --verbosity=2
+
+  # ────────────────────────────────────────────────────────────
+  # JOB 3: Təhlükəsizlik yoxlaması
+  # ────────────────────────────────────────────────────────────
+  security:
+    name: "🛡️ Təhlükəsizlik"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "📥 Kodu yüklə"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Python qur"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: "🛡️ Paket təhlükəsizliyini yoxla"
+        run: |
+          pip install pip-audit
+          cd backend
+          pip-audit -r requirements.txt || true
