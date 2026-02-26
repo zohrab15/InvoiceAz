@@ -1,3 +1,6 @@
+from django.utils.deprecation import MiddlewareMixin
+
+
 class BusinessContextMiddleware(MiddlewareMixin):
     def process_view(self, request, view_func, view_args, view_kwargs):
         # Note: In DRF, request.user is often not populated yet (AnonymousUser)
