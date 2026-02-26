@@ -79,7 +79,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: "📦 Asılılıqları qur"
+      - name: "� Sistem asılılıqlarını qur"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libgdk-pixbuf2.0-dev \
+            libffi-dev \
+            shared-mime-info
+
+      - name: "�📦 Asılılıqları qur"
         run: |
           cd backend
           pip install -r requirements.txt
