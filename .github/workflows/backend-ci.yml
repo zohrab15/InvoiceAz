@@ -99,6 +99,8 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_invoiceaz
           DJANGO_SETTINGS_MODULE: config.settings
           SECRET_KEY: ci-test-secret-key-not-for-production
+          DEBUG: "True"
+          SECURE_SSL_REDIRECT: "False"
         run: |
           cd backend
           python manage.py test --verbosity=2
