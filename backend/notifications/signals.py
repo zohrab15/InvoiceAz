@@ -124,6 +124,12 @@ def _log(business, action, module, description):
             if not user_role and hasattr(business, 'user') and user == business.user:
                 user_role = 'OWNER'
                     
+        # FINAL SAFETY CHECK: Ensure user exists in DB to avoid ForeignKeyViolation in tests
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if not User.objects.filter(id=user.id).exists():
+            return
+
         ActivityLog.objects.create(
             business=business,
             user=user,

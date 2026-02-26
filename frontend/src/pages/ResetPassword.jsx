@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion as Motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import clientApi from '../api/client';
 import { useToast } from '../components/Toast';
 import { Lock, Eye, EyeOff, CheckCircle2, Zap, ArrowRight, ShieldCheck } from 'lucide-react';
@@ -78,7 +78,7 @@ const ResetPassword = () => {
 
             {/* Right Side - Form */}
             <div className="flex-1 flex items-center justify-center px-6 py-12">
-                <Motion.div
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
@@ -155,7 +155,7 @@ const ResetPassword = () => {
                             </form>
                         </>
                     ) : (
-                        <Motion.div
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="text-center"
@@ -174,7 +174,7 @@ const ResetPassword = () => {
                             >
                                 İndi Giriş Et
                             </button>
-                        </Motion.div>
+                        </motion.div>
                     )}
 
                     <div className="mt-8 pt-8 border-t border-white/[0.06] text-center">
@@ -182,7 +182,7 @@ const ResetPassword = () => {
                             Giriş səhifəsinə qayıt
                         </Link>
                     </div>
-                </Motion.div>
+                </motion.div>
             </div>
         </div>
     );

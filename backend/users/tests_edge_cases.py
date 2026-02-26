@@ -35,6 +35,9 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         
         self.unrelated_user = User.objects.create_user(email='hacker@edge.com', password='password123')
         
+        # 3. Setup Business
+        self.business = Business.objects.create(user=self.owner, name='Edge Test Business')
+        
         self.client.force_authenticate(user=self.owner)
 
     def test_plan_limit_enforcement(self):
@@ -50,7 +53,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         # Now try to add a 3rd person (should fail because 1 manager + 1 rep = 2, which is the limit)
         url = reverse('team-list')
         data = {'email': 'rep2@edge.com', 'role': 'SALES_REP'}
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
         
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data.get('code'), 'plan_limit')
@@ -61,9 +64,9 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         data = {'email': 'external@edge.com', 'role': 'SALES_REP'}
         
         # First one succeeds (creates invitation)
-        self.client.post(url, data)
+        self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
         # Second one fails
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
         
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertIn("dəvət göndərilib", str(response.data.get('detail', '')))
@@ -72,7 +75,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         """Owner should not be able to invite themselves to their own team."""
         url = reverse('team-list')
         data = {'email': self.owner.email, 'role': 'MANAGER'}
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
         
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertIn("Özünüzü komandaya əlavə edə bilməzsiniz", str(response.data.get('detail', '')))
@@ -87,7 +90,7 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         self.client.force_authenticate(user=self.manager)
         
         url = reverse('team-detail', args=[tm2.id])
-        response = self.client.delete(url)
+        response = self.client.delete(url, HTTP_X_BUSINESS_ID=self.business.id)
         
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertIn("Menecerlər digər menecerləri silə bilməz", str(response.data.get('detail', '')))
@@ -108,13 +111,13 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         self.client.force_authenticate(user=self.unrelated_user)
         
         url = reverse('team-list')
-        response = self.client.get(url)
+        response = self.client.get(url, HTTP_X_BUSINESS_ID=self.business.id)
         
         # They get empty list because queryset filters by owner
         # but let's check a direct detail access instead
-        tm_rep = TeamMember.objects.create(owner=self.owner, user=self.rep1, role='SALES_REP')
+        tm_rep = TeamMember.objects.create(owner=self.owner, business=self.business, user=self.rep1, role='SALES_REP')
         url_detail = reverse('team-detail', args=[tm_rep.id])
-        response_detail = self.client.get(url_detail)
+        response_detail = self.client.get(url_detail, HTTP_X_BUSINESS_ID=self.business.id)
         
         self.assertEqual(response_detail.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -126,20 +129,20 @@ class EdgeCaseFunctionalTestCase(APITestCase):
         
         # Invite with UPPERCASE
         data = {'email': 'CASE@TEST.COM', 'role': 'SALES_REP'}
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, HTTP_X_BUSINESS_ID=self.business.id)
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(TeamMember.objects.filter(user__email='case@test.com').exists())
 
     def test_target_limit_boundaries(self):
         """Test numeric boundaries for sales targets."""
-        tm_rep = TeamMember.objects.create(owner=self.owner, user=self.rep1, role='SALES_REP')
+        tm_rep = TeamMember.objects.create(owner=self.owner, business=self.business, user=self.rep1, role='SALES_REP')
         url = reverse('team-detail', args=[tm_rep.id])
         
         # 0 is valid
-        response = self.client.patch(url, {'monthly_target': 0})
+        response = self.client.patch(url, {'monthly_target': 0}, HTTP_X_BUSINESS_ID=self.business.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         # Large number is valid (up to max_digits)
-        response = self.client.patch(url, {'monthly_target': 99999999.99})
+        response = self.client.patch(url, {'monthly_target': 99999999.99}, HTTP_X_BUSINESS_ID=self.business.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
