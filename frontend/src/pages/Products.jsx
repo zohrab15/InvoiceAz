@@ -149,6 +149,15 @@ const Products = () => {
         onError: (err) => showToast(translateError(err), 'error')
     });
 
+    const bulkDeleteMutation = useMutation({
+        mutationFn: () => clientApi.post('/inventory/products/bulk-delete/'),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['products']);
+            showToast(res.data.detail);
+        },
+        onError: (err) => showToast(translateError(err), 'error')
+    });
+
     const unitMap = {
         'pcs': 'ədəd',
         'kg': 'kq',
@@ -713,6 +722,27 @@ const Products = () => {
                                 >
                                     {uploadMutation.isPending ? 'Yüklənir...' : 'İndi Yüklə'}
                                 </button>
+
+                                <div className="pt-2 border-t border-dashed" style={{ borderColor: 'var(--color-card-border)' }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (window.confirm('Bütün məhsulları silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz.')) {
+                                                const confirmCode = window.prompt('Bütün məhsulları silmək üçün "SIL" yazın:');
+                                                if (confirmCode === 'SIL') {
+                                                    bulkDeleteMutation.mutate();
+                                                } else {
+                                                    showToast('Təsdiq kodu yanlışdır', 'error');
+                                                }
+                                            }
+                                        }}
+                                        disabled={bulkDeleteMutation.isPending}
+                                        className="w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-500 text-xs"
+                                    >
+                                        <Trash2 size={14} />
+                                        Hafızanı Təmizlə (Bütün Məhsulları Sil)
+                                    </button>
+                                </div>
                             </form>
                         </motion.div>
                     </div>
@@ -720,12 +750,14 @@ const Products = () => {
             </AnimatePresence>
 
             {/* QR Scanner Interface */}
-            {isQRScannerOpen && (
-                <ProductQRScanner
-                    onScan={handleInitialQRScan}
-                    onClose={() => setIsQRScannerOpen(false)}
-                />
-            )}
+            {
+                isQRScannerOpen && (
+                    <ProductQRScanner
+                        onScan={handleInitialQRScan}
+                        onClose={() => setIsQRScannerOpen(false)}
+                    />
+                )
+            }
 
             <UpgradeModal
                 isOpen={upgradeConfig.isOpen}
@@ -735,7 +767,7 @@ const Products = () => {
                 resourceName="Məhsul"
                 limit={checkLimit('products').limit}
             />
-        </div>
+        </div >
     );
 };
 

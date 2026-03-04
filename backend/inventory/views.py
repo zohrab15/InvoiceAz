@@ -373,6 +373,20 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 "error": str(e)
             })
 
+    @action(detail=False, methods=['post'], url_path='bulk-delete')
+    def bulk_delete(self, request):
+        business = self.get_active_business()
+        if not business:
+            return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Delete all products for this business
+        count, _ = Product.objects.filter(business=business).delete()
+
+        return Response({
+            "detail": f"{count} məhsul uğurla silindi.",
+            "deleted_count": count
+        }, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['get'], url_path='all')
     def all_products(self, request):
         """Dropdownlar üçün bütün məhsulları səhifələmə olmadan qaytarır."""
