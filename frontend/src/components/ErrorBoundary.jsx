@@ -1,6 +1,7 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundaryInner extends React.Component {
     constructor(props) {
         super(props);
         this.state = { hasError: false, error: null };
@@ -12,6 +13,13 @@ class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         console.error('Uncaught error:', error, errorInfo);
+    }
+
+    // Reset error state when the route changes
+    componentDidUpdate(prevProps) {
+        if (prevProps.resetKey !== this.props.resetKey && this.state.hasError) {
+            this.setState({ hasError: false, error: null });
+        }
     }
 
     render() {
@@ -26,10 +34,16 @@ class ErrorBoundary extends React.Component {
                         <p className="text-slate-400 font-medium leading-relaxed">
                             Proqramın bu hissəsi yüklənərkən xəta baş verdi. Zəhmət olmasa səhifəni yeniləyin və ya bir az sonra yenidən cəhd edin.
                         </p>
-                        <div className="pt-4">
+                        <div className="pt-4 flex gap-3 justify-center">
+                            <button
+                                onClick={() => this.setState({ hasError: false, error: null })}
+                                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+                            >
+                                Yenidən Cəhd Et
+                            </button>
                             <button
                                 onClick={() => window.location.reload()}
-                                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+                                className="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition-all active:scale-95"
                             >
                                 Səhifəni Yenilə
                             </button>
@@ -48,5 +62,21 @@ class ErrorBoundary extends React.Component {
         return this.props.children;
     }
 }
+
+// Wrapper that provides location-based reset key
+const ErrorBoundary = ({ children }) => {
+    // Try to use useLocation - it will only work inside a Router
+    try {
+        return <ErrorBoundaryWithLocation>{children}</ErrorBoundaryWithLocation>;
+    } catch {
+        // Fallback for when used outside a Router (e.g., wrapping the Router itself)
+        return <ErrorBoundaryInner resetKey="static">{children}</ErrorBoundaryInner>;
+    }
+};
+
+const ErrorBoundaryWithLocation = ({ children }) => {
+    const location = useLocation();
+    return <ErrorBoundaryInner resetKey={location.pathname}>{children}</ErrorBoundaryInner>;
+};
 
 export default ErrorBoundary;
