@@ -60,7 +60,13 @@ const PurchaseOrders = () => {
 
     const createMutation = useMutation({
         mutationFn: (data) => clientApi.post('/inventory/purchase-orders/', data),
-        onSuccess: () => { queryClient.invalidateQueries(['purchase-orders']); showToast('Alış sifarişi yaradıldı'); setIsAddOpen(false); setItems([{ product: '', quantity_ordered: 1, unit_cost: 0 }]); },
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['purchase-orders']);
+            const isDraft = res.data?.status === 'DRAFT';
+            showToast(isDraft ? 'Qaralama saxlanıldı' : 'Alış sifarişi yaradıldı');
+            setIsAddOpen(false);
+            setItems([{ product: '', quantity_ordered: 1, unit_cost: 0 }]);
+        },
         onError: (err) => showToast(err.response?.data?.detail || 'Xəta baş verdi', 'error'),
     });
 
