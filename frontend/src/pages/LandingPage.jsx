@@ -63,7 +63,7 @@ const LandingPage = () => {
     const goLogin = () => navigate('/login');
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
 
             {/* ══════════ NAVBAR ══════════ */}
             <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4">
@@ -76,7 +76,7 @@ const LandingPage = () => {
                             <Zap size={14} className="text-white md:hidden" />
                             <Zap size={18} className="text-white hidden md:block" />
                         </div>
-                        <span className="text-base md:text-xl font-black tracking-tight">InvoiceAZ</span>
+                        <span className="text-base md:text-xl font-black tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>InvoiceAZ</span>
                     </div>
                     <div className="hidden md:flex items-center gap-6">
                         <a href="#features" className="text-sm font-semibold text-white/60 hover:text-white transition-colors">Özəlliklər</a>
