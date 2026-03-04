@@ -25,14 +25,19 @@ const PurchaseOrders = () => {
     const [items, setItems] = useState([{ product: '', quantity_ordered: 1, unit_cost: 0 }]);
     const [page, setPage] = useState(1);
     const [currentStatus, setCurrentStatus] = useState('ORDERED');
+    const [isReceiveOpen, setIsReceiveOpen] = useState(false);
+    const [receivingOrder, setReceivingOrder] = useState(null);
+    const [receivingItems, setReceivingItems] = useState([]);
 
     const { data: products } = useQuery({
+        // ... (existing code for products fetch)
         queryKey: ['all-products', activeBusiness?.id],
         queryFn: async () => { const res = await clientApi.get('/inventory/products/all/'); return res.data; },
         enabled: !!activeBusiness,
     });
 
     const { data: warehouses } = useQuery({
+        // ... (existing code for warehouses fetch)
         queryKey: ['warehouses', activeBusiness?.id],
         queryFn: async () => { const res = await clientApi.get('/inventory/warehouses/all/'); return res.data; },
         enabled: !!activeBusiness,
@@ -41,6 +46,7 @@ const PurchaseOrders = () => {
     const warehouseList = Array.isArray(warehouses) ? warehouses : (warehouses?.results || []);
 
     const { data, isLoading } = useQuery({
+        // ... (existing code for POs fetch)
         queryKey: ['purchase-orders', activeBusiness?.id, statusFilter, page],
         queryFn: async () => {
             const params = new URLSearchParams({ page });
@@ -60,7 +66,13 @@ const PurchaseOrders = () => {
 
     const receiveMutation = useMutation({
         mutationFn: ({ id, items }) => clientApi.post(`/inventory/purchase-orders/${id}/receive/`, { items }),
-        onSuccess: () => { queryClient.invalidateQueries(['purchase-orders']); queryClient.invalidateQueries(['products']); queryClient.invalidateQueries(['stock-movements']); showToast('Mal qəbul edildi və stoka əlavə olundu!'); },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['purchase-orders']);
+            queryClient.invalidateQueries(['products']);
+            queryClient.invalidateQueries(['stock-movements']);
+            showToast('Mal qəbulu uğurla qeydə alındı!');
+            setIsReceiveOpen(false);
+        },
         onError: () => showToast('Qəbul zamanı xəta', 'error'),
     });
 
@@ -90,13 +102,39 @@ const PurchaseOrders = () => {
         });
     };
 
-    const handleReceive = (po) => {
-        const receiveItems = po.items.filter(i => i.quantity_received < i.quantity_ordered).map(i => ({
+    const handleReceiveInit = (po) => {
+        const itemsToReceive = po.items
+            .filter(i => i.quantity_received < i.quantity_ordered)
+            .map(i => ({
+                id: i.id,
+                product_name: i.product_name,
+                remaining: parseFloat(i.quantity_ordered) - parseFloat(i.quantity_received),
+                quantity_received: parseFloat(i.quantity_ordered) - parseFloat(i.quantity_received),
+            }));
+
+        if (itemsToReceive.length === 0) {
+            showToast('Bütün mallar artıq qəbul edilib', 'warning');
+            return;
+        }
+
+        setReceivingOrder(po);
+        setReceivingItems(itemsToReceive);
+        setIsReceiveOpen(true);
+    };
+
+    const handleReceiveSubmit = (e) => {
+        e.preventDefault();
+        const payload = receivingItems.map(i => ({
             id: i.id,
-            quantity_received: i.quantity_ordered - i.quantity_received,
-        }));
-        if (receiveItems.length === 0) { showToast('Bütün mallar artıq qəbul edilib', 'warning'); return; }
-        receiveMutation.mutate({ id: po.id, items: receiveItems });
+            quantity_received: parseFloat(i.quantity_received) || 0,
+        })).filter(i => i.quantity_received > 0);
+
+        if (payload.length === 0) {
+            showToast('Qəbul miqdarı daxil edin', 'error');
+            return;
+        }
+
+        receiveMutation.mutate({ id: receivingOrder.id, items: payload });
     };
 
     if (!activeBusiness) return <div className="p-8 text-center text-slate-500">Zəhmət olmasa biznes seçin.</div>;
@@ -156,7 +194,7 @@ const PurchaseOrders = () => {
                                         </div>
                                     </div>
                                     {(po.status === 'ORDERED' || po.status === 'PARTIAL') && (
-                                        <button onClick={() => handleReceive(po)} disabled={receiveMutation.isPending}
+                                        <button onClick={() => handleReceiveInit(po)} disabled={receiveMutation.isPending}
                                             className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
                                             style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}>
                                             <Check size={16} /> Qəbul Et
@@ -264,6 +302,62 @@ const PurchaseOrders = () => {
                                         {createMutation.isPending ? 'Gözləyin...' : 'Sifarişi Göndər'}
                                     </button>
                                 </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Receive Modal (Partial supported) */}
+            <AnimatePresence>
+                {isReceiveOpen && receivingOrder && (
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                            className="rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
+                            <div className="p-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
+                                <div>
+                                    <h3 className="text-xl font-black" style={{ color: 'var(--color-text-primary)' }}>Mal Qəbulu</h3>
+                                    <p className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>PO-{receivingOrder.id} | {receivingOrder.supplier_name}</p>
+                                </div>
+                                <button onClick={() => setIsReceiveOpen(false)}><X size={20} style={{ color: 'var(--color-text-muted)' }} /></button>
+                            </div>
+                            <form onSubmit={handleReceiveSubmit} className="p-6 space-y-4">
+                                <p className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                                    Zəhmət olmasa daxil olan faktiki miqdarları qeyd edin. Əgər miqdar sifariş ediləndən azdırsa, status "Qismən" olaraq qalacaq.
+                                </p>
+
+                                <div className="space-y-3">
+                                    {receivingItems.map((item, idx) => (
+                                        <div key={item.id} className="p-4 rounded-2xl" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>{item.product_name}</span>
+                                                <span className="text-[10px] font-black uppercase text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded">Qalıq: {item.remaining}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <label className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text-muted)' }}>Gələn Miqdar:</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    max={item.remaining}
+                                                    value={item.quantity_received}
+                                                    onChange={e => {
+                                                        const newItems = [...receivingItems];
+                                                        newItems[idx].quantity_received = e.target.value;
+                                                        setReceivingItems(newItems);
+                                                    }}
+                                                    className="flex-1 rounded-xl p-2 outline-none font-black text-right"
+                                                    style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-brand)' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button type="submit" disabled={receiveMutation.isPending}
+                                    className="w-full py-4 rounded-xl font-black text-white flex items-center justify-center gap-2 shadow-lg"
+                                    style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}>
+                                    {receiveMutation.isPending ? 'İşlənilir...' : <><Check size={20} /> Qəbulu Təsdiqlə</>}
+                                </button>
                             </form>
                         </motion.div>
                     </div>
