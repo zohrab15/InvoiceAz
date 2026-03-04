@@ -83,13 +83,13 @@ const Products = () => {
     const { data: warehouses } = useQuery({
         queryKey: ['warehouses', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/warehouses/');
+            const res = await clientApi.get('/inventory/warehouses/all/');
             return res.data;
         },
         enabled: !!activeBusiness,
     });
 
-    const warehouseList = warehouses?.results || [];
+    const warehouseList = Array.isArray(warehouses) ? warehouses : (warehouses?.results || []);
 
     // Mutations
     const addMutation = useMutation({
@@ -534,7 +534,7 @@ const Products = () => {
                                         base_price: parseFloat(rawData.base_price) || 0,
                                         stock_quantity: parseFloat(rawData.stock_quantity) || 0,
                                         min_stock_level: parseFloat(rawData.min_stock_level) || 0,
-                                        warehouse: rawData.warehouse || null,
+                                        warehouse: warehouseList.length === 1 ? warehouseList[0].id : (rawData.warehouse || null),
                                     };
 
                                     if (editingProduct?.id) {

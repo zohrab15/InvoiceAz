@@ -59,6 +59,17 @@ class WarehouseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         warehouse.save()
         return Response({"detail": f"'{warehouse.name}' əsas anbar olaraq təyin edildi."})
 
+    @action(detail=False, methods=['get'], url_path='all')
+    def all_warehouses(self, request):
+        """Dropdownlar üçün bütün anbarları səhifələmə olmadan qaytarır."""
+        business = self.get_active_business()
+        if not business:
+            return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+
+        warehouses = Warehouse.objects.filter(business=business)
+        serializer = self.get_serializer(warehouses, many=True)
+        return Response(serializer.data)
+
 
 # ──────────────────── PRODUCT (updated) ────────────────────
 class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
