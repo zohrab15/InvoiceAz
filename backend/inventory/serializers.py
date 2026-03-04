@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import (
     Product, Warehouse, StockMovement,
-    PurchaseOrder, PurchaseOrderItem, InventoryAdjustment
+    PurchaseOrder, PurchaseOrderItem, InventoryAdjustment,
+    PurchaseOrderReceipt, PurchaseOrderReceiptItem
 )
 
 
@@ -70,18 +71,41 @@ class StockMovementSerializer(serializers.ModelSerializer):
 
 class PurchaseOrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
+    quantity_remaining = serializers.SerializerMethodField()
     line_total = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
+
+    def get_quantity_remaining(self, obj):
+        return obj.quantity_ordered - obj.quantity_received
 
     class Meta:
         model = PurchaseOrderItem
         fields = [
             'id', 'product', 'product_name',
-            'quantity_ordered', 'quantity_received', 'unit_cost', 'line_total'
+            'quantity_ordered', 'quantity_received', 'quantity_remaining',
+            'unit_cost', 'line_total'
         ]
+
+
+class PurchaseOrderReceiptItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='po_item.product.name', read_only=True)
+
+    class Meta:
+        model = PurchaseOrderReceiptItem
+        fields = ['id', 'po_item', 'product_name', 'quantity']
+
+
+class PurchaseOrderReceiptSerializer(serializers.ModelSerializer):
+    receipt_items = PurchaseOrderReceiptItemSerializer(many=True, read_only=True)
+    received_by_email = serializers.CharField(source='received_by.email', read_only=True, default=None)
+
+    class Meta:
+        model = PurchaseOrderReceipt
+        fields = ['id', 'received_by', 'received_by_email', 'received_at', 'note', 'receipt_items']
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     items = PurchaseOrderItemSerializer(many=True, read_only=True)
+    receipts = PurchaseOrderReceiptSerializer(many=True, read_only=True)
     total_amount = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     warehouse_name = serializers.CharField(source='warehouse.name', read_only=True, default=None)
@@ -94,7 +118,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
             'warehouse', 'warehouse_name',
             'order_number', 'status', 'status_display',
             'order_date', 'expected_date', 'received_date',
-            'note', 'total_amount', 'items',
+            'note', 'total_amount', 'items', 'receipts',
             'created_by', 'created_by_email',
             'created_at', 'updated_at'
         ]

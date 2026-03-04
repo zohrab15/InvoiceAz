@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import clientApi from '../api/client';
-import { ShoppingCart, Plus, X, Check, Clock, Package, Search, Trash2, Send } from 'lucide-react';
+import { ShoppingCart, Plus, X, Check, Clock, Package, Search, Trash2, Send, History, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
@@ -28,7 +28,9 @@ const PurchaseOrders = () => {
     const [isReceiveOpen, setIsReceiveOpen] = useState(false);
     const [receivingOrder, setReceivingOrder] = useState(null);
     const [receivingItems, setReceivingItems] = useState([]);
+    const [receivingNote, setReceivingNote] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [expandedPo, setExpandedPo] = useState(null);
 
     const { data: products } = useQuery({
         // ... (existing code for products fetch)
@@ -73,13 +75,14 @@ const PurchaseOrders = () => {
     });
 
     const receiveMutation = useMutation({
-        mutationFn: ({ id, items }) => clientApi.post(`/inventory/purchase-orders/${id}/receive/`, { items }),
+        mutationFn: ({ id, items, note }) => clientApi.post(`/inventory/purchase-orders/${id}/receive/`, { items, note }),
         onSuccess: () => {
             queryClient.invalidateQueries(['purchase-orders']);
             queryClient.invalidateQueries(['products']);
             queryClient.invalidateQueries(['stock-movements']);
             showToast('Mal qəbulu uğurla qeydə alındı!');
             setIsReceiveOpen(false);
+            setReceivingNote('');
         },
         onError: () => showToast('Qəbul zamanı xəta', 'error'),
     });
@@ -154,7 +157,7 @@ const PurchaseOrders = () => {
             return;
         }
 
-        receiveMutation.mutate({ id: receivingOrder.id, items: payload });
+        receiveMutation.mutate({ id: receivingOrder.id, items: payload, note: receivingNote });
     };
 
     if (!activeBusiness) return <div className="p-8 text-center text-slate-500">Zəhmət olmasa biznes seçin.</div>;
@@ -250,7 +253,81 @@ const PurchaseOrders = () => {
                                         )}
                                     </div>
                                 </div>
-                                {po.note && <p className="mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>{po.note}</p>}
+                                <div className="mt-4 pt-4 flex items-center justify-between" style={{ borderTop: po.note || po.receipts?.length > 0 ? '1px solid var(--color-card-border)' : 'none' }}>
+                                    {po.note ? (
+                                        <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>"{po.note}"</p>
+                                    ) : <div />}
+
+                                    <div className="flex items-center gap-3">
+                                        {po.receipts?.length > 0 && (
+                                            <button
+                                                onClick={() => setExpandedPo(expandedPo === po.id ? null : po.id)}
+                                                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider transition-colors hover:text-blue-600"
+                                                style={{ color: expandedPo === po.id ? 'var(--color-brand)' : 'var(--color-text-muted)' }}
+                                            >
+                                                <History size={14} />
+                                                {po.receipts.length} Qəbul Tarixçəsi
+                                                {expandedPo === po.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Expanded History Section */}
+                                <AnimatePresence>
+                                    {expandedPo === po.id && (
+                                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                            <div className="mt-6 space-y-4 bg-slate-500/5 rounded-2xl p-5 border border-dashed border-slate-500/20">
+                                                <h4 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                                                    <History size={12} /> Mal Qəbulu Tarixçəsi (GRN)
+                                                </h4>
+
+                                                <div className="space-y-6">
+                                                    {po.receipts.map((rcpt, rIdx) => (
+                                                        <div key={rcpt.id} className="relative pl-6 border-l-2 border-blue-500/20 last:border-l-0">
+                                                            <div className="absolute top-0 -left-[9px] w-4 h-4 rounded-full bg-blue-500 ring-4 ring-white" />
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <span className="text-[11px] font-black text-blue-600">Qəbul #{rcpt.id}</span>
+                                                                <span className="text-[10px] font-bold opacity-50 flex items-center gap-1"><Clock size={10} />{new Date(rcpt.received_at).toLocaleString('az-AZ')}</span>
+                                                            </div>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 px-4 py-3 bg-white/50 rounded-xl border border-slate-200">
+                                                                {rcpt.receipt_items.map(ri => (
+                                                                    <div key={ri.id} className="flex items-center justify-between text-xs">
+                                                                        <span className="font-bold">{ri.product_name}</span>
+                                                                        <span className="font-black text-emerald-600">+{ri.quantity} ədəd</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            {rcpt.note && <p className="mt-2 text-[10px] font-medium opacity-70 italic px-2">Qeyd: {rcpt.note}</p>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="mt-4 pt-4 border-t border-slate-200">
+                                                    <h5 className="text-[10px] font-black uppercase text-slate-400 mb-2">Ümumi Sifariş İcrası</h5>
+                                                    <div className="space-y-2">
+                                                        {po.items.map(item => {
+                                                            const percent = (item.quantity_received / item.quantity_ordered) * 100;
+                                                            return (
+                                                                <div key={item.id} className="space-y-1">
+                                                                    <div className="flex items-center justify-between text-[11px] font-bold">
+                                                                        <span>{item.product_name}</span>
+                                                                        <span style={{ color: item.quantity_remaining > 0 ? 'var(--color-amber-600)' : 'var(--color-emerald-600)' }}>
+                                                                            {item.quantity_received} / {item.quantity_ordered} {item.quantity_remaining > 0 && `(Qalıq: ${item.quantity_remaining})`}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                                                        <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${Math.min(percent, 100)}%` }} />
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </motion.div>
                         );
                     })}

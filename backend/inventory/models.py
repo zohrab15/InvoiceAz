@@ -179,12 +179,29 @@ class PurchaseOrderItem(models.Model):
     class Meta:
         ordering = ['id']
 
-    def __str__(self):
-        return f"{self.product.name} x {self.quantity_ordered}"
 
-    @property
-    def line_total(self):
-        return self.quantity_ordered * self.unit_cost
+class PurchaseOrderReceipt(models.Model):
+    """Mal qəbulu hadisəsi (GRN - Goods Receipt Note)."""
+    purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='receipts')
+    received_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    received_at = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['-received_at']
+
+    def __str__(self):
+        return f"Receipt for PO-{self.purchase_order_id} at {self.received_at}"
+
+
+class PurchaseOrderReceiptItem(models.Model):
+    """Hər qəbulda daxil olan spesifik mallar."""
+    receipt = models.ForeignKey(PurchaseOrderReceipt, on_delete=models.CASCADE, related_name='receipt_items')
+    po_item = models.ForeignKey(PurchaseOrderItem, on_delete=models.CASCADE, related_name='history_items')
+    quantity = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.po_item.product.name}"
 
 
 class InventoryAdjustment(models.Model):

@@ -507,7 +507,12 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response({"detail": "Qəbul ediləcək mallar göstərilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            all_received = True
+            receipt = PurchaseOrderReceipt.objects.create(
+                purchase_order=po,
+                received_by=request.user,
+                note=request.data.get('note', f"PO-{po.id} üzrə mal qəbulu")
+            )
+
             for item_data in received_items:
                 try:
                     po_item = PurchaseOrderItem.objects.get(id=item_data['id'], purchase_order=po)
@@ -520,6 +525,13 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
                 po_item.quantity_received += qty_received
                 po_item.save()
+
+                # Create receipt history item
+                PurchaseOrderReceiptItem.objects.create(
+                    receipt=receipt,
+                    po_item=po_item,
+                    quantity=qty_received
+                )
 
                 # Update product stock and cost price
                 product = po_item.product
@@ -540,14 +552,24 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     unit_cost=po_item.unit_cost,
                     stock_before=stock_before,
                     stock_after=product.stock_quantity,
-                    note=f"Alış sifarişi PO-{po.id} əsasında qəbul",
+                    note=f"Alış sifarişi PO-{po.id} əsasında qəbul (Qəbul #{receipt.id})",
                     created_by=request.user
                 )
 
-                if po_item.quantity_received < po_item.quantity_ordered:
+            # Check overall status across ALL items
+            all_received = True
+            any_received = False
+            for item in po.items.all():
+                if item.quantity_received < item.quantity_ordered:
                     all_received = False
+                if item.quantity_received > 0:
+                    any_received = True
 
-            po.status = 'RECEIVED' if all_received else 'PARTIAL'
+            if all_received:
+                po.status = 'RECEIVED'
+            elif any_received:
+                po.status = 'PARTIAL'
+            
             po.received_date = timezone.now().date()
             po.save()
 
