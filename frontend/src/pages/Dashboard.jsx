@@ -58,7 +58,7 @@ const Dashboard = () => {
     const { data: inventoryStats, isLoading: isLoadingInventory, isError: isErrorInventory } = useQuery({
         queryKey: ['inventory-stats', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/stats/');
+            const res = await clientApi.get('/inventory/products/stats/');
             return res.data;
         },
         enabled: !!activeBusiness && (activeBusiness?.user_role !== 'SALES_REP' && activeBusiness?.user_role !== 'ACCOUNTANT'),

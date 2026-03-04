@@ -2,24 +2,65 @@ import openpyxl
 from decimal import Decimal
 from django.db import transaction
 from django.db.models import Sum, F, Q
+from django.utils import timezone
 from rest_framework import viewsets, status, permissions, pagination, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Product
-from .serializers import ProductSerializer, ExcelUploadSerializer
-from users.models import Business
 
+from .models import (
+    Product, Warehouse, StockMovement,
+    PurchaseOrder, PurchaseOrderItem, InventoryAdjustment
+)
+from .serializers import (
+    ProductSerializer, ExcelUploadSerializer,
+    WarehouseSerializer, StockMovementSerializer,
+    PurchaseOrderSerializer, PurchaseOrderCreateSerializer,
+    PurchaseOrderItemSerializer,
+    InventoryAdjustmentSerializer
+)
+from users.models import Business
 from users.mixins import BusinessContextMixin
 from users.permissions import IsRoleAuthorized
 from users.plan_limits import check_product_limit
 from rest_framework.exceptions import PermissionDenied
+
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
     page_size = 50
     page_size_query_param = 'page_size'
     max_page_size = 1000
 
+
+# ──────────────────── WAREHOUSE ────────────────────
+class WarehouseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = Warehouse.objects.all()
+    serializer_class = WarehouseSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    pagination_class = StandardResultsSetPagination
+
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+        # If this is the first warehouse, make it default
+        if not Warehouse.objects.filter(business=business).exists():
+            serializer.save(business=business, is_default=True)
+        else:
+            serializer.save(business=business)
+
+    @action(detail=True, methods=['post'], url_path='set-default')
+    def set_default(self, request, pk=None):
+        business = self.get_active_business()
+        warehouse = self.get_object()
+        # Unset all others
+        Warehouse.objects.filter(business=business).update(is_default=False)
+        warehouse.is_default = True
+        warehouse.save()
+        return Response({"detail": f"'{warehouse.name}' əsas anbar olaraq təyin edildi."})
+
+
+# ──────────────────── PRODUCT (updated) ────────────────────
 class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -31,6 +72,10 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         stock_status = self.request.query_params.get('stock_status')
+        warehouse_id = self.request.query_params.get('warehouse')
+
+        if warehouse_id:
+            queryset = queryset.filter(warehouse_id=warehouse_id)
         if stock_status == 'out_of_stock':
             queryset = queryset.filter(stock_quantity__lte=0)
         elif stock_status == 'low_stock':
@@ -43,17 +88,17 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         business = self.get_active_business()
         if not business:
             raise PermissionDenied("Active business required")
-            
+
         limit_check = check_product_limit(self.request.user, business)
         if not limit_check['allowed']:
             raise PermissionDenied({
-                "code": "plan_limit", 
+                "code": "plan_limit",
                 "detail": "Məhsul limitiniz dolub.",
                 "limit": limit_check['limit'],
                 "current": limit_check['current'],
                 "upgrade_required": True
             })
-            
+
         super().perform_create(serializer)
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
@@ -61,102 +106,94 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         serializer = ExcelUploadSerializer(data=request.data)
         if serializer.is_valid():
             file = serializer.validated_data['file']
-            
-            # Use mixin helper for business to ensure consistency and isolation
+
             business = self.get_active_business()
             if not business:
                 return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
-                # Use read_only=True and values_only=True for performance
                 wb = openpyxl.load_workbook(file, read_only=True)
                 sheet = wb.active
-                
-                # 1. Collect and aggregate data from Excel (Handle duplicates within the file)
-                excel_data_map = {} # SKU -> combined data
+
+                excel_data_map = {}
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     if not row or not any(row):
                         continue
-                    
-                    vals = list(row) + [None] * 7
-                    name, desc, sku, price, unit, stock, min_stock = vals[0:7]
-                    
+
+                    vals = list(row) + [None] * 8
+                    name, desc, sku, price, cost, unit, stock, min_stock = vals[0:8]
+
                     if not name:
                         continue
 
-                    # Fallback for SKU if missing (though SKU is unique_together with business)
                     sku_key = sku or f"NO-SKU-{name}"
-                    
+
                     if sku_key not in excel_data_map:
                         excel_data_map[sku_key] = {
                             'name': name,
                             'description': desc,
                             'sku': sku,
                             'base_price': Decimal(str(price or 0)),
+                            'cost_price': Decimal(str(cost or 0)),
                             'unit': unit or 'pcs',
                             'stock_quantity': Decimal(str(stock or 0)),
                             'min_stock_level': Decimal(str(min_stock or 0))
                         }
                     else:
-                        # Aggregate: Sum stock, update other fields from latest row
                         excel_data_map[sku_key]['stock_quantity'] += Decimal(str(stock or 0))
                         excel_data_map[sku_key]['name'] = name
                         excel_data_map[sku_key]['description'] = desc
                         excel_data_map[sku_key]['base_price'] = Decimal(str(price or 0))
+                        excel_data_map[sku_key]['cost_price'] = Decimal(str(cost or 0))
                         excel_data_map[sku_key]['unit'] = unit or 'pcs'
                         excel_data_map[sku_key]['min_stock_level'] = Decimal(str(min_stock or 0))
 
                 if not excel_data_map:
                     return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
 
-                # Check limit before processing
                 limit_check = check_product_limit(request.user, business)
                 if not limit_check['allowed']:
                     raise PermissionDenied({
-                        "code": "plan_limit", 
+                        "code": "plan_limit",
                         "detail": "Məhsul limitiniz dolub.",
                         "limit": limit_check['limit'],
                         "current": limit_check['current'],
                         "upgrade_required": True
                     })
-                
-                # Check if Excel file itself exceeds the remaining limit
+
                 remaining = limit_check['limit'] - limit_check['current'] if limit_check['limit'] else 999999
                 if len(excel_data_map) > remaining:
-                     raise PermissionDenied({
-                        "code": "plan_limit", 
+                    raise PermissionDenied({
+                        "code": "plan_limit",
                         "detail": f"Excel faylındakı məhsul sayı ({len(excel_data_map)}) qalan limitinizi ({remaining}) aşır.",
                         "limit": limit_check['limit'],
                         "current": limit_check['current'],
                         "upgrade_required": True
                     })
 
-                # 2. Prepare products to process (Overwrite Mode: Database stock is ignored)
                 products_to_process = []
                 for sku_key, data in excel_data_map.items():
-                    # Overwrite Mode: We don't fetch or add existing DB stock. 
-                    # Excel is the Source of Truth.
                     product = Product(
                         business=business,
                         sku=data['sku'],
                         name=data['name'],
                         description=data['description'],
                         base_price=data['base_price'],
+                        cost_price=data['cost_price'],
                         unit=data['unit'],
                         stock_quantity=data['stock_quantity'],
                         min_stock_level=data['min_stock_level']
                     )
                     products_to_process.append(product)
 
-                # 3. Execute bulk operation with conflict resolution
                 with transaction.atomic():
                     Product.objects.bulk_create(
                         products_to_process,
                         update_conflicts=True,
                         unique_fields=['business', 'sku'],
-                        update_fields=['name', 'description', 'base_price', 'unit', 'stock_quantity', 'min_stock_level']
+                        update_fields=['name', 'description', 'base_price', 'cost_price', 'unit', 'stock_quantity', 'min_stock_level']
                     )
-                
+
                 return Response({
                     "detail": f"{len(products_to_process)} məhsul uğurla işlənildi (Sinxronizasiya: Mövcud stoklar əvəzləndi)."
                 }, status=status.HTTP_201_CREATED)
@@ -169,8 +206,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         sku = request.query_params.get('sku')
         business = self.get_active_business()
         if not business:
-             return Response({"detail": "SKU və Business ID mütləqdir."}, status=status.HTTP_400_BAD_REQUEST)
-            
+            return Response({"detail": "SKU və Business ID mütləqdir."}, status=status.HTTP_400_BAD_REQUEST)
+
         product = get_object_or_404(Product, business=business, sku=sku)
         serializer = self.get_serializer(product)
         return Response(serializer.data)
@@ -180,31 +217,30 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         business = self.get_active_business()
         if not business:
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Get base queryset (business-filtered)
-        # We manually use super().get_queryset() to avoid the stock_status filter 
-        # defined in our own get_queryset(), so button counts show all categories.
+
         queryset = super(ProductViewSet, self).get_queryset().filter(business=business)
-        
-        # Apply search filters from query params (respect current search)
         queryset = self.filter_queryset(queryset)
-        
+
         total_products = queryset.count()
-        
-        # Calculate total value for the filtered set
-        total_value_data = queryset.aggregate(
-            total_value=Sum(F('base_price') * F('stock_quantity'))
-        )
-        total_value = total_value_data['total_value'] or 0.00
-        
+
+        total_sale_value = queryset.aggregate(
+            total=Sum(F('base_price') * F('stock_quantity'))
+        )['total'] or 0.00
+
+        total_cost_value = queryset.aggregate(
+            total=Sum(F('cost_price') * F('stock_quantity'))
+        )['total'] or 0.00
+
         out_of_stock = queryset.filter(stock_quantity__lte=0).count()
         low_stock = queryset.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
         sufficient = queryset.filter(stock_quantity__gt=F('min_stock_level')).count()
         in_stock_count = queryset.filter(stock_quantity__gt=0).count()
-        
+
         return Response({
             "total_products": total_products,
-            "total_value": float(total_value),
+            "total_value": float(total_sale_value),
+            "total_cost_value": float(total_cost_value),
+            "potential_profit": float(total_sale_value - total_cost_value),
             "out_of_stock": out_of_stock,
             "low_stock": low_stock,
             "sufficient": sufficient,
@@ -213,13 +249,192 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='all')
     def all_products(self, request):
-        """
-        Dropdownlar üçün bütün məhsulları səhifələmə olmadan qaytarır.
-        """
+        """Dropdownlar üçün bütün məhsulları səhifələmə olmadan qaytarır."""
         business = self.get_active_business()
         if not business:
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         products = Product.objects.filter(business=business)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
+
+
+# ──────────────────── STOCK MOVEMENTS ────────────────────
+class StockMovementViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = StockMovement.objects.all()
+    serializer_class = StockMovementSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    pagination_class = StandardResultsSetPagination
+    http_method_names = ['get', 'post', 'head', 'options']  # No update/delete
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        product_id = self.request.query_params.get('product')
+        movement_type = self.request.query_params.get('movement_type')
+        warehouse_id = self.request.query_params.get('warehouse')
+
+        if product_id:
+            queryset = queryset.filter(product_id=product_id)
+        if movement_type:
+            queryset = queryset.filter(movement_type=movement_type)
+        if warehouse_id:
+            queryset = queryset.filter(warehouse_id=warehouse_id)
+        return queryset
+
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+
+        product = serializer.validated_data['product']
+        movement_type = serializer.validated_data['movement_type']
+        quantity = serializer.validated_data['quantity']
+        stock_before = product.stock_quantity
+
+        # Calculate new stock
+        if movement_type in ('IN', 'ADJUSTMENT_PLUS', 'RETURN'):
+            stock_after = stock_before + quantity
+        else:
+            stock_after = stock_before - quantity
+
+        # Update product stock
+        product.stock_quantity = stock_after
+        product.save(update_fields=['stock_quantity'])
+
+        serializer.save(
+            business=business,
+            created_by=self.request.user,
+            stock_before=stock_before,
+            stock_after=stock_after
+        )
+
+
+# ──────────────────── PURCHASE ORDERS ────────────────────
+class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = PurchaseOrder.objects.all()
+    serializer_class = PurchaseOrderSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        po_status = self.request.query_params.get('status')
+        if po_status:
+            queryset = queryset.filter(status=po_status)
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PurchaseOrderCreateSerializer
+        return PurchaseOrderSerializer
+
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+        serializer.save(business=business, created_by=self.request.user)
+
+    @action(detail=True, methods=['post'], url_path='receive')
+    def receive_order(self, request, pk=None):
+        """Mal qəbulu - sifarişi qəbul et və stoka əlavə et."""
+        po = self.get_object()
+        business = self.get_active_business()
+
+        if po.status == 'CANCELLED':
+            return Response({"detail": "Ləğv edilmiş sifariş qəbul edilə bilməz."}, status=status.HTTP_400_BAD_REQUEST)
+
+        received_items = request.data.get('items', [])
+        if not received_items:
+            return Response({"detail": "Qəbul ediləcək mallar göstərilməyib."}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            all_received = True
+            for item_data in received_items:
+                try:
+                    po_item = PurchaseOrderItem.objects.get(id=item_data['id'], purchase_order=po)
+                except PurchaseOrderItem.DoesNotExist:
+                    continue
+
+                qty_received = Decimal(str(item_data.get('quantity_received', 0)))
+                if qty_received <= 0:
+                    continue
+
+                po_item.quantity_received += qty_received
+                po_item.save()
+
+                # Update product stock and cost price
+                product = po_item.product
+                stock_before = product.stock_quantity
+                product.stock_quantity += qty_received
+                product.cost_price = po_item.unit_cost
+                product.save(update_fields=['stock_quantity', 'cost_price'])
+
+                # Log stock movement
+                StockMovement.objects.create(
+                    business=business,
+                    product=product,
+                    warehouse=po.warehouse,
+                    movement_type='IN',
+                    source_type='PURCHASE',
+                    source_id=po.id,
+                    quantity=qty_received,
+                    unit_cost=po_item.unit_cost,
+                    stock_before=stock_before,
+                    stock_after=product.stock_quantity,
+                    note=f"Alış sifarişi PO-{po.id} əsasında qəbul",
+                    created_by=request.user
+                )
+
+                if po_item.quantity_received < po_item.quantity_ordered:
+                    all_received = False
+
+            po.status = 'RECEIVED' if all_received else 'PARTIAL'
+            po.received_date = timezone.now().date()
+            po.save()
+
+        serializer = self.get_serializer(po)
+        return Response(serializer.data)
+
+
+# ──────────────────── INVENTORY ADJUSTMENTS ────────────────────
+class InventoryAdjustmentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
+    queryset = InventoryAdjustment.objects.all()
+    serializer_class = InventoryAdjustmentSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
+    pagination_class = StandardResultsSetPagination
+    http_method_names = ['get', 'post', 'head', 'options']  # Immutable once created
+
+    def perform_create(self, serializer):
+        business = self.get_active_business()
+        if not business:
+            raise PermissionDenied("Active business required")
+
+        product = serializer.validated_data['product']
+        new_quantity = serializer.validated_data['new_quantity']
+        old_quantity = product.stock_quantity
+        difference = new_quantity - old_quantity
+
+        # Update product stock
+        product.stock_quantity = new_quantity
+        product.save(update_fields=['stock_quantity'])
+
+        # Create stock movement log
+        movement_type = 'ADJUSTMENT_PLUS' if difference >= 0 else 'ADJUSTMENT_MINUS'
+        StockMovement.objects.create(
+            business=business,
+            product=product,
+            warehouse=serializer.validated_data.get('warehouse'),
+            movement_type=movement_type,
+            source_type='ADJUSTMENT',
+            quantity=abs(difference),
+            stock_before=old_quantity,
+            stock_after=new_quantity,
+            note=f"İnventarizasiya düzəlişi: {serializer.validated_data.get('reason', 'COUNT')} - {serializer.validated_data.get('note', '')}",
+            created_by=self.request.user
+        )
+
+        serializer.save(
+            business=business,
+            created_by=self.request.user,
+            old_quantity=old_quantity
+        )

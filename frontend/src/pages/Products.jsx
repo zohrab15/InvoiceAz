@@ -56,7 +56,7 @@ const Products = () => {
     const { data: stats } = useQuery({
         queryKey: ['products-stats', activeBusiness?.id, search],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/stats/', {
+            const res = await clientApi.get('/inventory/products/stats/', {
                 params: { search: search || '' }
             });
             return res.data;
@@ -73,7 +73,7 @@ const Products = () => {
                 search: search || '',
                 stock_status: stockFilter !== 'all' ? stockFilter : '',
             });
-            const res = await clientApi.get(`/inventory/?${params.toString()}`);
+            const res = await clientApi.get(`/inventory/products/?${params.toString()}`);
             return res.data;
         },
         enabled: !!activeBusiness,
@@ -83,7 +83,7 @@ const Products = () => {
 
     // Mutations
     const addMutation = useMutation({
-        mutationFn: (newProd) => clientApi.post('/inventory/', newProd),
+        mutationFn: (newProd) => clientApi.post('/inventory/products/', newProd),
         onSuccess: () => {
             queryClient.invalidateQueries(['products']);
             showToast('Məhsul əlavə edildi');
@@ -106,7 +106,7 @@ const Products = () => {
     });
 
     const updateMutation = useMutation({
-        mutationFn: (prod) => clientApi.put(`/inventory/${prod.id}/`, prod),
+        mutationFn: (prod) => clientApi.put(`/inventory/products/${prod.id}/`, prod),
         onSuccess: () => {
             queryClient.invalidateQueries(['products']);
             showToast('Məhsul yeniləndi');
@@ -118,7 +118,7 @@ const Products = () => {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => clientApi.delete(`/inventory/${id}/`),
+        mutationFn: (id) => clientApi.delete(`/inventory/products/${id}/`),
         onSuccess: () => {
             queryClient.invalidateQueries(['products']);
             showToast('Məhsul silindi');
@@ -127,7 +127,7 @@ const Products = () => {
     });
 
     const uploadMutation = useMutation({
-        mutationFn: (formData) => clientApi.post('/inventory/upload-excel/', formData, {
+        mutationFn: (formData) => clientApi.post('/inventory/products/upload-excel/', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         }),
         onSuccess: (res) => {
