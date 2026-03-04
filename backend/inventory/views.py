@@ -262,7 +262,9 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         unit=data['unit'],
                         stock_quantity=data['stock_quantity'],
                         min_stock_level=data['min_stock_level'],
-                        warehouse=data['warehouse']
+                        warehouse=data['warehouse'],
+                        is_deleted=False,
+                        deleted_at=None
                     )
                     products_to_process.append(product)
 
@@ -272,7 +274,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                             products_to_process,
                             update_conflicts=True,
                             unique_fields=['business', 'sku'],
-                            update_fields=['name', 'description', 'base_price', 'cost_price', 'unit', 'stock_quantity', 'min_stock_level']
+                            update_fields=['name', 'description', 'base_price', 'cost_price', 'unit', 'stock_quantity', 'min_stock_level', 'is_deleted', 'deleted_at']
                         )
                 except Exception:
                     # FALLBACK: If bulk_create fails, try a minimal bulk_create without new fields
@@ -284,7 +286,9 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                             name=data['name'],
                             description=data['description'],
                             base_price=data['base_price'],
-                            unit=data['unit']
+                            unit=data['unit'],
+                            is_deleted=False,
+                            deleted_at=None
                         ))
                     
                     with transaction.atomic():
@@ -292,7 +296,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                             minimal_products,
                             update_conflicts=True,
                             unique_fields=['business', 'sku'],
-                            update_fields=['name', 'description', 'base_price', 'unit']
+                            update_fields=['name', 'description', 'base_price', 'unit', 'is_deleted', 'deleted_at']
                         )
 
                 return Response({
@@ -380,7 +384,9 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Delete all products for this business
-        count, _ = Product.objects.filter(business=business).delete()
+        # SoftDeleteQuerySet.delete() returns an int, not a tuple
+        result = Product.objects.filter(business=business).delete()
+        count = result if isinstance(result, int) else result[0]
 
         return Response({
             "detail": f"{count} məhsul uğurla silindi.",
