@@ -61,3 +61,5 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [path('debug-static/', debug_static, name='debug_static')]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Build trigger: 2026-03-04 17:46
