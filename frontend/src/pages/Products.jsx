@@ -81,6 +81,18 @@ const Products = () => {
         keepPreviousData: true
     });
 
+    // Fetch Warehouses
+    const { data: warehouses } = useQuery({
+        queryKey: ['warehouses', activeBusiness?.id],
+        queryFn: async () => {
+            const res = await clientApi.get('/inventory/warehouses/');
+            return res.data;
+        },
+        enabled: !!activeBusiness,
+    });
+
+    const warehouseList = warehouses?.results || [];
+
     // Mutations
     const addMutation = useMutation({
         mutationFn: (newProd) => clientApi.post('/inventory/products/', newProd),
@@ -515,6 +527,7 @@ const Products = () => {
                                         base_price: parseFloat(rawData.base_price) || 0,
                                         stock_quantity: parseFloat(rawData.stock_quantity) || 0,
                                         min_stock_level: parseFloat(rawData.min_stock_level) || 0,
+                                        warehouse: rawData.warehouse || null,
                                     };
 
                                     if (editingProduct?.id) {
@@ -604,6 +617,24 @@ const Products = () => {
                                             placeholder="Limit?"
                                         />
                                     </div>
+
+                                    {warehouseList.length > 1 && (
+                                        <div className="sm:col-span-2">
+                                            <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Anbarı Seçin</label>
+                                            <select
+                                                name="warehouse"
+                                                defaultValue={editingProduct?.warehouse || ''}
+                                                required
+                                                className="w-full rounded-xl p-4 outline-none transition-all font-bold cursor-pointer"
+                                                style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                                            >
+                                                <option value="" disabled>Anbarı seçin...</option>
+                                                {warehouseList.map(w => (
+                                                    <option key={w.id} value={w.id}>{w.name} {w.is_default ? '(Əsas)' : ''}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
 
                                     <div className="sm:col-span-2">
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Təsvir</label>

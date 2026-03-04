@@ -99,6 +99,17 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 "upgrade_required": True
             })
 
+        # Smart warehouse auto-assignment
+        if not serializer.validated_data.get('warehouse'):
+            warehouses = Warehouse.objects.filter(business=business)
+            count = warehouses.count()
+            if count == 1:
+                serializer.validated_data['warehouse'] = warehouses.first()
+            elif count > 1:
+                default_wh = warehouses.filter(is_default=True).first()
+                if default_wh:
+                    serializer.validated_data['warehouse'] = default_wh
+
         super().perform_create(serializer)
 
     @action(detail=False, methods=['post'], url_path='upload-excel')
@@ -171,6 +182,14 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         "upgrade_required": True
                     })
 
+                # Smart warehouse auto-assignment for Excel
+                warehouses = Warehouse.objects.filter(business=business)
+                target_warehouse = None
+                if warehouses.count() == 1:
+                    target_warehouse = warehouses.first()
+                else:
+                    target_warehouse = warehouses.filter(is_default=True).first()
+
                 products_to_process = []
                 for sku_key, data in excel_data_map.items():
                     product = Product(
@@ -182,7 +201,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         cost_price=data['cost_price'],
                         unit=data['unit'],
                         stock_quantity=data['stock_quantity'],
-                        min_stock_level=data['min_stock_level']
+                        min_stock_level=data['min_stock_level'],
+                        warehouse=target_warehouse
                     )
                     products_to_process.append(product)
 
