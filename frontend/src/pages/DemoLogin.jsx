@@ -34,10 +34,34 @@ const DemoLogin = () => {
                 // Clear existing session
                 clearAuth();
 
-                const response = await client.post('/auth/login/', {
-                    email: 'demo_user@invoice.az',
-                    password: 'demopassword123'
-                });
+                // Pre-warm: fire-and-forget health check to wake up Render
+                console.log('Sending pre-warm ping to backend...');
+                client.get('/').catch(() => { });
+
+                // Retry logic for Render cold starts
+                let response;
+                let lastError;
+                for (let attempt = 1; attempt <= 3; attempt++) {
+                    try {
+                        console.log(`Demo login attempt ${attempt}/3...`);
+                        response = await client.post('/auth/login/', {
+                            email: 'demo_user@invoice.az',
+                            password: 'demopassword123'
+                        }, {
+                            timeout: attempt === 1 ? 60000 : 90000 // More time on retries
+                        });
+                        break; // Success, exit loop
+                    } catch (err) {
+                        lastError = err;
+                        console.warn(`Attempt ${attempt} failed:`, err.message);
+                        if (attempt < 3 && (err.code === 'ECONNABORTED' || !err.response)) {
+                            // Timeout or network error — wait and retry
+                            await new Promise(r => setTimeout(r, 3000));
+                        } else {
+                            throw err; // Non-retryable error or last attempt
+                        }
+                    }
+                }
 
                 const { access, access_token, user, key } = response.data;
                 const token = access || access_token || key;
@@ -57,7 +81,9 @@ const DemoLogin = () => {
                 }
             } catch (err) {
                 console.error('Demo Login Error:', err);
-                const errorMsg = err.response?.data?.detail || err.response?.data?.non_field_errors?.[0] || err.message;
+                const errorMsg = err.code === 'ECONNABORTED'
+                    ? 'Server yuxudadır, zəhmət olmasa bir neçə saniyə gözləyib yenidən cəhd edin.'
+                    : (err.response?.data?.detail || err.response?.data?.non_field_errors?.[0] || err.message);
                 showToast(`Demo giriş xətası: ${errorMsg}`, 'error');
                 setTimeout(() => navigate('/'), 3000);
             }
@@ -65,13 +91,13 @@ const DemoLogin = () => {
 
         loginDemo();
 
-        // Increment loading steps and progress bar
+        // Increment loading steps and progress bar — slower for cold start scenario
         const stepInterval = setInterval(() => {
             setLoadingStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
-        }, 2050);
+        }, 4000);
 
         const progressInterval = setInterval(() => {
-            setProgress(prev => (prev < 100 ? prev + 1 : 100));
+            setProgress(prev => (prev < 95 ? prev + 0.5 : prev));
         }, 100);
 
         return () => {
