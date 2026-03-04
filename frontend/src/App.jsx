@@ -8,7 +8,7 @@ import client from './api/client';
 import { BusinessProvider, useBusiness } from './context/BusinessContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary, { RouteErrorBoundary } from './components/ErrorBoundary';
 
 import { ToastProvider, useToast } from './components/Toast';
 import useLocationTracker from './hooks/useLocationTracker';
@@ -303,7 +303,7 @@ function App() {
           <ThemeProvider>
             <ToastProvider>
               <Router>
-                <ErrorBoundary>
+                <RouteErrorBoundary>
                   <ScrollToTop />
                   <PageTitleUpdater />
                   <Suspense fallback={<LoadingScreen />}>
@@ -335,7 +335,7 @@ function App() {
                       />
                     </Routes>
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               </Router>
             </ToastProvider>
           </ThemeProvider>

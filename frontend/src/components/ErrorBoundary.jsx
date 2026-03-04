@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-class ErrorBoundaryInner extends React.Component {
+class ErrorBoundaryCore extends React.Component {
     constructor(props) {
         super(props);
         this.state = { hasError: false, error: null };
@@ -15,7 +15,6 @@ class ErrorBoundaryInner extends React.Component {
         console.error('Uncaught error:', error, errorInfo);
     }
 
-    // Reset error state when the route changes
     componentDidUpdate(prevProps) {
         if (prevProps.resetKey !== this.props.resetKey && this.state.hasError) {
             this.setState({ hasError: false, error: null });
@@ -63,20 +62,15 @@ class ErrorBoundaryInner extends React.Component {
     }
 }
 
-// Wrapper that provides location-based reset key
+// Default export: simple ErrorBoundary without location (safe to use OUTSIDE Router)
 const ErrorBoundary = ({ children }) => {
-    // Try to use useLocation - it will only work inside a Router
-    try {
-        return <ErrorBoundaryWithLocation>{children}</ErrorBoundaryWithLocation>;
-    } catch {
-        // Fallback for when used outside a Router (e.g., wrapping the Router itself)
-        return <ErrorBoundaryInner resetKey="static">{children}</ErrorBoundaryInner>;
-    }
+    return <ErrorBoundaryCore resetKey="static">{children}</ErrorBoundaryCore>;
 };
 
-const ErrorBoundaryWithLocation = ({ children }) => {
+// Named export: route-aware ErrorBoundary (must be used INSIDE Router)
+export const RouteErrorBoundary = ({ children }) => {
     const location = useLocation();
-    return <ErrorBoundaryInner resetKey={location.pathname}>{children}</ErrorBoundaryInner>;
+    return <ErrorBoundaryCore resetKey={location.pathname}>{children}</ErrorBoundaryCore>;
 };
 
 export default ErrorBoundary;
