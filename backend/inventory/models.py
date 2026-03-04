@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from decimal import Decimal
 
 from utils.models import SoftDeleteModel
 
@@ -55,19 +56,33 @@ class Product(SoftDeleteModel):
     @property
     def profit_margin(self):
         """Hər vahid üzrə qazanc."""
-        if self.cost_price and self.cost_price > 0:
-            return self.base_price - self.cost_price
+        try:
+            if hasattr(self, 'cost_price') and hasattr(self, 'base_price'):
+                if self.cost_price and self.cost_price > 0:
+                    return self.base_price - self.cost_price
+        except Exception:
+            pass
         return None
 
     @property
     def total_cost_value(self):
         """Anbardakı bu məhsulun ümumi maya dəyəri."""
-        return self.cost_price * self.stock_quantity
+        try:
+            if hasattr(self, 'cost_price') and hasattr(self, 'stock_quantity'):
+                return self.cost_price * self.stock_quantity
+        except Exception:
+            pass
+        return Decimal('0.00')
 
     @property
     def total_sale_value(self):
         """Anbardakı bu məhsulun ümumi satış dəyəri."""
-        return self.base_price * self.stock_quantity
+        try:
+            if hasattr(self, 'base_price') and hasattr(self, 'stock_quantity'):
+                return self.base_price * self.stock_quantity
+        except Exception:
+            pass
+        return Decimal('0.00')
 
 
 class StockMovement(models.Model):
