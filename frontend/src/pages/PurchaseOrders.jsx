@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import clientApi from '../api/client';
-import { ShoppingCart, Plus, X, Check, Clock, Package, Search } from 'lucide-react';
+import { ShoppingCart, Plus, X, Check, Clock, Package, Search, Trash2, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
@@ -82,6 +82,18 @@ const PurchaseOrders = () => {
             setIsReceiveOpen(false);
         },
         onError: () => showToast('Qəbul zamanı xəta', 'error'),
+    });
+
+    const updateStatusMutation = useMutation({
+        mutationFn: ({ id, status }) => clientApi.patch(`/inventory/purchase-orders/${id}/`, { status }),
+        onSuccess: () => { queryClient.invalidateQueries(['purchase-orders']); showToast('Status yeniləndi'); },
+        onError: () => showToast('Xəta baş verdi', 'error'),
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id) => clientApi.delete(`/inventory/purchase-orders/${id}/`),
+        onSuccess: () => { queryClient.invalidateQueries(['purchase-orders']); showToast('Sifariş silindi'); },
+        onError: () => showToast('Silinmə zamanı xəta', 'error'),
     });
 
     const orders = data?.results || [];
@@ -215,13 +227,28 @@ const PurchaseOrders = () => {
                                             {po.warehouse_name && <span className="flex items-center gap-1 opacity-70"><Package size={12} />{po.warehouse_name}</span>}
                                         </div>
                                     </div>
-                                    {(po.status === 'ORDERED' || po.status === 'PARTIAL') && (
-                                        <button onClick={() => handleReceiveInit(po)} disabled={receiveMutation.isPending}
-                                            className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
-                                            style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}>
-                                            <Check size={16} /> Qəbul Et
-                                        </button>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {po.status === 'DRAFT' && (
+                                            <>
+                                                <button onClick={() => { if (window.confirm('Bu qaralamanı silmək istədiyinizə əminsiniz?')) deleteMutation.mutate(po.id); }}
+                                                    className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors" title="Sil">
+                                                    <Trash2 size={20} />
+                                                </button>
+                                                <button onClick={() => updateStatusMutation.mutate({ id: po.id, status: 'ORDERED' })}
+                                                    className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
+                                                    style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
+                                                    <Send size={16} /> Sifarişi Təsdiqlə
+                                                </button>
+                                            </>
+                                        )}
+                                        {(po.status === 'ORDERED' || po.status === 'PARTIAL') && (
+                                            <button onClick={() => handleReceiveInit(po)} disabled={receiveMutation.isPending}
+                                                className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
+                                                style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}>
+                                                <Check size={16} /> Qəbul Et
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 {po.note && <p className="mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>{po.note}</p>}
                             </motion.div>
