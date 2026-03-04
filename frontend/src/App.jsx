@@ -33,6 +33,10 @@ const PAGE_TITLES = {
   '/settings': 'Tənzimləmələr | InvoiceAZ',
   '/security': 'Təhlükəsizlik | InvoiceAZ',
   '/system-settings': 'Sistem Tənzimləmələri | InvoiceAZ',
+  '/warehouses': 'Anbarlar | InvoiceAZ',
+  '/stock-movements': 'Stok Hərəkətləri | InvoiceAZ',
+  '/purchase-orders': 'Alış Sifarişləri | InvoiceAZ',
+  '/inventory-adjustments': 'İnventarizasiya | InvoiceAZ',
   '/notifications': 'Bildirişlər | InvoiceAZ',
   '/pricing': 'Qiymət Planları | InvoiceAZ',
   '/help': 'Yardım | InvoiceAZ',
@@ -123,6 +127,10 @@ const LegalPage = lazy(() => import('./pages/LegalPage'));
 const Akademiya = lazy(() => import('./pages/Akademiya'));
 const AkademiyaPost = lazy(() => import('./pages/AkademiyaPost'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
+const Warehouses = lazy(() => import('./pages/Warehouses'));
+const StockMovements = lazy(() => import('./pages/StockMovements'));
+const PurchaseOrders = lazy(() => import('./pages/PurchaseOrders'));
+const InventoryAdjustments = lazy(() => import('./pages/InventoryAdjustments'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -227,6 +235,26 @@ const AuthenticatedRoutes = () => {
         <Route path="/activity-logs" element={
           <RoleGate roles={['OWNER', 'MANAGER']}>
             <ActivityLog />
+          </RoleGate>
+        } />
+        <Route path="/warehouses" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+            <Warehouses />
+          </RoleGate>
+        } />
+        <Route path="/stock-movements" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+            <StockMovements />
+          </RoleGate>
+        } />
+        <Route path="/purchase-orders" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+            <PurchaseOrders />
+          </RoleGate>
+        } />
+        <Route path="/inventory-adjustments" element={
+          <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
+            <InventoryAdjustments />
           </RoleGate>
         } />
       </Routes>

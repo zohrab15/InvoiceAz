@@ -17,7 +17,11 @@ import {
     Package,
     BarChart3,
     LifeBuoy,
-    Settings
+    Settings,
+    Warehouse,
+    ArrowLeftRight,
+    ShoppingCart,
+    ClipboardCheck
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
@@ -44,6 +48,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/', icon: <LayoutDashboard size={20} />, label: 'Ana səhifə' },
         { to: '/invoices', icon: <FileText size={20} />, label: 'Fakturalar' },
         { to: '/products', icon: <Package size={20} />, label: 'Məhsullar' },
+        { to: '/warehouses', icon: <Warehouse size={20} />, label: 'Anbarlar' },
+        { to: '/stock-movements', icon: <ArrowLeftRight size={20} />, label: 'Stok Hərəkətləri' },
+        { to: '/purchase-orders', icon: <ShoppingCart size={20} />, label: 'Alış Sifarişləri' },
+        { to: '/inventory-adjustments', icon: <ClipboardCheck size={20} />, label: 'İnventarizasiya' },
         { to: '/expenses', icon: <Wallet size={20} />, label: 'Xərclər' },
         { to: '/clients', icon: <Users size={20} />, label: 'Müştərilər' },
         { to: '/analytics/payments', icon: <TrendingUp size={20} />, label: 'Ödəniş Analitikası' },
@@ -68,7 +76,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 return ['Ana səhifə', 'Fakturalar', 'Məhsullar', 'Xərclər', 'Müştərilər', 'Ödəniş Analitikası', 'Məhsul Analitikası', 'Problemli Fakturalar', 'Vergi və Hesabatlar', 'Kömək və Dəstək'].includes(item.label);
             }
             if (role === 'INVENTORY_MANAGER') {
-                return ['Ana səhifə', 'Məhsullar', 'Məhsul Analitikası', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
+                return ['Ana səhifə', 'Məhsullar', 'Anbarlar', 'Stok Hərəkətləri', 'Alış Sifarişləri', 'İnventarizasiya', 'Məhsul Analitikası', 'Tənzimləmələr', 'Kömək və Dəstək'].includes(item.label);
             }
             // SALES_REP or any other unrecognized role gets minimum access
             if (role === 'SALES_REP') {
