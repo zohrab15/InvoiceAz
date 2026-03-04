@@ -13,13 +13,15 @@ const Warehouses = () => {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editingWarehouse, setEditingWarehouse] = useState(null);
 
-    const { data: warehouses, isLoading } = useQuery({
+    const { data: warehouses, isLoading, isError, refetch } = useQuery({
         queryKey: ['warehouses', activeBusiness?.id],
         queryFn: async () => {
             const res = await clientApi.get('/inventory/warehouses/');
             return res.data?.results || res.data || [];
         },
         enabled: !!activeBusiness,
+        retry: 2,
+        retryDelay: 1000,
     });
 
     const addMutation = useMutation({
@@ -80,7 +82,14 @@ const Warehouses = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {isLoading ? [1, 2, 3].map(i => (
                     <div key={i} className="animate-pulse p-6 rounded-3xl h-40" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }} />
-                )) : (warehouses || []).length === 0 ? (
+                )) : isError ? (
+                    <div className="col-span-full p-20 text-center rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
+                        <Warehouse size={48} className="mx-auto mb-4 opacity-20" />
+                        <p className="font-bold text-lg mb-2" style={{ color: 'var(--color-text-muted)' }}>Məlumatlar yüklənə bilmədi</p>
+                        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>Server cavab vermir. Bir az gözləyin və yenidən cəhd edin.</p>
+                        <button onClick={() => refetch()} className="px-6 py-3 rounded-xl font-bold text-sm text-white" style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }}>Yenidən Yüklə</button>
+                    </div>
+                ) : (warehouses || []).length === 0 ? (
                     <div className="col-span-full p-20 text-center rounded-3xl" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                         <Warehouse size={48} className="mx-auto mb-4 opacity-20" />
                         <p className="font-bold text-lg" style={{ color: 'var(--color-text-muted)' }}>Hələ heç bir anbar əlavə edilməyib</p>
