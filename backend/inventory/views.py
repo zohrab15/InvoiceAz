@@ -472,6 +472,8 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     serializer_class = PurchaseOrderSerializer
     permission_classes = [permissions.IsAuthenticated, IsRoleAuthorized]
     pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['supplier_name', 'note']
 
     def get_queryset(self):
         queryset = super().get_queryset()

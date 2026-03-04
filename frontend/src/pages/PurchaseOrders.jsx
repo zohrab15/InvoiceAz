@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import clientApi from '../api/client';
-import { ShoppingCart, Plus, X, Check, Clock, Package } from 'lucide-react';
+import { ShoppingCart, Plus, X, Check, Clock, Package, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
@@ -28,6 +28,7 @@ const PurchaseOrders = () => {
     const [isReceiveOpen, setIsReceiveOpen] = useState(false);
     const [receivingOrder, setReceivingOrder] = useState(null);
     const [receivingItems, setReceivingItems] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { data: products } = useQuery({
         // ... (existing code for products fetch)
@@ -47,10 +48,11 @@ const PurchaseOrders = () => {
 
     const { data, isLoading } = useQuery({
         // ... (existing code for POs fetch)
-        queryKey: ['purchase-orders', activeBusiness?.id, statusFilter, page],
+        queryKey: ['purchase-orders', activeBusiness?.id, statusFilter, page, searchTerm],
         queryFn: async () => {
             const params = new URLSearchParams({ page });
             if (statusFilter) params.set('status', statusFilter);
+            if (searchTerm) params.set('search', searchTerm);
             const res = await clientApi.get(`/inventory/purchase-orders/?${params.toString()}`);
             return res.data;
         },
@@ -162,15 +164,29 @@ const PurchaseOrders = () => {
                 </button>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl w-fit" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
-                {[{ id: '', label: 'Hamısı' }, { id: 'DRAFT', label: 'Qaralama' }, { id: 'ORDERED', label: 'Sifariş' }, { id: 'RECEIVED', label: 'Qəbul' }, { id: 'PARTIAL', label: 'Qismən' }].map(f => (
-                    <button key={f.id} onClick={() => { setStatusFilter(f.id); setPage(1); }}
-                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all`}
-                        style={{ backgroundColor: statusFilter === f.id ? 'var(--color-card-bg)' : 'transparent', color: statusFilter === f.id ? 'var(--color-brand)' : 'var(--color-text-muted)' }}>
-                        {f.label}
-                    </button>
-                ))}
+            {/* Filters & Search */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl w-fit" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)' }}>
+                    {[{ id: '', label: 'Hamısı' }, { id: 'DRAFT', label: 'Qaralama' }, { id: 'ORDERED', label: 'Sifariş' }, { id: 'RECEIVED', label: 'Qəbul' }, { id: 'PARTIAL', label: 'Qismən' }].map(f => (
+                        <button key={f.id} onClick={() => { setStatusFilter(f.id); setPage(1); }}
+                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all`}
+                            style={{ backgroundColor: statusFilter === f.id ? 'var(--color-card-bg)' : 'transparent', color: statusFilter === f.id ? 'var(--color-brand)' : 'var(--color-text-muted)' }}>
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="relative w-full md:w-72">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 opacity-30" size={18} />
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                        placeholder="Təchizatçı və ya qeyd üzrə axtar..."
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl outline-none font-bold text-sm transition-all"
+                        style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-primary)' }}
+                    />
+                </div>
             </div>
 
             {/* Orders List */}
