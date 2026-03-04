@@ -230,7 +230,8 @@ const Dashboard = () => {
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
             visible: !isSalesRep && !isAccountant,
-            isCurrency: false
+            isCurrency: false,
+            isInventoryCard: true
         },
         {
             label: 'Anbar Dəyəri',
@@ -240,7 +241,8 @@ const Dashboard = () => {
             bg: 'rgba(139,92,246,0.08)',
             border: '#8b5cf6',
             visible: isOwnerOrManager || isAccountant || isInventoryManager,
-            isCurrency: true
+            isCurrency: true,
+            isInventoryCard: true
         },
         {
             label: 'Kritik Stok',
@@ -250,7 +252,8 @@ const Dashboard = () => {
             bg: 'rgba(245,158,11,0.08)',
             border: '#f59e0b',
             visible: isOwnerOrManager || isInventoryManager,
-            isCurrency: false
+            isCurrency: false,
+            isInventoryCard: true
         },
         {
             label: 'Bitmiş Stok',
@@ -260,7 +263,8 @@ const Dashboard = () => {
             bg: 'rgba(239,68,68,0.08)',
             border: '#ef4444',
             visible: isOwnerOrManager || isInventoryManager,
-            isCurrency: false
+            isCurrency: false,
+            isInventoryCard: true
         },
         {
             label: isSalesRep ? 'Sizin Satış' : 'Ümumi Gəlir',
@@ -270,7 +274,8 @@ const Dashboard = () => {
             bg: 'rgba(59,130,246,0.08)',
             border: '#3b82f6',
             visible: !isInventoryManager,
-            isCurrency: true
+            isCurrency: true,
+            isInventoryCard: false
         },
         {
             label: 'Gözləyən',
@@ -280,7 +285,8 @@ const Dashboard = () => {
             bg: 'rgba(245,158,11,0.08)',
             border: '#f59e0b',
             visible: !isInventoryManager,
-            isCurrency: true
+            isCurrency: true,
+            isInventoryCard: false
         },
         {
             label: 'Ümumi Xərclər',
@@ -290,7 +296,8 @@ const Dashboard = () => {
             bg: 'rgba(239,68,68,0.08)',
             border: '#ef4444',
             visible: isOwnerOrManager || isAccountant,
-            isCurrency: true
+            isCurrency: true,
+            isInventoryCard: false
         },
         {
             label: 'Xalis Mənfəət',
@@ -300,7 +307,8 @@ const Dashboard = () => {
             bg: profit >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
             border: profit >= 0 ? '#10b981' : '#ef4444',
             visible: isOwnerOrManager || isAccountant,
-            isCurrency: true
+            isCurrency: true,
+            isInventoryCard: false
         },
     ].filter(card => card.visible);
 
@@ -446,7 +454,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                            {(isLoadingInventory && !isSalesRep && !isAccountant) ? '...' : isErrorInventory ? 'Xəta' : (
+                            {(s.isInventoryCard && isLoadingInventory) ? '...' : (s.isInventoryCard && isErrorInventory) ? 'Xəta' : (
                                 <>
                                     <CountUp to={s.val} decimals={s.isCurrency ? 2 : 0} />
                                     {s.isCurrency && <span className="text-xs font-semibold ml-1.5" style={{ color: 'var(--color-text-muted)' }}>{currencySymbol}</span>}
