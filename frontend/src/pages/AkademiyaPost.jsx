@@ -76,7 +76,7 @@ const AkademiyaPost = () => {
     .slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
 
       {/* ══════════ READING PROGRESS BAR ══════════ */}
       <div

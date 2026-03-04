@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-    Zap, 
-    ArrowLeft, 
-    Target, 
-    Users, 
-    ShieldCheck, 
-    Rocket, 
+import {
+    Zap,
+    ArrowLeft,
+    Target,
+    Users,
+    ShieldCheck,
+    Rocket,
     Sparkles,
     CheckCircle2,
     Globe,
@@ -24,7 +24,7 @@ const AboutUs = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             {/* Background Effects */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[150px] -translate-y-1/3 pointer-events-none" />
             <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[150px] pointer-events-none" />
@@ -38,7 +38,7 @@ const AboutUs = () => {
                         </div>
                         <span className="text-xl font-black tracking-tight">InvoiceAZ</span>
                     </div>
-                    <button 
+                    <button
                         onClick={() => navigate('/')}
                         className="flex items-center gap-2 text-sm font-bold text-white/60 hover:text-white transition-all group"
                     >
@@ -57,7 +57,7 @@ const AboutUs = () => {
                             <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Hekayəmiz</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-                            Biz sadəcə bir proqram deyil,<br /> 
+                            Biz sadəcə bir proqram deyil,<br />
                             <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Biznes tərəfdaşıyıq</span>
                         </h1>
                         <p className="text-lg md:text-xl text-white/50 leading-relaxed font-medium">
@@ -71,7 +71,7 @@ const AboutUs = () => {
             <section className="py-20 px-6 relative">
                 <div className="max-w-5xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, x: -40 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
@@ -80,22 +80,22 @@ const AboutUs = () => {
                             <h2 className="text-3xl font-black">Ehtiyacdan yaranan innovasiya</h2>
                             <div className="space-y-4 text-white/60 leading-relaxed font-medium">
                                 <p>
-                                    Hər bir böyük layihə kiçik bir narahatlıqdan başlayır. InvoiceAZ-ın hekayəsi də fərqli deyil. 
-                                    2023-cü ildə biz, bir qrup gənc sahibkar, Bakıda kiçik bir ofisdə öz işlərimizi idarə etməyə çalışırdıq. 
-                                    Lakin rəqəmsallaşma dövründə yaşamağımıza rəğmən, hər gün kağız fakturaların, Excel cədvəllərindəki 
+                                    Hər bir böyük layihə kiçik bir narahatlıqdan başlayır. InvoiceAZ-ın hekayəsi də fərqli deyil.
+                                    2023-cü ildə biz, bir qrup gənc sahibkar, Bakıda kiçik bir ofisdə öz işlərimizi idarə etməyə çalışırdıq.
+                                    Lakin rəqəmsallaşma dövründə yaşamağımıza rəğmən, hər gün kağız fakturaların, Excel cədvəllərindəki
                                     qarışıq rəqəmlərin və ödənişlərin izlənilməsində yaranan xaosun içində boğulurduq.
                                 </p>
                                 <p>
                                     Daim özümüzə sual verirdik: <span className="text-blue-400">"Niyə bir azərbaycanlı sahibkar üçün sadə, sürətli və professional bir maliyyə idarəetmə aləti yoxdur?"</span>
                                 </p>
                                 <p>
-                                    Bazardakı mövcud proqramlar ya çox mürəkkəb idi, ya da yerli vergi sistemimizə və biznes mədəniyyətimizə tam uyğun gəlmirdi. 
+                                    Bazardakı mövcud proqramlar ya çox mürəkkəb idi, ya da yerli vergi sistemimizə və biznes mədəniyyətimizə tam uyğun gəlmirdi.
                                     Beləliklə, qərara gəldik ki, öz hekayəmizi özümüz yazaq. İlk kod sətirləri məhz o zaman yazıldı.
                                 </p>
                             </div>
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, x: 40 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
@@ -117,14 +117,14 @@ const AboutUs = () => {
                         </motion.div>
                     </div>
 
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         className="mt-16 bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-8 md:p-12"
                     >
                         <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium text-center italic">
-                            "Bu gün InvoiceAZ minlərlə istifadəçiyə vaxt qazandırır, onların kağız israfını azaldır və ən əsası, bizneslərinə peşəkarlıq gətirir. 
+                            "Bu gün InvoiceAZ minlərlə istifadəçiyə vaxt qazandırır, onların kağız israfını azaldır və ən əsası, bizneslərinə peşəkarlıq gətirir.
                             Bizim hekayəmiz sizin uğurunuzla böyüyür. Çünki biz bilirik ki, sizin hər bir fakturanızın arxasında böyük bir zəhmət və bir hekayə dayanır."
                         </p>
                     </motion.div>
@@ -141,23 +141,23 @@ const AboutUs = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { 
-                                icon: <Target className="text-blue-400" />, 
-                                title: "Müştəri Fokuslu", 
-                                desc: "Hər bir yeni funksiyanı istifadəçilərimizin rəyləri əsasında hazırlayırıq." 
+                            {
+                                icon: <Target className="text-blue-400" />,
+                                title: "Müştəri Fokuslu",
+                                desc: "Hər bir yeni funksiyanı istifadəçilərimizin rəyləri əsasında hazırlayırıq."
                             },
-                            { 
-                                icon: <ShieldCheck className="text-emerald-400" />, 
-                                title: "Maksimum Təhlükəsizlik", 
-                                desc: "Biznes məlumatlarınızın gizli və qorunmuş olması bizim 1 nömrəli prioritetimizdir." 
+                            {
+                                icon: <ShieldCheck className="text-emerald-400" />,
+                                title: "Maksimum Təhlükəsizlik",
+                                desc: "Biznes məlumatlarınızın gizli və qorunmuş olması bizim 1 nömrəli prioritetimizdir."
                             },
-                            { 
-                                icon: <Globe className="text-violet-400" />, 
-                                title: "Yerli və Müasir", 
-                                desc: "Qlobal texnologiyaları yerli biznes mədəniyyətinə və qanunvericiliyə inteqrasiya edirik." 
+                            {
+                                icon: <Globe className="text-violet-400" />,
+                                title: "Yerli və Müasir",
+                                desc: "Qlobal texnologiyaları yerli biznes mədəniyyətinə və qanunvericiliyə inteqrasiya edirik."
                             }
                         ].map((v, i) => (
-                            <motion.div 
+                            <motion.div
                                 key={i}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}

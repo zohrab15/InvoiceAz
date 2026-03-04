@@ -30,7 +30,7 @@ export const ToastProvider = ({ children }) => {
     return (
         <ToastContext.Provider value={showToast}>
             {children}
-            <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 <AnimatePresence mode="popLayout">
                     {toasts.map((toast) => {
                         const isSuccess = toast.type === 'success';

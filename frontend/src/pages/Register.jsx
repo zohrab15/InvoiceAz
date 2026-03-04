@@ -76,7 +76,7 @@ const Register = () => {
     const strength = passwordStrength();
 
     return (
-        <div className="min-h-screen w-full flex bg-[#0a0a0f] text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen w-full flex bg-[#0a0a0f] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
 
             {/* Left Side - Branding */}
             <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
