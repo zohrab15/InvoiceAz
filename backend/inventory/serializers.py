@@ -9,7 +9,13 @@ class ProductSerializer(serializers.ModelSerializer):
     profit_margin = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     total_cost_value = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
     total_sale_value = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
-    warehouse_name = serializers.CharField(source='warehouse.name', read_only=True, default=None)
+    warehouse_name = serializers.SerializerMethodField()
+
+    def get_warehouse_name(self, obj):
+        try:
+            return obj.warehouse.name if obj.warehouse else None
+        except Exception:
+            return None
 
     class Meta:
         model = Product
