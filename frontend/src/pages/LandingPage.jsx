@@ -114,7 +114,7 @@ const LandingPage = () => {
                                     <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Azərbaycanın #1 Faktura Platforması</span>
                                 </div>
 
-                                <h1 className="text-5xl md:text-6xl lg:text-[76px] font-black leading-[1.05] mb-6 tracking-tighter">
+                                <h1 className="text-5xl md:text-5xl lg:text-6xl font-black leading-[1.05] mb-6 tracking-tighter">
                                     Azərbaycanın Ən Sadə <br />
                                     <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
                                         Elektron Qaimə
