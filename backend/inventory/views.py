@@ -320,40 +320,44 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            queryset = super(ProductViewSet, self).get_queryset().filter(business=business)
-            queryset = self.filter_queryset(queryset)
+            # Base queryset: only business-filtered
+            base_queryset = super(ProductViewSet, self).get_queryset().filter(business=business)
+            
+            # Apply search filters for specific aggregations if wanted, 
+            # but 'total_products' should usually be the business-wide total.
+            filtered_queryset = self.filter_queryset(base_queryset)
 
-            total_products = queryset.count()
+            total_products = base_queryset.count()
+            filtered_count = filtered_queryset.count()
 
             # Using try-except for aggregation to handle missing columns (cost_price) during deploy transition
             try:
-                total_sale_value = queryset.aggregate(
+                total_sale_value = base_queryset.aggregate(
                     total=Sum(F('base_price') * F('stock_quantity'))
                 )['total'] or 0.00
             except Exception:
                 total_sale_value = 0.00
 
             try:
-                total_cost_value = queryset.aggregate(
+                total_cost_value = base_queryset.aggregate(
                     total=Sum(F('cost_price') * F('stock_quantity'))
                 )['total'] or 0.00
             except Exception:
                 total_cost_value = 0.00
 
-            out_of_stock = queryset.filter(stock_quantity__lte=0).count()
-            low_stock = queryset.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
-            sufficient = queryset.filter(stock_quantity__gt=F('min_stock_level')).count()
-            in_stock_count = queryset.filter(stock_quantity__gt=0).count()
+            out_of_stock = base_queryset.filter(stock_quantity__lte=0).count()
+            low_stock = base_queryset.filter(stock_quantity__gt=0, stock_quantity__lte=F('min_stock_level')).count()
+            sufficient = base_queryset.filter(stock_quantity__gt=F('min_stock_level')).count()
 
             return Response({
                 "total_products": total_products,
+                "filtered_count": filtered_count,
                 "total_value": float(total_sale_value),
                 "total_cost_value": float(total_cost_value),
                 "potential_profit": float(total_sale_value - total_cost_value),
                 "out_of_stock": out_of_stock,
                 "low_stock": low_stock,
                 "sufficient": sufficient,
-                "in_stock": in_stock_count
             })
         except Exception as e:
             # Fallback for critical failures (e.g. whole table missing)

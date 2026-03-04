@@ -54,11 +54,9 @@ const Products = () => {
 
     // Fetch Stats
     const { data: stats } = useQuery({
-        queryKey: ['products-stats', activeBusiness?.id, search],
+        queryKey: ['products-stats', activeBusiness?.id],
         queryFn: async () => {
-            const res = await clientApi.get('/inventory/products/stats/', {
-                params: { search: search || '' }
-            });
+            const res = await clientApi.get('/inventory/products/stats/');
             return res.data;
         },
         enabled: !!activeBusiness,
