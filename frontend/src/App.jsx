@@ -131,6 +131,7 @@ const Warehouses = lazy(() => import('./pages/Warehouses'));
 const StockMovements = lazy(() => import('./pages/StockMovements'));
 const PurchaseOrders = lazy(() => import('./pages/PurchaseOrders'));
 const InventoryAdjustments = lazy(() => import('./pages/InventoryAdjustments'));
+const FontCompare = lazy(() => import('./pages/FontCompare'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -255,6 +256,11 @@ const AuthenticatedRoutes = () => {
         <Route path="/inventory-adjustments" element={
           <RoleGate roles={['OWNER', 'MANAGER', 'INVENTORY_MANAGER']}>
             <InventoryAdjustments />
+          </RoleGate>
+        } />
+        <Route path="/font-compare" element={
+          <RoleGate roles={['OWNER']}>
+            <FontCompare />
           </RoleGate>
         } />
       </Routes>
