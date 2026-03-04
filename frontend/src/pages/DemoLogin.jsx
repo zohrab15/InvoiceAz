@@ -97,7 +97,7 @@ const DemoLogin = () => {
         }, 4000);
 
         const progressInterval = setInterval(() => {
-            setProgress(prev => (prev < 95 ? prev + 0.5 : prev));
+            setProgress(prev => (prev < 95 ? prev + 1 : prev));
         }, 100);
 
         return () => {
@@ -124,7 +124,7 @@ const DemoLogin = () => {
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/20">
                             <Zap size={24} className="text-white" />
                         </div>
-                        <span className="text-2xl font-black tracking-tight">InvoiceAZ</span>
+                        <span className="text-2xl font-black tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>InvoiceAZ</span>
                     </motion.div>
 
                     {/* Step Icon Animation */}
@@ -142,7 +142,7 @@ const DemoLogin = () => {
                         </AnimatePresence>
                     </div>
 
-                    <h2 className="text-xl font-black mb-3">Professional Demo</h2>
+                    <h2 className="text-xl font-black mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Professional Demo</h2>
                     <div className="h-6 flex items-center justify-center overflow-hidden mb-10">
                         <AnimatePresence mode="wait">
                             <motion.p
@@ -158,17 +158,17 @@ const DemoLogin = () => {
                     </div>
 
                     {/* Progress Bar Container */}
-                    <div className="w-full bg-white/[0.03] border border-white/[0.06] h-2.5 rounded-full overflow-hidden mb-2">
+                    <div className="w-full bg-white/[0.04] border border-white/[0.08] h-3.5 rounded-full overflow-hidden mb-3 relative shadow-inner">
                         <motion.div
-                            className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-violet-600"
+                            className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-blue-500 via-blue-400 to-violet-600 rounded-full"
                             initial={{ width: "0%" }}
                             animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.1 }}
+                            transition={{ duration: 0.2, ease: "linear" }}
                         />
                     </div>
-                    <div className="flex justify-between w-full text-[10px] font-bold text-white/10 uppercase tracking-widest">
+                    <div className="flex justify-between w-full px-2 text-[10px] items-center font-bold text-white/40 uppercase tracking-widest">
                         <span>Sistem Hazırlanır</span>
-                        <span>{progress}%</span>
+                        <span>{Math.floor(progress)}%</span>
                     </div>
                 </div>
             </div>
