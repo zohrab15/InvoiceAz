@@ -9,8 +9,8 @@ import { CURRENCY_SYMBOLS } from '../utils/currency';
 
 const STATUS_STYLES = {
     'DRAFT': { bg: 'bg-gray-500/10', text: 'text-gray-500', label: 'Qaralama' },
-    'ORDERED': { bg: 'bg-blue-500/10', text: 'text-blue-500', label: 'Sifariş verildi' },
-    'RECEIVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-600', label: 'Qəbul edildi' },
+    'ORDERED': { bg: 'bg-blue-500/10', text: 'text-blue-500', label: 'Sifariş' },
+    'RECEIVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-600', label: 'Qəbul' },
     'PARTIAL': { bg: 'bg-amber-500/10', text: 'text-amber-500', label: 'Qismən' },
     'CANCELLED': { bg: 'bg-rose-500/10', text: 'text-rose-500', label: 'Ləğv' },
 };
@@ -24,12 +24,21 @@ const PurchaseOrders = () => {
     const [statusFilter, setStatusFilter] = useState('');
     const [items, setItems] = useState([{ product: '', quantity_ordered: 1, unit_cost: 0 }]);
     const [page, setPage] = useState(1);
+    const [currentStatus, setCurrentStatus] = useState('ORDERED');
 
     const { data: products } = useQuery({
         queryKey: ['all-products', activeBusiness?.id],
         queryFn: async () => { const res = await clientApi.get('/inventory/products/all/'); return res.data; },
         enabled: !!activeBusiness,
     });
+
+    const { data: warehouses } = useQuery({
+        queryKey: ['warehouses', activeBusiness?.id],
+        queryFn: async () => { const res = await clientApi.get('/inventory/warehouses/all/'); return res.data; },
+        enabled: !!activeBusiness,
+    });
+
+    const warehouseList = Array.isArray(warehouses) ? warehouses : (warehouses?.results || []);
 
     const { data, isLoading } = useQuery({
         queryKey: ['purchase-orders', activeBusiness?.id, statusFilter, page],
@@ -62,13 +71,21 @@ const PurchaseOrders = () => {
     const handleCreate = (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
+        const whId = warehouseList.length === 1 ? warehouseList[0].id : fd.get('warehouse');
+
+        if (!whId && warehouseList.length > 0) {
+            showToast('Zəhmət olmasa anbar seçin', 'error');
+            return;
+        }
+
         createMutation.mutate({
             supplier_name: fd.get('supplier_name'),
             supplier_contact: fd.get('supplier_contact'),
             order_date: fd.get('order_date'),
             expected_date: fd.get('expected_date') || null,
+            warehouse: whId,
             note: fd.get('note'),
-            status: 'ORDERED',
+            status: currentStatus,
             items: items.filter(i => i.product).map(i => ({ product: parseInt(i.product), quantity_ordered: parseFloat(i.quantity_ordered), unit_cost: parseFloat(i.unit_cost) })),
         });
     };
@@ -96,7 +113,7 @@ const PurchaseOrders = () => {
                     </h1>
                     <p className="mt-1 font-medium" style={{ color: 'var(--color-text-secondary)' }}>Təchizatçılardan mal sifarişi verin və qəbul edin.</p>
                 </div>
-                <button onClick={() => setIsAddOpen(true)} className="text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
+                <button onClick={() => { setIsAddOpen(true); setCurrentStatus('ORDERED'); }} className="text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
                     <Plus size={18} /> Yeni Sifariş
                 </button>
             </div>
@@ -131,10 +148,11 @@ const PurchaseOrders = () => {
                                             <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-lg ${st.bg} ${st.text}`}>{st.label}</span>
                                         </div>
                                         <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                                            <span>PO-{po.id}</span>
-                                            <span>{po.order_date}</span>
+                                            <span className="font-bold text-blue-600">PO-{po.id}</span>
+                                            <span className="flex items-center gap-1"><Clock size={12} />{po.order_date}</span>
                                             {po.items && <span>{po.items.length} məhsul</span>}
                                             <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{po.total_amount} {currencySymbol}</span>
+                                            {po.warehouse_name && <span className="flex items-center gap-1 opacity-70"><Package size={12} />{po.warehouse_name}</span>}
                                         </div>
                                     </div>
                                     {(po.status === 'ORDERED' || po.status === 'PARTIAL') && (
@@ -173,7 +191,7 @@ const PurchaseOrders = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Təchizatçı</label>
-                                        <input name="supplier_name" required className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
+                                        <input name="supplier_name" required className="w-full rounded-xl p-3 outline-none font-bold placeholder:font-medium placeholder:opacity-50" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} placeholder="Təchizatçı adını yazın" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Əlaqə</label>
@@ -187,10 +205,27 @@ const PurchaseOrders = () => {
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Gözlənilən Tarix</label>
                                         <input name="expected_date" type="date" className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                     </div>
+
+                                    {warehouseList.length > 1 && (
+                                        <div className="col-span-2">
+                                            <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Anbarı Seçin</label>
+                                            <select
+                                                name="warehouse"
+                                                required
+                                                className="w-full rounded-xl p-3 outline-none font-bold cursor-pointer"
+                                                style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                                            >
+                                                <option value="">Malların gələcəyi hədəf anbarı seçin...</option>
+                                                {warehouseList.map(w => (
+                                                    <option key={w.id} value={w.id}>{w.name} {w.is_default ? '(Əsas)' : ''}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Qeyd</label>
-                                    <textarea name="note" rows="2" className="w-full rounded-xl p-3 outline-none font-medium" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
+                                    <textarea name="note" rows="2" className="w-full rounded-xl p-3 outline-none font-medium text-sm" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                 </div>
 
                                 <div className="space-y-3">
@@ -200,27 +235,35 @@ const PurchaseOrders = () => {
                                     </div>
                                     {items.map((item, idx) => (
                                         <div key={idx} className="grid grid-cols-12 gap-2 items-end">
-                                            <div className="col-span-5">
+                                            <div className="col-span-12 sm:col-span-5">
                                                 <select value={item.product} onChange={e => { const n = [...items]; n[idx].product = e.target.value; setItems(n); }} className="w-full rounded-xl p-3 outline-none font-bold text-sm" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}>
                                                     <option value="">Məhsul seçin</option>
                                                     {(products || []).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                                 </select>
                                             </div>
-                                            <div className="col-span-3">
+                                            <div className="col-span-5 sm:col-span-3">
                                                 <input type="number" step="0.01" placeholder="Miqdar" value={item.quantity_ordered} onChange={e => { const n = [...items]; n[idx].quantity_ordered = e.target.value; setItems(n); }} className="w-full rounded-xl p-3 outline-none font-bold text-sm" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                             </div>
-                                            <div className="col-span-3">
+                                            <div className="col-span-5 sm:col-span-3">
                                                 <input type="number" step="0.01" placeholder="Qiymət" value={item.unit_cost} onChange={e => { const n = [...items]; n[idx].unit_cost = e.target.value; setItems(n); }} className="w-full rounded-xl p-3 outline-none font-bold text-sm" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                             </div>
-                                            <div className="col-span-1">
+                                            <div className="col-span-2 sm:col-span-1">
                                                 {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, i) => i !== idx))} className="p-2 text-rose-500"><X size={16} /></button>}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <button type="submit" disabled={createMutation.isPending} className="w-full py-4 rounded-xl font-black text-white" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
-                                    {createMutation.isPending ? 'Yaradılır...' : 'Sifariş Yarat'}
-                                </button>
+
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <button type="submit" onClick={() => setCurrentStatus('DRAFT')} disabled={createMutation.isPending}
+                                        className="py-4 rounded-xl font-black" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}>
+                                        Qaralama kimi saxla
+                                    </button>
+                                    <button type="submit" onClick={() => setCurrentStatus('ORDERED')} disabled={createMutation.isPending}
+                                        className="py-4 rounded-xl font-black text-white shadow-lg" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
+                                        {createMutation.isPending ? 'Gözləyin...' : 'Sifarişi Göndər'}
+                                    </button>
+                                </div>
                             </form>
                         </motion.div>
                     </div>
