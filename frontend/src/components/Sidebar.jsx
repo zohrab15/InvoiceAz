@@ -45,20 +45,29 @@ const Sidebar = ({ isOpen, onClose }) => {
     }, []);
 
     const navItems = [
+        // ── İcmal ──
         { to: '/', icon: <LayoutDashboard size={20} />, label: 'Ana səhifə' },
+
+        // ── Əsas Biznes ──
         { to: '/invoices', icon: <FileText size={20} />, label: 'Fakturalar' },
+        { to: '/clients', icon: <Users size={20} />, label: 'Müştərilər' },
+        { to: '/expenses', icon: <Wallet size={20} />, label: 'Xərclər' },
+
+        // ── Anbar İdarəetmə ──
         { to: '/products', icon: <Package size={20} />, label: 'Məhsullar' },
         { to: '/warehouses', icon: <Warehouse size={20} />, label: 'Anbarlar' },
         { to: '/stock-movements', icon: <ArrowLeftRight size={20} />, label: 'Stok Hərəkətləri' },
         { to: '/purchase-orders', icon: <ShoppingCart size={20} />, label: 'Alış Sifarişləri' },
         { to: '/inventory-adjustments', icon: <ClipboardCheck size={20} />, label: 'İnventarizasiya' },
-        { to: '/expenses', icon: <Wallet size={20} />, label: 'Xərclər' },
-        { to: '/clients', icon: <Users size={20} />, label: 'Müştərilər' },
+
+        // ── Analitika ──
         { to: '/analytics/payments', icon: <TrendingUp size={20} />, label: 'Ödəniş Analitikası' },
         { to: '/analytics/products', icon: <BarChart3 size={20} />, label: 'Məhsul Analitikası' },
         { to: '/analytics/issues', icon: <AlertTriangle size={20} />, label: 'Problemli Fakturalar' },
         { to: '/analytics/forecast', icon: <Sparkles size={20} />, label: 'Trend və Proqnoz', locked: isFeatureLocked('forecast_analytics') },
         { to: '/analytics/tax', icon: <Calculator size={20} />, label: 'Vergi və Hesabatlar' },
+
+        // ── Sistem ──
         { to: '/system-settings', icon: <Settings size={20} />, label: 'Tənzimləmələr' },
         { to: '/help', icon: <LifeBuoy size={20} />, label: 'Kömək və Dəstək' },
     ];
