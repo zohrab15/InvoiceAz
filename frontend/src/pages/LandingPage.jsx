@@ -114,7 +114,7 @@ const LandingPage = () => {
                                     <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Azərbaycanın #1 Faktura Platforması</span>
                                 </div>
 
-                                <h1 className="text-5xl md:text-6xl lg:text-8xl font-black leading-[1.05] mb-8 tracking-tighter">
+                                <h1 className="text-5xl md:text-6xl lg:text-[76px] font-black leading-[1.05] mb-6 tracking-tighter">
                                     Azərbaycanın Ən Sadə <br />
                                     <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
                                         Elektron Qaimə
@@ -122,7 +122,7 @@ const LandingPage = () => {
                                     <br />Sistemindən İstifadə Edin
                                 </h1>
 
-                                <p className="text-lg md:text-xl text-white/50 max-w-xl mb-10 leading-relaxed font-medium">
+                                <p className="text-lg md:text-xl text-white/50 max-w-xl mb-8 leading-relaxed font-medium">
                                     Onlayn faktura yaratmaq, xərcləri izləmək və pul axınını nəzarətdə saxlamaq üçün ən yaxşı mühasibat proqramı. Bir kliklə elektron qaimə hazırlayın.
                                 </p>
 
@@ -131,7 +131,7 @@ const LandingPage = () => {
                                         whileHover={{ scale: 1.03, boxShadow: '0 20px 60px rgba(99,102,241,0.4)' }}
                                         whileTap={{ scale: 0.97 }}
                                         onClick={goLogin}
-                                        className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-lg flex items-center justify-center gap-3 group shadow-xl shadow-blue-500/20"
+                                        className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl font-black text-lg flex items-center justify-center gap-3 group shadow-xl shadow-blue-500/20"
                                     >
                                         Pulsuz Qeydiyyat
                                         <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -140,7 +140,7 @@ const LandingPage = () => {
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                         onClick={() => navigate('/demo-login')}
-                                        className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-white/10 transition-all font-roboto"
+                                        className="w-full sm:w-auto px-8 py-3.5 bg-white/5 border border-white/10 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-white/10 transition-all font-roboto"
                                     >
                                         <Play size={18} className="fill-white text-white" />
                                         Demoya Bax
