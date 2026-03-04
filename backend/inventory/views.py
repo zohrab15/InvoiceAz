@@ -182,7 +182,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         continue
 
                     vals = list(row) + [None] * 9
-                    name, desc, sku, price, cost, unit, stock, min_stock, wh_name = vals[0:9]
+                    # New Order: Ad, Təsvir, SKU, Qiymət, Vahid, Miqdar, Limit, Maya Qiyməti, Anbar
+                    name, desc, sku, price, unit, stock, min_stock, cost, wh_name = vals[0:9]
 
                     if not name:
                         continue
