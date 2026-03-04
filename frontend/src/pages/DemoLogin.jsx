@@ -17,7 +17,7 @@ const steps = [
 
 const DemoLogin = () => {
     const navigate = useNavigate();
-    const setAuth = useAuthStore((state) => state.setAuth);
+    const { setAuth, clearAuth } = useAuthStore();
     const showToast = useToast();
 
     const [loadingStep, setLoadingStep] = useState(0);
@@ -30,9 +30,9 @@ const DemoLogin = () => {
 
         const loginDemo = async () => {
             try {
+                console.log('Starting Demo Login process...');
                 // Clear existing session
-                localStorage.removeItem('invoice_token');
-                localStorage.removeItem('active_business');
+                clearAuth();
 
                 const response = await client.post('/auth/login/', {
                     email: 'demo_user@invoice.az',

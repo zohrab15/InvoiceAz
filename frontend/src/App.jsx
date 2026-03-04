@@ -118,7 +118,7 @@ const TaxReports = lazy(() => import('./pages/TaxReports'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Products = lazy(() => import('./pages/Products'));
 const ProductAnalytics = lazy(() => import('./pages/ProductAnalytics'));
-const DemoLogin = lazy(() => import('./pages/DemoLogin'));
+import DemoLogin from './pages/DemoLogin';
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const ActivityLog = lazy(() => import('./pages/ActivityLog'));
@@ -288,7 +288,7 @@ function App() {
 
           // If token is invalid, clear it
           if (err.response?.status === 401) {
-            useAuthStore.getState().logout();
+            useAuthStore.getState().clearAuth();
           }
         }
       }
