@@ -4,84 +4,84 @@
 
   <!-- Ana səhifə - Landing Page -->
   <url>
-    <loc>/</loc>
+    <loc>https://invoiceaz.vercel.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="az" href="/"/>
+    <xhtml:link rel="alternate" hreflang="az" href="https://invoiceaz.vercel.app/"/>
   </url>
 
   <!-- Auth Səhifələri -->
   <url>
-    <loc>/login</loc>
+    <loc>https://invoiceaz.vercel.app/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/register</loc>
+    <loc>https://invoiceaz.vercel.app/register</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/forgot-password</loc>
+    <loc>https://invoiceaz.vercel.app/forgot-password</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <!-- Legal -->
   <url>
-    <loc>/terms</loc>
+    <loc>https://invoiceaz.vercel.app/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>/privacy</loc>
+    <loc>https://invoiceaz.vercel.app/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <!-- Yardım -->
   <url>
-    <loc>/help</loc>
+    <loc>https://invoiceaz.vercel.app/help</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <!-- Akademiya -->
   <url>
-    <loc>/akademiya</loc>
+    <loc>https://invoiceaz.vercel.app/akademiya</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/akademiya/azerbaycanda-faktura-nece-yazilir</loc>
+    <loc>https://invoiceaz.vercel.app/akademiya/azerbaycanda-faktura-nece-yazilir</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>/akademiya/kob-ucun-muhasibat-proqrami</loc>
+    <loc>https://invoiceaz.vercel.app/akademiya/kob-ucun-muhasibat-proqrami</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>/akademiya/edv-hesablamasi-azerbaycan</loc>
+    <loc>https://invoiceaz.vercel.app/akademiya/edv-hesablamasi-azerbaycan</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>/akademiya/freelancer-faktura-sablonu</loc>
+    <loc>https://invoiceaz.vercel.app/akademiya/freelancer-faktura-sablonu</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>/akademiya/kicik-biznesde-pul-axini-idareetme</loc>
+    <loc>https://invoiceaz.vercel.app/akademiya/kicik-biznesde-pul-axini-idareetme</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

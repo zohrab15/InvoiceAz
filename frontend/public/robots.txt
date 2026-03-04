@@ -28,4 +28,4 @@ Disallow: /demo-login
 Disallow: /view/
 Disallow: /public/
 
-Sitemap: /sitemap.xml
+Sitemap: https://invoiceaz.vercel.app/sitemap.xml
