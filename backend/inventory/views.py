@@ -171,18 +171,36 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 wb = openpyxl.load_workbook(file, read_only=True)
                 sheet = wb.active
 
+                # Pre-fetch warehouses for lookup
+                warehouses = Warehouse.objects.filter(business=business)
+                warehouse_map = {wh.name.strip().lower(): wh for wh in warehouses}
+                default_warehouse = warehouses.filter(is_default=True).first() or (warehouses.first() if warehouses.count() == 1 else None)
+
                 excel_data_map = {}
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     if not row or not any(row):
                         continue
 
-                    vals = list(row) + [None] * 8
-                    name, desc, sku, price, cost, unit, stock, min_stock = vals[0:8]
+                    vals = list(row) + [None] * 9
+                    name, desc, sku, price, cost, unit, stock, min_stock, wh_name = vals[0:9]
 
                     if not name:
                         continue
 
+                    # Lookup warehouse by name from the 9th column
+                    target_warehouse = None
+                    if wh_name:
+                        target_warehouse = warehouse_map.get(str(wh_name).strip().lower())
+                    
+                    if not target_warehouse:
+                        target_warehouse = default_warehouse
+
                     sku_key = sku or f"NO-SKU-{name}"
+                    
+                    # We add warehouse to key if we want to allow same SKU in different warehouses?
+                    # The unique constraint is ('business', 'sku'). So SKU must be unique per business.
+                    # If multiple rows have same SKU, they are treated as same product but potentially summing stock.
+                    # For now, we'll stick to SKU as the primary key.
 
                     if sku_key not in excel_data_map:
                         excel_data_map[sku_key] = {
@@ -193,7 +211,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                             'cost_price': Decimal(str(cost or 0)),
                             'unit': unit or 'pcs',
                             'stock_quantity': Decimal(str(stock or 0)),
-                            'min_stock_level': Decimal(str(min_stock or 0))
+                            'min_stock_level': Decimal(str(min_stock or 0)),
+                            'warehouse': target_warehouse
                         }
                     else:
                         excel_data_map[sku_key]['stock_quantity'] += Decimal(str(stock or 0))
@@ -203,6 +222,9 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         excel_data_map[sku_key]['cost_price'] = Decimal(str(cost or 0))
                         excel_data_map[sku_key]['unit'] = unit or 'pcs'
                         excel_data_map[sku_key]['min_stock_level'] = Decimal(str(min_stock or 0))
+                        # Update warehouse if provided in later rows? Let's keep first found or provided.
+                        if not excel_data_map[sku_key]['warehouse'] and target_warehouse:
+                            excel_data_map[sku_key]['warehouse'] = target_warehouse
 
                 if not excel_data_map:
                     return Response({"detail": "Faylda yüklənə biləcək məhsul tapılmadı."}, status=status.HTTP_400_BAD_REQUEST)
@@ -227,14 +249,6 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         "upgrade_required": True
                     })
 
-                # Smart warehouse auto-assignment for Excel
-                warehouses = Warehouse.objects.filter(business=business)
-                target_warehouse = None
-                if warehouses.count() == 1:
-                    target_warehouse = warehouses.first()
-                else:
-                    target_warehouse = warehouses.filter(is_default=True).first()
-
                 products_to_process = []
                 for sku_key, data in excel_data_map.items():
                     product = Product(
@@ -247,7 +261,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         unit=data['unit'],
                         stock_quantity=data['stock_quantity'],
                         min_stock_level=data['min_stock_level'],
-                        warehouse=target_warehouse
+                        warehouse=data['warehouse']
                     )
                     products_to_process.append(product)
 
