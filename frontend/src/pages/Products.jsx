@@ -704,7 +704,7 @@ const Products = () => {
                                     <AlertCircle size={18} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
                                     <div className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                                         Faylın sütun ardıcıllığı belə olmalıdır: <br />
-                                        <span className="font-bold">Ad, Təsvir, SKU, Qiymət, Vahid, Miqdar, Limit</span>
+                                        <span className="font-bold">Ad, Təsvir, SKU, Qiymət, Vahid, Miqdar, Limit, Maya Qiyməti, Anbar</span>
                                     </div>
                                 </div>
 
