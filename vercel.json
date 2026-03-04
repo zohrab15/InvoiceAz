@@ -1,7 +1,8 @@
 {
     "rewrites": [
         {
-            "handle": "filesystem"
+            "source": "/googleadf3842f09d54e93.html",
+            "destination": "/googleadf3842f09d54e93.html"
         },
         {
             "source": "/(.*)",
