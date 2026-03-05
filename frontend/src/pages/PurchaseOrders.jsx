@@ -352,33 +352,33 @@ const PurchaseOrders = () => {
                                                                 <span className="text-[11px] font-black text-blue-600">Qəbul #{rcpt.id}</span>
                                                                 <span className="text-[10px] font-bold opacity-50 flex items-center gap-1"><Clock size={10} />{new Date(rcpt.received_at).toLocaleString('az-AZ')}</span>
                                                             </div>
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 px-4 py-3 bg-white/50 rounded-xl border border-slate-200">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 px-4 py-3 rounded-xl border" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
                                                                 {rcpt.receipt_items.map(ri => (
                                                                     <div key={ri.id} className="flex items-center justify-between text-xs">
-                                                                        <span className="font-bold">{ri.product_name}</span>
+                                                                        <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{ri.product_name}</span>
                                                                         <span className="font-black text-emerald-600">+{ri.quantity} ədəd</span>
                                                                     </div>
                                                                 ))}
                                                             </div>
-                                                            {rcpt.note && <p className="mt-2 text-[10px] font-medium opacity-70 italic px-2">Qeyd: {rcpt.note}</p>}
+                                                            {rcpt.note && <p className="mt-2 text-[10px] font-medium opacity-70 italic px-2" style={{ color: 'var(--color-text-secondary)' }}>Qeyd: {rcpt.note}</p>}
                                                         </div>
                                                     ))}
                                                 </div>
 
-                                                <div className="mt-4 pt-4 border-t border-slate-200">
-                                                    <h5 className="text-[10px] font-black uppercase text-slate-400 mb-2">Ümumi Sifariş İcrası</h5>
+                                                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-card-border)' }}>
+                                                    <h5 className="text-[10px] font-black uppercase mb-2" style={{ color: 'var(--color-text-muted)' }}>Ümumi Sifariş İcrası</h5>
                                                     <div className="space-y-2">
                                                         {po.items.map(item => {
                                                             const percent = (item.quantity_received / item.quantity_ordered) * 100;
                                                             return (
                                                                 <div key={item.id} className="space-y-1">
                                                                     <div className="flex items-center justify-between text-[11px] font-bold">
-                                                                        <span>{item.product_name}</span>
+                                                                        <span style={{ color: 'var(--color-text-primary)' }}>{item.product_name}</span>
                                                                         <span style={{ color: parseFloat(item.quantity_remaining) > 0 ? 'var(--color-amber-600)' : 'var(--color-emerald-600)' }}>
                                                                             {item.quantity_received} / {item.quantity_ordered} {parseFloat(item.quantity_remaining) > 0 && `(Qalıq: ${item.quantity_remaining})`}
                                                                         </span>
                                                                     </div>
-                                                                    <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                                                    <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
                                                                         <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${Math.min(percent, 100)}%` }} />
                                                                     </div>
                                                                 </div>
