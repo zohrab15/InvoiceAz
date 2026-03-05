@@ -24,6 +24,7 @@ from users.mixins import BusinessContextMixin
 from users.permissions import IsRoleAuthorized
 from users.plan_limits import check_product_limit
 from rest_framework.exceptions import PermissionDenied
+from notifications.utils import create_notification, log_activity
 
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
@@ -52,7 +53,25 @@ class WarehouseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             # Assign all existing products with no warehouse to this first warehouse
             Product.objects.filter(business=business, warehouse__isnull=True).update(warehouse=warehouse)
         else:
-            serializer.save(business=business)
+            warehouse = serializer.save(business=business)
+
+        # Notify and Log
+        create_notification(
+            user=business.user,
+            business=business,
+            title="Yeni Anbar yaradıldı",
+            message=f"'{warehouse.name}' adlı yeni anbar yaradıldı.",
+            type='success',
+            link='/inventory',
+            setting_key='warehouse_created'
+        )
+        log_activity(
+            business=business,
+            user=self.request.user,
+            action='CREATE',
+            module='SETTINGS',
+            description=f"Yeni anbar yaradıldı: {warehouse.name}"
+        )
 
     @action(detail=True, methods=['post'], url_path='set-default')
     def set_default(self, request, pk=None):
@@ -150,7 +169,24 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 kwargs['created_by'] = self.request.user
         
         try:
-            serializer.save(**kwargs)
+            product = serializer.save(**kwargs)
+            # Notify and Log
+            create_notification(
+                user=business.user,
+                business=business,
+                title="Yeni Məhsul yaradıldı",
+                message=f"'{product.name}' adlı yeni məhsul əlavə edildi.",
+                type='success',
+                link='/inventory',
+                setting_key='product_created'
+            )
+            log_activity(
+                business=business,
+                user=self.request.user,
+                action='CREATE',
+                module='PRODUCT',
+                description=f"Yeni məhsul əlavə edildi: {product.name}"
+            )
         except Exception:
             # AGGRESSIVE FALLBACK: If save fails, it's likely due to missing columns in DB 
             # (e.g. warehouse_id, cost_price, stock_quantity, min_stock_level) during migration.
@@ -314,6 +350,24 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                             unique_fields=['business', 'sku'],
                             update_fields=['name', 'description', 'base_price', 'unit', 'is_deleted', 'deleted_at']
                         )
+
+                # Notify and Log for Bulk Upload
+                create_notification(
+                    user=business.user,
+                    business=business,
+                    title="Toplu Məhsul Yüklənməsi",
+                    message=f"Excel vasitəsilə {len(products_to_process)} məhsul uğurla işlənildi.",
+                    type='success',
+                    link='/inventory',
+                    setting_key='product_created'
+                )
+                log_activity(
+                    business=business,
+                    user=self.request.user,
+                    action='CREATE',
+                    module='PRODUCT',
+                    description=f"Excel ilə toplu məhsul yükləndi ({len(products_to_process)} ədəd)"
+                )
 
                 return Response({
                     "detail": f"{len(products_to_process)} məhsul uğurla işlənildi (Sinxronizasiya: Mövcud stoklar əvəzləndi)."
