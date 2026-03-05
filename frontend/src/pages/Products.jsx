@@ -101,9 +101,13 @@ const Products = () => {
         },
         onError: (err) => {
             const data = err.response?.data;
-            if (data?.detail) {
-                showToast(translateError(err), 'error');
-            } else if (data && typeof data === 'object') {
+            if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
+                setUpgradeConfig({
+                    isOpen: true,
+                    title: 'Məhsul Limiti dolub 📦',
+                    message: data.detail || `Pulsuz planda maksimum ${checkLimit('products').limit} məhsul əlavə edə bilərsiniz. Limitsiz məhsul idarəetməsi üçün Pro plana keçin.`
+                });
+            } else if (data && typeof data === 'object' && !data.detail) {
                 const errors = Object.entries(data).map(([key, value]) => {
                     const msg = Array.isArray(value) ? value[0] : value;
                     return `${key}: ${msg}`;
@@ -146,7 +150,19 @@ const Products = () => {
             setIsUploadModalOpen(false);
             setExcelFile(null);
         },
-        onError: (err) => showToast(translateError(err), 'error')
+        onError: (err) => {
+            const data = err.response?.data;
+            if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
+                setIsUploadModalOpen(false);
+                setUpgradeConfig({
+                    isOpen: true,
+                    title: 'Məhsul Limiti dolub 📦',
+                    message: data.detail || 'Fayldakı məhsul sayı qalan limitinizi aşır. Limitsiz idxal üçün Pro plana keçin.'
+                });
+            } else {
+                showToast(translateError(err), 'error');
+            }
+        }
     });
 
     const bulkDeleteMutation = useMutation({
