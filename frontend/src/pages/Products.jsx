@@ -559,6 +559,7 @@ const Products = () => {
                                     const sanitizedData = {
                                         ...rawData,
                                         base_price: parseFloat(rawData.base_price) || 0,
+                                        cost_price: parseFloat(rawData.cost_price) || 0,
                                         stock_quantity: parseFloat(rawData.stock_quantity) || 0,
                                         min_stock_level: parseFloat(rawData.min_stock_level) || 0,
                                         warehouse: warehouseList.length === 1 ? warehouseList[0].id : (rawData.warehouse || null),
@@ -609,6 +610,19 @@ const Products = () => {
                                             onInput={(e) => e.target.setCustomValidity('')}
                                             className="w-full rounded-xl p-4 outline-none transition-all font-bold"
                                             style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Maya Qiyməti ({currencySymbol})</label>
+                                        <input
+                                            name="cost_price"
+                                            type="number"
+                                            step="0.01"
+                                            defaultValue={editingProduct?.cost_price || 0}
+                                            className="w-full rounded-xl p-4 outline-none transition-all font-bold"
+                                            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
+                                            placeholder="Alış qiyməti"
                                         />
                                     </div>
 
