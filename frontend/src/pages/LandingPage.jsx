@@ -315,11 +315,14 @@ const LandingPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
                             { icon: <FileText size={24} />, title: 'Professional Fakturalar', desc: 'Saniyələr içində fərdiləşdirilmiş PDF fakturalar yaradın, müştərilərinizə bir klik ilə göndərin.', gradient: 'from-blue-500 to-cyan-500' },
+                            { icon: <Package size={24} />, title: 'Anbar İdarəetməsi', desc: 'Çoxsaylı anbarlar, barkod skan və stok hərəkətləri ilə qalığınızı saniyələr içində yoxlayın.', gradient: 'from-emerald-500 to-teal-500' },
                             { icon: <Wallet size={24} />, title: 'Xərc İdarəetmə', desc: 'Biznes xərclərinizi kateqoriyalar üzrə qruplaşdırın, büdcə limitləri təyin edin.', gradient: 'from-rose-500 to-orange-500' },
                             { icon: <BarChart3 size={24} />, title: 'Canlı Analitika', desc: 'Real-vaxt qrafiklər, gəlir/xərc trendləri və AI ilə gələcək proqnozlaşdırma.', gradient: 'from-violet-500 to-purple-500' },
-                            { icon: <Bell size={24} />, title: 'Ağıllı Bildirişlər', desc: 'Ödəniş vaxtı yaxınlaşanda və büdcə limiti aşılanda anında xəbərdar olun.', gradient: 'from-amber-500 to-yellow-500' },
-                            { icon: <Shield size={24} />, title: 'Təhlükəsiz İnfrastruktur', desc: 'Bütün məlumatlarınız şifrələnmiş serverdə saxlanılır. Tam məxfilik.', gradient: 'from-emerald-500 to-teal-500' },
+                            { icon: <Receipt size={24} />, title: 'Alış Sifarişləri', desc: 'Təchizatçılara sifariş göndərin, mal qəbulunu izləyin və anbarınızı avtomatik yeniləyin.', gradient: 'from-blue-600 to-indigo-600' },
                             { icon: <QrCode size={24} />, title: 'QR ilə Ödəniş', desc: 'Fakturalara avtomatik QR kod əlavə olunur, müştəriləriniz mobil bankçılıq ilə anında ödəniş etsin.', gradient: 'from-blue-500 to-indigo-500' },
+                            { icon: <Users size={24} />, title: 'Komanda İdarəetməsi', desc: 'İşçilərə fərdi rollar (Satış, Anbar, Mühasib) təyin edin və fəaliyyət jurnalı ilə nəzarət edin.', gradient: 'from-amber-600 to-orange-600' },
+                            { icon: <Bell size={24} />, title: 'Ağıllı Bildirişlər', desc: 'Ödəniş vaxtı yaxınlaşanda və büdcə limiti aşılanda anında xəbərdar olun.', gradient: 'from-amber-500 to-yellow-500' },
+                            { icon: <Shield size={24} />, title: 'Təhlükəsiz İnfrastruktur', desc: 'Bütün məlumatlarınız şifrələnmiş serverdə saxlanılır. Tam məxfilik və təhlükəsizlik.', gradient: 'from-cyan-600 to-blue-600' },
                         ].map((f, i) => (
                             <motion.div
                                 key={i}
