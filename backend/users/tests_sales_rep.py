@@ -7,6 +7,9 @@ from decimal import Decimal
 
 User = get_user_model()
 
+from django.test import override_settings
+
+@override_settings(SECURE_SSL_REDIRECT=False)
 class SalesRepFunctionalTestCase(APITestCase):
     def setUp(self):
         # Create Subscription Plan with team limits

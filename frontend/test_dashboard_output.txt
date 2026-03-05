@@ -1,0 +1,40 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/mirza/.gemini/antigravity/scratch/InvoiceAZ/frontend[39m
+
+ [31m❯[39m src/pages/Dashboard.test.jsx [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 179[2mms[22m[39m
+     [32m✓[39m shows loading state initially if queries are loading[32m 117[2mms[22m[39m
+[31m     [31m×[31m shows business creation prompt when no active business[39m[32m 38[2mms[22m[39m
+[31m     [31m×[31m renders dashboard with stats for OWNER[39m[32m 9[2mms[22m[39m
+[31m     [31m×[31m renders pipeline layout for SALES_REP[39m[32m 9[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/Dashboard.test.jsx[2m > [22mDashboard Page[2m > [22mshows business creation prompt when no active business
+[41m[1m FAIL [22m[49m src/pages/Dashboard.test.jsx[2m > [22mDashboard Page[2m > [22mrenders dashboard with stats for OWNER
+[41m[1m FAIL [22m[49m src/pages/Dashboard.test.jsx[2m > [22mDashboard Page[2m > [22mrenders pipeline layout for SALES_REP
+[31m[1mTypeError[22m: payList.map is not a function or its return value is not iterable[39m
+[36m [2m❯[22m src/pages/Dashboard.jsx:[2m190:24[22m[39m
+    [90m188| [39m                positive[33m:[39m [35mfalse[39m
+    [90m189| [39m            }))[33m,[39m
+    [90m190| [39m            [33m...[39mpayList[33m.[39m[34mmap[39m(pay [33m=>[39m ({
+    [90m   | [39m                       [31m^[39m
+    [90m191| [39m                id[33m:[39m [32m`pay-[39m[36m${[39mpay[33m.[39mid[36m}[39m[32m`[39m[33m,[39m
+    [90m192| [39m                type[33m:[39m [32m'payment'[39m[33m,[39m
+[90m [2m❯[22m mountMemo node_modules/react-dom/cjs/react-dom-client.development.js:[2m8777:23[22m[39m
+[90m [2m❯[22m Object.useMemo node_modules/react-dom/cjs/react-dom-client.development.js:[2m26216:18[22m[39m
+[90m [2m❯[22m process.env.NODE_ENV.exports.useMemo node_modules/react/cjs/react.development.js:[2m1251:34[22m[39m
+[90m [2m❯[22m Dashboard src/pages/Dashboard.jsx:[2m161:32[22m[39m
+[90m [2m❯[22m Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:[2m25904:20[22m[39m
+[90m [2m❯[22m renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:[2m7662:22[22m[39m
+[90m [2m❯[22m updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:[2m10166:19[22m[39m
+[90m [2m❯[22m beginWork node_modules/react-dom/cjs/react-dom-client.development.js:[2m11778:18[22m[39m
+[90m [2m❯[22m runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 07:15:05
+[2m   Duration [22m 7.69s[2m (transform 707ms, setup 646ms, import 1.48s, tests 179ms, environment 4.61s)[22m
+

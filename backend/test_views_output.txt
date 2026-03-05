@@ -1,0 +1,121 @@
+Creating test database for alias 'default'...
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:225: UserWarning: app_settings.USERNAME_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['username']['required']
+  required=allauth_account_settings.USERNAME_REQUIRED,
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:227: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:285: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 1 issue (0 silenced).
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\staticfiles\
+  mw_instance = middleware(adapted_handler)
+FFFFFFFFFFF
+======================================================================
+FAIL: test_logout (users.tests_views.LogoutViewTestCase.test_logout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 124, in test_logout
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_list_sessions (users.tests_views.SessionViewsTestCase.test_list_sessions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 106, in test_list_sessions
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_revoke_session (users.tests_views.SessionViewsTestCase.test_revoke_session)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 115, in test_revoke_session
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_disable_2fa (users.tests_views.TwoFactorAuthTestCase.test_disable_2fa)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 91, in test_disable_2fa
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_enable_2fa (users.tests_views.TwoFactorAuthTestCase.test_enable_2fa)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 80, in test_enable_2fa
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_generate_2fa (users.tests_views.TwoFactorAuthTestCase.test_generate_2fa)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 66, in test_generate_2fa
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_delete_account (users.tests_views.UserViewsTestCase.test_delete_account)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 55, in test_delete_account
+    self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 204
+
+======================================================================
+FAIL: test_password_change (users.tests_views.UserViewsTestCase.test_password_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 40, in test_password_change
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_password_change_wrong_old (users.tests_views.UserViewsTestCase.test_password_change_wrong_old)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 50, in test_password_change_wrong_old
+    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 400
+
+======================================================================
+FAIL: test_user_me_get (users.tests_views.UserViewsTestCase.test_user_me_get)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 24, in test_user_me_get
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_user_me_patch (users.tests_views.UserViewsTestCase.test_user_me_patch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_views.py", line 30, in test_user_me_patch
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+----------------------------------------------------------------------
+Ran 11 tests in 19.118s
+
+FAILED (failures=11)
+Destroying test database for alias 'default'...
+Found 11 test(s).

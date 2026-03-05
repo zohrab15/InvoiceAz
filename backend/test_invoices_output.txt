@@ -1,0 +1,44 @@
+Creating test database for alias 'default'...
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:225: UserWarning: app_settings.USERNAME_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['username']['required']
+  required=allauth_account_settings.USERNAME_REQUIRED,
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:227: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:285: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 1 issue (0 silenced).
+....E.EC:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\staticfiles\
+  mw_instance = middleware(adapted_handler)
+.C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\rest_framework\pagination.py:207: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'invoices.models.Expense'> SoftDeleteQuerySet.
+  paginator = self.django_paginator_class(queryset, page_size)
+..C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\rest_framework\pagination.py:207: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'invoices.models.Invoice'> SoftDeleteQuerySet.
+  paginator = self.django_paginator_class(queryset, page_size)
+.
+======================================================================
+ERROR: test_calculate_totals (invoices.tests_models.InvoiceModelTestCase.test_calculate_totals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\invoices\tests_models.py", line 44, in test_calculate_totals
+    self.assertEqual(invoice.tax_total, decimal.Decimal('2.00')) # 10% of 20 = 2
+                     ^^^^^^^^^^^^^^^^^
+AttributeError: 'Invoice' object has no attribute 'tax_total'
+
+======================================================================
+ERROR: test_update_payment_status (invoices.tests_models.InvoiceModelTestCase.test_update_payment_status)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\invoices\tests_models.py", line 64, in test_update_payment_status
+    self.assertEqual(invoice.amount_paid, decimal.Decimal('40.00'))
+                     ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Invoice' object has no attribute 'amount_paid'
+
+----------------------------------------------------------------------
+Ran 11 tests in 18.172s
+
+FAILED (errors=2)
+Destroying test database for alias 'default'...
+Found 11 test(s).

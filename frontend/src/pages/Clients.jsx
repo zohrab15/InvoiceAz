@@ -59,6 +59,8 @@ const Clients = () => {
         },
         enabled: !!activeBusiness,
         retry: false,
+        refetchInterval: 60 * 1000,
+        staleTime: 30 * 1000,
     });
 
     const clientsData = clients?.results || (Array.isArray(clients) ? clients : []);
@@ -81,6 +83,7 @@ const Clients = () => {
         },
         enabled: !!token && (user?.membership === 'Premium' || isOwnerOrManager),
         retry: false,
+        refetchInterval: 5 * 60 * 1000, // Team changes are less frequent
     });
 
     // Only show Sales Reps for assignment per user request
@@ -117,11 +120,28 @@ const Clients = () => {
 
     const deleteMutation = useMutation({
         mutationFn: (id) => clientApi.delete(`/clients/all/${id}/`),
-        onSuccess: () => {
-            queryClient.invalidateQueries(['clients']);
-            showToast('Müştəri silindi');
+        onMutate: async (id) => {
+            await queryClient.cancelQueries({ queryKey: ['clients', activeBusiness?.id] });
+            const previousClients = queryClient.getQueryData(['clients', activeBusiness?.id, page, searchTerm]);
+
+            queryClient.setQueryData(['clients', activeBusiness?.id, page, searchTerm], old => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    results: old.results.filter(c => c.id !== id),
+                    count: old.count - 1
+                };
+            });
+
+            return { previousClients };
         },
-        onError: (err) => showToast(translateError(err), 'error')
+        onError: (err, id, context) => {
+            queryClient.setQueryData(['clients', activeBusiness?.id, page, searchTerm], context.previousClients);
+            showToast(translateError(err), 'error');
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['clients']);
+        },
     });
 
     const bulkAssignMutation = useMutation({

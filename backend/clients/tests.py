@@ -17,7 +17,7 @@
 ═══════════════════════════════════════════════════════════════
 """
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -28,6 +28,7 @@ from clients.models import Client
 User = get_user_model()
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class ClientCRUDTestCase(APITestCase):
     """
     ═══════════════════════════════════════════
@@ -162,6 +163,7 @@ class ClientCRUDTestCase(APITestCase):
         self.assertTrue(deleted_client.is_deleted)
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class ClientIsolationTestCase(APITestCase):
     """
     ═══════════════════════════════════════════
@@ -250,6 +252,7 @@ class ClientIsolationTestCase(APITestCase):
         self.assertEqual(self.client_a.name, 'Müştəri A (gizli olmalıdır)')
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class ClientValidationTestCase(APITestCase):
     """
     ═══════════════════════════════════════════
@@ -346,6 +349,7 @@ class ClientValidationTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class ClientSearchTestCase(APITestCase):
     """
     ═══════════════════════════════════════════
@@ -436,6 +440,7 @@ class ClientSearchTestCase(APITestCase):
         self.assertEqual(len(results), 0)
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class ClientPlanLimitTestCase(APITestCase):
     """
     ═══════════════════════════════════════════
@@ -491,6 +496,7 @@ class ClientPlanLimitTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class ClientUnauthenticatedTestCase(APITestCase):
     """
     ═══════════════════════════════════════════
@@ -511,3 +517,99 @@ class ClientUnauthenticatedTestCase(APITestCase):
             {'name': 'Hack Attempt'}
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class ClientAdditionalCoverageTestCase(APITestCase):
+    def setUp(self):
+        self.plan, _ = SubscriptionPlan.objects.get_or_create(
+            name='pro',
+            defaults={
+                'label': 'Professional',
+                'team_members_limit': 10,
+                'clients_limit': 100,
+            }
+        )
+        self.owner = User.objects.create_user(
+            email='owner@add.com', password='password123',
+            membership='pro', subscription_plan=self.plan,
+        )
+        self.manager = User.objects.create_user(email='manager@add.com', password='password123')
+        self.rep = User.objects.create_user(email='rep@add.com', password='password123')
+        
+        self.business = Business.objects.create(user=self.owner, name='Biznes Additional')
+        
+        TeamMember.objects.create(owner=self.owner, business=self.business, user=self.manager, role='MANAGER')
+        TeamMember.objects.create(owner=self.owner, business=self.business, user=self.rep, role='SALES_REP')
+        
+        self.client_obj = Client.objects.create(business=self.business, name='Test Client 1')
+        self.client_obj2 = Client.objects.create(business=self.business, name='Test Client 2')
+        
+    def test_client_str_method(self):
+        self.assertEqual(str(self.client_obj), 'Test Client 1')
+        
+    def test_sales_rep_cannot_change_assigned_to(self):
+        # By default, reps can only see clients assigned to them. So let's assign it first so they don't get 404.
+        self.client_obj.assigned_to = self.rep
+        self.client_obj.save()
+        
+        self.client.force_authenticate(user=self.rep)
+        url = reverse('client-detail', args=[self.client_obj.id])
+        # Trying to assign to manager
+        response = self.client.patch(url, {'assigned_to': self.manager.id}, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.client_obj.refresh_from_db()
+        # Should remain self.rep, because it was dropped in perform_update and didn't change
+        self.assertEqual(self.client_obj.assigned_to, self.rep)
+
+        # Manager CAN assign
+        self.client.force_authenticate(user=self.manager)
+        response = self.client.patch(url, {'assigned_to': self.manager.id}, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.client_obj.refresh_from_db()
+        self.assertEqual(self.client_obj.assigned_to, self.manager)
+
+    def test_bulk_assign(self):
+        self.client.force_authenticate(user=self.owner)
+        url = reverse('client-bulk-assign')
+        
+        # We need to make sure client_obj2 is definitely associated, although we created it in setUp.
+        # Let's just create a completely fresh one inside the test to be safe from test DB scope pollution.
+        c3 = Client.objects.create(business=self.business, name='Test Client 3')
+        
+        # 1. No clients selected
+        response = self.client.post(url, {}, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        # 2. Invalid user
+        response = self.client.post(url, {'client_ids': [self.client_obj.id], 'assigned_to': 9999}, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        # 3. Valid assignment to rep
+        response = self.client.post(url, {'client_ids': [self.client_obj.id, c3.id], 'assigned_to': self.rep.id}, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('updated_count'), 2)
+        
+        self.client_obj.refresh_from_db()
+        self.assertEqual(self.client_obj.assigned_to, self.rep)
+        
+        # 4. Unassign
+        response = self.client.post(url, {'client_ids': [self.client_obj.id], 'assigned_to': ''}, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.client_obj.refresh_from_db()
+        self.assertIsNone(self.client_obj.assigned_to)
+
+    def test_dropdown_all_clients(self):
+        # 1. Without active business
+        self.client.force_authenticate(user=self.owner)
+        url = reverse('client-all-clients')
+        response = self.client.get(url)  # Missing business ID
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        # 2. With business
+        response = self.client.get(url, HTTP_X_BUSINESS_ID=self.business.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+

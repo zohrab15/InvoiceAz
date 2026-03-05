@@ -1,0 +1,168 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/mirza/.gemini/antigravity/scratch/InvoiceAZ/frontend[39m
+
+[90mstderr[2m | src/components/ScrollToTop.test.jsx[2m > [22m[2mScrollToTop Component[2m > [22m[2mscrolls to top when pathname changes
+[22m[39mAn update to MemoryRouter inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [31m❯[39m src/components/ScrollToTop.test.jsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 150[2mms[22m[39m
+[31m     [31m×[31m scrolls to top when pathname changes[39m[32m 144[2mms[22m[39m
+ [32m✓[39m src/components/ErrorBoundary.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[32m 223[2mms[22m[39m
+[90mstderr[2m | src/components/CountUp.test.jsx[2m > [22m[2mCountUp Component[2m > [22m[2mrenders with initial value 0
+[22m[39mAn update to CountUp inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [31m❯[39m src/components/CountUp.test.jsx [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 186[2mms[22m[39m
+     [32m✓[39m renders with initial value 0[32m 135[2mms[22m[39m
+[31m     [31m×[31m animates to the target value[39m[32m 28[2mms[22m[39m
+[31m     [31m×[31m formats with decimals[39m[32m 9[2mms[22m[39m
+[31m     [31m×[31m adds prefix and suffix correctly[39m[32m 9[2mms[22m[39m
+[90mstderr[2m | src/components/Toast.test.jsx[2m > [22m[2mToast Component[2m > [22m[2mshows a toast message when requested
+[22m[39mAn update to ToastProvider inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [31m❯[39m src/components/Toast.test.jsx [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 410[2mms[22m[39m
+     [32m✓[39m renders provider without crashing[32m 113[2mms[22m[39m
+     [32m✓[39m shows a toast message when requested[32m 239[2mms[22m[39m
+[31m     [31m×[31m removes toast after timeout[39m[32m 51[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/components/CountUp.test.jsx[2m > [22mCountUp Component[2m > [22manimates to the target value
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: 100. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<span>[31m
+      [0m0[0m
+    [36m</span>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/CountUp.test.jsx:[2m28:23[22m[39m
+    [90m 26| [39m        })[33m;[39m
+    [90m 27| [39m
+    [90m 28| [39m        [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'100'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 29| [39m    })[33m;[39m
+    [90m 30| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/CountUp.test.jsx[2m > [22mCountUp Component[2m > [22mformats with decimals
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: 100,55. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<span>[31m
+      [0m0,00[0m
+    [36m</span>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/CountUp.test.jsx:[2m38:23[22m[39m
+    [90m 36| [39m        })[33m;[39m
+    [90m 37| [39m
+    [90m 38| [39m        expect(screen.getByText('100,55')).toBeInTheDocument(); // az-…
+    [90m   | [39m                      [31m^[39m
+    [90m 39| [39m    })[33m;[39m
+    [90m 40| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/CountUp.test.jsx[2m > [22mCountUp Component[2m > [22madds prefix and suffix correctly
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: $50k. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<span>[31m
+      [0m$[0m
+      [0m0[0m
+      [0mk[0m
+    [36m</span>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/CountUp.test.jsx:[2m48:23[22m[39m
+    [90m 46| [39m        })[33m;[39m
+    [90m 47| [39m
+    [90m 48| [39m        [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'$50k'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 49| [39m    })[33m;[39m
+    [90m 50| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/ScrollToTop.test.jsx[2m > [22mScrollToTop Component[2m > [22mscrolls to top when pathname changes
+[31m[1mAssertionError[22m: expected 1 to be greater than 1[39m
+[36m [2m❯[22m src/components/ScrollToTop.test.jsx:[2m46:51[22m[39m
+    [90m 44| [39m
+    [90m 45| [39m        [90m// Should trigger again[39m
+    [90m 46| [39m        expect(window.scrollTo.mock.calls.length).toBeGreaterThan(init…
+    [90m   | [39m                                                  [31m^[39m
+    [90m 47| [39m    })[33m;[39m
+    [90m 48| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/Toast.test.jsx[2m > [22mToast Component[2m > [22mremoves toast after timeout
+[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <span
+  class="flex-1 text-sm font-semibold leading-snug"
+  style="color: rgba(255, 255, 255, 0.92);"
+>
+  Auto Remove Me
+</span> instead[31m[39m
+[36m [2m❯[22m src/components/Toast.test.jsx:[2m62:58[22m[39m
+    [90m 60| [39m        })[33m;[39m
+    [90m 61| [39m
+    [90m 62| [39m        expect(screen.queryByText('Auto Remove Me')).not.toBeInTheDocu…
+    [90m   | [39m                                                         [31m^[39m
+    [90m 63| [39m    })[33m;[39m
+    [90m 64| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 07:11:05
+[2m   Duration [22m 10.61s[2m (transform 1.05s, setup 2.65s, import 6.11s, tests 969ms, environment 21.63s)[22m
+

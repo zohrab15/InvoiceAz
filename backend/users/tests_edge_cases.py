@@ -7,6 +7,9 @@ from decimal import Decimal
 
 User = get_user_model()
 
+from django.test import override_settings
+
+@override_settings(SECURE_SSL_REDIRECT=False)
 class EdgeCaseFunctionalTestCase(APITestCase):
     def setUp(self):
         # 1. Setup Subscription Plans

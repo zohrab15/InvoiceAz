@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from notifications.utils import create_notification
 import uuid
 from utils.models import SoftDeleteModel
+from decimal import Decimal
 
 class Invoice(SoftDeleteModel):
     STATUS_CHOICES = (
@@ -113,7 +114,7 @@ class Invoice(SoftDeleteModel):
         total_tax = 0
         for item in items:
             effective_tax_rate = item.tax_rate if item.tax_rate > 0 else self.tax_rate
-            total_tax += item.amount * (effective_tax_rate / 100)
+            total_tax += item.amount * (effective_tax_rate / Decimal('100'))
             
         self.tax_amount = total_tax
         self.total = self.subtotal + self.tax_amount - self.discount

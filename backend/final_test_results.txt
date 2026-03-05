@@ -1,0 +1,192 @@
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\dj_rest_auth\registration\serializers.py:225: UserWarning: app_settings.USERNAME_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['username']['required']
+  required=allauth_account_settings.USERNAME_REQUIRED,
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\dj_rest_auth\registration\serializers.py:227: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\dj_rest_auth\registration\serializers.py:285: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+Creating test database for alias 'default'...
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 1 issue (0 silenced).
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\staticfiles\
+  mw_instance = middleware(adapted_handler)
+..C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\rest_framework\pagination.py:207: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'clients.models.Client'> SoftDeleteQuerySet.
+  paginator = self.django_paginator_class(queryset, page_size)
+...Not Found: /api/clients/all/1/
+Not Found: /api/clients/all/1/
+.Forbidden: /api/clients/all/
+Forbidden: /api/clients/all/
+.....Unauthorized: /api/clients/all/
+Unauthorized: /api/clients/all/
+.Unauthorized: /api/clients/all/
+Unauthorized: /api/clients/all/
+.Bad Request: /api/clients/all/
+Bad Request: /api/clients/all/
+..Bad Request: /api/clients/all/
+Bad Request: /api/clients/all/
+...............C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\rest_framework\pagination.py:207: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'invoices.models.Expense'> SoftDeleteQuerySet.
+  paginator = self.django_paginator_class(queryset, page_size)
+..C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\rest_framework\pagination.py:207: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'invoices.models.Invoice'> SoftDeleteQuerySet.
+  paginator = self.django_paginator_class(queryset, page_size)
+...........FFFFFFFF............FFFFFFF........Bad Request: /api/users/change-password/
+Bad Request: /api/users/change-password/
+...
+======================================================================
+FAIL: test_duplicate_invitation_prevention (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_duplicate_invitation_prevention)
+Sending the same invitation twice should be blocked.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 72, in test_duplicate_invitation_prevention
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+======================================================================
+FAIL: test_email_case_insensitivity (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_email_case_insensitivity)
+Invitations should handle emails case-insensitively.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 135, in test_email_case_insensitivity
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 201
+
+======================================================================
+FAIL: test_manager_cannot_delete_other_manager (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_manager_cannot_delete_other_manager)
+Cross-manager deletion should be restricted.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 96, in test_manager_cannot_delete_other_manager
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+======================================================================
+FAIL: test_manager_cannot_update_own_role (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_manager_cannot_update_own_role)
+A manager should not be able to change their own role or target.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 108, in test_manager_cannot_update_own_role
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+======================================================================
+FAIL: test_plan_limit_enforcement (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_plan_limit_enforcement)
+Verify that inviting more members than the plan allows returns an error.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 59, in test_plan_limit_enforcement
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+======================================================================
+FAIL: test_self_invitation_blocked (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_self_invitation_blocked)
+Owner should not be able to invite themselves to their own team.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 81, in test_self_invitation_blocked
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+======================================================================
+FAIL: test_target_limit_boundaries (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_target_limit_boundaries)
+Test numeric boundaries for sales targets.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 145, in test_target_limit_boundaries
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_unauthorized_user_cannot_access_team (users.tests_edge_cases.EdgeCaseFunctionalTestCase.test_unauthorized_user_cannot_access_team)
+A user not in the team or owner should have zero visibility.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_edge_cases.py", line 123, in test_unauthorized_user_cannot_access_team
+    self.assertEqual(response_detail.status_code, status.HTTP_404_NOT_FOUND)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 404
+
+======================================================================
+FAIL: test_manager_can_invite_rep (users.tests_sales_rep.SalesRepFunctionalTestCase.test_manager_can_invite_rep)
+Managers have the authority to invite new Sales Representatives.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 134, in test_manager_can_invite_rep
+    self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 202
+
+======================================================================
+FAIL: test_owner_can_add_existing_user (users.tests_sales_rep.SalesRepFunctionalTestCase.test_owner_can_add_existing_user)
+Owner can directly add an existing user as a Sales Rep.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 65, in test_owner_can_add_existing_user
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 201
+
+======================================================================
+FAIL: test_owner_can_invite_sales_rep (users.tests_sales_rep.SalesRepFunctionalTestCase.test_owner_can_invite_sales_rep)
+Owner can invite a user to the team by email.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 54, in test_owner_can_invite_sales_rep
+    self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 202
+
+======================================================================
+FAIL: test_owner_can_update_rep_target (users.tests_sales_rep.SalesRepFunctionalTestCase.test_owner_can_update_rep_target)
+Owner can set/update a Sales Rep's monthly sales target.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 75, in test_owner_can_update_rep_target
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_sales_rep_can_update_location (users.tests_sales_rep.SalesRepFunctionalTestCase.test_sales_rep_can_update_location)
+Sales Rep can update their current GPS coordinates.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 103, in test_sales_rep_can_update_location
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 200
+
+======================================================================
+FAIL: test_sales_rep_cannot_update_own_target (users.tests_sales_rep.SalesRepFunctionalTestCase.test_sales_rep_cannot_update_own_target)
+Sales Rep should not be able to change their own target.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 90, in test_sales_rep_cannot_update_own_target
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+======================================================================
+FAIL: test_unauthorized_role_cannot_invite (users.tests_sales_rep.SalesRepFunctionalTestCase.test_unauthorized_role_cannot_invite)
+Users with roles other than OWNER or MANAGER cannot invite members.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\users\tests_sales_rep.py", line 119, in test_unauthorized_role_cannot_invite
+    self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 301 != 403
+
+----------------------------------------------------------------------
+Ran 81 tests in 210.952s
+
+FAILED (failures=15)
+Destroying test database for alias 'default'...
+Found 81 test(s).

@@ -55,3 +55,4 @@ dj-database-url
 gunicorn
 whitenoise
 openpyxl
+coverage==7.4.3

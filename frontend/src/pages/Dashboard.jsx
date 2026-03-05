@@ -33,6 +33,7 @@ const Dashboard = () => {
         },
         enabled: !!activeBusiness && !!user,
         retry: false,
+        refetchInterval: 60 * 1000,
     });
 
     const { data: expenses, isLoading: isLoadingExpenses } = useQuery({
@@ -43,6 +44,7 @@ const Dashboard = () => {
         },
         enabled: !!activeBusiness && !!user && activeBusiness?.user_role !== 'SALES_REP',
         retry: false,
+        refetchInterval: 60 * 1000,
     });
 
     const { data: payments, isLoading: isLoadingPayments } = useQuery({
@@ -53,6 +55,7 @@ const Dashboard = () => {
         },
         enabled: !!activeBusiness && !!user && !['SALES_REP', 'INVENTORY_MANAGER'].includes(activeBusiness?.user_role),
         retry: false,
+        refetchInterval: 60 * 1000,
     });
 
     const { data: inventoryStats, isLoading: isLoadingInventory, isError: isErrorInventory } = useQuery({
@@ -63,6 +66,7 @@ const Dashboard = () => {
         },
         enabled: !!activeBusiness && (activeBusiness?.user_role !== 'SALES_REP' && activeBusiness?.user_role !== 'ACCOUNTANT'),
         retry: 1,
+        refetchInterval: 60 * 1000,
     });
 
     const { data: teamInfo } = useQuery({

@@ -1,0 +1,65 @@
+Creating test database for alias 'default'...
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:225: UserWarning: app_settings.USERNAME_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['username']['required']
+  required=allauth_account_settings.USERNAME_REQUIRED,
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:227: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:285: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 1 issue (0 silenced).
+EEFC:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\staticfiles\
+  mw_instance = middleware(adapted_handler)
+..
+======================================================================
+ERROR: test_product_creation (inventory.tests_models.InventoryModelTestCase.test_product_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\inventory\tests_models.py", line 33, in test_product_creation
+    self.assertEqual(product.profit_margin(), Decimal('50.00'))
+                     ~~~~~~~~~~~~~~~~~~~~~^^
+TypeError: 'decimal.Decimal' object is not callable
+
+======================================================================
+ERROR: test_stock_movement (inventory.tests_models.InventoryModelTestCase.test_stock_movement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\inventory\tests_models.py", line 43, in test_stock_movement
+    movement = StockMovement.objects.create(
+        business=self.business,
+    ...<3 lines>...
+        reference='Purchase'
+    )
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\venv\Lib\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: StockMovement() got unexpected keyword arguments: 'reference'
+
+======================================================================
+FAIL: test_warehouse_creation (inventory.tests_models.InventoryModelTestCase.test_warehouse_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\inventory\tests_models.py", line 20, in test_warehouse_creation
+    self.assertEqual(str(warehouse), 'Main Warehouse')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Main Warehouse (\u018fsas)' != 'Main Warehouse'
+- Main Warehouse (\u018fsas)
+?               -------
++ Main Warehouse
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.554s
+
+FAILED (failures=1, errors=2)
+Destroying test database for alias 'default'...
+Found 5 test(s).

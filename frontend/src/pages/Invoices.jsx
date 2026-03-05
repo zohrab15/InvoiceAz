@@ -120,6 +120,8 @@ const Invoices = () => {
         },
         enabled: !!activeBusiness,
         retry: false,
+        refetchInterval: 60 * 1000,
+        staleTime: 30 * 1000,
     });
 
     const invoicesData = useMemo(() => invoices?.results || (Array.isArray(invoices) ? invoices : []), [invoices]);
@@ -173,6 +175,7 @@ const Invoices = () => {
         mutationFn: (data) => clientApi.post('/invoices/', data),
         onSuccess: (res) => {
             queryClient.invalidateQueries(['invoices']);
+            queryClient.invalidateQueries(['business']);
             showToast('Faktura yaradıldı!');
             const inv = res.data;
             if (triggerSendModal) {
@@ -202,6 +205,7 @@ const Invoices = () => {
         mutationFn: (data) => clientApi.put(`/invoices/${data.id}/`, data),
         onSuccess: (res) => {
             queryClient.invalidateQueries(['invoices']);
+            queryClient.invalidateQueries(['business']);
             showToast('Faktura yeniləndi!');
             const inv = res.data;
             if (triggerSendModal) {
@@ -234,14 +238,43 @@ const Invoices = () => {
 
     const deleteMutation = useMutation({
         mutationFn: (id) => clientApi.delete(`/invoices/${id}/`),
-        onSuccess: () => queryClient.invalidateQueries(['invoices']),
-        onError: (err) => showToast(translateError(err), 'error')
+        onMutate: async (id) => {
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            await queryClient.cancelQueries({ queryKey: ['invoices', activeBusiness?.id] });
+
+            // Snapshot the previous value
+            const previousInvoices = queryClient.getQueryData(['invoices', activeBusiness?.id, page, searchTerm, statusFilter]);
+
+            // Optimistically update to the new value
+            queryClient.setQueryData(['invoices', activeBusiness?.id, page, searchTerm, statusFilter], old => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    results: old.results.filter(inv => inv.id !== id),
+                    count: old.count - 1
+                };
+            });
+
+            // Return a context object with the snapshotted value
+            return { previousInvoices };
+        },
+        onError: (err, id, context) => {
+            // If the mutation fails, use the context returned from onMutate to roll back
+            queryClient.setQueryData(['invoices', activeBusiness?.id, page, searchTerm, statusFilter], context.previousInvoices);
+            showToast(translateError(err), 'error');
+        },
+        onSettled: () => {
+            // Always refetch after error or success to ensure we are in sync with the server
+            queryClient.invalidateQueries(['invoices']);
+        },
     });
 
     const handleAddPayment = async (paymentData) => {
         try {
             await clientApi.post('/invoices/payments/', paymentData);
             queryClient.invalidateQueries(['invoices']);
+            queryClient.invalidateQueries(['payments']);
+            queryClient.invalidateQueries(['business']); // For dashboard stats
             showToast('Ödəniş uğurla qeyd edildi!');
         } catch (error) {
             console.error('Payment error:', error);

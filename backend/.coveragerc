@@ -1,0 +1,15 @@
+[run]
+omit =
+    */migrations/*
+    */tests/*
+    */tests.py
+    manage.py
+    backend/settings.py
+    backend/wsgi.py
+    backend/asgi.py
+    venv/*
+    *__init__.py
+    seed_demo.py
+    seed_data.py
+    debug_plan.py
+    debug_admin.py

@@ -1,0 +1,37 @@
+Creating test database for alias 'default'...
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\dj_rest_auth\registration\serializers.py:225: UserWarning: app_settings.USERNAME_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['username']['required']
+  required=allauth_account_settings.USERNAME_REQUIRED,
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\dj_rest_auth\registration\serializers.py:227: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\dj_rest_auth\registration\serializers.py:285: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 1 issue (0 silenced).
+C:\Users\mirza\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\staticfiles\
+  mw_instance = middleware(adapted_handler)
+Bad Request: /api/clients/all/bulk-assign/
+Bad Request: /api/clients/all/bulk-assign/
+Bad Request: /api/clients/all/bulk-assign/
+Bad Request: /api/clients/all/bulk-assign/
+F.Bad Request: /api/clients/all/dropdown/
+Bad Request: /api/clients/all/dropdown/
+..
+======================================================================
+FAIL: test_bulk_assign (clients.tests.ClientAdditionalCoverageTestCase.test_bulk_assign)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mirza\.gemini\antigravity\scratch\InvoiceAZ\backend\clients\tests.py", line 593, in test_bulk_assign
+    self.assertEqual(response.data.get('updated_count'), 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 2
+
+----------------------------------------------------------------------
+Ran 4 tests in 18.589s
+
+FAILED (failures=1)
+Destroying test database for alias 'default'...
+Found 4 test(s).

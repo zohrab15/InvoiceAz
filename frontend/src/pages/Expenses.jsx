@@ -91,6 +91,8 @@ const Expenses = () => {
             return res.data;
         },
         enabled: !!activeBusiness,
+        refetchInterval: 60 * 1000,
+        staleTime: 30 * 1000,
     });
 
     const expensesData = expenses?.results || (Array.isArray(expenses) ? expenses : []);
@@ -120,6 +122,8 @@ const Expenses = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['expenses']);
+            queryClient.invalidateQueries(['business']);
+            queryClient.invalidateQueries(['invoices']);
             showToast('Xərc uğurla əlavə edildi!');
             setShowAddModal(false);
             resetForm();
@@ -158,6 +162,8 @@ const Expenses = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['expenses']);
+            queryClient.invalidateQueries(['business']);
+            queryClient.invalidateQueries(['invoices']);
             showToast('Xərc yeniləndi!');
             setShowAddModal(false);
             resetForm();
@@ -170,11 +176,31 @@ const Expenses = () => {
 
     const deleteMutation = useMutation({
         mutationFn: (id) => clientApi.delete(`/invoices/expenses/${id}/`),
-        onSuccess: () => {
-            queryClient.invalidateQueries(['expenses']);
-            showToast('Xərc silindi');
+        onMutate: async (id) => {
+            await queryClient.cancelQueries({ queryKey: ['expenses', activeBusiness?.id] });
+            const previousExpenses = queryClient.getQueryData(['expenses', activeBusiness?.id, page, searchTerm]);
+
+            queryClient.setQueryData(['expenses', activeBusiness?.id, page, searchTerm], old => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    results: old.results.filter(exp => exp.id !== id),
+                    count: old.count - 1
+                };
+            });
+
+            return { previousExpenses };
         },
-        onError: (err) => showToast(translateError(err), 'error')
+        onError: (err, id, context) => {
+            queryClient.setQueryData(['expenses', activeBusiness?.id, page, searchTerm], context.previousExpenses);
+            showToast(translateError(err), 'error');
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['expenses']);
+            // Also invalidate dashboard/business stats as expenses affect profit/budget
+            queryClient.invalidateQueries(['business']);
+            queryClient.invalidateQueries(['invoices']); // Dashboard uses invoices for some context
+        },
     });
 
     const updateBudgetMutation = useMutation({

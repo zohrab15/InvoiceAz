@@ -1,0 +1,60 @@
+Name                            Stmts   Miss  Cover   Missing
+-------------------------------------------------------------
+clients\admin.py                    1      0   100%
+clients\apps.py                     3      0   100%
+clients\models.py                  20      1    95%   38
+clients\serializers.py             25      0   100%
+clients\urls.py                     6      0   100%
+clients\views.py                   60     24    60%   52-53, 59-84, 94-100
+config\settings.py                106      4    96%   36, 40, 104, 188
+config\urls.py                     32     20    38%   11-33, 36, 62-63
+inventory\admin.py                 29      0   100%
+inventory\apps.py                   7      0   100%
+inventory\models.py               144     13    91%   63-64, 73-75, 163, 167, 194, 204, 234-236, 240
+inventory\serializers.py           89      8    91%   18-19, 78, 140-144
+inventory\signals.py               17      1    94%   39
+inventory\stock_signals.py        101     43    57%   18-21, 53-54, 84-85, 100-101, 106-118, 124-147, 166-167, 175-188
+inventory\tests_models.py          24      0   100%
+inventory\tests_views.py           33      0   100%
+inventory\urls.py                  10      0   100%
+inventory\views.py                335    232    31%   45, 50, 54-60, 65-71, 89, 91, 93, 95, 101, 105, 120, 122-127, 142-145, 149-169, 173-318, 322-329, 333-379, 393-402, 410-416, 428-439, 442-461, 479-483, 486-488, 491-494, 499-577, 589-617
+invoices\admin.py                  20      0   100%
+invoices\analytics_views.py       280    255     9%   20-24, 28-182, 186-266, 270-473, 477-619, 623-662
+invoices\apps.py                    3      0   100%
+invoices\models.py                155     15    90%   93-101, 155, 166-167, 175, 178, 291-294
+invoices\serializers.py            88     33    62%   29-50, 75, 82-83, 99-118
+invoices\tests_models.py           49      0   100%
+invoices\tests_views.py            49      0   100%
+invoices\urls.py                    9      0   100%
+invoices\views.py                 288    203    30%   27-28, 46, 50, 66-69, 72-78, 93, 98, 102, 114-157, 161-179, 182-323, 327-336, 340-394, 398-403, 407-445, 449-465, 469-481, 485-500
+notifications\admin.py              1      0   100%
+notifications\apps.py               6      0   100%
+notifications\middleware.py        14      0   100%
+notifications\models.py            49      0   100%
+notifications\serializers.py       22      1    95%   27
+notifications\signals.py          104     23    78%   36, 60, 85, 108-112, 120-122, 133, 143-145, 158, 166, 170, 174-176, 196, 205, 209
+notifications\tests_models.py      29      0   100%
+notifications\tests_views.py       50      2    96%   26, 61
+notifications\urls.py               8      0   100%
+notifications\utils.py             32      3    91%   42-43, 56
+notifications\views.py             63     10    84%   39, 65, 73-74, 77-82
+users\adapters.py                  19     14    26%   9-15, 22-25, 32-37
+users\admin.py                     34      0   100%
+users\apps.py                       5      0   100%
+users\mixins.py                    75     31    59%   22-23, 27, 30, 45, 59-60, 68, 76-101, 105, 113, 119-122
+users\models.py                   136      0   100%
+users\permissions.py               29     18    38%   25-53
+users\plan_limits.py              119     39    67%   19-28, 37, 41, 46, 73, 77, 82, 89, 104, 108, 113, 132-147, 159, 163, 168, 200-201, 205-208, 213
+users\plan_views.py                10      3    70%   13-15
+users\serializers.py              118     48    59%   25-30, 47-54, 59, 66-77, 83-87, 92-94, 129-132, 135, 138-140, 143-168
+users\signals.py                   24     11    54%   17, 22-46, 57-62
+users\test_invitation.py           24      0   100%
+users\tests_edge_cases.py          79      0   100%
+users\tests_models.py              61      0   100%
+users\tests_sales_rep.py           70      0   100%
+users\tests_views.py               97      0   100%
+users\urls.py                       9      0   100%
+users\views.py                    302     94    69%   12-20, 23-28, 31-34, 37-44, 62-71, 98, 103, 132, 134, 182, 184, 191, 195-196, 204-212, 216-224, 234, 239, 259-260, 272-284, 315, 374-375, 407, 415, 423, 441-445, 458-508
+utils\models.py                    37     10    73%   6, 9, 12, 19, 22, 42, 50-52, 55
+-------------------------------------------------------------
+TOTAL                            3609   1159    68%
