@@ -43,9 +43,14 @@ class WarehouseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         business = self.get_active_business()
         if not business:
             raise PermissionDenied("Active business required")
-        # If this is the first warehouse, make it default
-        if not Warehouse.objects.filter(business=business).exists():
-            serializer.save(business=business, is_default=True)
+        
+        # Check if any warehouses already exist for this business
+        is_first_warehouse = not Warehouse.objects.filter(business=business).exists()
+        
+        if is_first_warehouse:
+            warehouse = serializer.save(business=business, is_default=True)
+            # Assign all existing products with no warehouse to this first warehouse
+            Product.objects.filter(business=business, warehouse__isnull=True).update(warehouse=warehouse)
         else:
             serializer.save(business=business)
 
