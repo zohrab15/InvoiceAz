@@ -210,6 +210,15 @@ const Products = () => {
         if (found) {
             setEditingProduct(found);
         } else {
+            const check = checkLimit('products');
+            if (!check.allowed) {
+                setUpgradeConfig({
+                    isOpen: true,
+                    title: 'Məhsul Limiti dolub 📦',
+                    message: `Pulsuz planda maksimum ${check.limit} məhsul əlavə edə bilərsiniz. Yeni məhsullar əlavə etmək üçün Pro plana keçin.`
+                });
+                return;
+            }
             setEditingProduct({ sku: result, name: '', base_price: 0, unit: 'pcs' });
         }
     };
