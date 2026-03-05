@@ -10,7 +10,9 @@ from django.shortcuts import get_object_or_404
 
 from .models import (
     Product, Warehouse, StockMovement,
-    PurchaseOrder, PurchaseOrderItem, InventoryAdjustment
+    PurchaseOrder, PurchaseOrderItem,
+    PurchaseOrderReceipt, PurchaseOrderReceiptItem,
+    InventoryAdjustment
 )
 from .serializers import (
     ProductSerializer, ExcelUploadSerializer,
