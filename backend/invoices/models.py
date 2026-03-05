@@ -78,6 +78,7 @@ class Invoice(SoftDeleteModel):
 
     class Meta:
         unique_together = ('business', 'invoice_number')
+        ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
@@ -246,6 +247,9 @@ class Expense(SoftDeleteModel):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
 
     def __str__(self):
         return f"{self.description} - {self.amount}"
