@@ -127,7 +127,7 @@ const PurchaseOrders = () => {
 
     const handleReceiveInit = (po) => {
         const itemsToReceive = po.items
-            .filter(i => i.quantity_received < i.quantity_ordered)
+            .filter(i => parseFloat(i.quantity_received) < parseFloat(i.quantity_ordered))
             .map(i => ({
                 id: i.id,
                 product_name: i.product_name,
@@ -312,8 +312,8 @@ const PurchaseOrders = () => {
                                                                 <div key={item.id} className="space-y-1">
                                                                     <div className="flex items-center justify-between text-[11px] font-bold">
                                                                         <span>{item.product_name}</span>
-                                                                        <span style={{ color: item.quantity_remaining > 0 ? 'var(--color-amber-600)' : 'var(--color-emerald-600)' }}>
-                                                                            {item.quantity_received} / {item.quantity_ordered} {item.quantity_remaining > 0 && `(Qalıq: ${item.quantity_remaining})`}
+                                                                        <span style={{ color: parseFloat(item.quantity_remaining) > 0 ? 'var(--color-amber-600)' : 'var(--color-emerald-600)' }}>
+                                                                            {item.quantity_received} / {item.quantity_ordered} {parseFloat(item.quantity_remaining) > 0 && `(Qalıq: ${item.quantity_remaining})`}
                                                                         </span>
                                                                     </div>
                                                                     <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
