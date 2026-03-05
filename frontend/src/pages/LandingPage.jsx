@@ -20,7 +20,8 @@ import {
     Receipt,
     PieChart,
     Clock,
-    QrCode
+    QrCode,
+    Package
 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
