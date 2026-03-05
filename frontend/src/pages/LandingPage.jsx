@@ -111,7 +111,7 @@ const LandingPage = () => {
                             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-8">
                                     <Sparkles size={14} className="text-blue-400" />
-                                    <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Azərbaycanın #1 Faktura Platforması</span>
+                                    <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Bütün Biznesiniz Tək Platformada</span>
                                 </div>
 
                                 <h1 className="text-5xl md:text-5xl lg:text-6xl font-black leading-[1.05] mb-6 tracking-tighter">
