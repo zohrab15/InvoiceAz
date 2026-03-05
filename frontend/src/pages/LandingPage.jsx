@@ -115,15 +115,14 @@ const LandingPage = () => {
                                 </div>
 
                                 <h1 className="text-5xl md:text-5xl lg:text-6xl font-black leading-[1.05] mb-6 tracking-tighter">
-                                    Azərbaycanın Ən Sadə <br />
+                                    Biznesinizi Tək <br />
                                     <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
-                                        Elektron Qaimə
+                                        Ekrandan İdarə Edin!
                                     </span>
-                                    <br />Sistemindən İstifadə Edin
                                 </h1>
 
                                 <p className="text-lg md:text-xl text-white/50 max-w-xl mb-8 leading-relaxed font-medium">
-                                    Onlayn faktura yaratmaq, xərcləri izləmək və pul axınını nəzarətdə saxlamaq üçün ən yaxşı mühasibat proqramı. Bir kliklə elektron qaimə hazırlayın.
+                                    Qaimə, Anbar, Müştəri və Maliyyə hesabatları — hamısı bir yerdə, ən sadə formada.
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
