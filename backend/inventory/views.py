@@ -313,6 +313,8 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 return Response({
                     "detail": f"{len(products_to_process)} məhsul uğurla işlənildi (Sinxronizasiya: Mövcud stoklar əvəzləndi)."
                 }, status=status.HTTP_201_CREATED)
+            except PermissionDenied:
+                raise
             except Exception as e:
                 return Response({"detail": f"Excel oxunarkən xəta baş verdi: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -102,10 +102,11 @@ const Products = () => {
         onError: (err) => {
             const data = err.response?.data;
             if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
+                const limitMsg = typeof data.detail === 'string' ? data.detail : (data.detail?.message || data.detail?.string || null);
                 setUpgradeConfig({
                     isOpen: true,
                     title: 'Məhsul Limiti dolub 📦',
-                    message: data.detail || `Pulsuz planda maksimum ${checkLimit('products').limit} məhsul əlavə edə bilərsiniz. Limitsiz məhsul idarəetməsi üçün Pro plana keçin.`
+                    message: limitMsg || `Pulsuz planda maksimum ${checkLimit('products').limit} məhsul əlavə edə bilərsiniz. Limitsiz məhsul idarəetməsi üçün Pro plana keçin.`
                 });
             } else if (data && typeof data === 'object' && !data.detail) {
                 const errors = Object.entries(data).map(([key, value]) => {
@@ -154,10 +155,11 @@ const Products = () => {
             const data = err.response?.data;
             if (data?.code === 'plan_limit' || (data?.detail && String(data.detail).includes('limit'))) {
                 setIsUploadModalOpen(false);
+                const limitMsg = typeof data.detail === 'string' ? data.detail : (data.detail?.message || data.detail?.string || null);
                 setUpgradeConfig({
                     isOpen: true,
                     title: 'Məhsul Limiti dolub 📦',
-                    message: data.detail || 'Fayldakı məhsul sayı qalan limitinizi aşır. Limitsiz idxal üçün Pro plana keçin.'
+                    message: limitMsg || 'Fayldakı məhsul sayı qalan limitinizi aşır. Limitsiz idxal üçün Pro plana keçin.'
                 });
             } else {
                 showToast(translateError(err), 'error');
