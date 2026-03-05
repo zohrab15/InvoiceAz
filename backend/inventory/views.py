@@ -558,6 +558,7 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
         # Send notification and log activity
         create_notification(
+            user=self.request.user,
             business=business,
             title='Yeni Alış Sifarişi',
             message=f"Yeni alış sifarişi məlumatları yaradıldı. Təchizatçı: {po.supplier_name}",
@@ -655,6 +656,7 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
             # Send notification and log activity
             create_notification(
+                user=request.user,
                 business=business,
                 title='Mal Qəbulu',
                 message=f"PO-{po.id} sənədi üzrə mal qəbul edildi.",
