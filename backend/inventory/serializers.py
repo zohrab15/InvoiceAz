@@ -143,6 +143,24 @@ class PurchaseOrderCreateSerializer(serializers.ModelSerializer):
             PurchaseOrderItem.objects.create(purchase_order=purchase_order, **item_data)
         return purchase_order
 
+    def update(self, instance, validated_data):
+        items_data = validated_data.pop('items', None)
+        
+        # Update PO fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Update items if provided
+        if items_data is not None:
+            # Simple approach: delete existing and recreate
+            # This is safe because we only allow edits when no receipts exist
+            instance.items.all().delete()
+            for item_data in items_data:
+                PurchaseOrderItem.objects.create(purchase_order=instance, **item_data)
+        
+        return instance
+
 
 class InventoryAdjustmentSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)

@@ -31,6 +31,7 @@ const PurchaseOrders = () => {
     const [receivingNote, setReceivingNote] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedPo, setExpandedPo] = useState(null);
+    const [editingPo, setEditingPo] = useState(null);
 
     const { data: products } = useQuery({
         // ... (existing code for products fetch)
@@ -99,6 +100,17 @@ const PurchaseOrders = () => {
         onError: () => showToast('Silinmə zamanı xəta', 'error'),
     });
 
+    const editMutation = useMutation({
+        mutationFn: ({ id, data }) => clientApi.patch(`/inventory/purchase-orders/${id}/`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['purchase-orders']);
+            showToast('Sifariş yeniləndi');
+            setIsAddOpen(false);
+            setEditingPo(null);
+        },
+        onError: (err) => showToast(err.response?.data?.[0] || err.response?.data?.detail || 'Xəta baş verdi', 'error'),
+    });
+
     const orders = data?.results || [];
     const totalCount = data?.count || 0;
     const totalPages = Math.ceil(totalCount / 50);
@@ -113,7 +125,7 @@ const PurchaseOrders = () => {
             return;
         }
 
-        createMutation.mutate({
+        const payload = {
             supplier_name: fd.get('supplier_name'),
             supplier_contact: fd.get('supplier_contact'),
             order_date: fd.get('order_date'),
@@ -122,7 +134,24 @@ const PurchaseOrders = () => {
             note: fd.get('note'),
             status: currentStatus,
             items: items.filter(i => i.product).map(i => ({ product: parseInt(i.product), quantity_ordered: parseFloat(i.quantity_ordered), unit_cost: parseFloat(i.unit_cost) })),
-        });
+        };
+
+        if (editingPo) {
+            editMutation.mutate({ id: editingPo.id, data: payload });
+        } else {
+            createMutation.mutate(payload);
+        }
+    };
+
+    const handleEditInit = (po) => {
+        setEditingPo(po);
+        setItems(po.items.map(i => ({
+            product: i.product,
+            quantity_ordered: i.quantity_ordered,
+            unit_cost: i.unit_cost
+        })));
+        setCurrentStatus(po.status);
+        setIsAddOpen(true);
     };
 
     const handleReceiveInit = (po) => {
@@ -174,7 +203,7 @@ const PurchaseOrders = () => {
                     </h1>
                     <p className="mt-1 font-medium" style={{ color: 'var(--color-text-secondary)' }}>Təchizatçılardan mal sifarişi verin və qəbul edin.</p>
                 </div>
-                <button onClick={() => { setIsAddOpen(true); setCurrentStatus('ORDERED'); }} className="text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
+                <button onClick={() => { setEditingPo(null); setIsAddOpen(true); setCurrentStatus('ORDERED'); setItems([{ product: '', quantity_ordered: 1, unit_cost: 0 }]); }} className="text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
                     <Plus size={18} /> Yeni Sifariş
                 </button>
             </div>
@@ -233,9 +262,17 @@ const PurchaseOrders = () => {
                                     <div className="flex items-center gap-2">
                                         {po.status === 'DRAFT' && (
                                             <>
+                                                <button onClick={() => { if (window.confirm('Bu sənədi ləğv etmək istədiyinizə əminsiniz?')) updateStatusMutation.mutate({ id: po.id, status: 'CANCELLED' }); }}
+                                                    className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors" title="Ləğv et">
+                                                    <X size={20} />
+                                                </button>
                                                 <button onClick={() => { if (window.confirm('Bu qaralamanı silmək istədiyinizə əminsiniz?')) deleteMutation.mutate(po.id); }}
                                                     className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors" title="Sil">
                                                     <Trash2 size={20} />
+                                                </button>
+                                                <button onClick={() => handleEditInit(po)}
+                                                    className="px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+                                                    Redaktə et
                                                 </button>
                                                 <button onClick={() => updateStatusMutation.mutate({ id: po.id, status: 'ORDERED' })}
                                                     className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
@@ -244,7 +281,32 @@ const PurchaseOrders = () => {
                                                 </button>
                                             </>
                                         )}
-                                        {(po.status === 'ORDERED' || po.status === 'PARTIAL') && (
+                                        {po.status === 'ORDERED' && (
+                                            <div className="flex items-center gap-2">
+                                                {(!po.receipts || po.receipts.length === 0) && (
+                                                    <>
+                                                        <button onClick={() => { if (window.confirm('Bu sənədi ləğv etmək istədiyinizə əminsiniz?')) updateStatusMutation.mutate({ id: po.id, status: 'CANCELLED' }); }}
+                                                            className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors" title="Ləğv et">
+                                                            <X size={20} />
+                                                        </button>
+                                                        <button onClick={() => updateStatusMutation.mutate({ id: po.id, status: 'DRAFT' })}
+                                                            className="px-4 py-2.5 rounded-xl font-bold text-sm bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
+                                                            Qaralamaya qaytar
+                                                        </button>
+                                                        <button onClick={() => handleEditInit(po)}
+                                                            className="px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+                                                            Redaktə et
+                                                        </button>
+                                                    </>
+                                                )}
+                                                <button onClick={() => handleReceiveInit(po)} disabled={receiveMutation.isPending}
+                                                    className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
+                                                    style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}>
+                                                    <Check size={16} /> Qəbul Et
+                                                </button>
+                                            </div>
+                                        )}
+                                        {po.status === 'PARTIAL' && (
                                             <button onClick={() => handleReceiveInit(po)} disabled={receiveMutation.isPending}
                                                 className="px-5 py-2.5 rounded-xl font-bold text-sm text-white flex items-center gap-2"
                                                 style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}>
@@ -348,26 +410,28 @@ const PurchaseOrders = () => {
                         <motion.div initial={{ opacity: 0, scale: 0.95, y: 40 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
                             className="rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl my-4 md:my-auto" style={{ backgroundColor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}>
                             <div className="p-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-card-border)' }}>
-                                <h3 className="text-xl font-black" style={{ color: 'var(--color-text-primary)' }}>Yeni Alış Sifarişi</h3>
-                                <button onClick={() => setIsAddOpen(false)}><X size={20} style={{ color: 'var(--color-text-muted)' }} /></button>
+                                <h3 className="text-xl font-black" style={{ color: 'var(--color-text-primary)' }}>
+                                    {editingPo ? `Sifarişi Redaktə Et: PO-${editingPo.id}` : 'Yeni Alış Sifarişi'}
+                                </h3>
+                                <button onClick={() => { setIsAddOpen(false); setEditingPo(null); }}><X size={20} style={{ color: 'var(--color-text-muted)' }} /></button>
                             </div>
                             <form onSubmit={handleCreate} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Təchizatçı</label>
-                                        <input name="supplier_name" required className="w-full rounded-xl p-3 outline-none font-bold placeholder:font-medium placeholder:opacity-50" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} placeholder="Təchizatçı adını yazın" />
+                                        <input name="supplier_name" required defaultValue={editingPo?.supplier_name} className="w-full rounded-xl p-3 outline-none font-bold placeholder:font-medium placeholder:opacity-50" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} placeholder="Təchizatçı adını yazın" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Əlaqə</label>
-                                        <input name="supplier_contact" className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
+                                        <input name="supplier_contact" defaultValue={editingPo?.supplier_contact} className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                     </div>
                                     <div>
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Sifariş Tarixi</label>
-                                        <input name="order_date" type="date" required defaultValue={new Date().toISOString().split('T')[0]} className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
+                                        <input name="order_date" type="date" required defaultValue={editingPo?.order_date || new Date().toISOString().split('T')[0]} className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                     </div>
                                     <div>
                                         <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Gözlənilən Tarix</label>
-                                        <input name="expected_date" type="date" className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
+                                        <input name="expected_date" type="date" defaultValue={editingPo?.expected_date} className="w-full rounded-xl p-3 outline-none font-bold" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                     </div>
 
                                     {warehouseList.length > 1 && (
@@ -376,6 +440,7 @@ const PurchaseOrders = () => {
                                             <select
                                                 name="warehouse"
                                                 required
+                                                defaultValue={editingPo?.warehouse}
                                                 className="w-full rounded-xl p-3 outline-none font-bold cursor-pointer"
                                                 style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }}
                                             >
@@ -389,7 +454,7 @@ const PurchaseOrders = () => {
                                 </div>
                                 <div>
                                     <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Qeyd</label>
-                                    <textarea name="note" rows="2" className="w-full rounded-xl p-3 outline-none font-medium text-sm" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
+                                    <textarea name="note" defaultValue={editingPo?.note} rows="2" className="w-full rounded-xl p-3 outline-none font-medium text-sm" style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-text-primary)' }} />
                                 </div>
 
                                 <div className="space-y-3">
@@ -419,13 +484,13 @@ const PurchaseOrders = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3 pt-2">
-                                    <button type="submit" onClick={() => setCurrentStatus('DRAFT')} disabled={createMutation.isPending}
+                                    <button type="submit" onClick={() => setCurrentStatus('DRAFT')} disabled={createMutation.isPending || editMutation.isPending}
                                         className="py-4 rounded-xl font-black" style={{ backgroundColor: 'var(--color-hover-bg)', border: '1px solid var(--color-card-border)', color: 'var(--color-text-secondary)' }}>
-                                        Qaralama kimi saxla
+                                        {editingPo ? 'Qeyd Et' : 'Qaralama kimi saxla'}
                                     </button>
-                                    <button type="submit" onClick={() => setCurrentStatus('ORDERED')} disabled={createMutation.isPending}
+                                    <button type="submit" onClick={() => setCurrentStatus('ORDERED')} disabled={createMutation.isPending || editMutation.isPending}
                                         className="py-4 rounded-xl font-black text-white shadow-lg" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
-                                        {createMutation.isPending ? 'Gözləyin...' : 'Sifarişi Göndər'}
+                                        {createMutation.isPending || editMutation.isPending ? 'Gözləyin...' : (editingPo ? 'Yadda Saxla' : 'Sifarişi Göndər')}
                                     </button>
                                 </div>
                             </form>

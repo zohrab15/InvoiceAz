@@ -546,7 +546,7 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ['create', 'update', 'partial_update']:
             return PurchaseOrderCreateSerializer
         return PurchaseOrderSerializer
 
@@ -572,6 +572,23 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             action='CREATE',
             module='PURCHASE_ORDER',
             description=f"Yeni alış sifarişi yaradıldı: {po.supplier_name}"
+        )
+
+    def perform_update(self, serializer):
+        po = self.get_object()
+        
+        # Guard: If items are being changed, check for receipts
+        if 'items' in serializer.validated_data:
+            if po.receipts.exists():
+                raise serializers.ValidationError("Artıq mal qəbulu edilmiş sifarişi redaktə etmək olmaz.")
+        
+        po = serializer.save()
+        log_activity(
+            business=po.business,
+            user=self.request.user,
+            action='UPDATE',
+            module='PURCHASE_ORDER',
+            description=f"Alış sifarişi yeniləndi: PO-{po.id}"
         )
 
     @action(detail=True, methods=['post'], url_path='receive')
