@@ -36,6 +36,8 @@ class NotificationSetting(models.Model):
     in_app_expense_created = models.BooleanField(default=True)
     in_app_product_created = models.BooleanField(default=True)
     in_app_warehouse_created = models.BooleanField(default=True)
+    in_app_purchase_order_created = models.BooleanField(default=True)
+    in_app_purchase_order_received = models.BooleanField(default=True)
     in_app_low_stock = models.BooleanField(default=True)
     in_app_overdue_invoice = models.BooleanField(default=True)
     in_app_target_reached = models.BooleanField(default=True)
@@ -63,6 +65,7 @@ class ActivityLog(models.Model):
         ('PAYMENT', 'Ödəniş'),
         ('CLIENT', 'Müştəri'),
         ('PRODUCT', 'Məhsul'),
+        ('PURCHASE_ORDER', 'Alış Sifarişi'),
         ('EXPENSE', 'Xərc'),
         ('TEAM', 'Komanda'),
         ('SETTINGS', 'Tənzimləmələr'),

@@ -554,7 +554,24 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         business = self.get_active_business()
         if not business:
             raise PermissionDenied("Active business required")
-        serializer.save(business=business, created_by=self.request.user)
+        po = serializer.save(business=business, created_by=self.request.user)
+
+        # Send notification and log activity
+        create_notification(
+            business=business,
+            title='Yeni Alış Sifarişi',
+            message=f"Yeni alış sifarişi məlumatları yaradıldı. Təchizatçı: {po.supplier_name}",
+            type='info',
+            category='in_app_purchase_order_created',
+            link='/inventory/purchase-orders'
+        )
+        log_activity(
+            business=business,
+            user=self.request.user,
+            action='CREATE',
+            module='PURCHASE_ORDER',
+            description=f"Yeni alış sifarişi yaradıldı: {po.supplier_name}"
+        )
 
     @action(detail=True, methods=['post'], url_path='receive')
     def receive_order(self, request, pk=None):
@@ -635,6 +652,23 @@ class PurchaseOrderViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             
             po.received_date = timezone.now().date()
             po.save()
+
+            # Send notification and log activity
+            create_notification(
+                business=business,
+                title='Mal Qəbulu',
+                message=f"PO-{po.id} sənədi üzrə mal qəbul edildi.",
+                type='success',
+                category='in_app_purchase_order_received',
+                link='/inventory/purchase-orders'
+            )
+            log_activity(
+                business=business,
+                user=request.user,
+                action='UPDATE',
+                module='PURCHASE_ORDER',
+                description=f"PO-{po.id} sənədi üzrə mal qəbul edildi (Qəbul #{receipt.id})."
+            )
 
         serializer = self.get_serializer(po)
         return Response(serializer.data)
