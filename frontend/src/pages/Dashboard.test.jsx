@@ -138,4 +138,37 @@ describe('Dashboard Page', () => {
         expect(screen.getByText('Satış Tuneli (Pipeline)')).toBeInTheDocument();
         expect(screen.queryByTestId('composed-chart')).not.toBeInTheDocument(); // Sales reps shouldn't see company financial chart
     });
+
+    it('calculates pending revenue correctly with partial payments', () => {
+        useBusiness.mockReturnValue({ activeBusiness: { id: 1, user_role: 'OWNER' } });
+
+        useQuery.mockImplementation(({ queryKey }) => {
+            const key = queryKey[0];
+            if (key === 'invoices') return {
+                data: {
+                    results: [
+                        { total: '1000', paid_amount: '400', status: 'sent' },
+                        { total: '500', paid_amount: '0', status: 'overdue' },
+                        { total: '2000', paid_amount: '2000', status: 'paid' }
+                    ]
+                },
+                isLoading: false
+            };
+            if (key === 'payments') return { data: [], isLoading: false };
+            return { data: { results: [] }, isLoading: false };
+        });
+
+        renderDashboard();
+
+        // 1000 - 400 = 600
+        // 500 - 0 = 500
+        // Total pending = 1100
+        // Paid status items (2000) are excluded from pendingRevenue
+
+        // Find the "Gözləyən" card and check its value
+        const countUps = screen.getAllByTestId('countup');
+        // stats.pendingRevenue is 1100
+        expect(screen.getByText('Gözləyən')).toBeInTheDocument();
+        expect(screen.getByText('1100')).toBeInTheDocument();
+    });
 });

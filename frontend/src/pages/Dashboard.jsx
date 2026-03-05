@@ -100,8 +100,8 @@ const Dashboard = () => {
 
         const revenue = activeInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
         const paid = invList.filter(i => i.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
-        const pending = invList.filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
-        const overdue = invList.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
+        const pending = invList.filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).reduce((sum, inv) => sum + (parseFloat(inv.total) - parseFloat(inv.paid_amount || 0)), 0) || 0;
+        const overdue = invList.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + (parseFloat(inv.total) - parseFloat(inv.paid_amount || 0)), 0) || 0;
 
         const pipeline = [
             { name: 'Qaralama', count: invList.filter(i => i.status === 'draft').length, color: '#94a3b8' },
