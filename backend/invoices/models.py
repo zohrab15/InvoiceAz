@@ -83,14 +83,14 @@ class Invoice(SoftDeleteModel):
     def save(self, *args, **kwargs):
         if not self.invoice_number:
             from django.db import transaction, IntegrityError
-            from django.db.models import Max
             
             max_retries = 10
             for attempt in range(max_retries):
                 try:
                     with transaction.atomic():
-                        # Get the highest invoice number for this business
-                        last_invoice = Invoice.objects.filter(business=self.business)\
+                        # IMPORTANT: Use all_objects to include soft-deleted invoices
+                        # The DB unique constraint covers ALL rows, not just active ones
+                        last_invoice = Invoice.all_objects.filter(business=self.business)\
                             .select_for_update()\
                             .order_by('id').last()
                         
@@ -101,12 +101,11 @@ class Invoice(SoftDeleteModel):
                                 current_num_str = last_invoice.invoice_number.split('-')[-1]
                                 next_num = int(current_num_str) + 1
                             except (IndexError, ValueError):
-                                # Fallback: count all invoices and add offset
-                                count = Invoice.objects.filter(business=self.business).count()
+                                count = Invoice.all_objects.filter(business=self.business).count()
                                 next_num = count + 1001
                         
-                        # Also check if this number already exists (handles soft-deleted/gaps)
-                        while Invoice.objects.filter(
+                        # Check ALL records (including soft-deleted) for existing number
+                        while Invoice.all_objects.filter(
                             business=self.business,
                             invoice_number=f"INV-{next_num:04d}"
                         ).exists():
@@ -114,12 +113,11 @@ class Invoice(SoftDeleteModel):
                         
                         self.invoice_number = f"INV-{next_num:04d}"
                         super().save(*args, **kwargs)
-                        return  # Success, exit the retry loop
+                        return  # Success
                 except IntegrityError:
-                    # Reset invoice_number for retry
                     self.invoice_number = None
                     if attempt == max_retries - 1:
-                        raise  # Re-raise on last attempt
+                        raise
         else:
             super().save(*args, **kwargs)
 
