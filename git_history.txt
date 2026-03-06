@@ -1,0 +1,25 @@
+935eed3 fix: restore safety fixes preventing 500 errors on invoice creation
+df8e9a4 fix: remove manual product entry in invoice creation form
+e63bedc chore: trigger deployment
+cf0e48f fix: updated dashboard profit calculation to use accrual basis and improved backend prefetching
+36dd337 feat: fix net profit calculation to include COGS and update activity log date format
+7f8cab0 feat: user-requested date format DD.MM.YYYY HH:mm for activity logs
+1e60d0d feat: user-requested date format for activity logs
+d97c34b feat: comprehensive audit logging across all major modules
+7e57012 style: improve dark mode visibility for GRN history and execution metrics
+0cdecbb feat: enhance purchase order management with edit, cancel, and back-to-draft
+47272b6 fix: resolve partial receipt bug in purchase orders
+121478a Fix: Pending and Overdue revenue calculations in dashboard now account for partial payments
+d6b5c13 fix(landing): add missing Package icon import to fix ReferenceError
+57fd414 feat(landing): expand features to 9 items including Inventory and POs
+3966005 style(landing): increase heading line height for better readability
+dd77c61 chore(branding): update landing page badge text
+8ad5af0 chore(landing): update hero slogan to version 1
+a3ca05a fix(inventory): pass user argument to create_notification to fix 500 error on purchase order actions
+7401e70 chore(deploy): force Vercel build again
+d0f061b chore(deploy): trigger Vercel build
+dd281ae feat(notifications): add notifications and activity logs for Purchase Orders
+48f764c chore: trigger Render redeploy
+c3c9767 feat: add Maya Qiyməti (cost_price) field to product creation form
+8a166ca fix: add missing PurchaseOrderReceipt imports to fix receive order error
+1151c5a fix(deploy): revert migration names and add resilient migrate fallback in build.sh

@@ -957,18 +957,11 @@ const Invoices = () => {
                                                             value={item.product || ''}
                                                             onChange={(e) => updateItem(index, 'product_id', e.target.value)}
                                                         >
-                                                            <option value="">-- Məhsul Seçin (Opsional) --</option>
+                                                            <option value="">-- Məhsul Seçin --</option>
                                                             {products?.map(p => (
                                                                 <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
                                                             ))}
                                                         </select>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full bg-transparent border-none rounded-lg p-1 text-sm font-bold text-[var(--color-text-primary)] focus:ring-0 placeholder:[var(--color-text-muted)] placeholder:font-normal"
-                                                            placeholder="Və ya əllə daxil edin..."
-                                                            value={item.description}
-                                                            onChange={(e) => updateItem(index, 'description', e.target.value)}
-                                                        />
                                                     </div>
                                                     <div className="w-full sm:w-24">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Miqdar</label>

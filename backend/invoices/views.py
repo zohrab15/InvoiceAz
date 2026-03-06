@@ -193,8 +193,9 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             img = qr.make_image(fill_color="black", back_color="white")
             
             temp_qr = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            temp_qr.close()
             img.save(temp_qr.name)
-            qr_code_path = temp_qr.name
+            qr_code_path = temp_qr.name.replace('\\', '/')
         except Exception as e:
             print(f"QR Code generation error: {e}")
 
@@ -202,19 +203,21 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         static_dir = str(settings.BASE_DIR / "static")
         fonts_dir = os.path.join(static_dir, "fonts")
         
-        # Prepare font paths for template
+        # Skip passing font paths to template to avoid xhtml2pdf parsing bug on Windows
+        arial_font_path = os.path.join(fonts_dir, "arial.ttf").replace('\\', '/')
+        arial_bold_font_path = os.path.join(fonts_dir, "arialbd.ttf").replace('\\', '/')
         
-        def get_font_base64(font_name):
-            font_path = os.path.join(fonts_dir, font_name)
-            try:
-                with open(font_path, "rb") as f:
-                    return base64.b64encode(f.read()).decode('utf-8')
-            except Exception as e:
-                print(f"Error reading font {font_name}: {e}")
-                return ""
-
-        arial_font_base64 = get_font_base64("arial.ttf")
-        arial_bold_font_base64 = get_font_base64("arialbd.ttf")
+        try:
+            from reportlab.pdfbase import pdfmetrics
+            from reportlab.pdfbase.ttfonts import TTFont
+            from reportlab.lib.fonts import addMapping
+            
+            pdfmetrics.registerFont(TTFont('Arial', arial_font_path))
+            pdfmetrics.registerFont(TTFont('Arial-Bold', arial_bold_font_path))
+            addMapping('Arial', 0, 0, 'Arial')
+            addMapping('Arial', 1, 0, 'Arial-Bold')
+        except Exception as e:
+            print(f"Font registration error: {e}")
 
         # Check for white label permission
         plan_status = get_full_plan_status(invoice.business.user, business_id=invoice.business_id)
@@ -240,8 +243,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'items': invoice.items.all(),
             'qr_code_path': qr_code_path,
             'theme': invoice.invoice_theme or 'modern',
-            'arial_font_base64': arial_font_base64,
-            'arial_bold_font_base64': arial_bold_font_base64,
             'has_white_label': has_white_label,
             'currency_symbol': currency_symbol,
         }
@@ -271,7 +272,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                         temp_img = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
                         temp_img.write(response.content)
                         temp_img.close()
-                        return temp_img.name
+                        return temp_img.name.replace('\\', '/')
                 except Exception as e:
                     print(f"PDF download error {uri_clean}: {e}")
                 return uri
@@ -300,7 +301,7 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 ]
                 abs_path = os.path.abspath(path)
                 if any(abs_path.startswith(root) for root in allowed_roots):
-                    return abs_path
+                    return abs_path.replace('\\', '/')
             
             return uri
 
@@ -313,7 +314,11 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                 link_callback=link_callback
             )
             
-            # No need to clean up QR code file if using base64
+            if qr_code_path and os.path.exists(qr_code_path):
+                try:
+                    os.remove(qr_code_path)
+                except Exception as e:
+                    print(f"Cleanup error: {e}")
             
             if pisa_status.err:
                 print(f"PISA ERROR: {pisa_status.err}")
