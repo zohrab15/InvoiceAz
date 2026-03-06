@@ -82,28 +82,44 @@ class Invoice(SoftDeleteModel):
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            from django.db import transaction
+            from django.db import transaction, IntegrityError
+            from django.db.models import Max
             
-            with transaction.atomic():
-                # Lock the last invoice for the business to prevent race conditions
-                last_invoice = Invoice.objects.filter(business=self.business)\
-                    .select_for_update()\
-                    .order_by('id').last()
-                
-                if last_invoice:
-                    try:
-                        # Extract number from format like INV-0001
-                        current_num_str = last_invoice.invoice_number.split('-')[-1]
-                        last_num = int(current_num_str)
-                        self.invoice_number = f"INV-{last_num + 1:04d}"
-                    except (IndexError, ValueError):
-                        # Fallback count if parsing fails
-                        count = Invoice.objects.filter(business=self.business).count()
-                        self.invoice_number = f"INV-{count + 1001:04d}"
-                else:
-                    self.invoice_number = "INV-1001"
-                
-                super().save(*args, **kwargs)
+            max_retries = 10
+            for attempt in range(max_retries):
+                try:
+                    with transaction.atomic():
+                        # Get the highest invoice number for this business
+                        last_invoice = Invoice.objects.filter(business=self.business)\
+                            .select_for_update()\
+                            .order_by('id').last()
+                        
+                        next_num = 1001  # Default starting number
+                        
+                        if last_invoice and last_invoice.invoice_number:
+                            try:
+                                current_num_str = last_invoice.invoice_number.split('-')[-1]
+                                next_num = int(current_num_str) + 1
+                            except (IndexError, ValueError):
+                                # Fallback: count all invoices and add offset
+                                count = Invoice.objects.filter(business=self.business).count()
+                                next_num = count + 1001
+                        
+                        # Also check if this number already exists (handles soft-deleted/gaps)
+                        while Invoice.objects.filter(
+                            business=self.business,
+                            invoice_number=f"INV-{next_num:04d}"
+                        ).exists():
+                            next_num += 1
+                        
+                        self.invoice_number = f"INV-{next_num:04d}"
+                        super().save(*args, **kwargs)
+                        return  # Success, exit the retry loop
+                except IntegrityError:
+                    # Reset invoice_number for retry
+                    self.invoice_number = None
+                    if attempt == max_retries - 1:
+                        raise  # Re-raise on last attempt
         else:
             super().save(*args, **kwargs)
 
