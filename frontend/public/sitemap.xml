@@ -85,5 +85,28 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://invoiceaz.vercel.app/akademiya/invoiceaz-ile-ilk-faktura-nece-yaranir</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://invoiceaz.vercel.app/akademiya/kicik-biznes-ucun-anbar-idarəetmesi</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://invoiceaz.vercel.app/akademiya/biznes-xerclerini-nece-izlemeli</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://invoiceaz.vercel.app/akademiya/azerbaycanda-vergi-hesabatlari</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 
 </urlset>
