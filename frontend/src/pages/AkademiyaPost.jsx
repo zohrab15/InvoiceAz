@@ -10,6 +10,7 @@ const kateqoriyaReng = {
   'Mühasibat': 'bg-violet-500/15 text-violet-400 border-violet-500/30',
   'Vergi': 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
   'Biznes': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  'Platforma': 'bg-pink-500/15 text-pink-400 border-pink-500/30',
   'Rehbər': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
 };
 

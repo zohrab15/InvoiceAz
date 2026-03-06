@@ -10,6 +10,7 @@ const kateqoriyaReng = {
   'Mühasibat': 'bg-violet-500/15 text-violet-400 border-violet-500/30',
   'Vergi': 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
   'Biznes': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  'Platforma': 'bg-pink-500/15 text-pink-400 border-pink-500/30',
   'Rehbər': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
 };
 
@@ -105,8 +106,8 @@ const Akademiya = () => {
                 key={kat}
                 onClick={() => setAktifKateqoriya(kat)}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${aktifKateqoriya === kat
-                    ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25'
-                    : 'bg-white/[0.04] border-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.08]'
+                  ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25'
+                  : 'bg-white/[0.04] border-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.08]'
                   }`}
               >
                 {kat}
