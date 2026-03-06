@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+<!-- djlint:off -->
 <!DOCTYPE html>
 <html>
 
@@ -113,14 +115,19 @@
     {% if theme == 'modern' %}
     <div class="modern-status">
         <span class="font-bold uppercase" style="font-size: 8pt; letter-spacing: 2pt;">
-            {% if invoice.status == 'paid' %}BU FAKTURA ÖDƏNİLİB{% else %}ÖDƏNİŞ GÖZLƏNİLİR{% endif %}
+            {% if invoice.status == 'paid' %}
+            BU FAKTURA ÖDƏNİLİB
+            {% else %}
+            ÖDƏNİŞ GÖZLƏNİLİR
+            {% endif %}
         </span>
     </div>
     <table class="w-full">
         <tr>
             <td class="valign-top" style="width: 60%;">
-                {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 60pt; margin-bottom: 15pt;">{%
-                endif %}
+                {% if business.logo %}
+                <img src="{{ business.logo.url }}" style="height: 60pt; margin-bottom: 15pt;">
+                {% endif %}
                 <h2 class="uppercase font-bold text-black" style="margin: 0; font-size: 16pt;">{{ business.name }}</h2>
                 <div class="text-slate" style="font-size: 10pt; margin-top: 5pt;">
                     {{ business.address|default:"" }}<br>
@@ -153,8 +160,9 @@
         <div style="border-bottom: 3pt solid #000; padding: 5pt 30pt; display: inline-block;">
             <h1 class="uppercase font-bold" style="margin: 0; font-size: 24pt; letter-spacing: 3pt;">HESAB-FAKTURA</h1>
         </div>
-        <div class="text-slate font-bold uppercase" style="margin-top: 5pt; font-size: 9pt;">No: {{
-            invoice.invoice_number }}</div>
+        <div class="text-slate font-bold uppercase" style="margin-top: 5pt; font-size: 9pt;">
+            No: <span>{{ invoice.invoice_number }}</span>
+        </div>
     </div>
     <table class="w-full">
         <tr>
@@ -176,13 +184,22 @@
         <tr>
             <td class="valign-top">
                 {% if business.logo %}<img src="{{ business.logo.url }}" style="height: 30pt;">{% endif %}
-                <div class="text-slate font-bold" style="font-size: 8pt; margin-top: 5pt;">Invoice #{{
-                    invoice.invoice_number }}</div>
+                <div class="text-slate font-bold" style="font-size: 8pt; margin-top: 5pt;">
+                    Invoice #<span>{{ invoice.invoice_number }}</span>
+                </div>
             </td>
             <td class="valign-top text-right">
-                <div class="minimal-amount">{{ invoice.total|floatformat:2 }} {{ currency_symbol }}</div>
-                <div class="text-slate uppercase font-bold" style="font-size: 7pt;">{% if invoice.status == 'paid'
-                    %}ÖDƏNİLİB{% else %}ÖDƏNİŞ GÖZLƏNİLİR{% endif %}</div>
+                <div class="minimal-amount">
+                    <span>{{ invoice.total|floatformat:2 }}</span>
+                    <span>{{ currency_symbol }}</span>
+                </div>
+                <div class="text-slate uppercase font-bold" style="font-size: 7pt;">
+                    {% if invoice.status == 'paid' %}
+                    ÖDƏNİLİB
+                    {% else %}
+                    ÖDƏNİŞ GÖZLƏNİLİR
+                    {% endif %}
+                </div>
             </td>
         </tr>
     </table>
@@ -202,10 +219,20 @@
             <tbody>
                 {% for item in items %}
                 <tr>
-                    <td class="text-black font-bold">{{ item.description }}</td>
-                    <td class="text-center text-slate">{{ item.quantity|floatformat:-2 }} {{ item.unit }}</td>
-                    <td class="text-right text-slate">{{ item.unit_price|floatformat:2 }} {{ currency_symbol }}</td>
-                    <td class="text-right font-bold text-black">{{ item.amount|floatformat:2 }} {{ currency_symbol }}
+                    <td class="text-black font-bold">
+                        <span>{{ item.description }}</span>
+                    </td>
+                    <td class="text-center text-slate">
+                        <span>{{ item.quantity|floatformat:-2 }}</span>
+                        <span>{{ item.unit }}</span>
+                    </td>
+                    <td class="text-right text-slate">
+                        <span>{{ item.unit_price|floatformat:2 }}</span>
+                        <span>{{ currency_symbol }}</span>
+                    </td>
+                    <td class="text-right font-bold text-black">
+                        <span>{{ item.amount|floatformat:2 }}</span>
+                        <span>{{ currency_symbol }}</span>
                     </td>
                 </tr>
                 {% endfor %}
@@ -218,8 +245,9 @@
         <tr>
             <td class="valign-top" style="width: 60%;">
                 <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Qeyd</div>
-                <div class="text-slate italic" style="font-size: 9pt; width: 80%; line-height: 1.5;">{{
-                    invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</div>
+                <div class="text-slate italic" style="font-size: 9pt; width: 80%; line-height: 1.5;">
+                    <span>{{ invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</span>
+                </div>
                 {% if qr_code_path %}
                 <div style="margin-top: 30pt; width: 250pt;">
                     <table class="qr-box">
@@ -241,18 +269,24 @@
                     <table class="w-full">
                         <tr>
                             <td class="text-slate">Cəm:</td>
-                            <td class="text-right font-bold">{{ invoice.subtotal|floatformat:2 }} {{ currency_symbol }}
+                            <td class="text-right font-bold">
+                                <span>{{ invoice.subtotal|floatformat:2 }}</span>
+                                <span>{{ currency_symbol }}</span>
                             </td>
                         </tr>
                         <tr>
                             <td class="text-slate">ƏDV (18%):</td>
-                            <td class="text-right font-bold">{{ invoice.tax_amount|floatformat:2 }} {{ currency_symbol
-                                }}</td>
+                            <td class="text-right font-bold">
+                                <span>{{ invoice.tax_amount|floatformat:2 }}</span>
+                                <span>{{ currency_symbol }}</span>
+                            </td>
                         </tr>
                         <tr>
                             <td class="font-bold text-black" style="padding-top: 15pt; font-size: 14pt;">YEKUN:</td>
-                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">{{
-                                invoice.total|floatformat:2 }} {{ currency_symbol }}</td>
+                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">
+                                <span>{{ invoice.total|floatformat:2 }}</span>
+                                <span>{{ currency_symbol }}</span>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -272,3 +306,5 @@
 </body>
 
 </html>
+<!-- prettier-ignore-end -->
+<!-- djlint:on -->
