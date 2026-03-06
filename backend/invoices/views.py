@@ -342,17 +342,24 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def send_email(self, request, pk=None):
+        print(f"--- send_email started for pk={pk} ---")
         invoice = self.get_object()
+        print(f"Invoice fetched: {invoice.invoice_number}")
         client = invoice.client
+        print(f"Client: {client.name if client else 'None'}, Email: {client.email if client else 'None'}")
         
         if not client or not client.email:
+            print("Client or email missing, returning 400")
             return Response({"error": "Müştərinin email ünvanı yoxdur."}, status=status.HTTP_400_BAD_REQUEST)
         
+        print("Calling _generate_pdf...")
         pdf_content = self._generate_pdf(invoice)
+        print("PDF generated successfully." if pdf_content else "PDF generation returned None")
         if not pdf_content:
             return Response({"error": "PDF yaradıla bilmədi."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
         try:
+            print("Building email content...")
             
             subject = f"Faktura #{invoice.invoice_number} - {invoice.business.name}"
             
@@ -386,16 +393,22 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             )
             
             email.attach(f"invoice_{invoice.invoice_number}.pdf", pdf_content, 'application/pdf')
+            print("Sending email...")
             email.send()
+            print("Email sent successfully.")
             
             # Update status if needed
             if invoice.status in ['draft', 'finalized']:
                 invoice.status = 'sent'
                 invoice.sent_at = timezone.now()
                 invoice.save()
+                print("Invoice status updated to sent.")
                 
             return Response({"message": "Email uğurla göndərildi."})
         except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print(f"Email error block reached: {str(e)}")
             return Response({"error": f"Email göndərmək mümkün olmadı: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['post'])
