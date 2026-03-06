@@ -245,6 +245,8 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             'theme': invoice.invoice_theme or 'modern',
             'has_white_label': has_white_label,
             'currency_symbol': currency_symbol,
+            'arial_font_path': arial_font_path,
+            'arial_bold_font_path': arial_bold_font_path,
         }
         
         html_string = render_to_string('invoices/invoice_pdf.html', context)
