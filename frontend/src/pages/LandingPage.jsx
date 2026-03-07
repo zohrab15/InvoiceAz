@@ -460,9 +460,20 @@ const LandingPage = () => {
                                 >
                                     İllik
                                 </span>
-                                <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-tighter">
-                                    🔥 2 Ay Hədiyyə
-                                </span>
+                                <motion.div
+                                    animate={{
+                                        scale: [1, 1.05, 1],
+                                        boxShadow: [
+                                            "0 0 0px rgba(16, 185, 129, 0)",
+                                            "0 0 15px rgba(16, 185, 129, 0.4)",
+                                            "0 0 0px rgba(16, 185, 129, 0)"
+                                        ]
+                                    }}
+                                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                                    className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-400/50 uppercase tracking-tighter shadow-xl flex items-center gap-1.5"
+                                >
+                                    <span className="text-xs">🔥</span> 2 AY HƏDİYYƏ
+                                </motion.div>
                             </div>
                         </div>
 
