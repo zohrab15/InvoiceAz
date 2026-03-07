@@ -103,7 +103,7 @@ const Header = ({ onMenuClick }) => {
             { icon: <User size={18} />, label: 'Profilim', onClick: () => navigate('/settings?tab=user') },
             { icon: <Shield size={18} />, label: 'Təhlükəsizlik', onClick: () => navigate('/security') },
             { icon: <Settings size={18} />, label: 'Tənzimləmələr', onClick: () => navigate('/system-settings') },
-            { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/pricing'), privileged: true },
+            { icon: <CreditCard size={18} />, label: 'Abunəlik', onClick: () => navigate('/subscription'), privileged: true },
             { icon: <BellRing size={18} />, label: 'Bildiriş Tənzimləmələri', onClick: () => navigate('/system-settings') },
             { icon: <History size={18} />, label: 'Fəaliyyət Tarixçəsi', onClick: () => navigate('/activity-logs'), privileged: true },
             { icon: <HelpCircle size={18} />, label: 'Yardım və Dəstək', onClick: () => navigate('/help') },

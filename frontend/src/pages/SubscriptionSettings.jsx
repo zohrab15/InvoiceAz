@@ -55,15 +55,15 @@ const SubscriptionSettings = () => {
     const expiryDate = planStatus?.subscription?.expiry;
 
     return (
-        <div className="min-h-screen p-6 md:p-8 space-y-8 max-w-5xl mx-auto font-roboto">
+        <div className="min-h-screen p-6 md:p-8 space-y-8 max-w-5xl mx-auto">
             <header className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate(-1)} className="p-2.5 bg-white/5 rounded-xl text-white/40 hover:text-white transition-colors">
+                    <button onClick={() => navigate(-1)} className="p-2.5 rounded-xl transition-colors" style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-muted)' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--color-text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'} >
                         <ArrowLeft size={20} />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-black text-white">Abunəlik İdarəetməsi</h1>
-                        <p className="text-sm text-white/40">Planınızı və ödənişlərinizi buradan idarə edin</p>
+                        <h1 className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>Abunəlik İdarəetməsi</h1>
+                        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Planınızı və ödənişlərinizi buradan idarə edin</p>
                     </div>
                 </div>
             </header>
@@ -74,32 +74,37 @@ const SubscriptionSettings = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-[#1e1e24] to-[#16161a] border border-white/10 rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl"
+                        className="border rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl"
+                        style={{
+                            backgroundColor: 'var(--color-card-bg)',
+                            borderColor: 'var(--color-card-border)',
+                            background: 'linear-gradient(135deg, var(--color-card-bg) 0%, var(--color-bg) 100%)'
+                        }}
                     >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/15 transition-colors" />
+                        <div className="absolute top-0 right-0 w-64 h-64 blur-[80px] -translate-y-1/2 translate-x-1/2 transition-colors" style={{ backgroundColor: 'var(--color-brand-shadow)', opacity: 0.1 }} />
 
                         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20">
+                                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center border" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)', borderColor: 'var(--color-brand-shadow)' }}>
                                         <ShieldCheck size={24} className="fill-current/10" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black uppercase tracking-widest text-white/30">Cari Plan</p>
-                                        <h2 className="text-2xl font-black text-white uppercase">{currentPlan}</h2>
+                                        <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)', opacity: 0.5 }}>Cari Plan</p>
+                                        <h2 className="text-2xl font-black uppercase" style={{ color: 'var(--color-text-primary)' }}>{currentPlan}</h2>
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-4">
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
                                         <Clock size={14} className="text-amber-500" />
-                                        <span className="text-xs font-bold text-white/60">
+                                        <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
                                             {isCancelled ? 'Bitmə tarixi: ' : 'Növbəti yenilənmə: '}
-                                            <span className="text-white">{expiryDate || 'N/A'}</span>
+                                            <span style={{ color: 'var(--color-text-primary)' }}>{expiryDate || 'N/A'}</span>
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/5">
-                                        <Calendar size={14} className="text-blue-500" />
-                                        <span className="text-xs font-bold text-white/60">İnterval: <span className="text-white uppercase">{planStatus?.subscription?.interval || '---'}</span></span>
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
+                                        <Calendar size={14} style={{ color: 'var(--color-brand)' }} />
+                                        <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>İnterval: <span className="uppercase" style={{ color: 'var(--color-text-primary)' }}>{planStatus?.subscription?.interval || '---'}</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -107,7 +112,8 @@ const SubscriptionSettings = () => {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() => navigate('/pricing')}
-                                    className="px-6 py-3 bg-blue-500 text-white font-black text-sm rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 group"
+                                    className="px-6 py-3 font-black text-sm rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2 group text-white"
+                                    style={{ background: 'var(--color-brand)', boxShadow: '0 10px 20px var(--color-brand-shadow)' }}
                                 >
                                     Planı Dəyiş
                                     <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -115,7 +121,10 @@ const SubscriptionSettings = () => {
                                 {currentPlan !== 'free' && !isCancelled && (
                                     <button
                                         onClick={() => setIsCancelModalOpen(true)}
-                                        className="text-xs font-bold text-red-400/60 hover:text-red-400 transition-colors p-2"
+                                        className="text-xs font-bold transition-colors p-2"
+                                        style={{ color: '#ef4444', opacity: 0.7 }}
+                                        onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                                        onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
                                     >
                                         Abunəliyi ləğv et
                                     </button>
@@ -124,11 +133,11 @@ const SubscriptionSettings = () => {
                         </div>
 
                         {isCancelled && (
-                            <div className="mt-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
+                            <div className="mt-8 p-4 rounded-2xl flex gap-3 border" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.2)' }}>
                                 <AlertCircle className="text-amber-500 shrink-0" size={20} />
                                 <div className="space-y-1">
-                                    <p className="text-xs font-bold text-amber-200 uppercase tracking-wider">Ləğv edilmə gözlənilir</p>
-                                    <p className="text-xs text-amber-200/60 leading-relaxed font-semibold">
+                                    <p className="text-xs font-bold uppercase tracking-wider text-amber-500">Ləğv edilmə gözlənilir</p>
+                                    <p className="text-xs leading-relaxed font-semibold text-amber-200/80">
                                         Abunəliyiniz ləğv edilib və <b>{expiryDate}</b> tarixində <b>Pulsuz Plana</b> keçid ediləcək. Bu tarixə qədər bütün imkanlardan yararlana bilərsiniz.
                                     </p>
                                 </div>
@@ -137,17 +146,17 @@ const SubscriptionSettings = () => {
                     </motion.div>
 
                     {/* Features highlight */}
-                    <div className="bg-[#16161a] border border-white/5 rounded-[2rem] p-8 space-y-6">
-                        <h3 className="text-sm font-black text-white/30 uppercase tracking-[0.2em]">Sizin İmalatlarınız</h3>
+                    <div className="border rounded-[2rem] p-8 space-y-6" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)', opacity: 0.4 }}>Sizin İmkurlarınız</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {planStatus?.limits && Object.entries(planStatus.limits).map(([key, limit]) => (
-                                <div key={key} className="flex items-center gap-4 p-4 bg-white/[0.02] rounded-2xl border border-white/5">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                <div key={key} className="flex items-center gap-4 p-4 rounded-2xl border" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
+                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                                         <Zap size={16} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-tighter">{key.replace(/_/g, ' ')}</p>
-                                        <p className="text-sm font-black text-white">{limit === true ? 'Limitsiz' : limit === false ? 'Yoxdur' : limit}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-tighter" style={{ color: 'var(--color-text-muted)' }}>{key.replace(/_/g, ' ')}</p>
+                                        <p className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>{limit === true ? 'Limitsiz' : limit === false ? 'Yoxdur' : limit}</p>
                                     </div>
                                 </div>
                             ))}
@@ -157,21 +166,21 @@ const SubscriptionSettings = () => {
 
                 {/* Sidebar Cards */}
                 <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-6 text-white shadow-xl shadow-blue-500/20 relative overflow-hidden group">
+                    <div className="rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden group" style={{ background: 'linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%)', boxShadow: '0 20px 40px var(--color-brand-shadow)' }}>
                         <Star className="absolute -bottom-4 -right-4 w-32 h-32 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-500" />
                         <div className="relative space-y-4">
                             <h4 className="font-black text-lg">Hər hansı bir probleminiz var?</h4>
                             <p className="text-sm text-white/80 font-medium">Texniki dəstək komandamız hər zaman yanınızdadır.</p>
-                            <button className="w-full py-3 bg-white text-blue-700 font-black text-xs rounded-xl hover:bg-blue-50 transition-colors uppercase tracking-widest">
+                            <button className="w-full py-3 bg-white text-blue-700 font-black text-xs rounded-xl hover:bg-blue-50 transition-colors uppercase tracking-widest shadow-lg">
                                 Dəstək ilə əlaqə
                             </button>
                         </div>
                     </div>
 
-                    <div className="bg-[#16161a] border border-white/10 rounded-[2rem] p-6 flex flex-col items-center text-center space-y-3">
-                        <CreditCard size={32} className="text-white/20" />
-                        <h4 className="text-sm font-black text-white uppercase tracking-wider">Ödəniş Metodları</h4>
-                        <p className="text-xs text-white/40 font-medium">Tezliklə kart əlavə etmə və ödəniş tarixçəsi funksiyaları aktiv olacaq.</p>
+                    <div className="border rounded-[2rem] p-6 flex flex-col items-center text-center space-y-3" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                        <CreditCard size={32} style={{ color: 'var(--color-text-muted)', opacity: 0.2 }} />
+                        <h4 className="text-sm font-black uppercase tracking-wider" style={{ color: 'var(--color-text-primary)' }}>Ödəniş Metodları</h4>
+                        <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Tezliklə kart əlavə etmə və ödəniş tarixçəsi funksiyaları aktiv olacaq.</p>
                     </div>
                 </div>
             </div>
