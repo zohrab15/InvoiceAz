@@ -221,6 +221,17 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             if not business:
                 return Response({"detail": "Aktiv biznes seçilməyib."}, status=status.HTTP_400_BAD_REQUEST)
 
+            from users.plan_limits import check_storage_limit
+            storage = check_storage_limit(business.user, file.size)
+            if not storage['allowed']:
+                return Response({
+                    "code": "storage_limit",
+                    "detail": f"Yaddaş limitiniz dolub ({storage['current_mb']} / {storage['limit_mb']} MB). Faylı yükləmək üçün planınızı yüksəldin.",
+                    "current_mb": storage['current_mb'],
+                    "limit_mb": storage['limit_mb'],
+                    "upgrade_required": True
+                }, status=status.HTTP_403_FORBIDDEN)
+
             try:
                 wb = openpyxl.load_workbook(file, read_only=True)
                 sheet = wb.active
