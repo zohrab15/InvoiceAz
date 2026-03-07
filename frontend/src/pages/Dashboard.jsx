@@ -99,7 +99,7 @@ const Dashboard = () => {
         const activeInvoices = invList.filter(i => !['draft', 'cancelled'].includes(i.status));
 
         const revenue = activeInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
-        const paid = invList.filter(i => i.status === 'paid').reduce((sum, inv) => sum + parseFloat(inv.total), 0) || 0;
+        const paid = invList.reduce((sum, inv) => sum + parseFloat(inv.paid_amount || 0), 0) || 0;
         const pending = invList.filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).reduce((sum, inv) => sum + (parseFloat(inv.total) - parseFloat(inv.paid_amount || 0)), 0) || 0;
         const overdue = invList.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + (parseFloat(inv.total) - parseFloat(inv.paid_amount || 0)), 0) || 0;
 
@@ -123,7 +123,7 @@ const Dashboard = () => {
         };
     }, [invoices, expenses]);
 
-    const profit = stats.paidRevenue - stats.totalExpenses;
+    const profit = stats.totalRevenue - stats.totalExpenses;
 
     // Default target for Sales Rep if not set
     const salesTarget = parseFloat(teamInfo?.monthly_target || 0) || 5000;
@@ -239,12 +239,23 @@ const Dashboard = () => {
         },
         {
             label: 'Anbar Dəyəri',
-            val: inventoryStats?.total_value || 0,
+            val: inventoryStats?.total_cost_value || 0,
             icon: <Wallet size={20} />,
             color: '#8b5cf6',
             bg: 'rgba(139,92,246,0.08)',
             border: '#8b5cf6',
             visible: isOwnerOrManager || isAccountant || isInventoryManager,
+            isCurrency: true,
+            isInventoryCard: true
+        },
+        {
+            label: 'Potensial Satış',
+            val: inventoryStats?.total_value || 0,
+            icon: <TrendingUp size={20} />,
+            color: '#10b981',
+            bg: 'rgba(16,185,129,0.08)',
+            border: '#10b981',
+            visible: isOwnerOrManager || isInventoryManager,
             isCurrency: true,
             isInventoryCard: true
         },
