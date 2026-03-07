@@ -7,7 +7,7 @@ from .views import (
     LogoutAPIView, TeamMemberViewSet, TeamMemberLocationUpdateView,
     RBACDebugView, ReferralStatsView, TeamMemberInvitationViewSet
 )
-from .plan_views import PlanStatusView
+from .plan_views import PlanStatusView, SubscriptionPlanListView, UpdatePlanView
 
 router = DefaultRouter()
 router.register(r'business', BusinessViewSet, basename='business')
@@ -28,6 +28,8 @@ urlpatterns = [
     path('2fa/enable/', Enable2FAView.as_view(), name='2fa_enable'),
     path('2fa/disable/', Disable2FAView.as_view(), name='2fa_disable'),
     path('plan/status/', PlanStatusView.as_view(), name='plan_status'),
+    path('plan/list/', SubscriptionPlanListView.as_view(), name='plan_list'),
+    path('plan/update/', UpdatePlanView.as_view(), name='plan_update'),
     path('referral/', ReferralStatsView.as_view(), name='referral_stats'),
     path('debug/rbac/', RBACDebugView.as_view(), name='rbac_debug'),
 ]

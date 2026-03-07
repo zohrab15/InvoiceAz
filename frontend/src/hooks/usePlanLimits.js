@@ -97,7 +97,8 @@ export const usePlanLimits = () => {
         },
         isPro: isDemo || ['pro', 'premium'].includes(planStatus?.plan),
         canUseThemes: isDemo || planStatus?.limits?.custom_themes,
-        interval: planStatus?.subscription_interval || 'monthly'
+        interval: planStatus?.subscription?.interval || 'monthly',
+        expiry: planStatus?.subscription?.expiry || null
     };
 };
 

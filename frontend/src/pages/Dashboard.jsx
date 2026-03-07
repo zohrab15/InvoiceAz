@@ -375,14 +375,27 @@ const Dashboard = () => {
 
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                 <div className="flex-1">
-                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-roboto" style={{ color: 'var(--color-text-primary)' }}>
+                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-roboto flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
                         {greeting}{user?.first_name ? `, ${user.first_name}` : ''} 👋
+                        {plan !== 'free' && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20 uppercase font-bold tracking-wider">
+                                {plan} ({interval === 'monthly' ? 'Aylıq' : 'İllik'})
+                            </span>
+                        )}
                     </h2>
-                    <div className="flex items-center gap-4 mt-2">
+                    <div className="flex flex-wrap items-center gap-4 mt-2">
                         <div className="flex items-center gap-2">
                             <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
                             <span className="text-xs font-semibold capitalize" style={{ color: 'var(--color-text-muted)' }}>{todayStr}</span>
                         </div>
+                        {plan !== 'free' && expiry && (
+                            <div className="flex items-center gap-2 pl-4 border-l border-[var(--color-card-border)]">
+                                <Clock size={12} style={{ color: 'var(--color-text-muted)' }} />
+                                <span className="text-[10px] font-bold" style={{ color: 'var(--color-text-muted)' }}>
+                                    Bitmə tarixi: <span style={{ color: 'var(--color-text-primary)' }}>{expiry}</span>
+                                </span>
+                            </div>
+                        )}
                         {isSalesRep && (
                             <div className="hidden sm:flex items-center gap-4 pl-6 border-l border-[var(--color-card-border)]">
                                 <div className="flex flex-col items-end">

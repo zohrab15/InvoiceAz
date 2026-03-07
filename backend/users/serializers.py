@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from users.models import User, Business, TeamMember, DiscountCoupon, TeamMemberInvitation
+from users.models import User, Business, TeamMember, DiscountCoupon, TeamMemberInvitation, SubscriptionPlan
+
+
+class SubscriptionPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubscriptionPlan
+        fields = ['id', 'name', 'price_monthly', 'price_yearly', 'features']
 
 
 class DiscountCouponSerializer(serializers.ModelSerializer):

@@ -1,14 +1,40 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { CheckCircle2, Zap, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/useAuthStore';
+import { useQueryClient } from '@tanstack/react-query';
+import clientApi from '../api/client';
+import toast from 'react-hot-toast';
 
 const PricingPage = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const { user } = useAuthStore();
     const currentPlan = user?.membership || 'free';
     const [billingInterval, setBillingInterval] = React.useState('monthly');
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    const handleSubscribe = async (planName) => {
+        if (planName === currentPlan) return;
+
+        setIsSubmitting(true);
+        try {
+            await clientApi.post('/users/plan/update/', {
+                plan: planName,
+                interval: billingInterval
+            });
+
+            toast.success("Abunəliyiniz uğurla yeniləndi!");
+
+            // Refetch plan status so UI updates everywhere
+            queryClient.invalidateQueries(['planStatus']);
+            // Also might need to update the global user object if it stores membership
+            // For now, refetching plan status should be enough for most UI
+
+            navigate('/dashboard');
+        } catch (error) {
+            console.error("Subscription error:", error);
+            toast.error(error.response?.data?.error || "Abunəlik yenilənərkən xəta baş verdi.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="min-h-screen p-6 relative overflow-hidden font-roboto" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
@@ -113,11 +139,13 @@ const PricingPage = () => {
                             ))}
                         </ul>
                         <button
-                            disabled={currentPlan === 'free'}
+                            onClick={() => handleSubscribe('free')}
+                            disabled={currentPlan === 'free' || isSubmitting}
                             className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all"
                             style={{
                                 backgroundColor: currentPlan === 'free' ? 'var(--color-hover-bg)' : 'var(--color-card-border)',
-                                color: currentPlan === 'free' ? 'var(--color-text-muted)' : 'var(--color-text-primary)'
+                                color: currentPlan === 'free' ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
+                                opacity: isSubmitting ? 0.7 : 1
                             }}
                         >
                             {currentPlan === 'free' ? 'İstifadə olunur' : 'Seçin'}
@@ -168,15 +196,17 @@ const PricingPage = () => {
                             ))}
                         </ul>
                         <button
-                            disabled={currentPlan === 'pro'}
+                            onClick={() => handleSubscribe('pro')}
+                            disabled={currentPlan === 'pro' || isSubmitting}
                             className="w-full py-3.5 rounded-2xl font-bold text-sm shadow-xl transition-all text-white"
                             style={{
                                 background: currentPlan === 'pro' ? 'var(--color-hover-bg)' : 'linear-gradient(to right, var(--color-brand), var(--color-brand-dark))',
                                 color: currentPlan === 'pro' ? 'var(--color-text-muted)' : 'white',
-                                boxShadow: currentPlan === 'pro' ? 'none' : '0 10px 20px var(--color-brand-shadow)'
+                                boxShadow: currentPlan === 'pro' ? 'none' : '0 10px 20px var(--color-brand-shadow)',
+                                opacity: isSubmitting ? 0.7 : 1
                             }}
                         >
-                            {currentPlan === 'pro' ? 'İstifadə olunur' : 'Pro-ya Keçin'}
+                            {isSubmitting ? 'Gözləyin...' : (currentPlan === 'pro' ? 'İstifadə olunur' : 'Pro-ya Keçin')}
                         </button>
                     </motion.div>
 
@@ -216,11 +246,16 @@ const PricingPage = () => {
                             ))}
                         </ul>
                         <button
-                            disabled={true}
-                            className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all cursor-not-allowed"
-                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-muted)' }}
+                            onClick={() => handleSubscribe('premium')}
+                            disabled={currentPlan === 'premium' || isSubmitting}
+                            className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all"
+                            style={{
+                                backgroundColor: currentPlan === 'premium' ? 'var(--color-hover-bg)' : 'var(--color-brand-dark)',
+                                color: currentPlan === 'premium' ? 'var(--color-text-muted)' : 'white',
+                                opacity: isSubmitting ? 0.7 : 1
+                            }}
                         >
-                            Tezliklə
+                            {currentPlan === 'premium' ? 'İstifadə olunur' : 'Premium-a Keçin'}
                         </button>
                     </motion.div>
                 </div>
