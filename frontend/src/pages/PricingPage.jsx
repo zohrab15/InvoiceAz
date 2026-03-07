@@ -284,13 +284,13 @@ const PricingPage = () => {
                     >
                         <PlanBadge plan="premium" />
                         <div className="absolute -top-3 right-8 bg-gradient-to-r from-amber-500 to-orange-500 text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                            Muessise
+                            Korporativ
                         </div>
                         <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 border" style={{ backgroundColor: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.2)' }}>
                             <Crown size={22} className="text-amber-400" />
                         </div>
                         <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Premium</h4>
-                        <p className="text-sm font-medium mb-6" style={{ color: 'var(--color-text-muted)' }}>Limitsiz guc. Muessise seviyyesi.</p>
+                        <p className="text-sm font-medium mb-6" style={{ color: 'var(--color-text-muted)' }}>Limitsiz güc. Korporativ səviyyəsi.</p>
                         <div className="mb-8">
                             <div className="text-4xl font-black" style={{ color: 'var(--color-text-primary)' }}>
                                 {billingInterval === 'monthly' ? '49.99 \u20BC' : '499.99 \u20BC'}

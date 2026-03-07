@@ -551,13 +551,13 @@ const LandingPage = () => {
                         {/* ── PREMIUM ── */}
                         <motion.div whileHover={{ y: -8 }} className="relative bg-gradient-to-br from-amber-500/10 to-orange-600/10 border border-amber-500/20 rounded-3xl p-8 flex flex-col">
                             <div className="absolute -top-3 right-8 bg-gradient-to-r from-amber-500 to-orange-500 text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                Müəssisə
+                                Korporativ
                             </div>
                             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-5">
                                 <Crown size={22} className="text-amber-400" />
                             </div>
                             <h4 className="text-xl font-black mb-1">Premium</h4>
-                            <p className="text-sm text-white/40 font-medium mb-6">Limitsiz güc. Müəssisə səviyyəsi.</p>
+                            <p className="text-sm text-white/40 font-medium mb-6">Limitsiz güc. Korporativ səviyyəsi.</p>
                             <div className="mb-8">
                                 <div className="text-4xl font-black">
                                     {billingInterval === 'monthly' ? '49.99 ₼' : '499.99 ₼'}
