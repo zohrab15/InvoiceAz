@@ -48,47 +48,47 @@ const PricingPage = () => {
         if (currentPlan !== plan) return null;
         return (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg" style={{ backgroundColor: 'var(--color-brand)' }}>
-                Hazirkl Plan
+                Hazırkı Plan
             </div>
         );
     };
 
     const comparisonData = [
-        { section: 'Kemiyyet Limitlari' },
-        { f: 'Aylik faktura', free: '5', pro: '100', premium: 'Limitsiz' },
-        { f: 'Musteri', free: '10', pro: 'Limitsiz', premium: 'Limitsiz' },
-        { f: 'Aylik xerc', free: '15', pro: 'Limitsiz', premium: 'Limitsiz' },
+        { section: 'Kəmiyyət Limitləri' },
+        { f: 'Aylıq faktura', free: '5', pro: '100', premium: 'Limitsiz' },
+        { f: 'Müştəri', free: '10', pro: 'Limitsiz', premium: 'Limitsiz' },
+        { f: 'Aylıq xərc', free: '15', pro: 'Limitsiz', premium: 'Limitsiz' },
         { f: 'Biznes profili', free: '1', pro: '3', premium: 'Limitsiz' },
-        { f: 'Mehsul', free: '20', pro: '500', premium: 'Limitsiz' },
-        { f: 'Komanda uzvu', free: '0', pro: '5', premium: 'Limitsiz' },
+        { f: 'Məhsul', free: '20', pro: '500', premium: 'Limitsiz' },
+        { f: 'Komanda üzvü', free: '0', pro: '5', premium: 'Limitsiz' },
         { f: 'Anbar', free: '1', pro: '3', premium: 'Limitsiz' },
-        { f: 'Satinalma sifarisi / ay', free: '5', pro: '50', premium: 'Limitsiz' },
-        { f: 'Yaddas', free: '50 MB', pro: '500 MB', premium: 'Limitsiz' },
-        { section: 'Faktura Xususiyyetleri' },
-        { f: 'Premium PDF dizaynlari', free: false, pro: true, premium: true },
-        { f: 'Ozel faktura temalari', free: false, pro: true, premium: true },
-        { f: 'E-pocla faktura gonderm\u0259', free: false, pro: true, premium: true },
-        { f: 'E-qaime XML (e-vergi)', free: false, pro: true, premium: true },
-        { f: 'Faktura dublikat etme', free: true, pro: true, premium: true },
-        { f: 'Ictimai faktura linki', free: true, pro: true, premium: true },
-        { f: 'Vaxtke\u00e7mis xatirlatma', free: false, pro: true, premium: true },
+        { f: 'Satınalma sifarişi / ay', free: '5', pro: '50', premium: 'Limitsiz' },
+        { f: 'Yaddaş', free: '50 MB', pro: '500 MB', premium: 'Limitsiz' },
+        { section: 'Faktura Xüsusiyyətləri' },
+        { f: 'Premium PDF dizaynları', free: false, pro: true, premium: true },
+        { f: 'Özəl faktura temaları', free: false, pro: true, premium: true },
+        { f: 'E-poçtla faktura göndərmə', free: false, pro: true, premium: true },
+        { f: 'E-qaimə XML (e-vergi)', free: false, pro: true, premium: true },
+        { f: 'Faktura dublikat etmə', free: true, pro: true, premium: true },
+        { f: 'İctimai faktura linki', free: true, pro: true, premium: true },
+        { f: 'Vaxtkeçmiş xatırlatma', free: false, pro: true, premium: true },
         { f: 'White-label PDF', free: false, pro: false, premium: true },
         { section: 'Analitika & Hesabatlar' },
-        { f: 'Dashboard & esas statistika', free: true, pro: true, premium: true },
-        { f: 'Proqnoz analitikasi (AI)', free: false, pro: true, premium: true },
-        { f: 'Odenis analitikasi', free: false, pro: true, premium: true },
-        { f: 'Vergi hesabatlari', free: false, pro: true, premium: true },
+        { f: 'Dashboard & əsas statistika', free: true, pro: true, premium: true },
+        { f: 'Proqnoz analitikası (AI)', free: false, pro: true, premium: true },
+        { f: 'Ödəniş analitikası', free: false, pro: true, premium: true },
+        { f: 'Vergi hesabatları', free: false, pro: true, premium: true },
         { f: 'CSV / Excel eksport', free: false, pro: true, premium: true },
-        { f: 'Musteri reytinqi (A-D)', free: false, pro: true, premium: true },
-        { f: 'Fealiyyet jurnali', free: false, pro: true, premium: true },
-        { section: 'Komanda & Inventar' },
-        { f: 'Komanda GPS izleme', free: false, pro: false, premium: true },
-        { f: 'Toplu emeliyyatlar', free: false, pro: true, premium: true },
-        { f: 'Stok xeberdarligi', free: false, pro: true, premium: true },
-        { f: '\u00c7oxvalyutali destek', free: false, pro: true, premium: true },
-        { section: 'Elave' },
-        { f: 'REST API girisi', free: false, pro: false, premium: true },
-        { f: 'VIP prioritet destek', free: false, pro: false, premium: true },
+        { f: 'Müştəri reytinqi (A-D)', free: false, pro: true, premium: true },
+        { f: 'Fəaliyyət jurnalı', free: false, pro: true, premium: true },
+        { section: 'Komanda & İnventar' },
+        { f: 'Komanda GPS izləmə', free: false, pro: false, premium: true },
+        { f: 'Toplu əməliyyatlar', free: false, pro: true, premium: true },
+        { f: 'Stok xəbərdarlığı', free: false, pro: true, premium: true },
+        { f: 'Çoxvalyutalı dəstək', free: false, pro: true, premium: true },
+        { section: 'Əlavə' },
+        { f: 'REST API girişi', free: false, pro: false, premium: true },
+        { f: 'VIP prioritet dəstək', free: false, pro: false, premium: true },
     ];
 
     const renderCell = (val) => {
@@ -115,18 +115,18 @@ const PricingPage = () => {
 
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <span className="text-xs font-black uppercase tracking-[0.3em] mb-4 block" style={{ color: 'var(--color-brand)' }}>Planlar ve Qiymetler</span>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] mb-4 block" style={{ color: 'var(--color-brand)' }}>Planlar və Qiymətlər</span>
                     <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6" style={{ color: 'var(--color-text-primary)' }}>
-                        Biznesiniz ucun{' '}
+                        Biznesiniz üçün{' '}
                         <span style={{ background: 'linear-gradient(to right, var(--color-brand), #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            en uygun plani
-                        </span>{' '}secin
+                            ən uyğun planı
+                        </span>{' '}seçin
                     </h2>
 
                     {/* Billing Toggle */}
                     <div className="flex items-center justify-center gap-4 mb-8">
                         <span className="text-sm font-bold transition-colors" style={{ color: billingInterval === 'monthly' ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>
-                            Ayliq
+                            Aylıq
                         </span>
                         <button
                             onClick={() => setBillingInterval(billingInterval === 'monthly' ? 'yearly' : 'monthly')}
@@ -137,7 +137,7 @@ const PricingPage = () => {
                         </button>
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-bold transition-colors" style={{ color: billingInterval === 'yearly' ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>
-                                Illik
+                                İllik
                             </span>
                             <motion.div
                                 animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px rgba(16,185,129,0)", "0 0 15px rgba(16,185,129,0.4)", "0 0 0px rgba(16,185,129,0)"] }}
@@ -150,7 +150,7 @@ const PricingPage = () => {
                     </div>
 
                     <p className="text-lg font-medium max-w-2xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
-                        Hazirki planiniz: <span className="uppercase font-bold" style={{ color: 'var(--color-text-primary)' }}>{currentPlan}</span>
+                        Hazırkı planınız: <span className="uppercase font-bold" style={{ color: 'var(--color-text-primary)' }}>{currentPlan}</span>
                     </p>
                 </div>
 
@@ -172,19 +172,19 @@ const PricingPage = () => {
                             <Zap size={22} style={{ color: 'var(--color-text-muted)' }} />
                         </div>
                         <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Pulsuz</h4>
-                        <p className="text-sm font-medium mb-6" style={{ color: 'var(--color-text-muted)' }}>Ferdi sahibkarlar ucun.</p>
+                        <p className="text-sm font-medium mb-6" style={{ color: 'var(--color-text-muted)' }}>Fərdi sahibkarlar üçün.</p>
                         <div className="text-4xl font-black mb-8" style={{ color: 'var(--color-text-primary)' }}>0 &#8380;</div>
                         <ul className="space-y-3.5 mb-10 flex-1">
                             {[
                                 'Ayda 5 faktura',
-                                '10 musteri',
-                                '15 xerc / ay',
+                                '10 müştəri',
+                                '15 xərc / ay',
                                 '1 biznes profili',
-                                '20 mehsul, 1 anbar',
-                                'Esas dashboard',
-                                'Faktura dublikat etme',
-                                'Ictimai faktura linki',
-                                'QR kod odenis',
+                                '20 məhsul, 1 anbar',
+                                'Əsas dashboard',
+                                'Faktura dublikat etmə',
+                                'İctimai faktura linki',
+                                'QR kod ödəniş',
                             ].map((item, i) => (
                                 <li key={i} className="flex items-center gap-3 text-[13px] font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
                                     <CheckCircle2 size={16} style={{ color: 'var(--color-brand)', opacity: 0.4 }} className="shrink-0" />
@@ -202,7 +202,7 @@ const PricingPage = () => {
                                 color: currentPlan === 'free' ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
                             }}
                         >
-                            {currentPlan === 'free' ? 'Istifade olunur' : 'Secin'}
+                            {currentPlan === 'free' ? 'İstifadə olunur' : 'Seçin'}
                         </button>
                     </motion.div>
 
@@ -224,7 +224,7 @@ const PricingPage = () => {
                             <Zap size={22} style={{ color: 'var(--color-brand)' }} />
                         </div>
                         <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Pro</h4>
-                        <p className="text-sm font-medium mb-6" style={{ color: 'var(--color-text-muted)' }}>Boyuyen bizneslerin tam paketi.</p>
+                        <p className="text-sm font-medium mb-6" style={{ color: 'var(--color-text-muted)' }}>Böyüyən bizneslərin tam paketi.</p>
                         <div className="mb-8">
                             <div className="text-4xl font-black" style={{ color: 'var(--color-text-primary)' }}>
                                 {billingInterval === 'monthly' ? '19.99 \u20BC' : '199.99 \u20BC'}
@@ -237,19 +237,19 @@ const PricingPage = () => {
                         <ul className="space-y-3.5 mb-10 flex-1">
                             {[
                                 { t: 'Ayda 100 faktura', h: true },
-                                { t: 'Limitsiz musteri & xerc', h: true },
-                                { t: '3 biznes, 500 mehsul, 3 anbar', h: false },
-                                { t: '5 komanda uzvu', h: true },
-                                { t: 'Premium PDF dizaynlari', h: true },
-                                { t: 'E-pocla faktura gonderm\u0259', h: true },
-                                { t: 'E-qaime XML (e-vergi)', h: true },
-                                { t: 'Proqnoz analitikasi + AI', h: true },
+                                { t: 'Limitsiz müştəri & xərc', h: true },
+                                { t: '3 biznes, 500 məhsul, 3 anbar', h: false },
+                                { t: '5 komanda üzvü', h: true },
+                                { t: 'Premium PDF dizaynları', h: true },
+                                { t: 'E-poçtla faktura göndərmə', h: true },
+                                { t: 'E-qaimə XML (e-vergi)', h: true },
+                                { t: 'Proqnoz analitikası + AI', h: true },
                                 { t: 'CSV / Excel eksport', h: true },
-                                { t: 'Odenis & vergi hesabatlari', h: true },
-                                { t: 'Musteri reytinqi (A-D)', h: false },
-                                { t: 'Stok xeberdarligi', h: false },
-                                { t: '\u00c7oxvalyutali destek', h: true },
-                                { t: 'Fealiyyet jurnali', h: false },
+                                { t: 'Ödəniş & vergi hesabatları', h: true },
+                                { t: 'Müştəri reytinqi (A-D)', h: false },
+                                { t: 'Stok xəbərdarlığı', h: false },
+                                { t: 'Çoxvalyutalı dəstək', h: true },
+                                { t: 'Fəaliyyət jurnalı', h: false },
                             ].map(({ t, h }, i) => (
                                 <li key={i} className={`flex items-center gap-3 text-[13px] ${h ? 'font-bold' : 'font-semibold'}`} style={{ color: h ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
                                     <Zap size={16} style={{ color: 'var(--color-brand)' }} className="shrink-0" />
@@ -267,7 +267,7 @@ const PricingPage = () => {
                                 boxShadow: currentPlan === 'pro' ? 'none' : '0 10px 20px var(--color-brand-shadow)',
                             }}
                         >
-                            {isSubmitting ? 'Gozleyin...' : (currentPlan === 'pro' ? 'Abunelivi legv et' : 'Pro-ya Kecin')}
+                            {isSubmitting ? 'Gözləyin...' : (currentPlan === 'pro' ? 'Abunəliyi ləğv et' : 'Pro-ya Keçin')}
                         </button>
                     </motion.div>
 
@@ -303,16 +303,16 @@ const PricingPage = () => {
                         <ul className="space-y-3.5 mb-10 flex-1">
                             {[
                                 { t: 'Limitsiz faktura', h: true },
-                                { t: 'Limitsiz musteri & xerc', h: true },
+                                { t: 'Limitsiz müştəri & xərc', h: true },
                                 { t: 'Limitsiz biznes profili', h: true },
-                                { t: 'Limitsiz mehsul & anbar', h: true },
-                                { t: 'Limitsiz komanda uzvu', h: true },
-                                { t: 'Pro-daki butun xususiyyetler', h: false },
-                                { t: 'GPS ile komanda izleme', h: true },
-                                { t: 'REST API inteqrasiyasi', h: true },
+                                { t: 'Limitsiz məhsul & anbar', h: true },
+                                { t: 'Limitsiz komanda üzvü', h: true },
+                                { t: 'Pro-dakı bütün xüsusiyyətlər', h: false },
+                                { t: 'GPS ilə komanda izləmə', h: true },
+                                { t: 'REST API inteqrasiyası', h: true },
                                 { t: 'White-label (brendsiz PDF)', h: true },
-                                { t: 'VIP prioritet destek', h: true },
-                                { t: 'Limitsiz yaddas', h: false },
+                                { t: 'VIP prioritet dəstək', h: true },
+                                { t: 'Limitsiz yaddaş', h: false },
                             ].map(({ t, h }, i) => (
                                 <li key={i} className={`flex items-center gap-3 text-[13px] ${h ? 'font-bold' : 'font-semibold'}`} style={{ color: h ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
                                     <Crown size={16} className="text-amber-400 shrink-0" />
@@ -330,7 +330,7 @@ const PricingPage = () => {
                                 boxShadow: currentPlan === 'premium' ? 'none' : '0 10px 20px rgba(245,158,11,0.2)',
                             }}
                         >
-                            {isSubmitting ? 'Gozleyin...' : (currentPlan === 'premium' ? 'Abunelivi legv et' : 'Premium-a Kecin')}
+                            {isSubmitting ? 'Gözləyin...' : (currentPlan === 'premium' ? 'Abunəliyi ləğv et' : 'Premium-a Keçin')}
                         </button>
                     </motion.div>
                 </div>
@@ -341,8 +341,8 @@ const PricingPage = () => {
                         <div className="flex items-center gap-3">
                             <Sparkles size={20} style={{ color: 'var(--color-brand)' }} />
                             <div>
-                                <h3 className="text-lg font-black" style={{ color: 'var(--color-text-primary)' }}>Tam Muqayise Cedveli</h3>
-                                <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Butun xususiyyetler bir baxisda</p>
+                                <h3 className="text-lg font-black" style={{ color: 'var(--color-text-primary)' }}>Tam Müqayisə Cədvəli</h3>
+                                <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Bütün xüsusiyyətlər bir baxışda</p>
                             </div>
                         </div>
                     </div>
@@ -350,7 +350,7 @@ const PricingPage = () => {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--color-card-border)' }}>
-                                    <th className="text-left px-8 py-4 text-xs font-black uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Xususiyyet</th>
+                                    <th className="text-left px-8 py-4 text-xs font-black uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Xüsusiyyət</th>
                                     <th className="text-center px-6 py-4 text-xs font-black uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Pulsuz</th>
                                     <th className="text-center px-6 py-4 text-xs font-black uppercase tracking-wider" style={{ color: 'var(--color-brand)' }}>Pro</th>
                                     <th className="text-center px-6 py-4 text-xs font-black uppercase tracking-wider text-amber-400">Premium</th>

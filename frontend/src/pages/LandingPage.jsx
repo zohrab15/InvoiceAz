@@ -457,7 +457,7 @@ const LandingPage = () => {
                                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                                     className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-400/50 uppercase tracking-tighter shadow-xl"
                                 >
-                                    2 AY PULSUZz
+                                    2 AY PULSUZ
                                 </motion.div>
                             </div>
                         </div>
