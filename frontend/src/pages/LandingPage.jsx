@@ -21,7 +21,11 @@ import {
     PieChart,
     Clock,
     QrCode,
-    Package
+    Package,
+    Crown,
+    X,
+    Infinity,
+    Check
 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
@@ -428,8 +432,9 @@ const LandingPage = () => {
             {/* ══════════ PRICING ══════════ */}
             <section id="pricing" className="py-28 px-6 bg-white/[0.02] relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[200px] -translate-y-1/3" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/10 rounded-full blur-[200px] translate-y-1/3" />
 
-                <div className="max-w-5xl mx-auto relative z-10">
+                <div className="max-w-6xl mx-auto relative z-10">
                     <div className="text-center mb-20">
                         <span className="text-emerald-400 text-xs font-black uppercase tracking-[0.3em] mb-4 block">Qiymətləndirmə</span>
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
@@ -438,41 +443,21 @@ const LandingPage = () => {
 
                         {/* Billing Toggle */}
                         <div className="flex items-center justify-center gap-4 mb-8">
-                            <span
-                                className="text-sm font-bold transition-colors"
-                                style={{ color: billingInterval === 'monthly' ? 'white' : 'white/40' }}
-                            >
-                                Aylıq
-                            </span>
+                            <span className={`text-sm font-bold transition-colors ${billingInterval === 'monthly' ? 'text-white' : 'text-white/40'}`}>Aylıq</span>
                             <button
                                 onClick={() => setBillingInterval(billingInterval === 'monthly' ? 'yearly' : 'monthly')}
                                 className="w-14 h-7 rounded-full relative p-1 transition-colors bg-white/5 border border-white/10"
                             >
-                                <motion.div
-                                    animate={{ x: billingInterval === 'monthly' ? 0 : 28 }}
-                                    className="w-5 h-5 rounded-full bg-blue-500 shadow-lg"
-                                />
+                                <motion.div animate={{ x: billingInterval === 'monthly' ? 0 : 28 }} className="w-5 h-5 rounded-full bg-blue-500 shadow-lg" />
                             </button>
                             <div className="flex items-center gap-2">
-                                <span
-                                    className="text-sm font-bold transition-colors"
-                                    style={{ color: billingInterval === 'yearly' ? 'white' : 'white/40' }}
-                                >
-                                    İllik
-                                </span>
+                                <span className={`text-sm font-bold transition-colors ${billingInterval === 'yearly' ? 'text-white' : 'text-white/40'}`}>İllik</span>
                                 <motion.div
-                                    animate={{
-                                        scale: [1, 1.05, 1],
-                                        boxShadow: [
-                                            "0 0 0px rgba(16, 185, 129, 0)",
-                                            "0 0 15px rgba(16, 185, 129, 0.4)",
-                                            "0 0 0px rgba(16, 185, 129, 0)"
-                                        ]
-                                    }}
+                                    animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px rgba(16,185,129,0)", "0 0 15px rgba(16,185,129,0.4)", "0 0 0px rgba(16,185,129,0)"] }}
                                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                                    className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-400/50 uppercase tracking-tighter shadow-xl flex items-center gap-1.5"
+                                    className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-400/50 uppercase tracking-tighter shadow-xl"
                                 >
-                                    <span className="text-xs">🔥</span> 2 AY HƏDİYYƏ
+                                    2 AY PULSUZz
                                 </motion.div>
                             </div>
                         </div>
@@ -480,52 +465,81 @@ const LandingPage = () => {
                         <p className="text-lg text-white/40 font-medium">Gizli ödəniş yoxdur. İstədiyiniz zaman ləğv edin.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Free */}
+                    {/* ── Plan Cards ── */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+
+                        {/* ── FREE ── */}
                         <motion.div whileHover={{ y: -8 }} className="bg-white/[0.03] border border-white/[0.06] rounded-3xl p-8 flex flex-col">
-                            <div className="mb-6">
-                                <h4 className="text-xl font-black mb-1">Başlanğıc</h4>
-                                <p className="text-sm text-white/30 font-medium">Fərdi sahibkarlar üçün.</p>
+                            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+                                <Zap size={22} className="text-white/40" />
                             </div>
-                            <div className="text-4xl font-black mb-8">Pulsuz</div>
-                            <ul className="space-y-4 mb-10 flex-1">
-                                {['Ayda 5 faktura', '3 aylıq tarixçə', 'Sadə hesabatlar', '1 biznes profili'].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-white/50 font-semibold">
-                                        <CheckCircle2 size={18} className="text-white/20" />
+                            <h4 className="text-xl font-black mb-1">Pulsuz</h4>
+                            <p className="text-sm text-white/30 font-medium mb-6">Fərdi sahibkarlar üçün ideal başlanğıc.</p>
+                            <div className="text-4xl font-black mb-8">0 ₼</div>
+                            <ul className="space-y-3.5 mb-10 flex-1">
+                                {[
+                                    'Ayda 5 faktura',
+                                    '10 müştəri',
+                                    '15 xərc / ay',
+                                    '1 biznes profili',
+                                    '20 məhsul',
+                                    '1 anbar',
+                                    'Əsas dashboard',
+                                    'Faktura dublikat etmə',
+                                    'İctimai faktura linki',
+                                    'QR kod ödəniş',
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-[13px] text-white/50 font-semibold">
+                                        <Check size={16} className="text-white/20 shrink-0" />
                                         {item}
                                     </li>
                                 ))}
                             </ul>
                             <button onClick={goLogin} className="w-full py-3.5 bg-white/5 border border-white/10 rounded-2xl font-black text-sm hover:bg-white/10 transition-all">
-                                Pulsuz Qeydiyyat
+                                Pulsuz Başla
                             </button>
                         </motion.div>
 
-                        {/* Pro */}
-                        <motion.div whileHover={{ y: -8 }} className="relative bg-gradient-to-br from-blue-600/20 to-violet-600/20 border border-blue-500/20 rounded-3xl p-8 flex flex-col">
+                        {/* ── PRO ── */}
+                        <motion.div whileHover={{ y: -8 }} className="relative bg-gradient-to-br from-blue-600/20 to-violet-600/20 border border-blue-500/20 rounded-3xl p-8 flex flex-col shadow-2xl shadow-blue-500/10">
                             <div className="absolute -top-3 right-8 bg-gradient-to-r from-blue-500 to-violet-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
                                 Populyar
                             </div>
-                            <div className="mb-6">
-                                <h4 className="text-xl font-black mb-1">Pro</h4>
-                                <p className="text-sm text-white/40 font-medium">Böyüyən bizneslər üçün.</p>
+                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-5">
+                                <Zap size={22} className="text-blue-400" />
                             </div>
+                            <h4 className="text-xl font-black mb-1">Pro</h4>
+                            <p className="text-sm text-white/40 font-medium mb-6">Böyüyən bizneslər üçün tam paket.</p>
                             <div className="mb-8">
                                 <div className="text-4xl font-black">
                                     {billingInterval === 'monthly' ? '19.99 ₼' : '199.99 ₼'}
-                                    <span className="text-lg text-white/30">
-                                        {billingInterval === 'monthly' ? ' /ay' : ' /il'}
-                                    </span>
+                                    <span className="text-lg text-white/30">{billingInterval === 'monthly' ? ' /ay' : ' /il'}</span>
                                 </div>
-                                {billingInterval === 'yearly' && (
-                                    <p className="text-xs font-bold text-emerald-400 mt-1">~16.66 AZN /ay</p>
-                                )}
+                                {billingInterval === 'yearly' && <p className="text-xs font-bold text-emerald-400 mt-1">~16.66 ₼ / ay</p>}
                             </div>
-                            <ul className="space-y-4 mb-10 flex-1">
-                                {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI proqnoz', 'Limitsiz bildirişlər', 'PDF və Excel eksport', 'QR ödəniş inteqrasiyası', '7/24 prioritet dəstək'].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-white/70 font-bold">
-                                        <Zap size={18} className="text-blue-400" />
-                                        {item}
+                            <ul className="space-y-3.5 mb-10 flex-1">
+                                {[
+                                    { t: 'Ayda 100 faktura', h: true },
+                                    { t: 'Limitsiz müştəri', h: true },
+                                    { t: 'Limitsiz xərc', h: true },
+                                    { t: '3 biznes profili', h: false },
+                                    { t: '500 məhsul, 3 anbar', h: false },
+                                    { t: '5 komanda üzvü', h: true },
+                                    { t: 'Premium PDF dizaynları', h: true },
+                                    { t: 'E-poçtla faktura göndərmə', h: true },
+                                    { t: 'E-qaime XML (e-vergi)', h: true },
+                                    { t: 'Proqnoz analitikası + AI', h: true },
+                                    { t: 'CSV / Excel eksport', h: true },
+                                    { t: 'Ödəniş & vergi hesabatları', h: true },
+                                    { t: 'Müştəri reytinqi (A-D)', h: false },
+                                    { t: 'Stok xəbərdarlıqları', h: false },
+                                    { t: 'Çoxvalyutalı dəstək', h: true },
+                                    { t: 'Avtomatik vaxtkeçmiş xatırlatma', h: false },
+                                    { t: 'Fəaliyyət jurnalı', h: false },
+                                ].map(({ t, h }, i) => (
+                                    <li key={i} className={`flex items-center gap-3 text-[13px] font-bold ${h ? 'text-white/80' : 'text-white/50'}`}>
+                                        <Zap size={16} className="text-blue-400 shrink-0" />
+                                        {t}
                                     </li>
                                 ))}
                             </ul>
@@ -534,41 +548,127 @@ const LandingPage = () => {
                             </button>
                         </motion.div>
 
-                        {/* Premium - COMING SOON */}
-                        <motion.div
-                            whileHover={{ y: -8 }}
-                            className="bg-white/[0.03] border border-white/[0.06] rounded-3xl p-8 flex flex-col relative overflow-hidden opacity-75"
-                        >
-                            <div className="absolute top-0 right-0 bg-amber-500 text-black font-black text-[10px] px-8 py-1 rotate-45 translate-x-8 translate-y-4 shadow-lg">
-                                TEZLİKLƏ
+                        {/* ── PREMIUM ── */}
+                        <motion.div whileHover={{ y: -8 }} className="relative bg-gradient-to-br from-amber-500/10 to-orange-600/10 border border-amber-500/20 rounded-3xl p-8 flex flex-col">
+                            <div className="absolute -top-3 right-8 bg-gradient-to-r from-amber-500 to-orange-500 text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                Müəssisə
                             </div>
-                            <div className="mb-6">
-                                <h4 className="text-xl font-black mb-1">Premium</h4>
-                                <p className="text-sm text-white/30 font-medium">Limitsiz imkanlar.</p>
+                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-5">
+                                <Crown size={22} className="text-amber-400" />
                             </div>
+                            <h4 className="text-xl font-black mb-1">Premium</h4>
+                            <p className="text-sm text-white/40 font-medium mb-6">Limitsiz güc. Müəssisə səviyyəsi.</p>
                             <div className="mb-8">
                                 <div className="text-4xl font-black">
                                     {billingInterval === 'monthly' ? '49.99 ₼' : '499.99 ₼'}
-                                    <span className="text-lg text-white/30">
-                                        {billingInterval === 'monthly' ? ' /ay' : ' /il'}
-                                    </span>
+                                    <span className="text-lg text-white/30">{billingInterval === 'monthly' ? ' /ay' : ' /il'}</span>
                                 </div>
-                                {billingInterval === 'yearly' && (
-                                    <p className="text-xs font-bold text-emerald-400 mt-1">~41.66 AZN /ay</p>
-                                )}
+                                {billingInterval === 'yearly' && <p className="text-xs font-bold text-emerald-400 mt-1">~41.66 ₼ / ay</p>}
                             </div>
-                            <ul className="space-y-4 mb-10 flex-1">
-                                {['Limitsiz faktura', 'VIP Dəstək', 'API inteqrasiyası', 'Komanda (Qrup) üzvləri', 'Fərdiləşdirilə bilən Faktura Temaları', 'Limitsiz biznes profili', 'Tam ağ etiket (White-label)'].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-white/50 font-semibold">
-                                        <CheckCircle2 size={18} className="text-amber-500/50" />
-                                        {item}
+                            <ul className="space-y-3.5 mb-10 flex-1">
+                                {[
+                                    { t: 'Limitsiz faktura', h: true },
+                                    { t: 'Limitsiz müştəri & xərc', h: true },
+                                    { t: 'Limitsiz biznes profili', h: true },
+                                    { t: 'Limitsiz məhsul & anbar', h: true },
+                                    { t: 'Limitsiz komanda üzvü', h: true },
+                                    { t: 'Pro-dakı bütün xüsusiyyətlər', h: false },
+                                    { t: 'GPS ilə komanda izləmə', h: true },
+                                    { t: 'REST API inteqrasiyası', h: true },
+                                    { t: 'White-label (brendsiz PDF)', h: true },
+                                    { t: 'VIP prioritet dəstək', h: true },
+                                    { t: 'Limitsiz yaddaş', h: false },
+                                ].map(({ t, h }, i) => (
+                                    <li key={i} className={`flex items-center gap-3 text-[13px] font-bold ${h ? 'text-white/80' : 'text-white/50'}`}>
+                                        <Crown size={16} className="text-amber-400 shrink-0" />
+                                        {t}
                                     </li>
                                 ))}
                             </ul>
-                            <button disabled className="w-full py-3.5 bg-white/5 border border-white/10 rounded-2xl font-black text-sm text-white/40 cursor-not-allowed">
-                                Tezliklə
+                            <button onClick={goLogin} className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black rounded-2xl font-black text-sm shadow-xl shadow-amber-500/20 hover:shadow-amber-500/40 transition-all">
+                                Premium-a Keçin
                             </button>
                         </motion.div>
+                    </div>
+
+                    {/* ── Feature Comparison Table ── */}
+                    <div className="bg-white/[0.02] border border-white/[0.06] rounded-3xl overflow-hidden">
+                        <div className="px-8 py-6 border-b border-white/[0.06]">
+                            <h3 className="text-lg font-black">Tam Müqayisə Cədvəli</h3>
+                            <p className="text-sm text-white/30 font-medium mt-1">Bütün xüsusiyyətlər bir baxışda</p>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-white/[0.06]">
+                                        <th className="text-left px-8 py-4 text-white/40 font-bold text-xs uppercase tracking-wider">Xüsusiyyət</th>
+                                        <th className="text-center px-6 py-4 text-white/40 font-bold text-xs uppercase tracking-wider">Pulsuz</th>
+                                        <th className="text-center px-6 py-4 font-bold text-xs uppercase tracking-wider text-blue-400">Pro</th>
+                                        <th className="text-center px-6 py-4 font-bold text-xs uppercase tracking-wider text-amber-400">Premium</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { section: 'Kəmiyyət Limitləri' },
+                                        { f: 'Aylıq faktura', free: '5', pro: '100', premium: 'Limitsiz' },
+                                        { f: 'Müştəri', free: '10', pro: 'Limitsiz', premium: 'Limitsiz' },
+                                        { f: 'Aylıq xərc', free: '15', pro: 'Limitsiz', premium: 'Limitsiz' },
+                                        { f: 'Biznes profili', free: '1', pro: '3', premium: 'Limitsiz' },
+                                        { f: 'Məhsul', free: '20', pro: '500', premium: 'Limitsiz' },
+                                        { f: 'Komanda üzvü', free: '0', pro: '5', premium: 'Limitsiz' },
+                                        { f: 'Anbar', free: '1', pro: '3', premium: 'Limitsiz' },
+                                        { f: 'Satınalma sifarişi / ay', free: '5', pro: '50', premium: 'Limitsiz' },
+                                        { f: 'Yaddaş', free: '50 MB', pro: '500 MB', premium: 'Limitsiz' },
+                                        { section: 'Faktura Xüsusiyyətləri' },
+                                        { f: 'Premium PDF dizaynları', free: false, pro: true, premium: true },
+                                        { f: 'Özəl faktura temaları', free: false, pro: true, premium: true },
+                                        { f: 'E-poçtla faktura göndərmə', free: false, pro: true, premium: true },
+                                        { f: 'E-qaime XML (e-vergi)', free: false, pro: true, premium: true },
+                                        { f: 'Faktura dublikat etmə', free: true, pro: true, premium: true },
+                                        { f: 'İctimai faktura linki', free: true, pro: true, premium: true },
+                                        { f: 'Vaxtkeçmiş xatırlatma', free: false, pro: true, premium: true },
+                                        { f: 'White-label PDF', free: false, pro: false, premium: true },
+                                        { section: 'Analitika & Hesabatlar' },
+                                        { f: 'Dashboard & əsas statistika', free: true, pro: true, premium: true },
+                                        { f: 'Proqnoz analitikası (AI)', free: false, pro: true, premium: true },
+                                        { f: 'Ödəniş analitikası', free: false, pro: true, premium: true },
+                                        { f: 'Vergi hesabatları', free: false, pro: true, premium: true },
+                                        { f: 'CSV / Excel eksport', free: false, pro: true, premium: true },
+                                        { f: 'Müştəri reytinqi (A-D)', free: false, pro: true, premium: true },
+                                        { f: 'Fəaliyyət jurnalı', free: false, pro: true, premium: true },
+                                        { section: 'Komanda & İnventar' },
+                                        { f: 'Komanda GPS izləmə', free: false, pro: false, premium: true },
+                                        { f: 'Toplu əməliyyatlar', free: false, pro: true, premium: true },
+                                        { f: 'Stok xəbərdarlıqları', free: false, pro: true, premium: true },
+                                        { f: 'Çoxvalyutalı dəstək', free: false, pro: true, premium: true },
+                                        { section: 'Əlavə' },
+                                        { f: 'REST API girişi', free: false, pro: false, premium: true },
+                                        { f: 'VIP prioritet dəstək', free: false, pro: false, premium: true },
+                                    ].map((row, i) => {
+                                        if (row.section) {
+                                            return (
+                                                <tr key={i} className="bg-white/[0.02]">
+                                                    <td colSpan={4} className="px-8 py-3 text-xs font-black uppercase tracking-wider text-white/50">{row.section}</td>
+                                                </tr>
+                                            );
+                                        }
+                                        const renderCell = (val) => {
+                                            if (val === true) return <Check size={18} className="text-emerald-400 mx-auto" />;
+                                            if (val === false) return <X size={16} className="text-white/10 mx-auto" />;
+                                            return <span className="font-bold text-white/70">{val}</span>;
+                                        };
+                                        return (
+                                            <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                                                <td className="px-8 py-3.5 text-white/60 font-semibold">{row.f}</td>
+                                                <td className="text-center px-6 py-3.5">{renderCell(row.free)}</td>
+                                                <td className="text-center px-6 py-3.5">{renderCell(row.pro)}</td>
+                                                <td className="text-center px-6 py-3.5">{renderCell(row.premium)}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>

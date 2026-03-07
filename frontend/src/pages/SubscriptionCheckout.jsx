@@ -37,13 +37,33 @@ const SubscriptionCheckout = () => {
             name: 'Pro',
             monthly: 19.99,
             yearly: 199.99,
-            features: ['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI', 'Limitsiz bildirişlər', 'PDF və Excel eksport', '3 biznes profili']
+            features: [
+                'Ayda 100 faktura',
+                'Limitsiz müştəri & xərc',
+                '5 komanda üzvü',
+                'Premium PDF dizaynları',
+                'E-poçtla faktura göndərmə',
+                'E-qaime XML (e-vergi)',
+                'Proqnoz analitikası + AI',
+                'CSV / Excel eksport',
+                'Ödəniş & vergi hesabatları',
+                'Çoxvalyutalı dəstək',
+            ]
         },
         'premium': {
             name: 'Premium',
             monthly: 49.99,
             yearly: 499.99,
-            features: ['Limitsiz faktura', 'VIP Dəstək', 'API inteqrasiyası', 'Komanda üzvlər', 'Fərdiləşdirilə bilən Temalar', 'Full White-label']
+            features: [
+                'Limitsiz hər şey',
+                'Limitsiz komanda üzvü',
+                'Pro-dakı bütün xüsusiyyətlər',
+                'GPS ilə komanda izləmə',
+                'REST API inteqrasiyası',
+                'White-label (brendsiz PDF)',
+                'VIP prioritet dəstək',
+                'Limitsiz yaddaş',
+            ]
         }
     };
 

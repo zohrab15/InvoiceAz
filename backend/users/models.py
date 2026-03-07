@@ -36,35 +36,66 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class SubscriptionPlan(models.Model):
-    name = models.CharField(max_length=50, unique=True, help_text="Slug name (e.g., 'free', 'pro')")
-    label = models.CharField(max_length=100, help_text="Display name (e.g., 'Pulsuz', 'Pro')")
-    
-    invoices_per_month = models.IntegerField(default=5, null=True, blank=True)
-    clients_limit = models.IntegerField(default=10, null=True, blank=True)
-    expenses_per_month = models.IntegerField(default=20, null=True, blank=True)
-    businesses_limit = models.IntegerField(default=1, null=True, blank=True)
-    products_limit = models.IntegerField(default=20, null=True, blank=True)
-    
-    has_forecast_analytics = models.BooleanField(default=False)
-    has_csv_export = models.BooleanField(default=False)
-    has_premium_pdf = models.BooleanField(default=False)
-    has_api_access = models.BooleanField(default=False)
-    
-    team_members_limit = models.IntegerField(default=0, null=True, blank=True)
-    has_custom_themes = models.BooleanField(default=False)
-    has_white_label = models.BooleanField(
-        default=False, 
-        help_text="Whether to hide 'Powered by InvoiceAZ' branding"
-    )
-    
-    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
+    # ─── Əsas Məlumatlar ───
+    name = models.CharField(max_length=50, unique=True, help_text="Slug adı (məs: 'free', 'pro', 'premium')")
+    label = models.CharField(max_length=100, help_text="Göstərilən ad (məs: 'Pulsuz', 'Pro', 'Premium')")
+    description = models.TextField(blank=True, default='', help_text="Plan haqqında qısa açıqlama")
+    sort_order = models.IntegerField(default=0, help_text="Sıralama ardıcıllığı (kiçik=əvvəl)")
+    is_active = models.BooleanField(default=True, help_text="Plan aktiv/deaktiv")
+
+    # ─── Qiymətləndirmə ───
+    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Aylıq qiymət (AZN)")
+    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="İllik qiymət (AZN)")
+
+    # ─── Kəmiyyət Limitləri (null = limitsiz) ───
+    invoices_per_month = models.IntegerField(default=5, null=True, blank=True, help_text="Aylıq faktura limiti (boş = limitsiz)")
+    clients_limit = models.IntegerField(default=10, null=True, blank=True, help_text="Müştəri limiti (boş = limitsiz)")
+    expenses_per_month = models.IntegerField(default=20, null=True, blank=True, help_text="Aylıq xərc limiti (boş = limitsiz)")
+    businesses_limit = models.IntegerField(default=1, null=True, blank=True, help_text="Biznes profili limiti (boş = limitsiz)")
+    products_limit = models.IntegerField(default=20, null=True, blank=True, help_text="Məhsul limiti (boş = limitsiz)")
+    team_members_limit = models.IntegerField(default=0, null=True, blank=True, help_text="Komanda üzvü limiti (boş = limitsiz)")
+    warehouses_limit = models.IntegerField(default=1, null=True, blank=True, help_text="Anbar limiti (boş = limitsiz)")
+    purchase_orders_per_month = models.IntegerField(default=0, null=True, blank=True, help_text="Aylıq satınalma sifarişi limiti (boş = limitsiz)")
+    storage_limit_mb = models.IntegerField(default=50, null=True, blank=True, help_text="Yaddaş limiti MB (boş = limitsiz)")
+
+    # ─── Faktura Xüsusiyyətləri ───
+    has_premium_pdf = models.BooleanField(default=False, help_text="Premium PDF dizaynları (Modern, Classic, Minimal)")
+    has_custom_themes = models.BooleanField(default=False, help_text="Özəl faktura temaları")
+    has_white_label = models.BooleanField(default=False, help_text="'Powered by InvoiceAZ' brendinqini gizlət")
+    has_email_sending = models.BooleanField(default=False, help_text="Fakturanı e-poçtla göndərmə")
+    has_etag_xml = models.BooleanField(default=False, help_text="E-qaime XML yaratma (e-vergi)")
+    has_duplicate_invoice = models.BooleanField(default=True, help_text="Faktura dublikat etmə")
+    has_public_sharing = models.BooleanField(default=True, help_text="Fakturanı ictimai link ilə paylaşma")
+    has_overdue_reminders = models.BooleanField(default=False, help_text="Vaxtı keçmiş fakturalar üçün avtomatik xatırlatma")
+
+    # ─── Analitika & Hesabatlar ───
+    has_forecast_analytics = models.BooleanField(default=False, help_text="Proqnoz analitikası (gəlir, cash flow)")
+    has_csv_export = models.BooleanField(default=False, help_text="CSV/Excel eksport")
+    has_payment_analytics = models.BooleanField(default=False, help_text="Ödəniş analitikası (heatmap, sürət, metod)")
+    has_tax_reports = models.BooleanField(default=False, help_text="Vergi hesabatları")
+    has_client_ratings = models.BooleanField(default=False, help_text="Müştəri ödəniş reytinqi (A, B, C, D)")
+    has_activity_log = models.BooleanField(default=False, help_text="Fəaliyyət jurnalı (audit trail)")
+
+    # ─── Komanda & İnventar ───
+    has_team_gps = models.BooleanField(default=False, help_text="Komanda üzvü GPS lokasiya izləmə")
+    has_bulk_operations = models.BooleanField(default=False, help_text="Toplu əməliyyatlar (müştəri təyinatı və s.)")
+    has_stock_alerts = models.BooleanField(default=False, help_text="Aşağı stok xəbərdarlıqları")
+    has_multi_currency = models.BooleanField(default=False, help_text="Çoxvalyutalı dəstək (USD, EUR, TRY, RUB, GBP)")
+
+    # ─── Əlavə Xüsusiyyətlər ───
+    has_api_access = models.BooleanField(default=False, help_text="REST API girişi (xarici inteqrasiya)")
+    has_vip_support = models.BooleanField(default=False, help_text="VIP / Prioritet dəstək")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['sort_order', 'price_monthly']
+        verbose_name = 'Abunəlik Planı'
+        verbose_name_plural = 'Abunəlik Planları'
+
     def __str__(self):
-        return self.label
+        return f"{self.label} ({self.name})"
 
 class User(AbstractUser):
     username = None

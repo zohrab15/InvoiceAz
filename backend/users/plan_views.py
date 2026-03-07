@@ -14,13 +14,8 @@ class PlanStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Look for business_id in query params or X-Business-ID header
         business_id = request.query_params.get('business_id') or request.headers.get('X-Business-ID')
         status_data = get_full_plan_status(request.user, business_id=business_id)
-        
-        # Add cancellation info if it exists in the user model but not yet in the status helper
-        status_data['subscription']['cancel_at_period_end'] = request.user.cancel_at_period_end
-        
         return Response(status_data)
 
 
@@ -29,7 +24,7 @@ class SubscriptionPlanListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        plans = SubscriptionPlan.objects.all()
+        plans = SubscriptionPlan.objects.filter(is_active=True).order_by('sort_order')
         serializer = SubscriptionPlanSerializer(plans, many=True)
         return Response(serializer.data)
 

@@ -5,7 +5,27 @@ from users.models import User, Business, TeamMember, DiscountCoupon, TeamMemberI
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscriptionPlan
-        fields = ['id', 'name', 'price_monthly', 'price_yearly', 'features']
+        fields = [
+            'id', 'name', 'label', 'description', 'sort_order', 'is_active',
+            # Qiymət
+            'price_monthly', 'price_yearly',
+            # Kəmiyyət limitləri
+            'invoices_per_month', 'clients_limit', 'expenses_per_month',
+            'businesses_limit', 'products_limit', 'team_members_limit',
+            'warehouses_limit', 'purchase_orders_per_month', 'storage_limit_mb',
+            # Faktura
+            'has_premium_pdf', 'has_custom_themes', 'has_white_label',
+            'has_email_sending', 'has_etag_xml', 'has_duplicate_invoice',
+            'has_public_sharing', 'has_overdue_reminders',
+            # Analitika
+            'has_forecast_analytics', 'has_csv_export', 'has_payment_analytics',
+            'has_tax_reports', 'has_client_ratings', 'has_activity_log',
+            # Komanda & İnventar
+            'has_team_gps', 'has_bulk_operations', 'has_stock_alerts',
+            'has_multi_currency',
+            # Əlavə
+            'has_api_access', 'has_vip_support',
+        ]
 
 
 class DiscountCouponSerializer(serializers.ModelSerializer):
