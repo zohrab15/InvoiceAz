@@ -40,6 +40,25 @@ const PricingPage = () => {
         }
     };
 
+    const handleCancel = async () => {
+        if (currentPlan === 'free') return;
+
+        const confirmed = window.confirm("Abunəliyinizi ləğv etmək istədiyinizə əminsiniz? Müddət bitənə qədər bütün imkanlardan yararlana biləcəksiniz.");
+        if (!confirmed) return;
+
+        setIsSubmitting(true);
+        try {
+            await clientApi.post('/users/plan/cancel/');
+            showToast("Abunəliyiniz ləğv edildi. Müddət bitənə qədər istifadə edə bilərsiniz.", "success");
+            queryClient.invalidateQueries(['planStatus']);
+        } catch (error) {
+            console.error("Cancellation error:", error);
+            showToast(error.response?.data?.error || "Abunəlik ləğv edilərkən xəta baş verdi.", "error");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="min-h-screen p-6 relative overflow-hidden font-roboto" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
             {/* Background Effects */}
@@ -200,8 +219,8 @@ const PricingPage = () => {
                             ))}
                         </ul>
                         <button
-                            onClick={() => handleSubscribe('pro')}
-                            disabled={currentPlan === 'pro' || isSubmitting}
+                            onClick={() => currentPlan === 'pro' ? handleCancel() : handleSubscribe('pro')}
+                            disabled={isSubmitting}
                             className="w-full py-3.5 rounded-2xl font-bold text-sm shadow-xl transition-all text-white"
                             style={{
                                 background: currentPlan === 'pro' ? 'var(--color-hover-bg)' : 'linear-gradient(to right, var(--color-brand), var(--color-brand-dark))',
@@ -210,7 +229,7 @@ const PricingPage = () => {
                                 opacity: isSubmitting ? 0.7 : 1
                             }}
                         >
-                            {isSubmitting ? 'Gözləyin...' : (currentPlan === 'pro' ? 'İstifadə olunur' : 'Pro-ya Keçin')}
+                            {isSubmitting ? 'Gözləyin...' : (currentPlan === 'pro' ? 'Abunəliyi ləğv et' : 'Pro-ya Keçin')}
                         </button>
                     </motion.div>
 
@@ -250,8 +269,8 @@ const PricingPage = () => {
                             ))}
                         </ul>
                         <button
-                            onClick={() => handleSubscribe('premium')}
-                            disabled={currentPlan === 'premium' || isSubmitting}
+                            onClick={() => currentPlan === 'premium' ? handleCancel() : handleSubscribe('premium')}
+                            disabled={isSubmitting}
                             className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all"
                             style={{
                                 backgroundColor: currentPlan === 'premium' ? 'var(--color-hover-bg)' : 'var(--color-brand-dark)',
@@ -259,7 +278,7 @@ const PricingPage = () => {
                                 opacity: isSubmitting ? 0.7 : 1
                             }}
                         >
-                            {currentPlan === 'premium' ? 'İstifadə olunur' : 'Premium-a Keçin'}
+                            {isSubmitting ? 'Gözləyin...' : (currentPlan === 'premium' ? 'Abunəliyi ləğv et' : 'Premium-a Keçin')}
                         </button>
                     </motion.div>
                 </div>

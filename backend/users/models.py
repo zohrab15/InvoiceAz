@@ -95,6 +95,7 @@ class User(AbstractUser):
     )
     subscription_interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, default='monthly')
     subscription_expiry = models.DateField(null=True, blank=True)
+    cancel_at_period_end = models.BooleanField(default=False)
 
     # Referral / Affiliate fields
     referral_code = models.CharField(max_length=12, unique=True, blank=True)

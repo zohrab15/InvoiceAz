@@ -7,7 +7,7 @@ from .views import (
     LogoutAPIView, TeamMemberViewSet, TeamMemberLocationUpdateView,
     RBACDebugView, ReferralStatsView, TeamMemberInvitationViewSet
 )
-from .plan_views import PlanStatusView, SubscriptionPlanListView, UpdatePlanView
+from .plan_views import PlanStatusView, SubscriptionPlanListView, UpdatePlanView, CancelSubscriptionView
 
 router = DefaultRouter()
 router.register(r'business', BusinessViewSet, basename='business')
@@ -30,6 +30,7 @@ urlpatterns = [
     path('plan/status/', PlanStatusView.as_view(), name='plan_status'),
     path('plan/list/', SubscriptionPlanListView.as_view(), name='plan_list'),
     path('plan/update/', UpdatePlanView.as_view(), name='plan_update'),
+    path('plan/cancel/', CancelSubscriptionView.as_view(), name='plan_cancel'),
     path('referral/', ReferralStatsView.as_view(), name='referral_stats'),
     path('debug/rbac/', RBACDebugView.as_view(), name='rbac_debug'),
 ]
