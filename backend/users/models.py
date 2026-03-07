@@ -57,6 +57,9 @@ class SubscriptionPlan(models.Model):
         help_text="Whether to hide 'Powered by InvoiceAZ' branding"
     )
     
+    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -84,6 +87,14 @@ class User(AbstractUser):
     # Security fields
     totp_secret = models.CharField(max_length=32, blank=True, null=True)
     is_2fa_enabled = models.BooleanField(default=False)
+
+    # Subscription interval
+    INTERVAL_CHOICES = (
+        ('monthly', 'Aylıq'),
+        ('yearly', 'İllik'),
+    )
+    subscription_interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, default='monthly')
+    subscription_expiry = models.DateField(null=True, blank=True)
 
     # Referral / Affiliate fields
     referral_code = models.CharField(max_length=12, unique=True, blank=True)
