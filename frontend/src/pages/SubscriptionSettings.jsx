@@ -61,6 +61,21 @@ const SubscriptionSettings = () => {
         'yearly': 'İllik'
     }[interval] || (interval ? interval : '---');
 
+    const featureTranslations = {
+        'invoices_per_month': 'Aylıq faktura sayı',
+        'clients': 'Müştəri limiti',
+        'expenses_per_month': 'Aylıq xərc limiti',
+        'businesses': 'Biznes profili sayı',
+        'forecast_analytics': 'Proqnoz Analitikası',
+        'csv_export': 'CSV Eksport',
+        'premium_pdf': 'Premium PDF Dizaynları',
+        'api_access': 'API Girişi',
+        'team_members': 'Komanda üzvləri',
+        'custom_themes': 'Özəl Temalar',
+        'products': 'Məhsul limiti',
+        'white_label': 'Ağ Etiket (White-label)'
+    };
+
     return (
         <div className="min-h-screen p-6 md:p-8 space-y-8 max-w-5xl mx-auto">
             <header className="flex items-center justify-between mb-4">
@@ -140,15 +155,27 @@ const SubscriptionSettings = () => {
                         </div>
 
                         {isCancelled && (
-                            <div className="mt-8 p-4 rounded-2xl flex gap-3 border" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.2)' }}>
-                                <AlertCircle className="text-amber-500 shrink-0" size={20} />
-                                <div className="space-y-1">
-                                    <p className="text-xs font-bold uppercase tracking-wider text-amber-500">Ləğv edilmə gözlənilir</p>
-                                    <p className="text-xs leading-relaxed font-semibold text-amber-200/80">
-                                        Abunəliyiniz ləğv edilib və <b>{expiryDate}</b> tarixində <b>Pulsuz Plana</b> keçid ediləcək. Bu tarixə qədər bütün imkanlardan yararlana bilərsiniz.
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-8 p-6 rounded-[2rem] flex gap-5 border-l-4 shadow-xl"
+                                style={{
+                                    backgroundColor: 'var(--color-card-bg)',
+                                    borderColor: 'var(--color-card-border)',
+                                    borderLeftColor: '#f59e0b',
+                                    boxShadow: '0 10px 30px rgba(245, 158, 11, 0.05)'
+                                }}
+                            >
+                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>
+                                    <AlertCircle size={24} />
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: '#f59e0b' }}>Ləğv edilmə gözlənilir</p>
+                                    <p className="text-sm leading-relaxed font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                                        Abunəliyiniz ləğv edilib və <b style={{ color: 'var(--color-text-primary)' }}>{expiryDate}</b> tarixində <b style={{ color: 'var(--color-brand)' }}>Pulsuz Plana</b> keçid ediləcək. Bu tarixə qədər bütün imkanlardan yararlana bilərsiniz.
                                     </p>
                                 </div>
-                            </div>
+                            </motion.div>
                         )}
                     </motion.div>
 
@@ -162,8 +189,8 @@ const SubscriptionSettings = () => {
                                         <Zap size={16} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-tighter" style={{ color: 'var(--color-text-muted)' }}>{key.replace(/_/g, ' ')}</p>
-                                        <p className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>{limit === true ? 'Limitsiz' : limit === false ? 'Yoxdur' : limit}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-tighter" style={{ color: 'var(--color-text-muted)' }}>{featureTranslations[key] || key.replace(/_/g, ' ')}</p>
+                                        <p className="text-sm font-black" style={{ color: 'var(--color-text-primary)' }}>{limit === true ? 'Var' : limit === false ? 'Yoxdur' : limit}</p>
                                     </div>
                                 </div>
                             ))}
