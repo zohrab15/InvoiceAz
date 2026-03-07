@@ -232,47 +232,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                             {item.locked && <Lock size={14} className="text-gray-400" />}
                         </NavLink>
                     ))}
-
-                    {/* Plan Status Indicator */}
-                    {(activeBusiness?.user_role === 'OWNER' || !activeBusiness) && (
-                        <div className="mt-8 px-3 py-4 rounded-xl border border-[var(--color-card-border)] bg-[var(--color-card-bg)] shadow-sm">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Sparkles size={14} className="text-blue-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-muted)]">Cari Plan</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-black capitalize" style={{ color: 'var(--color-text-primary)' }}>
-                                    {{
-                                        'free': 'Başlanğıc',
-                                        'pro': 'Professional',
-                                        'premium': 'Premium'
-                                    }[usePlanLimits().plan] || 'Pulsuz'}
-                                    <span className="text-[10px] text-[var(--color-text-muted)] ml-1 font-bold">
-                                        ({usePlanLimits().interval === 'yearly' ? 'İllik' : 'Aylıq'})
-                                    </span>
-                                </span>
-                                <NavLink to="/pricing" className="text-[10px] font-black text-blue-500 hover:underline">Yenilə</NavLink>
-                            </div>
-
-                            {/* Simple usage bar for invoices */}
-                            {usePlanLimits().plan !== 'premium' && (
-                                <div className="mt-3">
-                                    <div className="flex justify-between text-[9px] font-bold mb-1">
-                                        <span style={{ color: 'var(--color-text-muted)' }}>Faktura Limit</span>
-                                        <span style={{ color: 'var(--color-text-primary)' }}>
-                                            {usePlanLimits().checkLimit('invoices').current} / {usePlanLimits().checkLimit('invoices').limit}
-                                        </span>
-                                    </div>
-                                    <div className="h-1 w-full bg-[var(--color-hover-bg)] rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-blue-500 rounded-full"
-                                            style={{ width: `${Math.min((usePlanLimits().checkLimit('invoices').current / usePlanLimits().checkLimit('invoices').limit) * 100, 100)}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </nav>
             </div>
         </>

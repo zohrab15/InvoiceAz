@@ -375,13 +375,8 @@ const Dashboard = () => {
 
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                 <div className="flex-1">
-                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-roboto flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
+                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-roboto" style={{ color: 'var(--color-text-primary)' }}>
                         {greeting}{user?.first_name ? `, ${user.first_name}` : ''} 👋
-                        {plan !== 'free' && (
-                            <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                                {plan} ({interval === 'yearly' ? 'İllik' : 'Aylıq'})
-                            </span>
-                        )}
                     </h2>
                     <div className="flex items-center gap-4 mt-2">
                         <div className="flex items-center gap-2">
