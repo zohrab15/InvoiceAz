@@ -25,7 +25,7 @@ const Dashboard = () => {
     const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const navigate = useNavigate();
     const user = useAuthStore(state => state.user);
-    const { plan, interval } = usePlanLimits();
+    const { plan, interval, expiry } = usePlanLimits();
 
     const { data: invoices, isLoading: isLoadingInvoices } = useQuery({
         queryKey: ['invoices', activeBusiness?.id, user?.id],
