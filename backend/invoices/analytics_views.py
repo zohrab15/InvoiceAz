@@ -503,7 +503,7 @@ class TaxAnalyticsView(AnalyticsBaseView):
         from django.db.models.functions import ExtractMonth
         monthly_vat = relevant_invoices.annotate(month=ExtractMonth('invoice_date'))\
             .values('month')\
-            .annotate(vat=Sum('tax_amount'), revenue=Sum('total'))\
+            .annotate(vat=Sum('tax_amount'), revenue=Sum('subtotal'))\
             .order_by('month')
 
         formatted_monthly = []
@@ -516,7 +516,7 @@ class TaxAnalyticsView(AnalyticsBaseView):
             })
 
         # 2. Income Tax (Gəlir Vergisi)
-        total_revenue = float(relevant_invoices.aggregate(Sum('total'))['total__sum'] or 0)
+        total_revenue = float(relevant_invoices.aggregate(Sum('subtotal'))['subtotal__sum'] or 0)
         
         # Professional Logic: Only deduct tax-deductible expenses from the tax base
         deductible_expenses = expenses.filter(is_tax_deductible=True)
@@ -529,7 +529,7 @@ class TaxAnalyticsView(AnalyticsBaseView):
         from django.db.models.functions import ExtractQuarter
         quarterly_data = relevant_invoices.annotate(quarter=ExtractQuarter('invoice_date'))\
             .values('quarter')\
-            .annotate(revenue=Sum('total'), vat=Sum('tax_amount'))\
+            .annotate(revenue=Sum('subtotal'), vat=Sum('tax_amount'))\
             .order_by('quarter')
         
         quarterly_expenses = expenses.annotate(quarter=ExtractQuarter('date'))\
@@ -560,7 +560,7 @@ class TaxAnalyticsView(AnalyticsBaseView):
         twelve_month_revenue = float(Invoice.objects.filter(
             business=business,
             invoice_date__gte=twelve_months_ago
-        ).exclude(status__in=['draft', 'cancelled']).aggregate(total=Sum('total'))['total'] or 0)
+        ).exclude(status__in=['draft', 'cancelled']).aggregate(total=Sum('subtotal'))['total'] or 0)
         
         vat_limit = 200000.00
         is_approaching_vat = twelve_month_revenue > (vat_limit * 0.8)

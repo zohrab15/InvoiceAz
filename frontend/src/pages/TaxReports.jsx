@@ -100,7 +100,7 @@ const TaxReports = () => {
                         <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                             <TrendingUp size={24} />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gəlir</span>
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gəlir (ƏDV-siz)</span>
                         <div className="flex items-baseline gap-2 mt-1">
                             <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.revenue.toLocaleString()}</span>
                             <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
