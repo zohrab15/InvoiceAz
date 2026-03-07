@@ -51,8 +51,15 @@ const SubscriptionSettings = () => {
     if (isLoading) return <div className="p-8 animate-pulse text-white/20 font-black tracking-widest uppercase text-center mt-20">Yüklənir...</div>;
 
     const currentPlan = planStatus?.plan || 'free';
+    const planLabel = planStatus?.label || (currentPlan === 'pro' ? 'Pro' : (currentPlan === 'premium' ? 'Premium' : 'Pulsuz'));
     const isCancelled = planStatus?.subscription?.cancel_at_period_end;
     const expiryDate = planStatus?.subscription?.expiry;
+    const interval = planStatus?.subscription?.interval;
+
+    const intervalLabel = {
+        'monthly': 'Aylıq',
+        'yearly': 'İllik'
+    }[interval] || (interval ? interval : '---');
 
     return (
         <div className="min-h-screen p-6 md:p-8 space-y-8 max-w-5xl mx-auto">
@@ -91,7 +98,7 @@ const SubscriptionSettings = () => {
                                     </div>
                                     <div>
                                         <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)', opacity: 0.5 }}>Cari Plan</p>
-                                        <h2 className="text-2xl font-black uppercase" style={{ color: 'var(--color-text-primary)' }}>{currentPlan}</h2>
+                                        <h2 className="text-2xl font-black uppercase" style={{ color: 'var(--color-text-primary)' }}>{planLabel}</h2>
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-4">
@@ -99,12 +106,12 @@ const SubscriptionSettings = () => {
                                         <Clock size={14} className="text-amber-500" />
                                         <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
                                             {isCancelled ? 'Bitmə tarixi: ' : 'Növbəti yenilənmə: '}
-                                            <span style={{ color: 'var(--color-text-primary)' }}>{expiryDate || 'N/A'}</span>
+                                            <span style={{ color: 'var(--color-text-primary)' }}>{expiryDate || (currentPlan === 'free' ? 'Limitsiz' : 'N/A')}</span>
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>
                                         <Calendar size={14} style={{ color: 'var(--color-brand)' }} />
-                                        <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>İnterval: <span className="uppercase" style={{ color: 'var(--color-text-primary)' }}>{planStatus?.subscription?.interval || '---'}</span></span>
+                                        <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>İnterval: <span className="uppercase" style={{ color: 'var(--color-text-primary)' }}>{intervalLabel}</span></span>
                                     </div>
                                 </div>
                             </div>
