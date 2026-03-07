@@ -135,7 +135,7 @@
                     Tel: {{ business.phone|default:"" }}
                 </div>
             </td>
-            <td class="valign-top text-right" style="width: 40%;">
+            <td class="valign-top text-right" style="width: 210pt;">
                 <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Müştəri</div>
                 <div class="font-bold text-black" style="font-size: 12pt;">{{ client.name }}</div>
                 <div class="text-slate" style="font-size: 9pt;">{{ client.email }}</div>
@@ -166,12 +166,12 @@
     </div>
     <table class="w-full">
         <tr>
-            <td class="valign-top" style="border-left: 5pt solid #000; padding-left: 15pt; width: 50%;">
+            <td class="valign-top" style="border-left: 5pt solid #000; padding-left: 15pt; width: 265pt;">
                 <div class="text-slate uppercase font-bold" style="font-size: 7pt; margin-bottom: 5pt;">KİMƏ:</div>
                 <div class="font-bold text-black" style="font-size: 14pt;">{{ client.name }}</div>
                 <div class="text-slate" style="font-size: 9pt;">{{ client.address|default:client.email }}</div>
             </td>
-            <td class="valign-top text-right" style="width: 50%;">
+            <td class="valign-top text-right" style="width: 265pt;">
                 <div class="font-bold text-black" style="font-size: 14pt;">{{ business.name }}</div>
                 <div class="text-slate" style="font-size: 9pt;">VÖEN: {{ business.voen }}</div>
                 <div class="text-slate" style="font-size: 9pt;">{{ business.email }}</div>
@@ -210,27 +210,27 @@
         <table class="items-table">
             <thead>
                 <tr>
-                    <th style="width: 50%;">Məhsul / Xidmət</th>
-                    <th class="text-center">Sayı</th>
-                    <th class="text-right">Qiymət</th>
-                    <th class="text-right">Məbləğ</th>
+                    <th style="width: 250pt; text-align: left;">Məhsul / Xidmət</th>
+                    <th style="width: 80pt; text-align: center;">Sayı</th>
+                    <th style="width: 100pt; text-align: right;">Qiymət</th>
+                    <th style="width: 100pt; text-align: right;">Məbləğ</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in items %}
                 <tr>
-                    <td class="text-black font-bold">
+                    <td style="width: 250pt; padding-right: 5pt;" class="text-black font-bold">
                         <span>{{ item.description }}</span>
                     </td>
-                    <td class="text-center text-slate">
+                    <td style="width: 80pt; text-align: center;" class="text-slate">
                         <span>{{ item.quantity|floatformat:-2 }}</span>
                         <span>{{ item.unit }}</span>
                     </td>
-                    <td class="text-right text-slate">
+                    <td style="width: 100pt; text-align: right;" class="text-slate">
                         <span>{{ item.unit_price|floatformat:2 }}</span>
                         <span>{{ currency_symbol }}</span>
                     </td>
-                    <td class="text-right font-bold text-black">
+                    <td style="width: 100pt; text-align: right;" class="font-bold text-black">
                         <span>{{ item.amount|floatformat:2 }}</span>
                         <span>{{ currency_symbol }}</span>
                     </td>
@@ -243,13 +243,13 @@
     <!-- Totals and QR -->
     <table class="w-full" style="margin-top: 30pt;">
         <tr>
-            <td class="valign-top" style="width: 60%;">
+            <td class="valign-top" style="width: 300pt;">
                 <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Qeyd</div>
-                <div class="text-slate italic" style="font-size: 9pt; width: 80%; line-height: 1.5;">
+                <div class="text-slate italic" style="font-size: 9pt; width: 250pt; line-height: 1.5;">
                     <span>{{ invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</span>
                 </div>
                 {% if qr_code_path %}
-                <div style="margin-top: 30pt; width: 250pt;">
+                <div style="margin-top: 100pt; width: 250pt;">
                     <table class="qr-box">
                         <tr>
                             <td class="valign-middle" style="width: 100pt;"><img src="{{ qr_code_path }}"
@@ -264,7 +264,7 @@
                 </div>
                 {% endif %}
             </td>
-            <td class="valign-top" style="width: 40%;">
+            <td class="valign-top" style="width: 230pt;">
                 <div style="border-top: 4pt solid #1e293b; padding-top: 10pt;">
                     <table class="w-full">
                         <tr>
