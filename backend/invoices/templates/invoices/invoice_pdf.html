@@ -249,14 +249,14 @@
                     <span>{{ invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</span>
                 </div>
                 {% if qr_code_path %}
-                <div style="margin-top: 100pt; width: 250pt;">
+                <div style="margin-top: 100pt; width: 180pt;">
                     <table class="qr-box">
                         <tr>
-                            <td class="valign-middle" style="width: 100pt;"><img src="{{ qr_code_path }}"
-                                    style="width: 90pt; height: 90pt;"></td>
-                            <td class="valign-middle" style="padding-left: 15pt;">
-                                <div class="font-bold text-black" style="font-size: 11pt;">Sürətli Ödəniş</div>
-                                <div class="text-slate" style="font-size: 9pt; line-height: 1.4;">Mobil telefonla skan
+                            <td class="valign-middle" style="width: 70pt;"><img src="{{ qr_code_path }}"
+                                    style="width: 60pt; height: 60pt;"></td>
+                            <td class="valign-middle" style="padding-left: 10pt;">
+                                <div class="font-bold text-black" style="font-size: 9pt;">Sürətli Ödəniş</div>
+                                <div class="text-slate" style="font-size: 7pt; line-height: 1.4;">Mobil telefonla skan
                                     edərək dərhal ödəniş edin.</div>
                             </td>
                         </tr>
