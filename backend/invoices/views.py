@@ -6,7 +6,7 @@ from .models import Invoice, Expense, Payment, InvoiceItem
 from .serializers import InvoiceSerializer, ExpenseSerializer, PaymentSerializer
 from users.models import Business
 from users.mixins import BusinessContextMixin
-from users.plan_limits import check_invoice_limit, check_expense_limit, get_full_plan_status
+from users.plan_limits import check_invoice_limit, check_expense_limit, check_storage_limit, get_full_plan_status
 from users.permissions import IsRoleAuthorized
 from notifications.utils import create_notification
 from django.http import HttpResponse
@@ -44,17 +44,28 @@ class ExpenseViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         business = self.get_active_business()
         if not business:
             raise PermissionDenied("Active business required")
-            
+
         limit_check = check_expense_limit(self.request.user, business)
         if not limit_check['allowed']:
             raise PermissionDenied({
-                "code": "plan_limit", 
+                "code": "plan_limit",
                 "detail": "Aylıq xərc limitiniz dolub.",
                 "limit": limit_check['limit'],
                 "current": limit_check['current'],
                 "upgrade_required": True
             })
-            
+
+        if 'attachment' in self.request.FILES:
+            storage = check_storage_limit(business.user, self.request.FILES['attachment'].size)
+            if not storage['allowed']:
+                raise PermissionDenied({
+                    "code": "storage_limit",
+                    "detail": f"Yaddaş limitiniz dolub ({storage['current_mb']} / {storage['limit_mb']} MB).",
+                    "current_mb": storage['current_mb'],
+                    "limit_mb": storage['limit_mb'],
+                    "upgrade_required": True
+                })
+
         super().perform_create(serializer)
 
 class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
@@ -72,9 +83,18 @@ class PaymentViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         business = self.get_active_business()
         if not business:
             raise ValidationError({"detail": "Əməliyyat üçün Biznes Profili seçilməyib."})
-        
-        # The mixin's perform_create tries to save(business=business)
-        # but Payment model doesn't have a business field (it's in Invoice).
+
+        if 'receipt_file' in self.request.FILES:
+            storage = check_storage_limit(business.user, self.request.FILES['receipt_file'].size)
+            if not storage['allowed']:
+                raise PermissionDenied({
+                    "code": "storage_limit",
+                    "detail": f"Yaddaş limitiniz dolub ({storage['current_mb']} / {storage['limit_mb']} MB).",
+                    "current_mb": storage['current_mb'],
+                    "limit_mb": storage['limit_mb'],
+                    "upgrade_required": True
+                })
+
         serializer.save()
 
 class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):

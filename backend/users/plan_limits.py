@@ -3,6 +3,8 @@ Plan limits configuration and enforcement utilities.
 Defines resource limits per membership tier and provides
 helper functions to check if a user can create new resources.
 """
+import os
+from django.conf import settings
 from django.utils import timezone
 from django.db.models import Count
 
@@ -183,6 +185,71 @@ def check_team_member_limit(user, business=None):
     return _check_limit(plan.team_members_limit, current_count)
 
 
+def calculate_storage_usage_mb(user):
+    """Calculate total storage used by a user across all file fields (in MB)."""
+    from users.models import Business
+    from invoices.models import Invoice, Payment, Expense
+
+    total_bytes = 0
+    media_root = str(settings.MEDIA_ROOT)
+
+    def _file_size(file_field):
+        """Get file size in bytes, handling missing files gracefully."""
+        if not file_field:
+            return 0
+        try:
+            path = os.path.join(media_root, str(file_field))
+            if os.path.isfile(path):
+                return os.path.getsize(path)
+        except (OSError, ValueError):
+            pass
+        return 0
+
+    # User avatar
+    total_bytes += _file_size(user.avatar)
+
+    # Business logos
+    businesses = Business.objects.filter(user=user)
+    for biz in businesses:
+        total_bytes += _file_size(biz.logo)
+
+    # Invoice PDFs
+    for pdf in Invoice.objects.filter(business__user=user).exclude(pdf_file='').exclude(pdf_file__isnull=True).values_list('pdf_file', flat=True):
+        total_bytes += _file_size(pdf)
+
+    # Payment receipts
+    for receipt in Payment.objects.filter(invoice__business__user=user).exclude(receipt_file='').exclude(receipt_file__isnull=True).values_list('receipt_file', flat=True):
+        total_bytes += _file_size(receipt)
+
+    # Expense attachments
+    for attachment in Expense.objects.filter(business__user=user).exclude(attachment='').exclude(attachment__isnull=True).values_list('attachment', flat=True):
+        total_bytes += _file_size(attachment)
+
+    return round(total_bytes / (1024 * 1024), 2)
+
+
+def check_storage_limit(user, additional_bytes=0):
+    """Check if user has storage space available. additional_bytes = size of new file being uploaded."""
+    if _is_demo(user):
+        return {'allowed': True, 'current_mb': 0, 'limit_mb': None}
+
+    plan = get_plan_limits(user)
+    if not plan:
+        return {'allowed': True, 'current_mb': 0, 'limit_mb': None}
+
+    if plan.storage_limit_mb is None:
+        current = calculate_storage_usage_mb(user)
+        return {'allowed': True, 'current_mb': current, 'limit_mb': None}
+
+    current_mb = calculate_storage_usage_mb(user)
+    additional_mb = additional_bytes / (1024 * 1024)
+    return {
+        'allowed': (current_mb + additional_mb) <= plan.storage_limit_mb,
+        'current_mb': current_mb,
+        'limit_mb': plan.storage_limit_mb,
+    }
+
+
 def check_feature(user, feature_name, business=None):
     """Generic boolean feature check. Returns True/False."""
     owner = _get_owner(user, business)
@@ -325,5 +392,6 @@ def get_full_plan_status(user, business_id=None):
             'warehouses': total_warehouses,
             'team_members': total_team_members,
             'purchase_orders_this_month': purchase_orders_this_month,
+            'storage_used_mb': calculate_storage_usage_mb(organization_owner),
         }
     }

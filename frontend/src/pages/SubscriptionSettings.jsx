@@ -196,9 +196,52 @@ const SubscriptionSettings = () => {
                         )}
                     </motion.div>
 
+                    {/* Storage Usage */}
+                    {(() => {
+                        const storageLimitMb = planStatus?.limits?.storage_limit_mb;
+                        const storageUsedMb = planStatus?.usage?.storage_used_mb || 0;
+                        const percentage = storageLimitMb ? Math.min((storageUsedMb / storageLimitMb) * 100, 100) : 0;
+                        const isWarning = percentage > 80;
+                        const isCritical = percentage > 95;
+                        const barColor = isCritical ? '#ef4444' : isWarning ? '#f59e0b' : 'var(--color-brand)';
+
+                        return (
+                            <div className="border rounded-[2rem] p-8 space-y-4" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)', opacity: 0.4 }}>Yaddaş İstifadəsi</h3>
+                                    <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
+                                        {storageUsedMb} MB / {storageLimitMb ? `${storageLimitMb} MB` : 'Limitsiz'}
+                                    </span>
+                                </div>
+                                {storageLimitMb ? (
+                                    <>
+                                        <div className="w-full h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-hover-bg)' }}>
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${percentage}%` }}
+                                                transition={{ duration: 1, ease: 'easeOut' }}
+                                                className="h-full rounded-full"
+                                                style={{ backgroundColor: barColor }}
+                                            />
+                                        </div>
+                                        {isWarning && (
+                                            <p className="text-xs font-bold" style={{ color: barColor }}>
+                                                {isCritical ? 'Yaddaş demək olar ki, dolub! Plan yüksəldin.' : 'Yaddaş limitinə yaxınlaşırsınız.'}
+                                            </p>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="w-full h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-hover-bg)' }}>
+                                        <div className="h-full rounded-full w-full opacity-20" style={{ backgroundColor: 'var(--color-brand)' }} />
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })()}
+
                     {/* Features highlight */}
                     <div className="border rounded-[2rem] p-8 space-y-6" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
-                        <h3 className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)', opacity: 0.4 }}>Sizin İmkurlarınız</h3>
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-muted)', opacity: 0.4 }}>Sizin İmkanlarınız</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {planStatus?.limits && Object.entries(planStatus.limits).map(([key, limit]) => (
                                 <div key={key} className="flex items-center gap-4 p-4 rounded-2xl border" style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}>

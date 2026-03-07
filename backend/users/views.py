@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import Business, TeamMember, User, TeamMemberInvitation
 from .serializers import BusinessSerializer, TeamMemberSerializer, TeamMemberInvitationSerializer
-from .plan_limits import check_business_limit, get_plan_limits
+from .plan_limits import check_business_limit, check_storage_limit, get_plan_limits
 from rest_framework.exceptions import PermissionDenied
 
 class BusinessViewSet(viewsets.ModelViewSet):
@@ -25,6 +25,17 @@ class BusinessViewSet(viewsets.ModelViewSet):
             is_manager = TeamMember.objects.filter(business=business, user=request.user, role='MANAGER').exists()
             if not is_manager:
                 raise PermissionDenied("Bu biznes məlumatlarını yalnız sahib və ya menecer redaktə edə bilər.")
+        if 'logo' in request.FILES:
+            file_size = request.FILES['logo'].size
+            storage = check_storage_limit(business.user, file_size)
+            if not storage['allowed']:
+                raise PermissionDenied({
+                    "code": "storage_limit",
+                    "detail": f"Yaddaş limitiniz dolub ({storage['current_mb']} / {storage['limit_mb']} MB).",
+                    "current_mb": storage['current_mb'],
+                    "limit_mb": storage['limit_mb'],
+                    "upgrade_required": True
+                })
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
@@ -308,6 +319,17 @@ class UserMeView(APIView):
         return Response(serializer.data)
 
     def patch(self, request):
+        if 'avatar' in request.FILES:
+            file_size = request.FILES['avatar'].size
+            storage = check_storage_limit(request.user, file_size)
+            if not storage['allowed']:
+                return Response({
+                    "code": "storage_limit",
+                    "detail": f"Yaddaş limitiniz dolub ({storage['current_mb']} / {storage['limit_mb']} MB).",
+                    "current_mb": storage['current_mb'],
+                    "limit_mb": storage['limit_mb'],
+                    "upgrade_required": True
+                }, status=status.HTTP_403_FORBIDDEN)
         serializer = UserSerializer(request.user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
