@@ -181,8 +181,6 @@ class InvoiceViewSet(BusinessContextMixin, viewsets.ModelViewSet):
     def _generate_pdf(self, invoice):
         invoice.calculate_totals()
         
-        invoice.calculate_totals()
-        
         # Generate QR code for payment
         qr_code_path = None
         try:
