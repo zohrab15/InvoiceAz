@@ -234,3 +234,21 @@ class TeamMemberInvitation(models.Model):
     class Meta:
         unique_together = ('email', 'business')
         ordering = ['-created_at']
+
+
+class CancellationReason(models.Model):
+    REASON_CHOICES = [
+        ('too_expensive', 'Bahadır'),
+        ('missing_features', 'Lazımi özəllik yoxdur'),
+        ('hard_to_use', 'İstifadəsi çətindir'),
+        ('switching_to_competitor', 'Başqa xidmətə keçirəm'),
+        ('no_longer_needed', 'Artıq ehtiyac yoxdur'),
+        ('other', 'Digər'),
+    ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cancellation_reasons')
+    reason = models.CharField(max_length=50, choices=REASON_CHOICES)
+    feedback = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.get_reason_display()}"

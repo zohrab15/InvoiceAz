@@ -132,6 +132,7 @@ const StockMovements = lazy(() => import('./pages/StockMovements'));
 const PurchaseOrders = lazy(() => import('./pages/PurchaseOrders'));
 const InventoryAdjustments = lazy(() => import('./pages/InventoryAdjustments'));
 const FontCompare = lazy(() => import('./pages/FontCompare'));
+const SubscriptionSettings = lazy(() => import('./pages/SubscriptionSettings'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -225,6 +226,7 @@ const AuthenticatedRoutes = () => {
           </RoleGate>
         } />
         <Route path="/settings" element={<BusinessSettings />} />
+        <Route path="/subscription" element={<SubscriptionSettings />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/security" element={<SecurityPage />} />
         <Route path="/system-settings" element={

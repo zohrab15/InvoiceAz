@@ -84,6 +84,17 @@ class CancelSubscriptionView(APIView):
         if user.cancel_at_period_end:
             return Response({"message": "Abunəliyiniz onsuz da ləğv edilmə gözləməsindədir."}, status=status.HTTP_200_OK)
 
+        reason_code = request.data.get('reason')
+        feedback = request.data.get('feedback')
+
+        if reason_code:
+            from .models import CancellationReason
+            CancellationReason.objects.create(
+                user=user,
+                reason=reason_code,
+                feedback=feedback
+            )
+
         user.cancel_at_period_end = True
         user.save()
 

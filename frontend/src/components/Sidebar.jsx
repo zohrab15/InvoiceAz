@@ -21,7 +21,8 @@ import {
     Warehouse,
     ArrowLeftRight,
     ShoppingCart,
-    ClipboardCheck
+    ClipboardCheck,
+    CreditCard
 } from 'lucide-react';
 
 import { useBusiness } from '../context/BusinessContext';
@@ -68,6 +69,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/analytics/tax', icon: <Calculator size={20} />, label: 'Vergi və Hesabatlar' },
 
         // ── Sistem ──
+        { to: '/subscription', icon: <CreditCard size={20} />, label: 'Abunəlik' },
         { to: '/system-settings', icon: <Settings size={20} />, label: 'Tənzimləmələr' },
         { to: '/help', icon: <LifeBuoy size={20} />, label: 'Kömək və Dəstək' },
     ];
