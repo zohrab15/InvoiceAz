@@ -8,6 +8,7 @@ const PricingPage = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const currentPlan = user?.membership || 'free';
+    const [billingInterval, setBillingInterval] = React.useState('monthly');
 
     return (
         <div className="min-h-screen p-6 relative overflow-hidden font-roboto" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
@@ -32,6 +33,27 @@ const PricingPage = () => {
                     <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6" style={{ color: 'var(--color-text-primary)' }}>
                         Biznesiniz üçün <span style={{ background: 'linear-gradient(to right, var(--color-brand), #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ən uyğun planı</span> seçin
                     </h2>
+
+                    {/* Billing Toggle */}
+                    <div className="flex items-center justify-center gap-4 mb-8">
+                        <span className={`text-sm font-bold transition-colors ${billingInterval === 'monthly' ? 'text-white' : 'text-white/40'}`}>Aylıq</span>
+                        <button
+                            onClick={() => setBillingInterval(billingInterval === 'monthly' ? 'yearly' : 'monthly')}
+                            className="w-14 h-7 rounded-full relative p-1 transition-colors bg-white/10 border border-white/10"
+                        >
+                            <motion.div
+                                animate={{ x: billingInterval === 'monthly' ? 0 : 28 }}
+                                className="w-5 h-5 rounded-full bg-blue-500 shadow-lg"
+                            />
+                        </button>
+                        <div className="flex items-center gap-2">
+                            <span className={`text-sm font-bold transition-colors ${billingInterval === 'yearly' ? 'text-white' : 'text-white/40'}`}>İllik</span>
+                            <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-tighter">
+                                🔥 2 Ay Hədiyyə
+                            </span>
+                        </div>
+                    </div>
+
                     <p className="text-lg font-medium max-w-2xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
                         Hazırkı planınız: <span className="uppercase font-bold" style={{ color: 'var(--color-text-primary)' }}>{currentPlan}</span>
                     </p>
@@ -104,7 +126,17 @@ const PricingPage = () => {
                             <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Professional</h4>
                             <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Sürətli inkişaf edən bizneslər.</p>
                         </div>
-                        <div className="text-4xl font-black mb-8" style={{ color: 'var(--color-text-primary)' }}>19.99 ₼ <span className="text-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>/ay</span></div>
+                        <div className="mb-8">
+                            <div className="text-4xl font-black" style={{ color: 'var(--color-text-primary)' }}>
+                                {billingInterval === 'monthly' ? '19.99 ₼' : '199.99 ₼'}
+                                <span className="text-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                                    {billingInterval === 'monthly' ? ' /ay' : ' /il'}
+                                </span>
+                            </div>
+                            {billingInterval === 'yearly' && (
+                                <p className="text-xs font-bold text-emerald-400 mt-1">~16.66 AZN /ay</p>
+                            )}
+                        </div>
                         <ul className="space-y-4 mb-10 flex-1">
                             {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI', 'Limitsiz bildirişlər', 'PDF və Excel eksport', '3 biznes profili'].map((item, i) => (
                                 <li key={i} className="flex items-center gap-3 text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>
@@ -142,7 +174,17 @@ const PricingPage = () => {
                             <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Premium</h4>
                             <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Limitsiz imkanlar.</p>
                         </div>
-                        <div className="text-4xl font-black mb-8" style={{ color: 'var(--color-text-primary)' }}>49.99 ₼ <span className="text-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>/ay</span></div>
+                        <div className="mb-8">
+                            <div className="text-4xl font-black" style={{ color: 'var(--color-text-primary)' }}>
+                                {billingInterval === 'monthly' ? '49.99 ₼' : '499.99 ₼'}
+                                <span className="text-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                                    {billingInterval === 'monthly' ? ' /ay' : ' /il'}
+                                </span>
+                            </div>
+                            {billingInterval === 'yearly' && (
+                                <p className="text-xs font-bold text-emerald-400 mt-1">~41.66 AZN /ay</p>
+                            )}
+                        </div>
                         <ul className="space-y-4 mb-10 flex-1">
                             {['Limitsiz faktura', 'VIP Dəstək', 'API inteqrasiyası', 'Komanda (Qrup) üzvləri', 'Fərdiləşdirilə bilən Faktura Temaları', 'Limitsiz biznes profili', 'Tam ağ etiket (White-label)'].map((item, i) => (
                                 <li key={i} className="flex items-center gap-3 text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}>

@@ -96,7 +96,8 @@ export const usePlanLimits = () => {
             return isFeatureLocked(feature);
         },
         isPro: isDemo || ['pro', 'premium'].includes(planStatus?.plan),
-        canUseThemes: isDemo || planStatus?.limits?.custom_themes
+        canUseThemes: isDemo || planStatus?.limits?.custom_themes,
+        interval: planStatus?.subscription_interval || 'monthly'
     };
 };
 

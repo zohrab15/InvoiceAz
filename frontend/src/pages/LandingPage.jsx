@@ -51,6 +51,7 @@ const LandingPage = () => {
     const navigate = useNavigate();
     const token = useAuthStore(state => state.token);
     const [searchParams] = useSearchParams();
+    const [billingInterval, setBillingInterval] = useState('monthly');
 
     // Persist referral code from URL so Register page can pick it up
     useEffect(() => {
@@ -434,6 +435,27 @@ const LandingPage = () => {
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
                             Şəffaf <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">qiymətlər</span>
                         </h2>
+
+                        {/* Billing Toggle */}
+                        <div className="flex items-center justify-center gap-4 mb-8">
+                            <span className={`text-sm font-bold transition-colors ${billingInterval === 'monthly' ? 'text-white' : 'text-white/40'}`}>Aylıq</span>
+                            <button
+                                onClick={() => setBillingInterval(billingInterval === 'monthly' ? 'yearly' : 'monthly')}
+                                className="w-14 h-7 rounded-full relative p-1 transition-colors bg-white/10 border border-white/10"
+                            >
+                                <motion.div
+                                    animate={{ x: billingInterval === 'monthly' ? 0 : 28 }}
+                                    className="w-5 h-5 rounded-full bg-blue-500 shadow-lg"
+                                />
+                            </button>
+                            <div className="flex items-center gap-2">
+                                <span className={`text-sm font-bold transition-colors ${billingInterval === 'yearly' ? 'text-white' : 'text-white/40'}`}>İllik</span>
+                                <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-tighter">
+                                    🔥 2 Ay Hədiyyə
+                                </span>
+                            </div>
+                        </div>
+
                         <p className="text-lg text-white/40 font-medium">Gizli ödəniş yoxdur. İstədiyiniz zaman ləğv edin.</p>
                     </div>
 
@@ -467,7 +489,17 @@ const LandingPage = () => {
                                 <h4 className="text-xl font-black mb-1">Professional</h4>
                                 <p className="text-sm text-white/40 font-medium">Böyüyən bizneslər üçün.</p>
                             </div>
-                            <div className="text-4xl font-black mb-8">19.99 ₼ <span className="text-lg text-white/30">/ay</span></div>
+                            <div className="mb-8">
+                                <div className="text-4xl font-black">
+                                    {billingInterval === 'monthly' ? '19.99 ₼' : '199.99 ₼'}
+                                    <span className="text-lg text-white/30">
+                                        {billingInterval === 'monthly' ? ' /ay' : ' /il'}
+                                    </span>
+                                </div>
+                                {billingInterval === 'yearly' && (
+                                    <p className="text-xs font-bold text-emerald-400 mt-1">~16.66 AZN /ay</p>
+                                )}
+                            </div>
                             <ul className="space-y-4 mb-10 flex-1">
                                 {['Ayda 100 faktura', 'Özəl faktura dizaynları', 'Tam analitika + AI proqnoz', 'Limitsiz bildirişlər', 'PDF və Excel eksport', 'QR ödəniş inteqrasiyası', '7/24 prioritet dəstək'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-white/70 font-bold">
@@ -493,7 +525,17 @@ const LandingPage = () => {
                                 <h4 className="text-xl font-black mb-1">Premium</h4>
                                 <p className="text-sm text-white/30 font-medium">Limitsiz imkanlar.</p>
                             </div>
-                            <div className="text-4xl font-black mb-8">49.99 ₼ <span className="text-lg text-white/30">/ay</span></div>
+                            <div className="mb-8">
+                                <div className="text-4xl font-black">
+                                    {billingInterval === 'monthly' ? '49.99 ₼' : '499.99 ₼'}
+                                    <span className="text-lg text-white/30">
+                                        {billingInterval === 'monthly' ? ' /ay' : ' /il'}
+                                    </span>
+                                </div>
+                                {billingInterval === 'yearly' && (
+                                    <p className="text-xs font-bold text-emerald-400 mt-1">~41.66 AZN /ay</p>
+                                )}
+                            </div>
                             <ul className="space-y-4 mb-10 flex-1">
                                 {['Limitsiz faktura', 'VIP Dəstək', 'API inteqrasiyası', 'Komanda (Qrup) üzvləri', 'Fərdiləşdirilə bilən Faktura Temaları', 'Limitsiz biznes profili', 'Tam ağ etiket (White-label)'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-white/50 font-semibold">
