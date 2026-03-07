@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.db import transaction
 from django.db.models import Sum, F, Q
 from django.utils import timezone
-from rest_framework import viewsets, status, permissions, pagination, filters
+from rest_framework import viewsets, status, permissions, pagination, filters, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -409,18 +409,31 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
             filtered_count = filtered_queryset.count()
 
             # Using try-except for aggregation to handle missing columns (cost_price) during deploy transition
+            from django.db import models
             try:
                 total_sale_value = base_queryset.aggregate(
-                    total=Sum(F('base_price') * F('stock_quantity'))
+                    total=Sum(
+                        F('base_price') * F('stock_quantity'), 
+                        output_field=models.DecimalField()
+                    )
                 )['total'] or 0.00
-            except Exception:
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error("Error in total_sale_value: %s", e)
                 total_sale_value = 0.00
 
             try:
                 total_cost_value = base_queryset.aggregate(
-                    total=Sum(F('cost_price') * F('stock_quantity'))
+                    total=Sum(
+                        F('cost_price') * F('stock_quantity'), 
+                        output_field=models.DecimalField()
+                    )
                 )['total'] or 0.00
-            except Exception:
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error("Error in total_cost_value: %s", e)
                 total_cost_value = 0.00
 
             out_of_stock = base_queryset.filter(stock_quantity__lte=0).count()
