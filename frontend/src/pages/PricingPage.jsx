@@ -1,10 +1,16 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, CheckCircle2, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 import clientApi from '../api/client';
-import toast from 'react-hot-toast';
+import useAuthStore from '../store/useAuthStore';
+import { useToast } from '../components/Toast';
 
 const PricingPage = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const showToast = useToast();
     const { user } = useAuthStore();
     const currentPlan = user?.membership || 'free';
     const [billingInterval, setBillingInterval] = React.useState('monthly');
@@ -20,17 +26,15 @@ const PricingPage = () => {
                 interval: billingInterval
             });
 
-            toast.success("Abunəliyiniz uğurla yeniləndi!");
+            showToast("Abunəliyiniz uğurla yeniləndi!", "success");
 
             // Refetch plan status so UI updates everywhere
             queryClient.invalidateQueries(['planStatus']);
-            // Also might need to update the global user object if it stores membership
-            // For now, refetching plan status should be enough for most UI
 
             navigate('/dashboard');
         } catch (error) {
             console.error("Subscription error:", error);
-            toast.error(error.response?.data?.error || "Abunəlik yenilənərkən xəta baş verdi.");
+            showToast(error.response?.data?.error || "Abunəlik yenilənərkən xəta baş verdi.", "error");
         } finally {
             setIsSubmitting(false);
         }

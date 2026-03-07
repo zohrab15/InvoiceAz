@@ -251,7 +251,7 @@ const Dashboard = () => {
             isInventoryCard: true
         },
         {
-            label: 'Potensial Satış',
+            label: 'Gözlənilən satış',
             val: inventoryStats?.total_value || 0,
             icon: <TrendingUp size={20} />,
             color: '#10b981',
