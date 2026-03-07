@@ -203,10 +203,19 @@ const SubscriptionSettings = () => {
                     <div className="rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden group" style={{ background: 'linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%)', boxShadow: '0 20px 40px var(--color-brand-shadow)' }}>
                         <Star className="absolute -bottom-4 -right-4 w-32 h-32 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-500" />
                         <div className="relative space-y-4">
-                            <h4 className="font-black text-lg">Hər hansı bir probleminiz var?</h4>
-                            <p className="text-sm text-white/80 font-medium">Texniki dəstək komandamız hər zaman yanınızdadır.</p>
-                            <button className="w-full py-3 bg-white text-blue-700 font-black text-xs rounded-xl hover:bg-blue-50 transition-colors uppercase tracking-widest shadow-lg">
-                                Dəstək ilə əlaqə
+                            <h4 className="font-black text-lg">
+                                {currentPlan === 'free' ? 'Hər hansı bir probleminiz var?' : 'Prioritet Dəstək Xətti'}
+                            </h4>
+                            <p className="text-sm text-white/80 font-medium">
+                                {currentPlan === 'free'
+                                    ? 'Texniki dəstək komandamız hər zaman yanınızdadır.'
+                                    : 'Sizin üçün özəl prioritet dəstək xidməti aktivdir.'}
+                            </p>
+                            <button
+                                onClick={() => window.open('https://wa.me/994517640324', '_blank')}
+                                className="w-full py-3 bg-white text-blue-700 font-black text-xs rounded-xl hover:bg-blue-50 transition-colors uppercase tracking-widest shadow-lg"
+                            >
+                                {currentPlan === 'free' ? 'Dəstək ilə əlaqə' : 'WhatsApp ilə əlaqə'}
                             </button>
                         </div>
                     </div>
