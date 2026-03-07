@@ -91,7 +91,7 @@ const SubscriptionCheckout = () => {
     };
 
     if (success) return (
-        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4">
+        <div className="min-h-screen bg-[var(--color-page-bg)] flex items-center justify-center px-4">
             <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -111,7 +111,7 @@ const SubscriptionCheckout = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] py-12 px-4 md:px-8">
+        <div className="min-h-screen bg-[var(--color-page-bg)] py-12 px-4 md:px-8">
             <div className="max-w-6xl mx-auto">
                 <button
                     onClick={() => navigate(-1)}
@@ -188,10 +188,10 @@ const SubscriptionCheckout = () => {
                                     <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Global PCI-DSS Security Standard</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <div className="w-10 h-6 bg-white/5 border border-white/10 rounded-md flex items-center justify-center grayscale">
+                                    <div className="w-10 h-6 bg-[var(--color-badge-bg)] border border-[var(--color-card-border)] rounded-md flex items-center justify-center grayscale opacity-50">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-2" alt="Visa" />
                                     </div>
-                                    <div className="w-10 h-6 bg-white/5 border border-white/10 rounded-md flex items-center justify-center grayscale">
+                                    <div className="w-10 h-6 bg-[var(--color-badge-bg)] border border-[var(--color-card-border)] rounded-md flex items-center justify-center grayscale opacity-50">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" alt="Mastercard" />
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@ const SubscriptionCheckout = () => {
                                                     required
                                                     type="text"
                                                     placeholder="AD SOYAD"
-                                                    className="w-full h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none uppercase placeholder:text-white/10"
+                                                    className="w-full h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none uppercase placeholder:text-[var(--color-text-muted)] placeholder:opacity-30"
                                                     value={cardData.name}
                                                     onChange={e => setCardData({ ...cardData, name: e.target.value.toUpperCase() })}
                                                 />
@@ -221,7 +221,7 @@ const SubscriptionCheckout = () => {
                                                         type="text"
                                                         placeholder="0000 0000 0000 0000"
                                                         maxLength="19"
-                                                        className="w-full h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 pl-14 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none placeholder:text-white/10"
+                                                        className="w-full h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 pl-14 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none placeholder:text-[var(--color-text-muted)] placeholder:opacity-30"
                                                         value={cardData.number}
                                                         onChange={e => setCardData({ ...cardData, number: formatCardNumber(e.target.value) })}
                                                     />
@@ -237,7 +237,7 @@ const SubscriptionCheckout = () => {
                                                         type="text"
                                                         placeholder="MM / YY"
                                                         maxLength="7"
-                                                        className="h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none placeholder:text-white/10 text-center"
+                                                        className="h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none placeholder:text-[var(--color-text-muted)] placeholder:opacity-30 text-center"
                                                         value={cardData.expiry}
                                                         onChange={e => setCardData({ ...cardData, expiry: e.target.value })}
                                                     />
@@ -250,7 +250,7 @@ const SubscriptionCheckout = () => {
                                                             type="password"
                                                             placeholder="***"
                                                             maxLength="3"
-                                                            className="w-full h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none placeholder:text-white/10 text-center"
+                                                            className="w-full h-16 bg-[var(--color-input-bg)] border-2 border-[var(--color-input-border)] rounded-2xl px-6 text-lg font-black text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand-shadow)] transition-all outline-none placeholder:text-[var(--color-text-muted)] placeholder:opacity-30 text-center"
                                                             value={cardData.cvc}
                                                             onChange={e => setCardData({ ...cardData, cvc: e.target.value })}
                                                         />
@@ -265,7 +265,7 @@ const SubscriptionCheckout = () => {
                                         <button
                                             disabled={processing}
                                             type="submit"
-                                            className="w-full h-20 bg-[var(--color-brand)] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] hover:shadow-[0_20px_40px_var(--color-brand-shadow)] transition-all active:scale-95 flex items-center justify-center gap-3 disabled:bg-white/5 disabled:text-white/20 disabled:scale-100 disabled:shadow-none"
+                                            className="w-full h-20 bg-[var(--color-brand)] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] hover:shadow-[0_20px_40px_var(--color-brand-shadow)] transition-all active:scale-95 flex items-center justify-center gap-3 disabled:bg-[var(--color-hover-bg)] disabled:text-[var(--color-text-muted)] disabled:scale-100 disabled:shadow-none"
                                         >
                                             {processing ? (
                                                 <>
