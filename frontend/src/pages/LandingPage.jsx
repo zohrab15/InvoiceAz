@@ -316,7 +316,7 @@ const LandingPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
-                            { icon: <FileText size={24} />, title: 'Professional Fakturalar', desc: 'Saniyələr içində fərdiləşdirilmiş PDF fakturalar yaradın, müştərilərinizə bir klik ilə göndərin.', gradient: 'from-blue-500 to-cyan-500' },
+                            { icon: <FileText size={24} />, title: 'Pro Fakturalar', desc: 'Saniyələr içində fərdiləşdirilmiş PDF fakturalar yaradın, müştərilərinizə bir klik ilə göndərin.', gradient: 'from-blue-500 to-cyan-500' },
                             { icon: <Package size={24} />, title: 'Anbar İdarəetməsi', desc: 'Çoxsaylı anbarlar, barkod skan və stok hərəkətləri ilə qalığınızı saniyələr içində yoxlayın.', gradient: 'from-emerald-500 to-teal-500' },
                             { icon: <Wallet size={24} />, title: 'Xərc İdarəetmə', desc: 'Biznes xərclərinizi kateqoriyalar üzrə qruplaşdırın, büdcə limitləri təyin edin.', gradient: 'from-rose-500 to-orange-500' },
                             { icon: <BarChart3 size={24} />, title: 'Canlı Analitika', desc: 'Real-vaxt qrafiklər, gəlir/xərc trendləri və AI ilə gələcək proqnozlaşdırma.', gradient: 'from-violet-500 to-purple-500' },
@@ -359,7 +359,7 @@ const LandingPage = () => {
                         {[
                             { step: '01', title: 'Qeydiyyat', desc: 'E-poçtunuzla 30 saniyə içində pulsuz hesab yaradın. Bank kartı tələb olunmur.', icon: <Users size={28} /> },
                             { step: '02', title: 'Biznesinizi əlavə edin', desc: 'Şirkət adınızı, loqonuzu və bank rekvizitlərinizi daxil edin. Sadə və sürətli.', icon: <Receipt size={28} /> },
-                            { step: '03', title: 'Faktura yaradın', desc: 'İlk professional fakturanızı yaradın, PDF olaraq yükləyin və ya birbaşa göndərin!', icon: <FileText size={28} /> },
+                            { step: '03', title: 'Faktura yaradın', desc: 'İlk pro fakturanızı yaradın, PDF olaraq yükləyin və ya birbaşa göndərin!', icon: <FileText size={28} /> },
                         ].map((s, i) => (
                             <motion.div
                                 key={i}
@@ -507,7 +507,7 @@ const LandingPage = () => {
                                 Populyar
                             </div>
                             <div className="mb-6">
-                                <h4 className="text-xl font-black mb-1">Professional</h4>
+                                <h4 className="text-xl font-black mb-1">Pro</h4>
                                 <p className="text-sm text-white/40 font-medium">Böyüyən bizneslər üçün.</p>
                             </div>
                             <div className="mb-8">

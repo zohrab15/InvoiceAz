@@ -196,7 +196,7 @@ const PricingPage = () => {
                             Populyar
                         </div>
                         <div className="mb-6">
-                            <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Professional</h4>
+                            <h4 className="text-xl font-black mb-1" style={{ color: 'var(--color-text-primary)' }}>Pro</h4>
                             <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Sürətli inkişaf edən bizneslər.</p>
                         </div>
                         <div className="mb-8">
