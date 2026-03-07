@@ -21,17 +21,7 @@ const PricingPage = () => {
 
         setIsSubmitting(true);
         try {
-            await clientApi.post('/users/plan/update/', {
-                plan: planName,
-                interval: billingInterval
-            });
-
-            showToast("Abunəliyiniz uğurla yeniləndi!", "success");
-
-            // Refetch plan status so UI updates everywhere
-            queryClient.invalidateQueries(['planStatus']);
-
-            navigate('/dashboard');
+            navigate(`/payment/checkout?plan=${planName}&interval=${billingInterval}`);
         } catch (error) {
             console.error("Subscription error:", error);
             showToast(error.response?.data?.error || "Abunəlik yenilənərkən xəta baş verdi.", "error");
