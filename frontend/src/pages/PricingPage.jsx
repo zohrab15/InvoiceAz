@@ -36,10 +36,16 @@ const PricingPage = () => {
 
                     {/* Billing Toggle */}
                     <div className="flex items-center justify-center gap-4 mb-8">
-                        <span className={`text-sm font-bold transition-colors ${billingInterval === 'monthly' ? 'text-white' : 'text-white/40'}`}>Aylıq</span>
+                        <span
+                            className="text-sm font-bold transition-colors"
+                            style={{ color: billingInterval === 'monthly' ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}
+                        >
+                            Aylıq
+                        </span>
                         <button
                             onClick={() => setBillingInterval(billingInterval === 'monthly' ? 'yearly' : 'monthly')}
-                            className="w-14 h-7 rounded-full relative p-1 transition-colors bg-white/10 border border-white/10"
+                            className="w-14 h-7 rounded-full relative p-1 transition-colors border"
+                            style={{ backgroundColor: 'var(--color-hover-bg)', borderColor: 'var(--color-card-border)' }}
                         >
                             <motion.div
                                 animate={{ x: billingInterval === 'monthly' ? 0 : 28 }}
@@ -47,7 +53,12 @@ const PricingPage = () => {
                             />
                         </button>
                         <div className="flex items-center gap-2">
-                            <span className={`text-sm font-bold transition-colors ${billingInterval === 'yearly' ? 'text-white' : 'text-white/40'}`}>İllik</span>
+                            <span
+                                className="text-sm font-bold transition-colors"
+                                style={{ color: billingInterval === 'yearly' ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}
+                            >
+                                İllik
+                            </span>
                             <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-tighter">
                                 🔥 2 Ay Hədiyyə
                             </span>
