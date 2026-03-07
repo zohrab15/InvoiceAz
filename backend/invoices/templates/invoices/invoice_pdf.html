@@ -245,26 +245,31 @@
     <table class="w-full" style="margin-top: 30pt;">
         <tr>
             <td class="valign-top" style="width: 300pt;">
-                <div class="text-slate uppercase font-bold" style="font-size: 8pt;">Qeyd</div>
-                <div class="text-slate italic" style="font-size: 9pt; width: 250pt; line-height: 1.5;">
-                    <span>{{ invoice.notes|default:"Zəhmət olmasa vaxtında ödəniş edin." }}</span>
+                <div class="text-slate uppercase font-bold"
+                    style="font-size: 8pt; color: #94a3b8; letter-spacing: 1px; margin-bottom: 10pt;">QEYD VƏ ŞƏRTLƏR
+                </div>
+                <div
+                    style="background-color: #f8fafc; border: 1pt solid #f1f5f9; border-radius: 12pt; padding: 15pt; width: 220pt;">
+                    <div class="text-slate italic" style="font-size: 9pt; line-height: 1.5; color: #64748b;">
+                        <span>{{ invoice.notes|default:"Bu faktura kompyuter vasitəsilə generasiya olunub. Zəhmət olmasa
+                            vaxtında ödəniş edin." }}</span>
+                    </div>
                 </div>
                 {% if qr_code_path %}
-                <div style="margin-top: 25pt; width: 250pt;">
+                <div style="margin-top: 15pt; width: 250pt;">
                     <table class="qr-box">
                         <tr>
-                            <td class="valign-middle" style="width: 90pt;">
+                            <td class="valign-middle" style="width: 80pt;">
                                 <div
-                                    style="background-color: white; padding: 9pt; border-radius: 12pt; border: 1pt solid #dbeafe; display: inline-block;">
-                                    <img src="{{ qr_code_path }}" style="width: 75pt; height: 75pt; display: block;">
+                                    style="background-color: white; padding: 5pt; border-radius: 8pt; border: 1pt solid #e2e8f0; display: inline-block;">
+                                    <img src="{{ qr_code_path }}" style="width: 70pt; height: 70pt; display: block;">
                                 </div>
                             </td>
-                            <td class="valign-middle" style="padding-left: 18pt;">
-                                <div class="font-bold text-black uppercase"
-                                    style="font-size: 10.5pt; color: #0f172a; margin-bottom: 3pt; letter-spacing: -0.5px;">
-                                    Sürətli Ödəniş</div>
-                                <div class="text-slate"
-                                    style="font-size: 9pt; line-height: 1.6; color: #64748b; font-weight: 500;">Mobil
+                            <td class="valign-middle" style="padding-left: 12pt;">
+                                <div class="font-bold uppercase"
+                                    style="font-size: 9.5pt; color: #0f172a; margin-bottom: 3pt; letter-spacing: 0.5px;">
+                                    &#128241; SÜRƏTLİ ÖDƏNİŞ</div>
+                                <div style="font-size: 8pt; line-height: 1.4; color: #64748b; font-weight: 500;">Mobil
                                     telefonunuzla skan<br>edərək dərhal ödəniş edin.</div>
                             </td>
                         </tr>
@@ -273,27 +278,35 @@
                 {% endif %}
             </td>
             <td class="valign-top" style="width: 230pt;">
-                <div style="border-top: 4pt solid #1e293b; padding-top: 10pt;">
+                <div style="border-top: 2pt solid #000; padding-top: 10pt; width: 220pt;">
                     <table class="w-full">
                         <tr>
-                            <td class="text-slate">Cəm:</td>
-                            <td class="text-right font-bold">
+                            <td style="color: #64748b; font-size: 10pt; padding-bottom: 10pt;">Cəm:</td>
+                            <td class="text-right" style="color: #64748b; font-size: 10pt; padding-bottom: 10pt;">
                                 <span>{{ invoice.subtotal|floatformat:2 }}</span>
                                 <span>{{ currency_symbol }}</span>
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-slate">ƏDV (18%):</td>
-                            <td class="text-right font-bold">
+                            <td style="color: #64748b; font-size: 10pt; padding-bottom: 10pt;">ƏDV (18%):</td>
+                            <td class="text-right" style="color: #64748b; font-size: 10pt; padding-bottom: 10pt;">
                                 <span>{{ invoice.tax_amount|floatformat:2 }}</span>
                                 <span>{{ currency_symbol }}</span>
                             </td>
                         </tr>
                         <tr>
-                            <td class="font-bold text-black" style="padding-top: 15pt; font-size: 14pt;">YEKUN:</td>
-                            <td class="text-right font-bold text-blue" style="padding-top: 15pt; font-size: 14pt;">
-                                <span>{{ invoice.total|floatformat:2 }}</span>
-                                <span>{{ currency_symbol }}</span>
+                            <td colspan="2" style="padding-top: 5pt;">
+                                <div style="background-color: #eff6ff; border-radius: 12pt; padding: 15pt;">
+                                    <table class="w-full">
+                                        <tr>
+                                            <td class="font-bold text-black" style="font-size: 14pt;">YEKUN:</td>
+                                            <td class="text-right font-bold" style="font-size: 16pt; color: #2563eb;">
+                                                <span>{{ invoice.total|floatformat:2 }}</span>
+                                                <span>{{ currency_symbol }}</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </td>
                         </tr>
                     </table>
