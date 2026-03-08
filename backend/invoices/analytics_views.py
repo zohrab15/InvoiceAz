@@ -553,20 +553,162 @@ class TaxAnalyticsView(AnalyticsBaseView):
                 'profit': q_rev - q_exp
             })
 
-        # 4. Yearly Summary & Comparisons
-        # 4. VAT Registration Threshold Analysis (200,000 AZN / 12 months)
-        # Any consecutive 12 months!
+        # 4. VAT Registration Threshold Analysis (400,000 AZN / 12 months — 2026 qanunvericiliyi)
         twelve_months_ago = today - timedelta(days=365)
         twelve_month_revenue = float(Invoice.objects.filter(
             business=business,
             invoice_date__gte=twelve_months_ago
         ).exclude(status__in=['draft', 'cancelled']).aggregate(total=Sum('subtotal'))['total'] or 0)
         
-        vat_limit = 200000.00
+        vat_limit = 400000.00
         is_approaching_vat = twelve_month_revenue > (vat_limit * 0.8)
         is_over_vat = twelve_month_revenue >= vat_limit
 
         customer_count = relevant_invoices.values('client').distinct().count()
+
+        # 5. Dynamic Tax Calendar — Azərbaycan Vergi Məcəlləsinə əsasən
+        tax_regime = getattr(business, 'tax_regime', 'simplified')
+        
+        def _next_monthly_deadline(day_of_month):
+            """Növbəti aylıq son tarix — hər ayın müəyyən günü"""
+            results = []
+            for offset in range(0, 12):
+                m = today.month + offset
+                y = today.year
+                while m > 12:
+                    m -= 12
+                    y += 1
+                try:
+                    d = datetime.date(y, m, day_of_month)
+                except ValueError:
+                    # Ay 28/29/30 gündürsə
+                    import calendar
+                    last_day = calendar.monthrange(y, m)[1]
+                    d = datetime.date(y, m, min(day_of_month, last_day))
+                if d >= today:
+                    results.append(d)
+                if len(results) >= 3:
+                    break
+            return results
+
+        def _quarterly_deadlines(day_of_month):
+            """Rüblük son tarixlər — hər rübdən sonrakı ayın müəyyən günü"""
+            # Q1→Apr, Q2→Jul, Q3→Oct, Q4→Jan(+1)
+            quarter_months = [4, 7, 10, 1]
+            results = []
+            for qm in quarter_months:
+                y = today.year if qm > 1 else today.year + 1
+                try:
+                    d = datetime.date(y, qm, day_of_month)
+                except ValueError:
+                    import calendar
+                    last_day = calendar.monthrange(y, qm)[1]
+                    d = datetime.date(y, qm, min(day_of_month, last_day))
+                if d >= today:
+                    results.append(d)
+            # Növbəti il üçün də yoxla
+            for qm in quarter_months:
+                y = today.year + 1 if qm > 1 else today.year + 2
+                try:
+                    d = datetime.date(y, qm, day_of_month)
+                except ValueError:
+                    import calendar
+                    last_day = calendar.monthrange(y, qm)[1]
+                    d = datetime.date(y, qm, min(day_of_month, last_day))
+                if d >= today and d not in results:
+                    results.append(d)
+            results.sort()
+            return results[:3]
+        
+        month_names_full = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 
+                            'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr']
+        quarter_names = {4: '1-ci rüb', 7: '2-ci rüb', 10: '3-cü rüb', 1: '4-cü rüb'}
+        
+        calendar_items = []
+
+        # === HƏMIŞƏ GÖSTƏRİLƏN ===
+        
+        # 1. Əmək haqqı üzrə gəlir vergisi — hər ayın 20-si (VM Maddə 150)
+        for d in _next_monthly_deadline(20)[:2]:
+            prev_month = d.month - 1 if d.month > 1 else 12
+            prev_year = d.year if d.month > 1 else d.year - 1
+            calendar_items.append({
+                'title': f'Əmək haqqı gəlir vergisi ({month_names_full[prev_month-1]} {prev_year})',
+                'date': d.strftime('%Y-%m-%d'),
+                'days_left': (d - today).days,
+                'category': 'salary'
+            })
+        
+        # 2. MDSS, İTS və İşsizlik Sığortası — hər ayın 15-i (növbəti ay)
+        for d in _next_monthly_deadline(15)[:2]:
+            prev_month = d.month - 1 if d.month > 1 else 12
+            prev_year = d.year if d.month > 1 else d.year - 1
+            calendar_items.append({
+                'title': f'MDSS, İTS, İşsizlik sığortası ({month_names_full[prev_month-1]} {prev_year})',
+                'date': d.strftime('%Y-%m-%d'),
+                'days_left': (d - today).days,
+                'category': 'social'
+            })
+
+        # 3. İllik Mənfəət/Gəlir vergisi bəyannaməsi — hər il 31 mart (VM Maddə 149)
+        annual_deadline = datetime.date(today.year, 3, 31)
+        if annual_deadline < today:
+            annual_deadline = datetime.date(today.year + 1, 3, 31)
+        calendar_items.append({
+            'title': f'İllik Gəlir/Mənfəət vergisi bəyannaməsi ({annual_deadline.year - 1})',
+            'date': annual_deadline.strftime('%Y-%m-%d'),
+            'days_left': (annual_deadline - today).days,
+            'category': 'annual'
+        })
+
+        # 4. İllik Əmlak vergisi — hər il 31 mart (VM Maddə 201)
+        property_deadline = datetime.date(today.year, 3, 31)
+        if property_deadline < today:
+            property_deadline = datetime.date(today.year + 1, 3, 31)
+        calendar_items.append({
+            'title': f'İllik Əmlak vergisi bəyannaməsi ({property_deadline.year - 1})',
+            'date': property_deadline.strftime('%Y-%m-%d'),
+            'days_left': (property_deadline - today).days,
+            'category': 'annual'
+        })
+
+        # === VERGİ REJİMİNƏ GÖRƏ ===
+
+        if tax_regime == 'vat':
+            # ƏDV bəyannaməsi — hər ayın 20-si (VM Maddə 175)
+            for d in _next_monthly_deadline(20)[:3]:
+                prev_month = d.month - 1 if d.month > 1 else 12
+                prev_year = d.year if d.month > 1 else d.year - 1
+                calendar_items.append({
+                    'title': f'ƏDV bəyannaməsi ({month_names_full[prev_month-1]} {prev_year})',
+                    'date': d.strftime('%Y-%m-%d'),
+                    'days_left': (d - today).days,
+                    'category': 'vat'
+                })
+        else:
+            # Sadələşdirilmiş vergi bəyannaməsi — rübdən sonrakı ayın 20-si (VM Maddə 218)
+            for d in _quarterly_deadlines(20)[:3]:
+                qname = quarter_names.get(d.month, f'{d.month}')
+                q_year = d.year if d.month > 1 else d.year - 1
+                calendar_items.append({
+                    'title': f'Sadələşdirilmiş vergi bəyannaməsi ({qname}, {q_year})',
+                    'date': d.strftime('%Y-%m-%d'),
+                    'days_left': (d - today).days,
+                    'category': 'simplified'
+                })
+
+        # Tarixə görə sırala, yalnız gələcək tarixləri göstər, ilk 6-nı götür
+        calendar_items = [c for c in calendar_items if c['days_left'] >= 0]
+        calendar_items.sort(key=lambda x: x['days_left'])
+        # Eyni tarixdə təkrarları birləşdir
+        seen = set()
+        unique_calendar = []
+        for item in calendar_items:
+            key = (item['title'], item['date'])
+            if key not in seen:
+                seen.add(key)
+                unique_calendar.append(item)
+        calendar_items = unique_calendar[:6]
         
         response_data = {
             'year': year,
@@ -600,15 +742,9 @@ class TaxAnalyticsView(AnalyticsBaseView):
                 'percent_reached': round((twelve_month_revenue / vat_limit * 100), 1) if vat_limit > 0 else 0,
                 'is_approaching': is_approaching_vat,
                 'is_over': is_over_vat,
-                'rule_text': "Azərbaycan Vergi Məcəlləsinə əsasən, ardıcıl 12 aylıq dövriyyə 200,000 AZN-i keçdikdə ƏDV qeydiyyatı məcburidir. (Qeyd: 2026-cı ildən pərakəndə ticarət və xidmət sahələrində bu limitin 400,000 AZN-ə qaldırılması planlaşdırılır)."
+                'rule_text': "Azərbaycan Vergi Məcəlləsinə əsasən, ardıcıl 12 aylıq dövriyyə 400,000 AZN-i keçdikdə ƏDV qeydiyyatı məcburidir."
             },
-            'tax_calendar': [
-                {'title': f'Aylıq ƏDV və Aksiz bəyannaməsi ({today.year})', 'date': f'{today.year}-03-20', 'days_left': (datetime.date(today.year, 3, 20) - today).days},
-                {'title': 'Maaş üzrə MDSS, İTS və Gəlir vergisi ödənişi', 'date': f'{today.year}-03-20', 'days_left': (datetime.date(today.year, 3, 20) - today).days},
-                {'title': f'İllik Gəlir/Mənfəət və Əmlak vergisi ({today.year - 1})', 'date': f'{today.year}-03-31', 'days_left': (datetime.date(today.year, 3, 31) - today).days},
-                {'title': f'Rüblük Məşğulluq hesabatı (1-ci rüb {today.year})', 'date': f'{today.year}-04-15', 'days_left': (datetime.date(today.year, 4, 15) - today).days},
-                {'title': f'1-ci rüb: Sadələşdirilmiş və Vahid bəyannamə ({today.year})', 'date': f'{today.year}-04-20', 'days_left': (datetime.date(today.year, 4, 20) - today).days},
-            ],
+            'tax_calendar': calendar_items,
             'expense_meta': {
                 'total_recorded': total_expenses,
                 'total_deductible': official_expenses,
