@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import client from '../api/client';
 import { useToast } from '../components/Toast';
-import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle, Users, Gift } from 'lucide-react';
+import { Save, Building2, Landmark, Check, Plus, User, Shield, Trash2, AlertTriangle, Users, Gift, Receipt } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import UserSettings from '../components/settings/UserSettings';
 import TeamSettings from '../components/settings/TeamSettings';
@@ -58,6 +58,8 @@ const BusinessSettings = () => {
         swift: '',
         default_invoice_theme: 'modern',
         default_currency: 'AZN',
+        tax_regime: 'simplified',
+        default_vat_rate: 18,
     };
     const [formData, setFormData] = useState(initialFormState);
 
@@ -510,6 +512,66 @@ const BusinessSettings = () => {
                                                     </select>
                                                 </div>
                                                 <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">Yeni faktura yaradarkən bu valyuta avtomatik seçiləcək</p>
+                                            </div>
+
+                                            {/* ──── Vergi Rejimi ──── */}
+                                            <div className="pt-4 border-t" style={{ borderColor: 'var(--color-card-border)' }}>
+                                                <h3 className="font-black flex items-center gap-3 text-lg tracking-tight mb-4" style={{ color: 'var(--color-text-primary)' }}>
+                                                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}><Receipt size={20} /></div>
+                                                    Vergi Rejimi
+                                                </h3>
+                                                <label className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                                    Vergi Mükəlləfiyyəti
+                                                    {!checkLimit('vat_support')?.allowed && formData.tax_regime !== 'vat' && <Lock size={12} style={{ color: 'var(--color-text-muted)' }} />}
+                                                </label>
+                                                <div className="relative mt-1.5">
+                                                    <select
+                                                        name="tax_regime"
+                                                        value={formData.tax_regime || 'simplified'}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            if (val === 'vat') {
+                                                                const planCheck = checkLimit('vat_support');
+                                                                if (!planCheck?.allowed) {
+                                                                    setUpgradeConfig({
+                                                                        isOpen: true,
+                                                                        title: 'ƏDV Rejimi — Premium 💎',
+                                                                        message: 'ƏDV ödəyicisi rejimi yalnız Premium paketdə mövcuddur. ƏDV qeydiyyatı olan bizneslər üçün tam dəstək almaq üçün Premium plana keçin.'
+                                                                    });
+                                                                    return;
+                                                                }
+                                                            }
+                                                            setFormData({ ...formData, tax_regime: val });
+                                                        }}
+                                                        className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer"
+                                                        style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
+                                                    >
+                                                        <option value="simplified">Sadələşdirilmiş Vergi</option>
+                                                        <option value="vat">ƏDV Ödəyicisi</option>
+                                                    </select>
+                                                </div>
+                                                <p className="text-[9px] text-[var(--color-text-muted)] mt-1 ml-1 lowercase italic">
+                                                    {formData.tax_regime === 'vat'
+                                                        ? 'Fakturalarda ƏDV dərəcəsi avtomatik hesablanacaq'
+                                                        : 'Sadələşdirilmiş vergidə faktura üzərində ƏDV hesablanmır'
+                                                    }
+                                                </p>
+
+                                                {formData.tax_regime === 'vat' && (
+                                                    <div className="mt-4 space-y-1.5">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-text-muted)' }}>Defolt ƏDV Dərəcəsi</label>
+                                                        <select
+                                                            name="default_vat_rate"
+                                                            value={formData.default_vat_rate ?? 18}
+                                                            onChange={handleChange}
+                                                            className="w-full border-2 border-transparent focus:border-primary-blue rounded-xl p-2.5 outline-none transition-all font-bold appearance-none cursor-pointer"
+                                                            style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-primary)' }}
+                                                        >
+                                                            <option value={18}>18%</option>
+                                                            <option value={0}>0% (ƏDV-dən azad)</option>
+                                                        </select>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

@@ -82,6 +82,9 @@ class SubscriptionPlan(models.Model):
     has_stock_alerts = models.BooleanField(default=False, help_text="Aşağı stok xəbərdarlıqları")
     has_multi_currency = models.BooleanField(default=False, help_text="Çoxvalyutalı dəstək (USD, EUR, TRY, RUB, GBP)")
 
+    # ─── Vergi & ƏDV ───
+    has_vat_support = models.BooleanField(default=False, help_text="ƏDV rejimi dəstəyi (yalnız Premium)")
+
     # ─── Əlavə Xüsusiyyətlər ───
     has_api_access = models.BooleanField(default=False, help_text="REST API girişi (xarici inteqrasiya)")
     has_vip_support = models.BooleanField(default=False, help_text="VIP / Prioritet dəstək")
@@ -155,6 +158,15 @@ class User(AbstractUser):
         return self.email
 
 class Business(models.Model):
+    TAX_REGIME_CHOICES = (
+        ('simplified', 'Sadələşdirilmiş Vergi'),
+        ('vat', 'ƏDV Ödəyicisi'),
+    )
+    VAT_RATE_CHOICES = (
+        (18, '18%'),
+        (0, '0% (ƏDV-dən azad)'),
+    )
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='businesses')
     name = models.CharField(max_length=255)
     voen = models.CharField(max_length=20, blank=True, null=True) # Tax ID
@@ -165,6 +177,10 @@ class Business(models.Model):
     email = models.EmailField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     
+    # Vergi rejimi
+    tax_regime = models.CharField(max_length=20, choices=TAX_REGIME_CHOICES, default='simplified', help_text="Vergi mükəlləfiyyəti statusu")
+    default_vat_rate = models.IntegerField(default=18, choices=VAT_RATE_CHOICES, help_text="Defolt ƏDV dərəcəsi (yalnız ƏDV rejimində istifadə olunur)")
+
     # Banking
     bank_name = models.CharField(max_length=255, blank=True, null=True)
     iban = models.CharField(max_length=34, blank=True, null=True)

@@ -23,6 +23,8 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
             # Komanda & İnventar
             'has_team_gps', 'has_bulk_operations', 'has_stock_alerts',
             'has_multi_currency',
+            # Vergi
+            'has_vat_support',
             # Əlavə
             'has_api_access', 'has_vip_support',
         ]
@@ -63,11 +65,23 @@ class BusinessSerializer(serializers.ModelSerializer):
         model = Business
         fields = [
             'id', 'name', 'voen', 'logo', 'address', 'city', 'phone', 
-            'email', 'website', 'bank_name', 'iban', 'swift', 
+            'email', 'website', 'tax_regime', 'default_vat_rate',
+            'bank_name', 'iban', 'swift', 
             'budget_limit', 'default_invoice_theme', 'default_currency', 'is_active', 
             'created_at', 'updated_at', 'user_role'
         ]
         read_only_fields = ('id', 'user')
+
+    def validate_tax_regime(self, value):
+        request = self.context.get('request')
+        if value == 'vat' and request and request.user:
+            from users.plan_limits import get_plan_limits
+            plan = get_plan_limits(request.user)
+            if plan and not getattr(plan, 'has_vat_support', False):
+                raise serializers.ValidationError(
+                    "ƏDV rejimi yalnız Premium paketdə mövcuddur. Zəhmət olmasa planınızı yeniləyin."
+                )
+        return value
 
     def validate_voen(self, value):
         if value:

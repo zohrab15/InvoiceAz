@@ -54,6 +54,16 @@ class Invoice(SoftDeleteModel):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='AZN')
     
+    # Vergi rejimi tarixçəsi (faktura kəsiləndəki status)
+    TAX_REGIME_CHOICES = (
+        ('simplified', 'Sadələşdirilmiş Vergi'),
+        ('vat', 'ƏDV Ödəyicisi'),
+    )
+    tax_regime_at_creation = models.CharField(
+        max_length=20, choices=TAX_REGIME_CHOICES, default='simplified',
+        help_text="Faktura kəsiləndə biznesin vergi rejimi (tarixçə üçün saxlanılır)"
+    )
+
     # Financials
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0) # Percentage

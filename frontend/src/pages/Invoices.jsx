@@ -58,6 +58,10 @@ const Invoices = () => {
     const isAccountant = activeBusiness?.user_role === 'ACCOUNTANT';
     const canManageInvoices = isOwnerOrManager || isAccountant;
 
+    // Vergi rejimi: sadələşdirilmiş => tax_rate = 0, ƏDV => default_vat_rate
+    const isVatBusiness = activeBusiness?.tax_regime === 'vat';
+    const defaultTaxRate = isVatBusiness ? (activeBusiness?.default_vat_rate ?? 18) : 0;
+
     const [view, setView] = useState('list'); // 'list' or 'create'
     const [editInvoice, setEditInvoice] = useState(null);
     const [showPreview, setShowPreview] = useState(false);
@@ -86,7 +90,7 @@ const Invoices = () => {
     const [page, setPage] = useState(1);
 
     // Form State
-    const [items, setItems] = useState([{ description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd' }]);
+    const [items, setItems] = useState([{ description: '', quantity: 1, unit_price: 0, tax_rate: defaultTaxRate, unit: 'ədəd' }]);
     const [selectedClientId, setSelectedClientId] = useState('');
     const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
     const [dueDate, setDueDate] = useState('');
@@ -304,7 +308,7 @@ const Invoices = () => {
     };
 
     const resetForm = () => {
-        setItems([{ description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd' }]);
+        setItems([{ description: '', quantity: 1, unit_price: 0, tax_rate: defaultTaxRate, unit: 'ədəd' }]);
         setSelectedClientId('');
         setInvoiceDate(new Date().toISOString().split('T')[0]);
         setDueDate('');
@@ -354,7 +358,7 @@ const Invoices = () => {
         }
     };
 
-    const addItem = () => setItems([...items, { description: '', quantity: 1, unit_price: 0, tax_rate: 18, unit: 'ədəd', product: null }]);
+    const addItem = () => setItems([...items, { description: '', quantity: 1, unit_price: 0, tax_rate: defaultTaxRate, unit: 'ədəd', product: null }]);
     const removeItem = (index) => setItems(items.filter((_, i) => i !== index));
 
     const updateItem = (index, field, value) => {
@@ -528,7 +532,9 @@ const Invoices = () => {
 
             <div className="ml-auto w-48 space-y-2 pt-4 border-t-2 border-gray-50">
                 <div className="flex justify-between text-xs text-gray-500"><span>Cəm:</span><span>{calculateSubtotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
-                <div className="flex justify-between text-xs text-gray-500"><span>ƏDV (18%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
+                {isVatBusiness && (
+                    <div className="flex justify-between text-xs text-gray-500"><span>ƏDV ({activeBusiness?.default_vat_rate || 18}%):</span><span>{calculateTax().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
+                )}
                 <div className="flex justify-between font-bold text-gray-900 pt-2 border-t"><span>YEKUN:</span><span>{calculateTotal().toFixed(2)} {CURRENCY_SYMBOLS[currency] || CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼'}</span></div>
             </div>
 

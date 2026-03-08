@@ -379,6 +379,9 @@ def get_full_plan_status(user, business_id=None):
             'stock_alerts': _val(plan.has_stock_alerts),
             'multi_currency': _val(plan.has_multi_currency),
 
+            # Vergi
+            'vat_support': _val(plan.has_vat_support),
+
             # Əlavə
             'api_access': _val(plan.has_api_access),
             'vip_support': _val(plan.has_vip_support),

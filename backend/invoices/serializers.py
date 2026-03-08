@@ -87,6 +87,12 @@ class InvoiceSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         with transaction.atomic():
             items_data = validated_data.pop('items', [])
+            
+            # Avtomatik vergi rejimini saxla (tarixçə üçün)
+            business = validated_data.get('business')
+            if business:
+                validated_data['tax_regime_at_creation'] = business.tax_regime
+            
             invoice = Invoice.objects.create(**validated_data)
             for item_data in items_data:
                 InvoiceItem.objects.create(invoice=invoice, **item_data)
