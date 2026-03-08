@@ -588,8 +588,7 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
                     user=request.user,
                     action='UPDATE',
                     module='INVENTORY',
-                    description=f'{product.name} məhsulu transfer edildi ({product.warehouse.name if product.warehouse else "Bilinmir"} -> {target_warehouse.name}, {quantity} {product.unit})',
-                    related_object_id=product.id
+                    description=f'{product.name} məhsulu transfer edildi ({product.warehouse.name if product.warehouse else "Bilinmir"} -> {target_warehouse.name}, {quantity} {product.unit})'
                 )
                 
             return Response({'detail': 'Transfer uğurla tamamlandı.'})
