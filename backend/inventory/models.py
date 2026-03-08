@@ -47,7 +47,7 @@ class Product(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('business', 'sku')
+        unique_together = ('business', 'sku', 'warehouse')
         ordering = ['name']
 
     def __str__(self):

@@ -5,6 +5,7 @@ import { Warehouse, Plus, Star, MapPin, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBusiness } from '../context/BusinessContext';
 import { useToast } from '../components/Toast';
+import WarehouseDetailsModal from '../components/WarehouseDetailsModal';
 
 const Warehouses = () => {
     const { activeBusiness } = useBusiness();
@@ -12,6 +13,7 @@ const Warehouses = () => {
     const showToast = useToast();
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editingWarehouse, setEditingWarehouse] = useState(null);
+    const [viewingWarehouse, setViewingWarehouse] = useState(null);
 
     const { data: warehouses, isLoading, isError, refetch } = useQuery({
         queryKey: ['warehouses', activeBusiness?.id],
@@ -108,8 +110,9 @@ const Warehouses = () => {
                         </div>
                         <div className="text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>{wh.product_count || 0} məhsul</div>
                         <div className="flex gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => setEditingWarehouse(wh)} className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1" style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-secondary)' }}>Düzəliş et</button>
-                            {!wh.is_default && <button onClick={() => setDefaultMutation.mutate(wh.id)} className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1" style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-secondary)' }}><Star size={12} />Əsas et</button>}
+                            <button onClick={() => setViewingWarehouse(wh)} className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>Məhsullar</button>
+                            <button onClick={() => setEditingWarehouse(wh)} className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1" style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-secondary)' }}>Düzəliş</button>
+                            {!wh.is_default && <button onClick={() => setDefaultMutation.mutate(wh.id)} className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1" style={{ backgroundColor: 'var(--color-hover-bg)', color: 'var(--color-text-secondary)' }}><Star size={12} /></button>}
                             {!wh.is_default && <button onClick={() => { if (window.confirm('Bu anbarı silmək istəyirsiniz?')) deleteMutation.mutate(wh.id); }} className="text-xs font-bold px-3 py-1.5 rounded-lg text-rose-500" style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>Sil</button>}
                         </div>
                     </motion.div>
@@ -151,6 +154,16 @@ const Warehouses = () => {
                             </form>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {viewingWarehouse && (
+                    <WarehouseDetailsModal
+                        warehouse={viewingWarehouse}
+                        allWarehouses={warehouses || []}
+                        onClose={() => setViewingWarehouse(null)}
+                    />
                 )}
             </AnimatePresence>
         </div>
