@@ -384,7 +384,7 @@ const Products = () => {
                             <tr style={{ backgroundColor: 'var(--color-hover-bg)', borderBottom: '1px solid var(--color-card-border)' }}>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Məhsul</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>SKU / Barkod</th>
-                                <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Qiymət</th>
+                                <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Satış Qiyməti</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Anbar (Stok)</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest text-right" style={{ color: 'var(--color-text-muted)' }}>Əməliyyatlar</th>
                             </tr>
@@ -599,7 +599,7 @@ const Products = () => {
                                     </div>
 
                                     <div>
-                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Qiymət ({currencySymbol})</label>
+                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Satış Qiyməti ({currencySymbol})</label>
                                         <input
                                             name="base_price"
                                             type="number"
@@ -614,7 +614,7 @@ const Products = () => {
                                     </div>
 
                                     <div>
-                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Maya Qiyməti ({currencySymbol})</label>
+                                        <label className="text-[10px] uppercase font-black tracking-widest block mb-2" style={{ color: 'var(--color-text-muted)' }}>Alış Qiyməti ({currencySymbol})</label>
                                         <input
                                             name="cost_price"
                                             type="number"
@@ -752,7 +752,7 @@ const Products = () => {
                                     <AlertCircle size={18} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
                                     <div className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                                         Faylın sütun ardıcıllığı belə olmalıdır: <br />
-                                        <span className="font-bold">Ad, Təsvir, SKU, Qiymət, Vahid, Miqdar, Limit, Maya Qiyməti, Anbar</span>
+                                        <span className="font-bold">Ad, Təsvir, SKU, Satış Qiyməti, Vahid, Miqdar, Limit, Alış Qiyməti, Anbar</span>
                                     </div>
                                 </div>
 
