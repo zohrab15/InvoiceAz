@@ -523,74 +523,78 @@ class ProductViewSet(BusinessContextMixin, viewsets.ModelViewSet):
         except Warehouse.DoesNotExist:
             return Response({'detail': 'Hədəf anbar tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
             
-        with transaction.atomic():
-            # Mənbə anbardan çıxılır
-            product.stock_quantity -= quantity
-            product.save(update_fields=['stock_quantity', 'updated_at'])
-            
-            # Hədəf anbarda axtarılır və ya yaradılır
-            target_product = Product.objects.filter(business=business, sku=product.sku, warehouse=target_warehouse).first()
-            
-            if target_product:
-                target_product.stock_quantity += quantity
-                target_product.save(update_fields=['stock_quantity', 'updated_at'])
-            else:
-                # Yeni obyekt yaradırıq (şəkillər və s. kimi digər fieldlərdəki funksionallıqları əlavə etmək üçün)
-                target_product = Product.objects.create(
+        try:
+            with transaction.atomic():
+                # Mənbə anbardan çıxılır
+                product.stock_quantity -= quantity
+                product.save(update_fields=['stock_quantity', 'updated_at'])
+                
+                # Hədəf anbarda axtarılır və ya yaradılır
+                target_product = Product.objects.filter(business=business, sku=product.sku, warehouse=target_warehouse).first()
+                
+                if target_product:
+                    target_product.stock_quantity += quantity
+                    target_product.save(update_fields=['stock_quantity', 'updated_at'])
+                else:
+                    target_product = Product(
+                        business=business,
+                        name=product.name,
+                        description=product.description,
+                        sku=product.sku,
+                        base_price=product.base_price,
+                        cost_price=product.cost_price,
+                        unit=product.unit,
+                        min_stock_level=product.min_stock_level,
+                        warehouse=target_warehouse,
+                        stock_quantity=quantity
+                    )
+                    if hasattr(target_product, 'created_by_id'):
+                        target_product.created_by = request.user
+                    target_product.save()
+                    
+                # Stok hərəkətlərini yazırıq (Mənbə üçün ÇIXIŞ)
+                StockMovement.objects.create(
                     business=business,
-                    name=product.name,
-                    description=product.description,
-                    sku=product.sku,
-                    base_price=product.base_price,
-                    cost_price=product.cost_price,
-                    unit=product.unit,
-                    min_stock_level=product.min_stock_level,
-                    warehouse=target_warehouse,
-                    stock_quantity=quantity,
-                    created_by=request.user if hasattr(Product, 'created_by') else None
+                    product=product,
+                    warehouse=product.warehouse,
+                    movement_type='OUT',
+                    source_type='TRANSFER',
+                    quantity=quantity,
+                    unit_cost=product.cost_price,
+                    stock_before=product.stock_quantity + quantity,
+                    stock_after=product.stock_quantity,
+                    note=f'{target_warehouse.name} anbarına transfer',
+                    created_by=request.user
                 )
                 
-            # Stok hərəkətlərini yazırıq (Mənbə üçün ÇIXIŞ)
-            StockMovement.objects.create(
-                business=business,
-                product=product,
-                warehouse=product.warehouse,
-                movement_type='OUT',
-                source_type='TRANSFER',
-                quantity=quantity,
-                unit_cost=product.cost_price,
-                stock_before=product.stock_quantity + quantity,
-                stock_after=product.stock_quantity,
-                note=f'{target_warehouse.name} anbarına transfer',
-                created_by=request.user
-            )
-            
-            # (Hədəf üçün GİRİŞ)
-            StockMovement.objects.create(
-                business=business,
-                product=target_product,
-                warehouse=target_warehouse,
-                movement_type='IN',
-                source_type='TRANSFER',
-                quantity=quantity,
-                unit_cost=target_product.cost_price,
-                stock_before=target_product.stock_quantity - quantity,
-                stock_after=target_product.stock_quantity,
-                note=f'{product.warehouse.name if product.warehouse else "Köhnə"} anbarından transfer',
-                created_by=request.user
-            )
-            
-            # Log aktivliyi
-            log_activity(
-                business=business,
-                user=request.user,
-                action='UPDATE',
-                module='INVENTORY',
-                description=f'{product.name} məhsulu transfer edildi ({product.warehouse.name if product.warehouse else "Bilinmir"} -> {target_warehouse.name}, {quantity} {product.unit})',
-                related_object_id=product.id
-            )
-            
-        return Response({'detail': 'Transfer uğurla tamamlandı.'})
+                # (Hədəf üçün GİRİŞ)
+                StockMovement.objects.create(
+                    business=business,
+                    product=target_product,
+                    warehouse=target_warehouse,
+                    movement_type='IN',
+                    source_type='TRANSFER',
+                    quantity=quantity,
+                    unit_cost=target_product.cost_price,
+                    stock_before=target_product.stock_quantity - quantity,
+                    stock_after=target_product.stock_quantity,
+                    note=f'{product.warehouse.name if product.warehouse else "Köhnə"} anbarından transfer',
+                    created_by=request.user
+                )
+                
+                # Log aktivliyi
+                log_activity(
+                    business=business,
+                    user=request.user,
+                    action='UPDATE',
+                    module='INVENTORY',
+                    description=f'{product.name} məhsulu transfer edildi ({product.warehouse.name if product.warehouse else "Bilinmir"} -> {target_warehouse.name}, {quantity} {product.unit})',
+                    related_object_id=product.id
+                )
+                
+            return Response({'detail': 'Transfer uğurla tamamlandı.'})
+        except Exception as e:
+            return Response({'detail': f'Sistem xətası: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], url_path='all')
     def all_products(self, request):
