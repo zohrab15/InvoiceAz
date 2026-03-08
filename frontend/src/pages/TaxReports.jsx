@@ -28,7 +28,8 @@ const TaxReports = () => {
     const { activeBusiness } = useBusiness();
     const currencySymbol = CURRENCY_SYMBOLS[activeBusiness?.default_currency] || '₼';
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [taxMode, setTaxMode] = useState('simplified'); // 'simplified' or 'profit'
+    const isVatBusiness = activeBusiness?.tax_regime === 'vat';
+    const [taxMode, setTaxMode] = useState(isVatBusiness ? 'profit' : 'simplified'); // 'simplified' or 'profit'
 
     const { data: taxData, isLoading } = useQuery({
         queryKey: ['tax-analytics', activeBusiness?.id, selectedYear],
@@ -51,8 +52,15 @@ const TaxReports = () => {
             {/* Header - Hidden in Print */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <div>
-                    <h2 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight font-roboto uppercase">Vergi və Hesabatlar</h2>
-                    <p className="text-[var(--color-text-secondary)] mt-1">Vergi öhdəliklərinizi və maliyyə hesabatlarınızı buradan izləyin.</p>
+                    <h2 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight font-roboto uppercase">
+                        {isVatBusiness ? 'ƏDV Hesabatları' : 'Vergi Hesabatları'}
+                    </h2>
+                    <p className="text-[var(--color-text-secondary)] mt-1">
+                        {isVatBusiness
+                            ? 'ƏDV öhdəliklərinizi və maliyyə hesabatlarınızı buradan izləyin.'
+                            : 'Sadələşdirilmiş vergi öhdəliklərinizi və maliyyə hesabatlarınızı buradan izləyin.'
+                        }
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <select
@@ -93,14 +101,14 @@ const TaxReports = () => {
             </div>
 
             {/* 1. KPI SECTION */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${isVatBusiness ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6`}>
                 <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <div className="flex flex-col relative">
                         <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
                             <TrendingUp size={24} />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Gəlir</span>
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Ümumi Dövriyyə</span>
                         <div className="flex items-baseline gap-2 mt-1">
                             <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.revenue.toLocaleString()}</span>
                             <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
@@ -122,33 +130,53 @@ const TaxReports = () => {
                     </div>
                 </div>
 
-                <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <div className="flex flex-col relative">
-                        <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>
-                            <Calculator size={24} />
+                {isVatBusiness ? (
+                    <>
+                        <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                            <div className="flex flex-col relative">
+                                <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>
+                                    <Calculator size={24} />
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Vergi Bazası</span>
+                                <div className="flex items-baseline gap-2 mt-1">
+                                    <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.tax_base.toLocaleString()}</span>
+                                    <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
+                                </div>
+                            </div>
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Vergi Bazası</span>
-                        <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.income_tax.tax_base.toLocaleString()}</span>
-                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <div className="flex flex-col relative">
-                        <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#F59E0B15', color: '#F59E0B' }}>
-                            <Coins size={24} />
+                        <div className="p-6 rounded-3xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)' }}>
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                            <div className="flex flex-col relative">
+                                <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: '#F59E0B15', color: '#F59E0B' }}>
+                                    <Coins size={24} />
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Toplanmış ƏDV</span>
+                                <div className="flex items-baseline gap-2 mt-1">
+                                    <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.vat.total.toLocaleString()}</span>
+                                    <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
+                                </div>
+                            </div>
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Toplanmış ƏDV</span>
-                        <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-2xl font-black" style={{ color: 'var(--color-text-primary)' }}>{taxData.vat.total.toLocaleString()}</span>
-                            <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
+                    </>
+                ) : (
+                    /* Sadələşdirilmiş Vergi KPI: Ödəniləcək Vergi (2%) */
+                    <div className="p-6 rounded-3xl border-2 shadow-sm hover:shadow-md transition-all group overflow-hidden relative" style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-brand)' }}>
+                        <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" style={{ backgroundColor: 'var(--color-brand-light)' }} />
+                        <div className="flex flex-col relative">
+                            <div className="p-3 rounded-2xl w-fit mb-4" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>
+                                <Calculator size={24} />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Sadələşdirilmiş Vergi (2%)</span>
+                            <div className="flex items-baseline gap-2 mt-1">
+                                <span className="text-2xl font-black" style={{ color: 'var(--color-brand)' }}>{taxData.income_tax.estimates.simplified_2pct.toLocaleString()}</span>
+                                <span className="text-sm font-bold opacity-50" style={{ color: 'var(--color-text-secondary)' }}>{currencySymbol}</span>
+                            </div>
+                            <p className="text-[10px] mt-2 font-medium" style={{ color: 'var(--color-text-muted)' }}>Dövriyyə × 2% = Ödəniləcək vergi</p>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* VAT Registration Threshold Alert - New Section */}
@@ -204,82 +232,108 @@ const TaxReports = () => {
                 </div>
             )}
 
-            {/* 2. VAT SECTION */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm space-y-6">
+            {/* 2. SADƏLƏŞDIRILMIŞ VERGİ — Aylıq Dövriyyə Qrafiki (yalnız simplified rejim) */}
+            {!isVatBusiness && (
+                <div className="bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm space-y-6">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text-primary)]"><PieChart className="text-primary-blue" /> Aylıq ƏDV Dinamikası</h3>
-                        <div className="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Hesablanmış</div>
+                        <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text-primary)]"><BarChart3 className="text-primary-blue" /> Aylıq Dövriyyə</h3>
+                        <div className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider" style={{ backgroundColor: 'var(--color-brand-light)', color: 'var(--color-brand)' }}>Sadələşdirilmiş</div>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
-                            <AreaChart data={taxData.vat.monthly}>
-                                <defs>
-                                    <linearGradient id="colorVat" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
+                            <BarChart data={taxData.vat.monthly}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
                                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '16px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(val) => [`${val.toLocaleString()} ${currencySymbol}`, 'ƏDV']}
+                                    formatter={(val) => [`${val.toLocaleString()} ${currencySymbol}`, 'Dövriyyə']}
                                 />
-                                <Area type="monotone" dataKey="vat" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorVat)" />
-                            </AreaChart>
+                                <Bar dataKey="revenue" fill="var(--color-brand)" radius={[8, 8, 0, 0]} />
+                            </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
+            )}
 
-                <div
-                    className="lg:col-span-4 p-8 rounded-3xl shadow-xl space-y-8 relative overflow-hidden border"
-                    style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-primary)' }}
-                >
-                    <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/5 rounded-tl-full -mr-12 -mb-12 pointer-events-none" />
-                    <div>
-                        <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>ƏDV Bölgüsü</h3>
-                        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Rate üzrə vergi daxilolmaları</p>
+            {/* 2. ƏDV SECTION — yalnız VAT rejimində */}
+            {isVatBusiness && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-8 bg-[var(--color-card-bg)] p-8 rounded-3xl border border-[var(--color-card-border)] shadow-sm space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text-primary)]"><PieChart className="text-primary-blue" /> Aylıq ƏDV Dinamikası</h3>
+                            <div className="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Hesablanmış</div>
+                        </div>
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={200}>
+                                <AreaChart data={taxData.vat.monthly}>
+                                    <defs>
+                                        <linearGradient id="colorVat" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-card-border)" />
+                                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: 'var(--color-card-bg)', borderRadius: '16px', border: '1px solid var(--color-card-border)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                        formatter={(val) => [`${val.toLocaleString()} ${currencySymbol}`, 'ƏDV']}
+                                    />
+                                    <Area type="monotone" dataKey="vat" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorVat)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="flex justify-between items-end border-b pb-4" style={{ borderColor: 'var(--color-card-border)' }}>
-                            <div>
-                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>18% Rate</span>
-                                <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
-                                    {taxData.vat.by_rate.rate_18.toLocaleString()} <span className="text-sm font-bold opacity-50">{currencySymbol}</span>
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                <Percent size={20} />
-                            </div>
+                    <div
+                        className="lg:col-span-4 p-8 rounded-3xl shadow-xl space-y-8 relative overflow-hidden border"
+                        style={{ backgroundColor: 'var(--color-card-bg)', borderColor: 'var(--color-card-border)', color: 'var(--color-text-primary)' }}
+                    >
+                        <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/5 rounded-tl-full -mr-12 -mb-12 pointer-events-none" />
+                        <div>
+                            <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>ƏDV Bölgüsü</h3>
+                            <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Rate üzrə vergi daxilolmaları</p>
                         </div>
 
-                        <div className="flex justify-between items-end border-b pb-4" style={{ borderColor: 'var(--color-card-border)' }}>
-                            <div>
-                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>0% Rate (Azad)</span>
-                                <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
-                                    {taxData.vat.by_rate.rate_0.toLocaleString()} <span className="text-sm font-bold opacity-50">{currencySymbol}</span>
-                                </p>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-end border-b pb-4" style={{ borderColor: 'var(--color-card-border)' }}>
+                                <div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>18% Rate</span>
+                                    <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
+                                        {taxData.vat.by_rate.rate_18.toLocaleString()} <span className="text-sm font-bold opacity-50">{currencySymbol}</span>
+                                    </p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                    <Percent size={20} />
+                                </div>
                             </div>
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}>
-                                <Percent size={20} />
-                            </div>
-                        </div>
 
-                        <div className="pt-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>Yekun Ödənilməli ƏDV</span>
-                                <span className="text-xl font-bold text-blue-500">{taxData.vat.total.toLocaleString()} {currencySymbol}</span>
+                            <div className="flex justify-between items-end border-b pb-4" style={{ borderColor: 'var(--color-card-border)' }}>
+                                <div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>0% Rate (Azad)</span>
+                                    <p className="text-2xl font-black mt-1" style={{ color: 'var(--color-text-primary)' }}>
+                                        {taxData.vat.by_rate.rate_0.toLocaleString()} <span className="text-sm font-bold opacity-50">{currencySymbol}</span>
+                                    </p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}>
+                                    <Percent size={20} />
+                                </div>
                             </div>
-                            <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
-                                <div className="bg-blue-500 h-full w-[100%]" />
+
+                            <div className="pt-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-sm font-bold" style={{ color: 'var(--color-text-secondary)' }}>Yekun Ödənilməli ƏDV</span>
+                                    <span className="text-xl font-bold text-blue-500">{taxData.vat.total.toLocaleString()} {currencySymbol}</span>
+                                </div>
+                                <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
+                                    <div className="bg-blue-500 h-full w-[100%]" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* 3. QUARTERLY & INCOME TAX */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -294,9 +348,10 @@ const TaxReports = () => {
                             <thead>
                                 <tr className="text-xs text-[var(--color-text-muted)] uppercase tracking-widest border-b border-[var(--color-card-border)]">
                                     <th className="pb-4 pt-2">Rüb</th>
-                                    <th className="pb-4 pt-2">Gəlir</th>
+                                    <th className="pb-4 pt-2">Dövriyyə</th>
                                     <th className="pb-4 pt-2">Xərc</th>
-                                    <th className="pb-4 pt-2">ƏDV</th>
+                                    {isVatBusiness && <th className="pb-4 pt-2">ƏDV</th>}
+                                    {!isVatBusiness && <th className="pb-4 pt-2">Vergi (2%)</th>}
                                     <th className="pb-4 pt-2 text-right">Mənfəət</th>
                                 </tr>
                             </thead>
@@ -306,7 +361,8 @@ const TaxReports = () => {
                                         <td className="py-4 font-black text-[var(--color-text-primary)]">{q.name}</td>
                                         <td className="py-4 font-bold text-[var(--color-text-secondary)]">{q.revenue.toLocaleString()}</td>
                                         <td className="py-4 text-[var(--color-text-muted)]">{q.expenses.toLocaleString()}</td>
-                                        <td className="py-4 text-[var(--color-text-muted)]">{q.vat.toLocaleString()}</td>
+                                        {isVatBusiness && <td className="py-4 text-[var(--color-text-muted)]">{q.vat.toLocaleString()}</td>}
+                                        {!isVatBusiness && <td className="py-4 font-bold" style={{ color: 'var(--color-brand)' }}>{Math.round(q.revenue * 0.02).toLocaleString()}</td>}
                                         <td className={`py-4 font-black text-right ${q.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                             {q.profit.toLocaleString()}
                                         </td>
