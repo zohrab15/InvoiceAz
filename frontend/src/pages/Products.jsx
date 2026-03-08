@@ -384,7 +384,9 @@ const Products = () => {
                             <tr style={{ backgroundColor: 'var(--color-hover-bg)', borderBottom: '1px solid var(--color-card-border)' }}>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Məhsul</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>SKU / Barkod</th>
+                                <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Alış Qiyməti</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Satış Qiyməti</th>
+                                <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Fərq (%)</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Anbar (Stok)</th>
                                 <th className="p-5 text-[10px] uppercase font-black tracking-widest text-right" style={{ color: 'var(--color-text-muted)' }}>Əməliyyatlar</th>
                             </tr>
@@ -393,12 +395,12 @@ const Products = () => {
                             {isLoading ? (
                                 [1, 2, 3].map(i => (
                                     <tr key={i} className="animate-pulse">
-                                        <td colSpan="4" className="p-8"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/4"></div></td>
+                                        <td colSpan="7" className="p-8"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/4"></div></td>
                                     </tr>
                                 ))
                             ) : filteredProducts.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="p-20 text-center">
+                                    <td colSpan="7" className="p-20 text-center">
                                         <div className="flex flex-col items-center gap-3 grayscale opacity-30">
                                             <Package size={64} />
                                             <p className="font-bold text-slate-500 text-lg">Məhsul tapılmadı</p>
@@ -425,8 +427,31 @@ const Products = () => {
                                     </td>
                                     <td className="p-5">
                                         <div className="font-black" style={{ color: 'var(--color-text-primary)' }}>
+                                            {product.cost_price || 0} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>{currencySymbol}</span>
+                                        </div>
+                                    </td>
+                                    <td className="p-5">
+                                        <div className="font-black" style={{ color: 'var(--color-text-primary)' }}>
                                             {product.base_price} <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-muted)' }}>{currencySymbol}</span>
                                         </div>
+                                    </td>
+                                    <td className="p-5">
+                                        {(() => {
+                                            const cost = Number(product.cost_price || 0);
+                                            const sell = Number(product.base_price || 0);
+                                            if (cost <= 0) return <span className="font-bold text-slate-400">---</span>;
+                                            const diff = sell - cost;
+                                            const diffPercent = ((diff / cost) * 100).toFixed(1);
+                                            const isProfit = diff >= 0;
+                                            return (
+                                                <div className={`font-black flex flex-col ${isProfit ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                                    <span>{isProfit ? '+' : ''}{diffPercent}%</span>
+                                                    <span className="text-[10px] uppercase tracking-wider opacity-70">
+                                                        {isProfit ? '+' : ''}{diff.toFixed(2)} {currencySymbol}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })()}
                                     </td>
                                     <td className="p-5">
                                         <div className="flex flex-col gap-1">
