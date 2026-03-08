@@ -972,11 +972,20 @@ const Invoices = () => {
                                                     <div className="w-full sm:w-24">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Miqdar</label>
                                                         <div className="relative">
-                                                            <input min="1" type="number" className="w-full bg-[var(--color-input-bg)] border-none rounded-lg p-2 pr-10 text-sm text-center font-bold text-[var(--color-text-primary)]" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 1)} />
+                                                            <input min="1" type="number" className="w-full bg-[var(--color-input-bg)] border border-transparent focus:border-blue-500 outline-none rounded-lg p-2 pr-10 text-sm text-center font-bold text-[var(--color-text-primary)] transition-all" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 1)} />
                                                             <span className="absolute right-2 top-2.5 text-[10px] font-black uppercase text-[var(--color-text-muted)] pointer-events-none">
                                                                 {item.unit || 'ədəd'}
                                                             </span>
                                                         </div>
+                                                        {item.product && products?.find(p => String(p.id) === String(item.product)) && (() => {
+                                                            const p = products.find(prod => String(prod.id) === String(item.product));
+                                                            const isExceeding = Number(item.quantity) > Number(p.stock_quantity);
+                                                            return (
+                                                                <div className={`text-[10px] font-bold mt-1 text-center truncate ${isExceeding ? 'text-red-500' : 'text-[var(--color-text-muted)]'}`} title={`Stokda: ${p.stock_quantity} ${p.unit}`}>
+                                                                    Stok: {p.stock_quantity}
+                                                                </div>
+                                                            );
+                                                        })()}
                                                     </div>
                                                     <div className="w-full sm:w-32 relative">
                                                         <label className="sm:hidden text-[10px] font-bold text-[var(--color-text-muted)] uppercase mb-1 block">Qiymət</label>

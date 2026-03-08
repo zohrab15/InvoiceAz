@@ -93,6 +93,26 @@ class InvoiceSerializer(serializers.ModelSerializer):
             if business:
                 validated_data['tax_regime_at_creation'] = business.tax_regime
             
+            # Stok yoxlanışı — məhsullu itemlər üçün anbarda kifayət qədər stok olmalıdır
+            from inventory.models import Product
+            stock_errors = []
+            for item_data in items_data:
+                product_id = item_data.get('product')
+                if product_id:
+                    try:
+                        product = Product.objects.get(pk=product_id if not hasattr(product_id, 'pk') else product_id.pk)
+                        requested_qty = item_data.get('quantity', 0)
+                        if product.stock_quantity < requested_qty:
+                            stock_errors.append(
+                                f'"{product.name}" üçün anbarda kifayət qədər stok yoxdur '
+                                f'(Tələb: {requested_qty}, Mövcud: {product.stock_quantity})'
+                            )
+                    except Product.DoesNotExist:
+                        pass
+            
+            if stock_errors:
+                raise serializers.ValidationError({'stock_error': stock_errors})
+            
             invoice = Invoice.objects.create(**validated_data)
             for item_data in items_data:
                 InvoiceItem.objects.create(invoice=invoice, **item_data)
@@ -117,6 +137,27 @@ class InvoiceSerializer(serializers.ModelSerializer):
             if items_data:
                 # Use all_objects to bypass soft-delete filter and actually delete from DB
                 instance.items.model.all_objects.filter(invoice=instance).delete()
+                
+                # Stok yoxlanışı (Sıfırlandıqdan sonra yoxlayırıq ki, köhnə miqdar stoka qayıtmış olsun)
+                from inventory.models import Product
+                stock_errors = []
+                for item_data in items_data:
+                    product_id = item_data.get('product')
+                    if product_id:
+                        try:
+                            product = Product.objects.get(pk=product_id if not hasattr(product_id, 'pk') else product_id.pk)
+                            requested_qty = item_data.get('quantity', 0)
+                            if product.stock_quantity < requested_qty:
+                                stock_errors.append(
+                                    f'"{product.name}" üçün anbarda kifayət qədər stok yoxdur '
+                                    f'(Tələb: {requested_qty}, Mövcud: {product.stock_quantity})'
+                                )
+                        except Product.DoesNotExist:
+                            pass
+                
+                if stock_errors:
+                    raise serializers.ValidationError({'stock_error': stock_errors})
+
                 for item_data in items_data:
                     InvoiceItem.objects.create(invoice=instance, **item_data)
             
