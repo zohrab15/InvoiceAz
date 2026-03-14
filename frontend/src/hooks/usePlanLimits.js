@@ -83,7 +83,7 @@ export const usePlanLimits = () => {
     const isDemo = useAuthStore.getState().user?.email === 'demo_user@invoice.az';
 
     return {
-        plan: isDemo ? 'pro' : (planStatus?.plan || 'free'),
+        plan: isDemo ? 'premium' : (planStatus?.plan || 'free'),
         limits: planStatus?.limits,
         usage: planStatus?.usage,
         isLoading,
