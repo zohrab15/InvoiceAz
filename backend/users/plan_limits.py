@@ -335,7 +335,7 @@ def get_full_plan_status(user, business_id=None):
 
     return {
         'plan': 'premium' if is_privileged else plan.name,
-        'label': 'Pro (Privileged)' if (user.is_superuser or user.is_staff) else ('Premium' if is_demo else plan.label),
+        'label': 'Premium' if is_demo else ('Pro (Privileged)' if (user.is_superuser or user.is_staff) else plan.label),
         'subscription': {
             'interval': user.subscription_interval,
             'expiry': user.subscription_expiry.strftime('%Y-%m-%d') if user.subscription_expiry else None,

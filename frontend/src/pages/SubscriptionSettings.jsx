@@ -50,8 +50,9 @@ const SubscriptionSettings = () => {
 
     if (isLoading) return <div className="p-8 animate-pulse text-white/20 font-black tracking-widest uppercase text-center mt-20">Yüklənir...</div>;
 
-    const currentPlan = planStatus?.plan || 'free';
-    const planLabel = planStatus?.label || (currentPlan === 'pro' ? 'Pro' : (currentPlan === 'premium' ? 'Premium' : 'Pulsuz'));
+    const isDemoUser = user?.email === 'demo_user@invoice.az';
+    const currentPlan = isDemoUser ? 'premium' : (planStatus?.plan || 'free');
+    const planLabel = isDemoUser ? 'Premium' : (planStatus?.label || (currentPlan === 'pro' ? 'Pro' : (currentPlan === 'premium' ? 'Premium' : 'Pulsuz')));
     const isCancelled = planStatus?.subscription?.cancel_at_period_end;
     const expiryDate = planStatus?.subscription?.expiry;
     const interval = planStatus?.subscription?.interval;
